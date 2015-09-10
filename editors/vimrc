@@ -1,0 +1,434 @@
+" Chad Stovern's vimrc
+" Contact: helpme@chadstovern.com
+" Much of this file is based on what I've learned from Derek Wyatt.
+" Go visit derekwyatt.org and take a look at his tutorials & examples.
+
+" Want this first; forget being compatible with good ol' vi
+set nocompatible
+
+" Vundle settings
+" filetype needs to be off for vundle but is set to on first to prevent a bug
+filetype on
+filetype off
+
+" Load the Vundle vim bundle (addon) manager
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#rc()
+
+" addons
+" vundle (let vundle manage and update itself)
+Plugin 'gmarik/Vundle.vim'
+
+" colorschemes
+Plugin 'https://bitbucket.org/chadhs/wombat256.vim'
+Plugin 'altercation/vim-colors-solarized'
+
+" additional syntaxes
+Plugin 'plasticboy/vim-markdown'
+Plugin 'groenewege/vim-less'
+Plugin 'mitsuhiko/vim-jinja'
+Plugin 'vim-scripts/yaml.vim'
+Plugin 'chadhs/django.vim'
+
+" language support
+Plugin 'kovisoft/slimv'
+Plugin 'klen/python-mode'
+Plugin 'benmills/vimux'
+Plugin 'kchmck/vim-coffee-script'
+Plugin 'juvenn/mustache.vim'
+Plugin 'tpope/vim-haml'
+Plugin 'guns/vim-clojure-static'
+Plugin 'guns/vim-clojure-highlight'
+Plugin 'vim-scripts/paredit.vim'
+Plugin 'kien/rainbow_parentheses.vim'
+Plugin 'tpope/vim-fireplace'
+Plugin 'derekwyatt/vim-scala'
+
+" associate *.ich with mustache filetype
+au BufRead,BufNewFile *.ich setfiletype mustache
+
+" status bar enhancement
+Plugin 'Lokaltog/vim-powerline'
+Plugin 'stephenmckinney/vim-solarized-powerline'
+
+" code completion
+Plugin 'Valloric/YouCompleteMe'
+Plugin 'SirVer/ultisnips'
+Plugin 'honza/vim-snippets'
+
+" from practical vim
+Plugin 'thinca/vim-visualstar'
+Plugin 'nelstrom/vim-qargs'
+
+" grep like search in the directory you're in
+Plugin 'mileszs/ack.vim'
+" replacement for command-t for quickly opening files & buffers
+Plugin 'kien/ctrlp.vim'
+" file tree navigator
+Plugin 'scrooloose/nerdtree'
+" enhanced word and character search movement
+Plugin 'Lokaltog/vim-easymotion'
+" narrow region allows you to capture one section and edit it in it's own buffer
+Plugin 'chrisbra/NrrwRgn'
+" close a buffer without destroying/deleting the buffer space
+Plugin 'https://bitbucket.org/chadhs/bclose.vim'
+" nerdtree like buffer navigator / manager
+Plugin 'jeetsukumaran/vim-buffergator'
+" focus in on a split as if it were the only buffer open
+Plugin 'vim-scripts/ZoomWin'
+" auto closing parens, brackets, etc
+Plugin 'Raimondi/delimitMate'
+" change surrounding parens, brackets, etc by using 'cs'
+Plugin 'tpope/vim-surround'
+" use '.' to repeat addon commands such as 'cs'
+Plugin 'tpope/vim-repeat'
+" expand the scope of builtin bracket matching
+Plugin 'vim-scripts/matchit.zip'
+" side panel for showing all functions/methods/vars/etc in a project or file
+Plugin 'majutsushi/tagbar'
+" syntax checking addon
+Plugin 'scrooloose/syntastic'
+" syntax understanding auto commenter that is simply amazing
+Plugin 'scrooloose/nerdcommenter'
+" undo manager (that is very awesome)
+Plugin 'sjl/gundo.vim'
+" move between tmux and vim splits with common hotkeys
+Plugin 'christoomey/vim-tmux-navigator'
+
+
+"" "The Bare Minimum"
+" Get that filetype stuff happening
+" filetype on (set to off for vundle compatability)
+filetype plugin on
+filetype indent on
+
+" Turn on that syntax highlighting
+syntax on
+
+" Why is this not a default
+" Make sure that unsaved buffers that are to be put in the background are
+" allowed to go in there (ie. the "must save first" error doesn't come up)
+set hidden
+
+" Don't update the display while executing macros
+set lazyredraw
+
+" At least let yourself know what mode you're in
+set showmode
+
+" Enable enhanced command-line completion. Presumes you have compiled
+" with +wildmenu.  See :help 'wildmenu'
+set wildmenu
+
+" Let's make it easy to edit this file (mnemonic for the key sequence is
+" 'e'dit 'v'imrc)
+nmap <silent> ,ev :e $MYVIMRC<cr>
+
+" And to source this file as well (mnemonic for the key sequence is
+" 's'ource 'v'imrc)
+nmap <silent> ,sv :so $MYVIMRC<cr>
+
+
+"" "Better Settings"
+" Set the search scan to wrap around the file
+set wrapscan
+
+" Set the forward slash to be the slash of note.  Backslashes suck
+" This is really only applicable to Windows but I like to have a vimrc
+" that works no matter what OS I'm currently on
+set shellslash
+
+" Allow backspacing over indent, eol, and the start of an insert
+set backspace=2
+
+" Derek Wyatt's status line the way he likes it
+"set stl=%f\ %m\ %r\ Line:\ %l/%L[%p%%]\ Col:\ %c\ Buf:\ #%n\ [%b][0x%B]
+
+" Chad's status line (**currently off due to using powerline**)
+"set stl=%f 										" file name
+"set stl+=\ %m 									" modified flag
+"set stl+=\ %r 									" read only flag
+"set stl+=\ line:\ %l/%L 						" cursor line/total lines
+"set stl+=[%p%%] 								" percent through entire file (as in Ctrl+G)
+"set stl+=\ col:\ %c 							" cursor column
+"set stl+=\ buf:\ #%n 							" buffer
+"set stl+=%= 									" left/right separator
+"set stl+=\ type:\ %y 							" filetype
+"set stl+=\ %{strlen(&fenc)?&fenc:'none'} 	"file encoding
+"let g:Powerline_theme='short'
+let g:Powerline_colorscheme='solarized16_dark'
+
+" tell VIM to always put a status line in, even if there is only one window
+set laststatus=2
+
+" Hide the mouse pointer while typing
+set mousehide
+
+" The GUI (i.e. the 'g' in 'gvim') is fantastic, but let's not be
+" silly about it :)  The GUI is fantastic, but it's fantastic for
+" its fonts and its colours, not for its toolbar and its menus -
+" those just steal screen real estate
+set guioptions=ac
+
+" This is the timeout used while waiting for user input on a
+" multi-keyed macro or while just sitting and waiting for another
+" key to be pressed measured in milliseconds.
+"
+" i.e. for the ",d" command, there is a "timeoutlen" wait
+"      period between the "," key and the "d" key.  If the
+"      "d" key isn't pressed before the timeout expires,
+"      one of two things happens: The "," command is executed
+"      if there is one (which there isn't) or the command aborts.
+"
+" The idea here is that if you have two commands, say ",dv" and
+" ",d" that it will take 'timeoutlen' milliseconds to recognize
+" that you're going for ",d" instead of ",dv"
+"
+" In general you should endeavour to avoid that type of
+" situation because waiting 'timeoutlen' milliseconds is
+" like an eternity.
+set timeoutlen=500
+
+" Keep some stuff in the history
+set history=100
+
+" Fold settings
+"" These commands open folds
+set foldopen=block,insert,jump,mark,percent,quickfix,search,tag,undo
+"" set the folding method
+set foldmethod=syntax
+"" toggle folds
+nmap <space> za
+"" start with folds collapsed
+set nofoldenable
+
+" When the page starts to scroll, keep the cursor 8 lines from
+" the top and 8 lines from the bottom
+set scrolloff=8
+
+" Incrementally match the search.  I orignally hated this
+" but someone forced me to live with it for a while and told
+" me that I would grow to love it after getting used to it...
+" turns out he was right :)
+set incsearch
+
+" Syntax coloring lines that are too long just slows down the world
+set synmaxcol=2048
+
+" Tabstops are 4 spaces unless specified
+set tabstop=4
+set shiftwidth=4
+autocmd FileType python,html,css,htmljinja,htmldjango set expandtab
+" Tabstops for javascript 2 spaces
+autocmd FileType ruby,javascript,coffee,sql,yaml,clojure set tabstop=2 shiftwidth=2 expandtab
+
+" set the search scan so that it ignores case when the search is all lower
+" case but recognizes uppercase if it's specified
+set ignorecase
+set smartcase
+
+" Show the current command in the lower right corner
+set showcmd
+
+" Set up the gui cursor to look nice
+set guicursor=n-v-c:block-Cursor-blinkon0
+set guicursor+=ve:ver35-Cursor
+set guicursor+=o:hor50-Cursor
+set guicursor+=i-ci:ver25-Cursor
+set guicursor+=r-cr:hor20-Cursor
+set guicursor+=sm:block-Cursor-blinkwait175-blinkoff150-blinkon175
+
+" NERD Tree Plugin Settings
+" Toggle the NERD Tree on an off with Control-n
+nmap <C-n> :NERDTreeToggle<CR>
+" Have NERD Tree always open on the right side
+let g:NERDTreeWinPos = "right"
+" Close vim if the only buffer open is NERD Tree
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERDTreeType == "primary") | q | endif
+
+" ~ files are evil; set this to not leave any behind
+set nobackup
+set backupdir=~/tmp
+
+" set an absolute path for swp files so you can commit git/svn changes without closing the files
+set dir=~/tmp
+
+" turn on search hilighting (yup, i actually like it)
+set hls
+
+" clear search yet leave search history in tact
+nmap <silent> ,/ :nohlsearch<CR>
+
+" turn off mouse in vim (i like the terminal to have mouse control and i use
+" the keyboard for visual controls)
+set mouse-=a
+
+" stop vim from clearing the screen after exit (helps for referencing stuff)
+set t_ti= t_te=
+
+" set some gui only options (for macvim / gvim)
+if has("gui_running")
+  set gfn=Menlo:h14
+endif
+
+" set theme options
+syntax enable
+set background=dark
+colorscheme solarized
+
+" have vim jump to the last position when reopening a file
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
+
+" The following are commented out as they cause vim to behave a lot
+" differently from regular Vi. They are highly recommended though.
+set showmatch           " Show matching brackets.
+set autowrite           " Automatically save before commands like :next and :make
+
+" allow jk navigation to not follow line/word wrapping contraints
+nnoremap j gj
+nnoremap k gk
+
+" change the "leader" (vim command key) to ","
+let mapleader = ","
+
+" Toggle Line Numbers
+"set nonumber
+"autocmd FileType python setlocal nonumber
+nmap <C-N><C-N> :set invnumber<CR>
+
+" set F5 as the hotkey to toggle gundo
+"nnoremap <F5> :GundoToggle<CR>
+nnoremap <leader>gu :GundoToggle<CR>
+"let g:gundo_right = 1
+
+" change directory to the current file's directory and then print the working directory
+nnoremap ,cd :cd %:p:h<CR>:pwd<CR>
+" change to home src dir
+nnoremap ,cds :cd ~/src<CR>:pwd<CR>
+" change to home remotefs dir for remote file editing
+nnoremap ,cdr :cd ~/remotefs<CR>:pwd<CR>
+
+" preview the current file in marked
+nnoremap <leader>m :silent !open -a Marked\ 2.app '%:p'<cr>
+
+" set F8 as the hotkey to toggle tagbar
+"nmap <F8> :TagbarToggle<CR>
+nmap <leader>rt :TagbarToggle<CR>
+
+" GRB: use fancy buffer closing that doesn't close the split
+cnoremap <expr> bd (getcmdtype() == ':' ? 'Bclose' : 'bd')
+
+" ctrlp settings
+nnoremap <leader>t :CtrlP [./] <CR>
+nnoremap <leader>b :CtrlPBuffer<CR>
+set wildignore+=*/venv/*,*/.git/*,*/.svn/*,*.pyc,.DS_Store,*.zip
+
+" ack bindings
+nnoremap <leader>f :Ack<space>
+let g:ackprg = 'ag --nogroup --nocolor --column'
+
+"buffergator settings
+" do not use default keymaps (1=yes 0=no)
+let g:buffergator_suppress_keymaps = 1
+" set custom keymaps
+nnoremap <leader>bg :BuffergatorToggle<CR>
+" auto dismiss buffergator window after opening buffer (1=yes 0=no)
+let g:buffergator_autodismiss_on_select = 1
+" auto expand vim window when opening buffergator (1=yes 0=no)
+let g:buffergator_autoexpand_on_split = 0
+" buffergator window width (default=40)
+let g:buffergator_split_size = 40
+
+"ZoomWin keybinds (toggles focusing in on a split; sort of a split/unsplit)
+nnoremap <leader>zw :ZoomWin<CR>
+
+" resize splits
+nnoremap <leader><UP> :resize +5<CR>
+nnoremap <leader><DOWN> :resize -5<CR>
+nnoremap <leader><LEFT> :vertical resize +5<CR>
+nnoremap <leader><RIGHT> :vertical resize -5<CR>
+"nnoremap <C-k> :resize +5<CR>
+"nnoremap <C-j> :resize -5<CR>
+"nnoremap <C-l> :vertical resize +5<CR>
+"nnoremap <C-h> :vertical resize -5<CR>
+
+" slimv
+let g:slimv_leader = ","
+let g:slimv_keybindings = 2
+let g:slimv_repl_split = 2 "horz split repl on bottom
+"let g:slimv_repl_split = 3 "vert split repl on left
+"" paredit mode settings
+let g:paredit_mode = 0
+"let g:slimv_swank_cmd = '!osascript -e "tell application \"Terminal\" to do script \"clisp ~/.vim/bundle/slimv.vim/slime/start-swank.lisp\""'
+"let g:slimv_swank_cmd = '!osascript -e "tell application \"Terminal\" to do script \"/usr/local/bin/sbcl --load ~/.vim/bundle/slimv/slime/start-swank.lisp\""'
+
+"vimux
+"nnoremap <Leader>r :w<CR> <bar> :call VimuxRunCommand("clear; python " . bufname("%"))<CR>
+nnoremap <leader>w :w<CR>
+nnoremap <Leader>r :call VimuxRunCommand("clear; python " . bufname("%"))<CR>
+"nnoremap <Leader>r :call VimuxRunCommand("clear; ./" . bufname("%"))<CR>
+"nnoremap <Leader>r :call VimuxRunCommand("clear; " . `hostname` . bufname("%"))<CR>
+nnoremap <Leader>vi :VimuxInspectRunner<CR>
+nnoremap <Leader>vq :VimuxCloseRunner<CR>
+nnoremap <Leader>c :VimuxInterruptRunner<CR>
+
+" revamp this for repl action
+"function! VimuxSlime()
+ "call VimuxSendText(@v)
+ "call VimuxSendKeys("Enter")
+"endfunction
+
+" If text is selected, save it in the v buffer and send that buffer it to tmux
+"vmap <Leader>vs "vy :call VimuxSlime()<CR>
+
+" Select current paragraph and send it to tmux
+"nmap <Leader>vs vip<LocalLeader>vs<CR>
+" end revamp this for repl action
+
+" bash syntax
+let g:is_bash = 1
+
+" python-mode
+"let g:pymode = 0
+"let g:pymode_options = 0
+let g:pymode_rope_completion = 0
+let g:pymode_virtualenv = 0
+let g:pymode_breakpoint_bind = '<leader>pb'
+let g:pymode_run_bind = '<leader>pr'
+let g:pymode_lint_options_pep8 = {
+        \ 'ignore': 'E501',
+        \ 'max_line_length': 160,
+	\ }
+let g:pymode_lint = 1
+
+let g:pymode_options_colorcolumn = 0
+"highlight ColorColumn ctermbg=8
+"highlight ColorColumn guibg=Black
+"highlight ColorColumn guibg=Gray
+
+" youcompleteme
+let g:ycm_collect_identifiers_from_tags_files = 1 " Let YCM read tags from Ctags file
+let g:ycm_use_ultisnips_completer = 1 " Default 1, just ensure
+let g:ycm_seed_identifiers_with_syntax = 1 " Completion for programming language's keyword
+let g:ycm_complete_in_comments = 1 " Completion in comments
+let g:ycm_complete_in_strings = 1 " Completion in string
+
+" ultisnips
+let g:UltiSnipsExpandTrigger       = "<c-j>"
+let g:UltiSnipsJumpForwardTrigger  = "<c-j>"
+let g:UltiSnipsJumpBackwardTrigger = "<c-p>"
+let g:UltiSnipsListSnippets        = "<c-k>" "List possible snippets based on current file"
+
+" scratch preview window
+set completeopt-=preview
+
+" rainbow parens
+au VimEnter * RainbowParenthesesToggle
+au Syntax * RainbowParenthesesLoadRound
+au Syntax * RainbowParenthesesLoadSquare
+au Syntax * RainbowParenthesesLoadBraces
+
+" trailing whitespace
+autocmd FileType python,html,css,javascript,htmljinja,htmldjango autocmd BufWritePre <buffer> :%s/\s\+$//e

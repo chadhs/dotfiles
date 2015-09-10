@@ -1,0 +1,134 @@
+;;; package support
+(require 'package)
+
+;; package repositories
+(setq package-archives'(
+						("gnu" . "http://elpa.gnu.org/packages/")		
+			 			("melpa" . "http://melpa.org/packages/")
+			 			("melpa-stable" . "http://stable.melpa.org/packages/")
+						))
+
+;; specify which repo to install packages from
+(setq package-pinned-packages 
+	  '(
+	  	;; unstable packages
+		(exec-path-from-shell				. "melpa")
+		(evil 								. "melpa")
+		(evil-leader 						. "melpa")
+		(evil-matchit 						. "melpa")
+		(evil-surround 						. "melpa")
+		(evil-nerd-commenter 				. "melpa")
+	  	;; stable packages
+	  	(cider 								. "melpa-stable")
+		(clojure-mode 						. "melpa-stable")
+		(paredit	 						. "melpa-stable")
+		(clojure-mode-extra-font-locking 	. "melpa-stable")
+		(rainbow-delimiters 				. "melpa-stable")
+		))
+
+;; packages to install
+(setq package-list '(
+					 ;; core
+					 exec-path-from-shell 
+					 evil 
+					 evil-leader 
+					 evil-matchit 
+					 evil-surround 
+					 evil-nerd-commenter
+					 clojure-mode
+					 cider
+					 ;; test
+					 paredit
+					 clojure-mode-extra-font-locking
+					 rainbow-delimiters
+					 ))
+
+;; loads packages and activates them
+(package-initialize)
+
+;; fetch the list of packages available
+(unless package-archive-contents
+  (package-refresh-contents))
+
+;; install packages
+(dolist (package package-list)
+  (unless (package-installed-p package)
+    (package-install package)))
+
+
+;;; path fix for os x gui mode
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+
+
+;;; os x keybinding fix
+;; For iTerm: Go to Manage Profiles > Keyboard profiles > (your profile) > Option Key as… and choose +Esc
+
+;;; slime support
+(load (expand-file-name "~/quicklisp/slime-helper.el"))
+;; Replace "sbcl" with the path to your implementation
+(setq inferior-lisp-program "/usr/local/bin/sbcl")
+
+
+;;; evil mode
+;; load evil-leader first so it's initialized from the start
+(require 'evil-leader)
+(global-evil-leader-mode)
+(evil-leader/set-leader ",")
+
+;; load base evil mode
+(require 'evil)
+(evil-mode 1)
+
+;; evil matchit
+(require 'evil-matchit)
+(global-evil-matchit-mode 1)
+
+;; evil nerd commenter
+(evilnc-default-hotkeys)
+
+;; evil surround
+(require 'evil-surround)
+(global-evil-surround-mode 1)
+
+
+;; clojure
+(require 'clojure-mode-extra-font-locking)
+(require 'rainbow-delimiters)
+(add-hook 'clojure-mode-hook 'enable-paredit-mode)
+(add-hook 'cider-repl-mode-hook 'paredit-mode)
+(add-hook 'prog-mode-hook 'rainbow-delimiters-mode)
+
+
+;; yes and no prompts
+(defalias 'yes-or-no-p 'y-or-n-p)
+
+
+;;; ui tweaks
+(if (display-graphic-p)
+  (progn
+      (scroll-bar-mode -1)
+      (tool-bar-mode -1)))
+(menu-bar-mode -1)
+
+
+;;; font settings
+(set-face-attribute 'default nil
+                    :family "Menlo" :height 140 :weight 'normal)
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Values Set via Customize ;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-enabled-themes (quote (wombat))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
