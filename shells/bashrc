@@ -1,11 +1,7 @@
-# os x .bashrc settings
-# contact: chadhs@digitalnomad.im
+# .bashrc settings
 
 # check for an interative session
 [ -z "$PS1" ] && return
-
-# set archlinux default PS1
-PS1='[\u@mac \W]\$ '
 
 # history settings
 unset HISTFILESIZE
@@ -35,39 +31,61 @@ alias l='ls'
 alias la='ls -ah'
 alias ll='ls -lah'
 alias cd..='cd ..'
-#alias vim='mvim -v'
-alias flushdns='dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
-alias shadowno='defaults write com.apple.screencapture disable-shadow -bool true && killall SystemUIServer'
-alias shadowyes='defaults delete com.apple.screencapture disable-shadow && killall SystemUIServer'
-alias sortlaunchpad='rm ~/Library/Application\ Support/Dock/*.db ; killall Dock'
-alias brewdoc='brew update && brew doctor'
-alias brewup='brew update && brew doctor && brew upgrade; brew cleanup; brew prune'
-alias speedtest='wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip'
 
-## bash completion
-if [ -f $(brew --prefix)/etc/bash_completion ]; then
-	. $(brew --prefix)/etc/bash_completion
+## mac only aliases
+if [ $(uname) = "Darwin" ]; then
+	alias flushdns='dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
+	alias shadowno='defaults write com.apple.screencapture disable-shadow -bool true && killall SystemUIServer'
+	alias shadowyes='defaults delete com.apple.screencapture disable-shadow && killall SystemUIServer'
+	alias sortlaunchpad='rm ~/Library/Application\ Support/Dock/*.db ; killall Dock'
+	alias brewdoc='brew update && brew doctor'
+	alias brewup='brew update && brew doctor && brew upgrade; brew cleanup; brew prune'
+	alias speedtest='wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip'
+	### bash completion
+	if [ -f $(brew --prefix)/etc/bash_completion ]; then
+		. $(brew --prefix)/etc/bash_completion
+	fi
 fi
 
-## development
-### python
-export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7
-#alias sv="source venv/bin/activate; export PS1='(\W-venv)$PS1'"
-alias sv='source venv/bin/activate'
 
-### django
-source $HOME/mac-prefs/django_bash_completion
+## mac development
+if [ $(uname) = "Darwin" ]; then
+	### python
+	export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7
+	alias sv='source venv/bin/activate'
 
-### git
-#if [ -f "$(brew --prefix bash-git-prompt)/share/gitprompt.sh" ]; then
-#	GIT_PROMPT_THEME=Default
-#	GIT_PROMPT_ONLY_IN_REPO=1
-#	source "$(brew --prefix bash-git-prompt)/share/gitprompt.sh"
-#fi
+	### django
+	source $HOME/mac-prefs/django_bash_completion
 
-### go
-#export GOPATH=$HOME/go
-#export PATH=$PATH:$GOPATH/bin
+	### marks
+	export MARKPATH=$HOME/.marks
+	function jump { 
+		cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
+	}
+	function mark { 
+		mkdir -p "$MARKPATH"; ln -s "$(pwd)" "$MARKPATH/$1"
+	}
+	function unmark { 
+		rm -i "$MARKPATH/$1"
+	}
+
+	#### osx
+	function marks {
+		\ls -l "$MARKPATH" | tail -n +2 | sed 's/  / /g' | cut -d' ' -f9- | awk -F ' -> ' '{printf "%-10s -> %s\n", $1, $2}'
+	}
+
+	_completemarks() {
+	  local curw=${COMP_WORDS[COMP_CWORD]}
+	  local wordlist=$(find $MARKPATH -type l | sed -En 's/(.*)\/.(marks)\/(.*)/\3/p')
+	  COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
+	  return 0
+	}
+
+	complete -F _completemarks jump unmark
+
+	### Added by the Heroku Toolbelt
+	export PATH="/usr/local/heroku/bin:$PATH"
+fi
 
 
 ## man page color and search hilighting
@@ -83,32 +101,3 @@ man() {
 		LESS_TERMCAP_us=$(printf "\e[1;32m") \
 		man "$@"
 }
-
-## marks
-export MARKPATH=$HOME/.marks
-function jump { 
-    cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
-}
-function mark { 
-    mkdir -p "$MARKPATH"; ln -s "$(pwd)" "$MARKPATH/$1"
-}
-function unmark { 
-    rm -i "$MARKPATH/$1"
-}
-
-### osx
-function marks {
-    \ls -l "$MARKPATH" | tail -n +2 | sed 's/  / /g' | cut -d' ' -f9- | awk -F ' -> ' '{printf "%-10s -> %s\n", $1, $2}'
-}
-
-_completemarks() {
-  local curw=${COMP_WORDS[COMP_CWORD]}
-  local wordlist=$(find $MARKPATH -type l | sed -En 's/(.*)\/.(marks)\/(.*)/\3/p')
-  COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
-  return 0
-}
-
-complete -F _completemarks jump unmark
-
-### Added by the Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
