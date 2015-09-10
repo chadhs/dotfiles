@@ -179,3 +179,8 @@ man() {
 		LESS_TERMCAP_us=$(printf "\e[1;32m") \
 		man "$@"
 }
+
+## load tmux automagically on servers intelligently
+if [ ! $(uname) = "Darwin" ]; then
+	case "$-" in *i*) [ -z $TMUX ] && if tmux has; then tmux attach; else tmux new; fi && exit 0; esac;
+fi
