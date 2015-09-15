@@ -42,6 +42,7 @@ symlink_configs(){
 
 	# mac
 	[ "$system_os" = "mac" ] && [ ! -d ~/.ssh ] && ln -s ~/Dropbox/configs/ssh .ssh
+	[ "$system_os" = "mac" ] && [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig .gitconfig
 
 	# all
 	[ ! -d ~/.oh-my-zsh ] && curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh \
@@ -55,7 +56,7 @@ symlink_configs(){
 	[ ! -e ~/.vimrc ] && ln -s ~/dotfiles/editors/vimrc .vimrc
 	[ ! -d ~/.vim ] && git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
 	[ ! -e ~/.spacemacs ] && ln -s ~/dotfiles/editors/spacemacs .spacemacs
-	[ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig .gitconfig
+	[ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig
 }
 
 
