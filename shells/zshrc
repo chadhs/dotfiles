@@ -173,6 +173,13 @@ if [ $(uname) = "Darwin" ]; then
 	source /usr/local/share/chruby/auto.sh
 fi
 
+## update dot files
+update-dotfiles(){
+	curdir=$(pwd)
+	cd ~/dotfiles && git pull && sh deploy.sh
+	cd $curdir
+}
+
 ## man page color and search hilighting
 export PAGER="less"
 man() {
@@ -189,7 +196,5 @@ man() {
 
 ## update settings and load tmux automagically on servers intelligently
 if [ ! $(uname) = "Darwin" ] && [ ! $(id -u) = 0 ]; then
-	cd ~/dotfiles && git pull && sh deploy.sh
-	cd ~
 	case "$-" in *i*) [ -z $TMUX ] && if tmux has; then tmux attach; else tmux new; fi && exit 0; esac;
 fi
