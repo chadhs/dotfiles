@@ -187,7 +187,8 @@ man() {
 		man "$@"
 }
 
-## load tmux automagically on servers intelligently
+## update settings and load tmux automagically on servers intelligently
 if [ ! $(uname) = "Darwin" ] && [ ! $(id -u) = 0 ]; then
+	cd ~/dotfiles && git pull && sh deploy.sh
 	case "$-" in *i*) [ -z $TMUX ] && if tmux has; then tmux attach; else tmux new; fi && exit 0; esac;
 fi
