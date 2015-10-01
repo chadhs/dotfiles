@@ -169,8 +169,8 @@ if [ $(uname) = "Darwin" ]; then
 	### vagrant
 	alias vssh='vagrant up && vagrant ssh'
 	### ruby
-	source /usr/local/share/chruby/chruby.sh
-	source /usr/local/share/chruby/auto.sh
+	source /usr/local/opt/chruby/share/chruby/chruby.sh
+	source /usr/local/opt/chruby/share/chruby/auto.sh
 fi
 
 ## update dot files
