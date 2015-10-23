@@ -29,6 +29,7 @@ Plugin 'groenewege/vim-less'
 Plugin 'mitsuhiko/vim-jinja'
 Plugin 'vim-scripts/yaml.vim'
 Plugin 'chadhs/django.vim'
+Plugin 'saltstack/salt-vim'
 
 " language support
 Plugin 'kovisoft/slimv'
