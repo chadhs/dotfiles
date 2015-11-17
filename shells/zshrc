@@ -152,10 +152,8 @@ if [ $(uname) = "Darwin" ]; then
 	alias vagrant='nocorrect vagrant'
 	alias chef='nocorrect chef'
 	alias knife='nocorrect knife'
-fi
 
-## mac development
-if [ $(uname) = "Darwin" ]; then
+#### mac development
 	### homebrew
 	export HOMEBREW_GITHUB_API_TOKEN=4da4afd78bcd05ec169285a1dfca84a27481e961
 	### python
@@ -171,6 +169,16 @@ if [ $(uname) = "Darwin" ]; then
 	### ruby
 	source /usr/local/opt/chruby/share/chruby/chruby.sh
 	source /usr/local/opt/chruby/share/chruby/auto.sh
+
+#### mac blogging
+	cryogen-publish(){
+		curdir=$(pwd)
+		cd ../public/ || echo "### You must run this from the resources/templates directory of your Cryogen site! ###"
+		git add --all
+		git commit -a -m "site content update" && git push
+		cd $curdir
+}
+
 fi
 
 ## update dot files

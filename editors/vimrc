@@ -41,7 +41,8 @@ Plugin 'tpope/vim-haml'
 Plugin 'guns/vim-clojure-static'
 Plugin 'guns/vim-clojure-highlight'
 Plugin 'vim-scripts/paredit.vim'
-Plugin 'kien/rainbow_parentheses.vim'
+"Plugin 'kien/rainbow_parentheses.vim'
+Plugin 'junegunn/rainbow_parentheses.vim'
 Plugin 'tpope/vim-fireplace'
 Plugin 'derekwyatt/vim-scala'
 
@@ -219,9 +220,9 @@ set synmaxcol=2048
 " Tabstops are 4 spaces unless specified
 set tabstop=4
 set shiftwidth=4
-autocmd FileType python,html,css,htmljinja,htmldjango set expandtab
+autocmd FileType python set tabstop=2 shiftwidth=2 expandtab
 " Tabstops for javascript 2 spaces
-autocmd FileType ruby,javascript,coffee,sql,yaml,clojure set tabstop=2 shiftwidth=2 expandtab
+autocmd FileType ruby,javascript,coffee,sql,yaml,clojure,html,css,htmljinja,htmldjango set tabstop=2 shiftwidth=2 expandtab
 
 " set the search scan so that it ignores case when the search is all lower
 " case but recognizes uppercase if it's specified
@@ -269,7 +270,7 @@ set t_ti= t_te=
 
 " set some gui only options (for macvim / gvim)
 if has("gui_running")
-  set gfn=Menlo:h14
+  set gfn=Menlo:h15
 endif
 
 " set theme options
@@ -425,11 +426,15 @@ let g:UltiSnipsListSnippets        = "<c-k>" "List possible snippets based on cu
 " scratch preview window
 set completeopt-=preview
 
+" junegunn/rainbow_parentheses
+au VimEnter * RainbowParentheses
+let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
+
 " rainbow parens
-au VimEnter * RainbowParenthesesToggle
-au Syntax * RainbowParenthesesLoadRound
-au Syntax * RainbowParenthesesLoadSquare
-au Syntax * RainbowParenthesesLoadBraces
+"au VimEnter * RainbowParenthesesToggle
+"au Syntax * RainbowParenthesesLoadRound
+"au Syntax * RainbowParenthesesLoadSquare
+"au Syntax * RainbowParenthesesLoadBraces
 
 " trailing whitespace
 autocmd FileType python,html,css,javascript,htmljinja,htmldjango autocmd BufWritePre <buffer> :%s/\s\+$//e
