@@ -48,6 +48,7 @@ symlink_configs(){
 	[ ! -d ~/.oh-my-zsh ] && curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh \
 		; rm ~/.zshrc
 	[ ! -e ~/.zshrc ] && ln -s ~/dotfiles/shells/zshrc .zshrc
+	[ ! -e ~/.zshenv ] && ln -s ~/dotfiles/shells/zshenv .zshenv
 	[ ! -e ~/.oh-my-zsh/themes/digitalnomad.zsh-theme ] && \
 		ln -s ~/dotfiles/shells/digitalnomad.zsh-theme ~/.oh-my-zsh/themes/digitalnomad.zsh-theme
 	[ ! -e ~/.inputrc ] && ln -s ~/dotfiles/shells/inputrc .inputrc
