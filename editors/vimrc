@@ -38,8 +38,8 @@ Plugin 'guns/vim-clojure-highlight'
 Plugin 'vim-scripts/paredit.vim'
 Plugin 'junegunn/rainbow_parentheses.vim'
 Plugin 'tpope/vim-fireplace'
-Plugin 'venantius/vim-eastwood'
-"Plugin 'venantius/vim-cljfmt'
+"Plugin 'venantius/vim-eastwood'
+Plugin 'venantius/vim-cljfmt'
 " python specific
 Plugin 'klen/python-mode'
 " common lisp & scheme
