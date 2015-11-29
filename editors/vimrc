@@ -32,22 +32,25 @@ Plugin 'chadhs/django.vim'
 Plugin 'saltstack/salt-vim'
 
 " language support
-Plugin 'kovisoft/slimv'
-Plugin 'klen/python-mode'
-Plugin 'benmills/vimux'
-Plugin 'kchmck/vim-coffee-script'
-Plugin 'juvenn/mustache.vim'
-Plugin 'tpope/vim-haml'
+" clojure specific
 Plugin 'guns/vim-clojure-static'
 Plugin 'guns/vim-clojure-highlight'
 Plugin 'vim-scripts/paredit.vim'
-"Plugin 'kien/rainbow_parentheses.vim'
 Plugin 'junegunn/rainbow_parentheses.vim'
 Plugin 'tpope/vim-fireplace'
-Plugin 'derekwyatt/vim-scala'
-
+Plugin 'venantius/vim-eastwood'
+"Plugin 'venantius/vim-cljfmt'
+" python specific
+Plugin 'klen/python-mode'
+" common lisp & scheme
+Plugin 'kovisoft/slimv'
+" misc
+Plugin 'tpope/vim-haml'
+Plugin 'kchmck/vim-coffee-script'
+Plugin 'juvenn/mustache.vim'
 " associate *.ich with mustache filetype
 au BufRead,BufNewFile *.ich setfiletype mustache
+Plugin 'derekwyatt/vim-scala'
 
 " status bar enhancement
 Plugin 'Lokaltog/vim-powerline'
@@ -64,36 +67,52 @@ Plugin 'nelstrom/vim-qargs'
 
 " grep like search in the directory you're in
 Plugin 'mileszs/ack.vim'
+
 " replacement for command-t for quickly opening files & buffers
 Plugin 'kien/ctrlp.vim'
+
 " file tree navigator
 Plugin 'scrooloose/nerdtree'
+
 " enhanced word and character search movement
 Plugin 'Lokaltog/vim-easymotion'
+
 " narrow region allows you to capture one section and edit it in it's own buffer
 Plugin 'chrisbra/NrrwRgn'
+
 " close a buffer without destroying/deleting the buffer space
 Plugin 'https://bitbucket.org/chadhs/bclose.vim'
+
 " nerdtree like buffer navigator / manager
 Plugin 'jeetsukumaran/vim-buffergator'
+
 " focus in on a split as if it were the only buffer open
 Plugin 'vim-scripts/ZoomWin'
+
 " auto closing parens, brackets, etc
 Plugin 'Raimondi/delimitMate'
+
 " change surrounding parens, brackets, etc by using 'cs'
 Plugin 'tpope/vim-surround'
+
 " use '.' to repeat addon commands such as 'cs'
 Plugin 'tpope/vim-repeat'
+
 " expand the scope of builtin bracket matching
 Plugin 'vim-scripts/matchit.zip'
+
 " side panel for showing all functions/methods/vars/etc in a project or file
 Plugin 'majutsushi/tagbar'
+
 " syntax checking addon
 Plugin 'scrooloose/syntastic'
+
 " syntax understanding auto commenter that is simply amazing
 Plugin 'scrooloose/nerdcommenter'
+
 " undo manager (that is very awesome)
 Plugin 'sjl/gundo.vim'
+
 " move between tmux and vim splits with common hotkeys
 Plugin 'christoomey/vim-tmux-navigator'
 
@@ -217,12 +236,13 @@ set incsearch
 " Syntax coloring lines that are too long just slows down the world
 set synmaxcol=2048
 
-" Tabstops are 4 spaces unless specified
+" tabstops are 4 spaces unless specified
 set tabstop=4
 set shiftwidth=4
-autocmd FileType python set tabstop=2 shiftwidth=2 expandtab
-" Tabstops for javascript 2 spaces
-autocmd FileType ruby,javascript,coffee,sql,yaml,clojure,html,css,htmljinja,htmldjango set tabstop=2 shiftwidth=2 expandtab
+" tabstops for python are 4 spaces and softtabs used (spaces not hard tabs)
+autocmd FileType python set tabstop=4 shiftwidth=4 expandtab
+" tabstops for many languages 2 spaces and softtabs used (spaces not hard tabs)
+autocmd FileType clojure,coffee,css,html,htmldjango,htmljinja,javascript,ruby,sql,yaml set tabstop=2 shiftwidth=2 expandtab
 
 " set the search scan so that it ignores case when the search is all lower
 " case but recognizes uppercase if it's specified
@@ -270,7 +290,7 @@ set t_ti= t_te=
 
 " set some gui only options (for macvim / gvim)
 if has("gui_running")
-  set gfn=Menlo:h15
+  set gfn=Menlo:h14
 endif
 
 " set theme options
@@ -309,8 +329,6 @@ nnoremap <leader>gu :GundoToggle<CR>
 nnoremap ,cd :cd %:p:h<CR>:pwd<CR>
 " change to home src dir
 nnoremap ,cds :cd ~/src<CR>:pwd<CR>
-" change to home remotefs dir for remote file editing
-nnoremap ,cdr :cd ~/remotefs<CR>:pwd<CR>
 
 " preview the current file in marked
 nnoremap <leader>m :silent !open -a Marked\ 2.app '%:p'<cr>
@@ -325,7 +343,7 @@ cnoremap <expr> bd (getcmdtype() == ':' ? 'Bclose' : 'bd')
 " ctrlp settings
 nnoremap <leader>t :CtrlP [./] <CR>
 nnoremap <leader>b :CtrlPBuffer<CR>
-set wildignore+=*/venv/*,*/.git/*,*/.svn/*,*.pyc,.DS_Store,*.zip
+set wildignore+=*/venv/*,*/.git/*,*/.svn/*,*.pyc,.DS_Store,*.zip,*.jar,*.tar,*.gz,*.tar.gz,*.tgz
 
 " ack bindings
 nnoremap <leader>f :Ack<space>
@@ -351,43 +369,12 @@ nnoremap <leader><UP> :resize +5<CR>
 nnoremap <leader><DOWN> :resize -5<CR>
 nnoremap <leader><LEFT> :vertical resize +5<CR>
 nnoremap <leader><RIGHT> :vertical resize -5<CR>
-"nnoremap <C-k> :resize +5<CR>
-"nnoremap <C-j> :resize -5<CR>
-"nnoremap <C-l> :vertical resize +5<CR>
-"nnoremap <C-h> :vertical resize -5<CR>
 
 " slimv
 let g:slimv_leader = ","
 let g:slimv_keybindings = 2
 let g:slimv_repl_split = 2 "horz split repl on bottom
-"let g:slimv_repl_split = 3 "vert split repl on left
-"" paredit mode settings
-let g:paredit_mode = 0
-"let g:slimv_swank_cmd = '!osascript -e "tell application \"Terminal\" to do script \"clisp ~/.vim/bundle/slimv.vim/slime/start-swank.lisp\""'
-"let g:slimv_swank_cmd = '!osascript -e "tell application \"Terminal\" to do script \"/usr/local/bin/sbcl --load ~/.vim/bundle/slimv/slime/start-swank.lisp\""'
-
-"vimux
-"nnoremap <Leader>r :w<CR> <bar> :call VimuxRunCommand("clear; python " . bufname("%"))<CR>
-nnoremap <leader>w :w<CR>
-nnoremap <Leader>r :call VimuxRunCommand("clear; python " . bufname("%"))<CR>
-"nnoremap <Leader>r :call VimuxRunCommand("clear; ./" . bufname("%"))<CR>
-"nnoremap <Leader>r :call VimuxRunCommand("clear; " . `hostname` . bufname("%"))<CR>
-nnoremap <Leader>vi :VimuxInspectRunner<CR>
-nnoremap <Leader>vq :VimuxCloseRunner<CR>
-nnoremap <Leader>c :VimuxInterruptRunner<CR>
-
-" revamp this for repl action
-"function! VimuxSlime()
- "call VimuxSendText(@v)
- "call VimuxSendKeys("Enter")
-"endfunction
-
-" If text is selected, save it in the v buffer and send that buffer it to tmux
-"vmap <Leader>vs "vy :call VimuxSlime()<CR>
-
-" Select current paragraph and send it to tmux
-"nmap <Leader>vs vip<LocalLeader>vs<CR>
-" end revamp this for repl action
+let g:slimv_disable_clojure = 1
 
 " bash syntax
 let g:is_bash = 1
@@ -430,11 +417,5 @@ set completeopt-=preview
 au VimEnter * RainbowParentheses
 let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
 
-" rainbow parens
-"au VimEnter * RainbowParenthesesToggle
-"au Syntax * RainbowParenthesesLoadRound
-"au Syntax * RainbowParenthesesLoadSquare
-"au Syntax * RainbowParenthesesLoadBraces
-
 " trailing whitespace
-autocmd FileType python,html,css,javascript,htmljinja,htmldjango autocmd BufWritePre <buffer> :%s/\s\+$//e
+autocmd FileType clojure,coffee,css,html,htmldjango,htmljinja,javascript,python,ruby,sql,yaml autocmd BufWritePre <buffer> :%s/\s\+$//e
