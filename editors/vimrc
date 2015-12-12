@@ -45,6 +45,7 @@ Plugin 'klen/python-mode'
 " common lisp & scheme
 Plugin 'kovisoft/slimv'
 " misc
+Plugin 'rizzatti/dash.vim'
 Plugin 'tpope/vim-haml'
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'juvenn/mustache.vim'
@@ -416,6 +417,9 @@ set completeopt-=preview
 " junegunn/rainbow_parentheses
 au VimEnter * RainbowParentheses
 let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
+
+" dash app support
+nmap <silent> <leader>d <Plug>DashSearch
 
 " trailing whitespace
 autocmd FileType clojure,coffee,css,html,htmldjango,htmljinja,javascript,python,ruby,sql,yaml autocmd BufWritePre <buffer> :%s/\s\+$//e
