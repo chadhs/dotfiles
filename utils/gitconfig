@@ -3,3 +3,5 @@
 	email = chad@stovern.me
 [push]
 	default = simple
+[color]
+	ui = auto

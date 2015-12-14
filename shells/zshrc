@@ -172,6 +172,8 @@ if [ $(uname) = "Darwin" ]; then
 	### ruby
 	source /usr/local/opt/chruby/share/chruby/chruby.sh
 	source /usr/local/opt/chruby/share/chruby/auto.sh
+	#### set default ruby when no .ruby-version is present
+	chruby ruby-2.2
 
 #### mac blogging
 	cryogen-publish(){
