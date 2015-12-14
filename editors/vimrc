@@ -20,38 +20,39 @@ call vundle#rc()
 Plugin 'gmarik/Vundle.vim'
 
 " colorschemes
-Plugin 'https://bitbucket.org/chadhs/wombat256.vim'
 Plugin 'altercation/vim-colors-solarized'
+Plugin 'https://bitbucket.org/chadhs/wombat256.vim'
 
-" additional syntaxes
-Plugin 'plasticboy/vim-markdown'
-Plugin 'groenewege/vim-less'
-Plugin 'mitsuhiko/vim-jinja'
-Plugin 'vim-scripts/yaml.vim'
-Plugin 'chadhs/django.vim'
-Plugin 'saltstack/salt-vim'
-
-" language support
-" clojure specific
+" syntax and language support
+"" clojure specific
 Plugin 'guns/vim-clojure-static'
 Plugin 'guns/vim-clojure-highlight'
 Plugin 'vim-scripts/paredit.vim'
 Plugin 'junegunn/rainbow_parentheses.vim'
 Plugin 'tpope/vim-fireplace'
-"Plugin 'venantius/vim-eastwood'
 Plugin 'venantius/vim-cljfmt'
-" python specific
-Plugin 'klen/python-mode'
-" common lisp & scheme
-Plugin 'kovisoft/slimv'
-" misc
-Plugin 'rizzatti/dash.vim'
+"Plugin 'venantius/vim-eastwood'
+"" html & css
+Plugin 'groenewege/vim-less'
 Plugin 'tpope/vim-haml'
+Plugin 'plasticboy/vim-markdown'
+"" python and friends
+Plugin 'klen/python-mode'
+Plugin 'chadhs/django.vim'
+Plugin 'saltstack/salt-vim'
+Plugin 'mitsuhiko/vim-jinja'
+Plugin 'vim-scripts/yaml.vim'
+"" common lisp & scheme
+Plugin 'kovisoft/slimv'
+"" javascript
 Plugin 'kchmck/vim-coffee-script'
 Plugin 'juvenn/mustache.vim'
-" associate *.ich with mustache filetype
+""" associate *.ich with mustache filetype
 au BufRead,BufNewFile *.ich setfiletype mustache
+"" java and friends
 Plugin 'derekwyatt/vim-scala'
+"" misc
+Plugin 'rizzatti/dash.vim'
 
 " status bar enhancement
 Plugin 'Lokaltog/vim-powerline'
@@ -344,7 +345,7 @@ cnoremap <expr> bd (getcmdtype() == ':' ? 'Bclose' : 'bd')
 " ctrlp settings
 nnoremap <leader>t :CtrlP [./] <CR>
 nnoremap <leader>b :CtrlPBuffer<CR>
-set wildignore+=*/venv/*,*/.git/*,*/.svn/*,*.pyc,.DS_Store,*.zip,*.jar,*.tar,*.gz,*.tar.gz,*.tgz
+set wildignore+=*/venv/*,*/.git/*,*/.svn/*,*/out/*,*/target/*,*/repl/*,*.pyc,.DS_Store,*.zip,*.jar,*.tar,*.gz,*.tar.gz,*.tgz
 
 " ack bindings
 nnoremap <leader>f :Ack<space>
