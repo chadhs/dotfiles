@@ -235,6 +235,7 @@ layers configuration. You are free to put any user code."
   (evil-leader/set-key
     "m/" 'evil-search-highlight-persist-remove-all
     "mcl" 'evilnc-comment-or-uncomment-lines
+    "mci" 'evilnc-comment-or-uncomment-lines
     "mcp" 'evilnc-comment-or-uncomment-paragraphs
     "mp" 'helm-projectile-find-file
     "mb" 'helm-mini
