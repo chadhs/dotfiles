@@ -3,7 +3,7 @@
 
 ;;; package repositories
 (setq package-archives '(
-                         ("gnu"           . "http://elpa.gnu.org/packages/")		
+                         ("gnu"           . "http://elpa.gnu.org/packages/")
                          ("melpa"         . "http://melpa.org/packages/")
                          ("melpa-stable"  . "http://stable.melpa.org/packages/")
                          ))
@@ -16,14 +16,14 @@
 ;;; packages to install
 (setq package-list '(
                      ;; core
-                     exec-path-from-shell 
+                     exec-path-from-shell
 
 		     ;; editing enhancements
                      paredit
                      rainbow-delimiters
 		     ace-jump-mode
                      powerline
-		     
+
                      ;; auto-completion
                      auto-complete
 
@@ -31,11 +31,11 @@
                      solarized-theme
 
                      ;; vim mode
-                     evil 
-                     evil-leader 
+                     evil
+                     evil-leader
                      evil-paredit
-                     evil-matchit 
-                     evil-surround 
+                     evil-matchit
+                     evil-surround
                      evil-nerd-commenter
                      evil-visualstar
                      evil-search-highlight-persist
@@ -53,11 +53,11 @@
                      clojure-mode
                      clojure-mode-extra-font-locking
                      cider
-		     
+
 		     ;; other syntaxes
                      ac-ispell
                      markdown-mode
-		     
+
                      ;; wishlist / testing
                      ;html
                      ;sql
@@ -68,7 +68,7 @@
                      ;spotify
                      ;git
                      ;syntax checking
-		     
+
 		     ;; not in use
                      ;smartparens
                      ;evil-smartparens
@@ -126,7 +126,7 @@
 
 ;;; code completion settings
 (ac-config-default)
-;; set tab key to do all completion and disable return 
+;; set tab key to do all completion and disable return
 (define-key ac-completing-map "\t" 'ac-complete)
 (define-key ac-completing-map "\r" nil)
 
@@ -211,7 +211,7 @@
     (scroll-bar-mode -1)
     (tool-bar-mode -1)))
 (menu-bar-mode -1)
-(setq scroll-margin 8)
+(setq scroll-margin 4)
 
 ;;; initial widow size and position (`left . -1` is the closest i can get to right align)
 (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
@@ -219,6 +219,14 @@
 ;;; fix terminal colors
 (add-hook 'window-setup-hook 'remove-background-color)
 (add-hook 'server-visit-hook 'remove-background-color)
+
+;;; remove trailing whitespace from code
+(add-hook 'prog-mode-hook
+	  (lambda () (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
+
+;;; remember cursor position in buffers
+(require 'saveplace)
+(setq-default save-place t)
 
 
 
