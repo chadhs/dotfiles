@@ -28,6 +28,7 @@ Plugin 'https://bitbucket.org/chadhs/wombat256.vim'
 Plugin 'guns/vim-clojure-static'
 Plugin 'guns/vim-clojure-highlight'
 Plugin 'vim-scripts/paredit.vim'
+"Plugin 'bhurlow/vim-parinfer'
 Plugin 'junegunn/rainbow_parentheses.vim'
 Plugin 'tpope/vim-fireplace'
 Plugin 'venantius/vim-cljfmt'
@@ -40,6 +41,7 @@ Plugin 'plasticboy/vim-markdown'
 Plugin 'klen/python-mode'
 Plugin 'chadhs/django.vim'
 Plugin 'saltstack/salt-vim'
+Plugin 'pearofducks/ansible-vim'
 Plugin 'mitsuhiko/vim-jinja'
 Plugin 'vim-scripts/yaml.vim'
 "" common lisp & scheme
@@ -93,6 +95,7 @@ Plugin 'vim-scripts/ZoomWin'
 
 " auto closing parens, brackets, etc
 Plugin 'Raimondi/delimitMate'
+let delimitMate_excluded_ft = "clojure,lisp"
 
 " change surrounding parens, brackets, etc by using 'cs'
 Plugin 'tpope/vim-surround'
@@ -244,7 +247,7 @@ set shiftwidth=4
 " tabstops for python are 4 spaces and softtabs used (spaces not hard tabs)
 autocmd FileType python set tabstop=4 shiftwidth=4 expandtab
 " tabstops for many languages 2 spaces and softtabs used (spaces not hard tabs)
-autocmd FileType clojure,coffee,css,html,htmldjango,htmljinja,javascript,ruby,sql,yaml set tabstop=2 shiftwidth=2 expandtab
+autocmd FileType clojure,coffee,css,html,htmldjango,htmljinja,javascript,lisp,ruby,sql,yaml set tabstop=2 shiftwidth=2 expandtab
 
 " set the search scan so that it ignores case when the search is all lower
 " case but recognizes uppercase if it's specified
