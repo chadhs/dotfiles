@@ -17,15 +17,21 @@
 (setq package-list '(
                      ;; core
                      exec-path-from-shell
+                     diminish
 
-		     ;; editing enhancements
+                     ;; editing enhancements
+                     ace-jump-mode
                      paredit
+                     powerline-evil
                      rainbow-delimiters
-		     ace-jump-mode
-                     powerline
 
                      ;; auto-completion
                      auto-complete
+
+                     ;; syntax checking
+                     flycheck
+                     flycheck-pos-tip
+                     flycheck-clojure
 
                      ;; themes
                      solarized-theme
@@ -33,32 +39,33 @@
                      ;; vim mode
                      evil
                      evil-leader
-                     evil-paredit
                      evil-matchit
-                     evil-surround
                      evil-nerd-commenter
-                     evil-visualstar
+                     evil-paredit
                      evil-search-highlight-persist
+                     evil-surround
+                     evil-visualstar
 
                      ;; docs
                      dash-at-point
 
                      ;; projects / file / buffer mgmt
-                     projectile
                      helm
-                     helm-projectile
                      helm-ag
+                     helm-projectile
+                     projectile
 
                      ;; clojure
+                     cider
                      clojure-mode
                      clojure-mode-extra-font-locking
-                     cider
 
-		     ;; other syntaxes
+                     ;; other syntaxes
                      ac-ispell
                      markdown-mode
 
                      ;; wishlist / testing
+                     ;ac-cider
                      ;html
                      ;sql
                      ;yaml
@@ -69,7 +76,7 @@
                      ;git
                      ;syntax checking
 
-		     ;; not in use
+                     ;; not in use
                      ;smartparens
                      ;evil-smartparens
                      ))
@@ -81,7 +88,7 @@
 (unless package-archive-contents
   (package-refresh-contents))
 
-;;; install packages
+;;; install / update packages
 (dolist (package package-list)
   (unless (package-installed-p package)
     (package-install package)))
@@ -121,8 +128,31 @@
 (global-evil-search-highlight-persist t)
 
 ;;; project management
-(projectile-global-mode)
+(require 'projectile)
 (setq projectile-require-project-root nil)
+(setq projectile-enable-caching t)
+(setq projectile-globally-ignored-directories
+      (append '(
+                ".git"
+                ".svn"
+                "out"
+                "repl"
+                "target"
+                "venv"
+                )
+              projectile-globally-ignored-directories))
+(setq projectile-globally-ignored-files
+      (append '(
+                ".DS_Store"
+                "*.gz"
+                "*.pyc"
+                "*.jar"
+                "*.tar.gz"
+                "*.tgz"
+                "*.zip"
+                )
+              projectile-globally-ignored-files))
+(projectile-global-mode)
 
 ;;; code completion settings
 (ac-config-default)
@@ -142,22 +172,46 @@
 (add-hook 'markdown-mode-hook 'ac-ispell-ac-setup)
 (add-hook 'git-commit-mode-hook 'ac-ispell-ac-setup)
 
+;;; syntax checking
+(add-hook 'after-init-hook #'global-flycheck-mode)
+;; floating tooltips only works in graphical mode
+(when (display-graphic-p (selected-frame))
+  (with-eval-after-load 'flycheck
+    (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages)
+    (flycheck-pos-tip-mode)))
+(setq flycheck-check-syntax-automatically '(mode-enabled save))
+
 ;;; paredit
 (autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
 (add-hook 'prog-mode-hook #'enable-paredit-mode)
 (add-hook 'prog-mode-hook #'evil-paredit-mode)
+
+;;; show-parens-mode
+(show-paren-mode 1)
+(setq show-paren-delay 0)
 
 ;;; rainbow delimiters
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 ;;; emacs powerline
-(require 'powerline)
-(powerline-vim-theme)
+(require 'powerline-evil)
+(powerline-evil-vim-color-theme)
+(custom-set-faces
+ '(powerline-evil-normal-face ((t (:background "#859900" :foreground "#eee8d5"))))
+ '(powerline-evil-insert-face ((t (:background "#268bd2" :foreground "#eee8d5"))))
+ '(powerline-evil-visual-face ((t (:background "#cb4b16" :foreground "#eee8d5"))))
+ '(powerline-evil-operator-face ((t (:background "#2aa198" :foreground "#eee8d5"))))
+ '(powerline-evil-replace-face ((t (:background "#dc322f" :foreground "#eee8d5"))))
+ '(powerline-evil-motion-face ((t (:background "#d33682" :foreground "#eee8d5"))))
+ '(powerline-evil-emacs-face ((t (:background "#6c71c4" :foreground "#eee8d5"))))
+ )
 
 ;;; clojure support
 (require 'clojure-mode-extra-font-locking)
 (add-hook 'cider-repl-mode-hook #'paredit-mode)
+(setq cider-repl-pop-to-buffer-on-connect nil)
+(eval-after-load 'flycheck '(flycheck-clojure-setup))
 
 ;;; slime support
 ;(load (expand-file-name "~/quicklisp/slime-helper.el"))
@@ -172,7 +226,7 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;;; fix terminal colors function // called in user-config below
-(defun remove-background-color()
+(defun remove-background-color ()
   "Userful for transparent a terminal."
   (unless (display-graphic-p (selected-frame))
     (set-face-background 'default "unspecified-bg" (selected-frame))))
@@ -194,16 +248,32 @@
     (newline arg)
     (indent-according-to-mode)))
 
+;;; make escape act like C-g in evil-mode
+(defun minibuffer-keyboard-quit ()
+  "Abort recursive edit.
+In Delete Selection mode, if the mark is active, just deactivate it;
+then it takes a second \\[keyboard-quit] to abort the minibuffer."
+  (interactive)
+  (if (and delete-selection-mode transient-mark-mode mark-active)
+      (setq deactivate-mark  t)
+    (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+    (abort-recursive-edit)))
+
 
 
 ;;;; user configuration
+
+;;; emacs startup settings
+;; (setq inhibit-startup-message t)
+;; (setq initial-scratch-message nil)
+;; (setq initial-buffer-choice "~/src/")
 
 ;;; theme
 (load-theme 'solarized-dark t)
 
 ;;; font settings
 (set-face-attribute 'default nil
-		    :family "Menlo" :height 140 :weight 'normal)
+                    :family "Menlo" :height 140 :weight 'normal)
 
 ;;; ui tweaks
 (if (display-graphic-p)
@@ -211,7 +281,14 @@
     (scroll-bar-mode -1)
     (tool-bar-mode -1)))
 (menu-bar-mode -1)
-(setq scroll-margin 4)
+
+;;; smoother scrolling
+(setq scroll-margin 8
+      scroll-conservatively 9999
+      scroll-step 1)
+
+;;; ace-jump - no leading word character needed for ace-jump-word-mode
+(setq ace-jump-word-mode-use-query-char nil)
 
 ;;; initial widow size and position (`left . -1` is the closest i can get to right align)
 (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
@@ -220,13 +297,37 @@
 (add-hook 'window-setup-hook 'remove-background-color)
 (add-hook 'server-visit-hook 'remove-background-color)
 
-;;; remove trailing whitespace from code
+;;; tab settings
+(setq indent-tabs-mode nil)
+
+;;; remove trailing whitespace and hard tabs from code
 (add-hook 'prog-mode-hook
-	  (lambda () (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
+          (lambda ()
+            (add-hook 'before-save-hook
+                      (lambda ()
+                        (delete-trailing-whitespace)
+                        (untabify (point-min) (point-max))))))
 
 ;;; remember cursor position in buffers
 (require 'saveplace)
 (setq-default save-place t)
+
+;;; store auto-save and backup files in ~/tmp/
+(defvar my-auto-save-dir "~/tmp/")
+(setq backup-directory-alist
+      `((".*" . ,my-auto-save-dir)))
+(setq auto-save-file-name-transforms
+      `((".*" ,my-auto-save-dir t)))
+
+;;; set file types
+(add-to-list 'auto-mode-alist '(".emacs" . lisp-mode))
+
+;;; declutter modeline
+(require 'diminish)
+(eval-after-load "paredit" '(diminish 'paredit-mode))
+(eval-after-load "auto-complete" '(diminish 'auto-complete-mode))
+;; (eval-after-load "flycheck" '(diminish 'flycheck-mode))
+(eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
 
 
 
@@ -239,9 +340,10 @@
 (evil-leader/set-key "/" 'evil-search-highlight-persist-remove-all)
 
 ;;; projects / files / buffers
-(evil-leader/set-key "t" 'helm-projectile-find-file-dwim)
-(evil-leader/set-key "b" 'helm-buffers-list)
-(evil-leader/set-key "f" 'helm-projectile-ag)
+(evil-leader/set-key "t" 'helm-projectile-find-file-dwim) ; emulate command-(t)
+(evil-leader/set-key "b" 'helm-buffers-list) ; switch to (b)uffer
+(evil-leader/set-key "kb" 'kill-buffer) ; (k)ill (b)uffer
+(evil-leader/set-key "f" 'helm-projectile-ag) ; (f)ind in files
 
 ;;; commenting
 (evil-leader/set-key "cl" 'evilnc-comment-or-uncomment-lines)
@@ -269,14 +371,29 @@
 
 ;;; jump to line / word
 (evil-leader/set-key "jl" 'evil-ace-jump-line-mode)
+(evil-leader/set-key "jw" 'evil-ace-jump-word-mode)
 (evil-leader/set-key "jc" 'evil-ace-jump-char-mode)
 
+;;; use escape for C-g in evil-mode
+(define-key evil-normal-state-map [escape] 'keyboard-quit)
+(define-key evil-visual-state-map [escape] 'keyboard-quit)
+(define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-ns-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-completion-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-must-match-map [escape] 'minibuffer-keyboard-quit)
+(define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
+(global-set-key [escape] 'evil-exit-emacs-state)
+
 ;;; clojure - cider
-(evil-leader/set-key "ji" 'cider-jack-in)
-(evil-leader/set-key "eb" 'cider-eval-buffer)
-(evil-leader/set-key "ef" 'cider-eval-defun-at-point)
-(evil-leader/set-key "rt" 'cider-test-run-tests)
-(evil-leader/set-key "rb" 'cider-switch-to-repl-buffer)
+(evil-leader/set-key "ri" 'cider-jack-in)               ; (r)epl (i)nitialize
+(evil-leader/set-key "rc" 'cider-connect)               ; (r)epl (c)onnect
+(evil-leader/set-key "eb" 'cider-eval-buffer)           ; (e)val (b)uffer
+(evil-leader/set-key "ef" 'cider-eval-defun-at-point)   ; (e)val (f)orm
+(evil-leader/set-key "rt" 'cider-test-run-tests)        ; (r)un (t)ests
+(evil-leader/set-key "rb" 'cider-switch-to-repl-buffer) ; (r)epl (b)uffer
+
+;; flycheck
+(evil-leader/set-key "cb" 'flycheck-buffer) ; (c)heck (b)uffer
 
 ;;; paredit
 (evil-leader/set-key "W" 'paredit-wrap-sexp)
@@ -298,12 +415,14 @@
 ;;; line number toggle
 (evil-leader/set-key "nn" 'linum-mode)
 
-;;; edit config (.emacs)
-;(evil-leader/set-key "ec" 'edit "~/.emacs")
+;;; (e)dit (e)macs user init file
+(evil-leader/set-key "ee" (lambda () (interactive) (find-file user-init-file)))
 
-;;; source config (.emacs)
-;(evil-leader/set-key "sc" 'load-file "~/.emacs")
+;;; (s)ource (e)macs user init file
+(evil-leader/set-key "se" (lambda () (interactive) (load-file user-init-file)))
 
+;;; set emacs command hotkey (M-x) to (helm-M-x)
+(global-set-key (kbd "M-x") 'helm-M-x)
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

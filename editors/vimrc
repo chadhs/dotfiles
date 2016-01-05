@@ -380,6 +380,8 @@ let g:slimv_leader = ","
 let g:slimv_keybindings = 2
 let g:slimv_repl_split = 2 "horz split repl on bottom
 let g:slimv_disable_clojure = 1
+let g:slimv_disable_lisp = 1
+let g:slimv_disable_scheme = 1
 
 " bash syntax
 let g:is_bash = 1
@@ -424,6 +426,9 @@ let g:rainbow#pairs = [['(', ')'], ['[', ']'], ['{', '}']]
 
 " dash app support
 nmap <silent> <leader>d <Plug>DashSearch
+
+" toggle paste mode
+set pastetoggle=<leader>p
 
 " trailing whitespace
 autocmd FileType clojure,coffee,css,html,htmldjango,htmljinja,javascript,python,ruby,sql,yaml autocmd BufWritePre <buffer> :%s/\s\+$//e
