@@ -27,6 +27,9 @@
 
                      ;; auto-completion
                      auto-complete
+                     ac-html
+                     ac-ispell
+                     yasnippet
 
                      ;; syntax checking
                      flycheck
@@ -61,24 +64,12 @@
                      clojure-mode-extra-font-locking
 
                      ;; other syntaxes
-                     ac-ispell
                      markdown-mode
+                     yaml-mode
+                     salt-mode
+                     ansible
 
                      ;; wishlist / testing
-                     ;ac-cider
-                     ;html
-                     ;sql
-                     ;yaml
-                     ;ansible
-                     ;salt
-                     ;shell
-                     ;spotify
-                     ;git
-                     ;syntax checking
-
-                     ;; not in use
-                     ;smartparens
-                     ;evil-smartparens
                      ))
 
 ;;; loads packages and activates them
@@ -95,14 +86,7 @@
 
 
 
-;;;; initial settings
-
-;;; path fix for os x gui mode
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
-
-;;; os x keybinding fix
-;; For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option key acts as: > choose +Esc
+;;;; package settings
 
 ;;; evil mode settings
 ;; load evil-leader first so it's initialized from the start
@@ -154,11 +138,26 @@
               projectile-globally-ignored-files))
 (projectile-global-mode)
 
-;;; code completion settings
+;;; code auto-completion settings
 (ac-config-default)
 ;; set tab key to do all completion and disable return
 (define-key ac-completing-map "\t" 'ac-complete)
 (define-key ac-completing-map "\r" nil)
+
+;;; code snippets
+(with-eval-after-load 'yasnippet
+  (yas-global-mode 1))
+
+;;; html auto-complete
+;; (defun setup-ac-for-html ()
+;;   (require 'ac-html)
+;;   (require 'ac-html-default-data-provider)
+;;   (ac-html-enable-data-provider 'ac-html-default-data-provider)
+;;   (ac-html-setup)
+;;   (setq ac-sources '(ac-source-html-tag
+;;                      ac-source-html-attr
+;;                      ac-source-html-attrv)))
+;; (add-hook 'html-mode-hook 'setup-ac-for-html)
 
 ;;; spell check
 (custom-set-variables
@@ -207,11 +206,20 @@
  '(powerline-evil-emacs-face ((t (:background "#6c71c4" :foreground "#eee8d5"))))
  )
 
+;;; ace-jump - no leading word character needed for ace-jump-word-mode
+(setq ace-jump-word-mode-use-query-char nil)
+
 ;;; clojure support
 (require 'clojure-mode-extra-font-locking)
 (add-hook 'cider-repl-mode-hook #'paredit-mode)
 (setq cider-repl-pop-to-buffer-on-connect nil)
 (eval-after-load 'flycheck '(flycheck-clojure-setup))
+
+;;; yaml support
+(require 'yaml-mode)
+
+;;; ansible support
+(add-hook 'yaml-mode-hook '(lambda () (ansible 1)))
 
 ;;; slime support
 ;(load (expand-file-name "~/quicklisp/slime-helper.el"))
@@ -263,10 +271,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;;; user configuration
 
-;;; emacs startup settings
-;; (setq inhibit-startup-message t)
-;; (setq initial-scratch-message nil)
-;; (setq initial-buffer-choice "~/src/")
+;;; path fix for os x gui mode
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+
+;;; os x keybinding fix
+;; For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option key acts as: > choose +Esc
 
 ;;; theme
 (load-theme 'solarized-dark t)
@@ -286,9 +296,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (setq scroll-margin 8
       scroll-conservatively 9999
       scroll-step 1)
-
-;;; ace-jump - no leading word character needed for ace-jump-word-mode
-(setq ace-jump-word-mode-use-query-char nil)
 
 ;;; initial widow size and position (`left . -1` is the closest i can get to right align)
 (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
@@ -321,12 +328,13 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;; set file types
 (add-to-list 'auto-mode-alist '(".emacs" . lisp-mode))
+(add-to-list 'auto-mode-alist '("\\.yml" . yaml-mode))
 
 ;;; declutter modeline
 (require 'diminish)
 (eval-after-load "paredit" '(diminish 'paredit-mode))
 (eval-after-load "auto-complete" '(diminish 'auto-complete-mode))
-;; (eval-after-load "flycheck" '(diminish 'flycheck-mode))
+(eval-after-load "flycheck" '(diminish 'flycheck-mode))
 (eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
 
 
