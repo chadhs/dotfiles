@@ -21,7 +21,7 @@ Plugin 'gmarik/Vundle.vim'
 
 " colorschemes
 Plugin 'altercation/vim-colors-solarized'
-Plugin 'https://bitbucket.org/chadhs/wombat256.vim'
+Plugin 'chadhs/wombat256.vim'
 
 " syntax and language support
 "" clojure specific
@@ -85,7 +85,7 @@ Plugin 'Lokaltog/vim-easymotion'
 Plugin 'chrisbra/NrrwRgn'
 
 " close a buffer without destroying/deleting the buffer space
-Plugin 'https://bitbucket.org/chadhs/bclose.vim'
+Plugin 'chadhs/bclose.vim'
 
 " nerdtree like buffer navigator / manager
 Plugin 'jeetsukumaran/vim-buffergator'
