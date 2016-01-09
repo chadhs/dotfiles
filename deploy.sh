@@ -56,7 +56,7 @@ symlink_configs(){
 	[ ! -d ~/tmp ] && mkdir ~/tmp
 	[ ! -e ~/.vimrc ] && ln -s ~/dotfiles/editors/vimrc .vimrc
 	[ ! -d ~/.vim ] && git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-	[ ! -e ~/.spacemacs ] && ln -s ~/dotfiles/editors/spacemacs .spacemacs
+	[ ! -e ~/.emacs ] && ln -s ~/dotfiles/editors/emacs .emacs
 	[ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig
 }
 
