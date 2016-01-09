@@ -43,6 +43,7 @@
 
                      ;; themes
                      solarized-theme
+                     ample-theme
 
                      ;; vim mode
                      evil
@@ -260,10 +261,10 @@
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 ;;; fix terminal colors function // called in user-config below
-(defun remove-background-color ()
-  "Userful for transparent a terminal."
-  (unless (display-graphic-p (selected-frame))
-    (set-face-background 'default "unspecified-bg" (selected-frame))))
+;; (defun remove-background-color ()
+;;   "Userful for transparent a terminal."
+;;   (unless (display-graphic-p (selected-frame))
+;;     (set-face-background 'default "unspecified-bg" (selected-frame))))
 
 ;;; electric return functionality
 (defvar electrify-return-match
@@ -312,11 +313,16 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;; For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option key acts as: > choose +Esc
 
 ;;; theme
-(load-theme 'solarized-dark t)
+(if (display-graphic-p)
+    (load-theme 'solarized-dark t) ; graphical theme
+    (load-theme 'ample t) ; terminal theme
+    ;; (load-theme 'solarized-light t) ; terminal theme
+    ;; (load-theme 'solarized-dark t) ; terminal theme
+  )
 
 ;;; font settings
 (set-face-attribute 'default nil
-                    :family "Menlo" :height 140 :weight 'normal)
+		    :family "Menlo" :height 140 :weight 'normal)
 
 ;;; ui tweaks
 (if (display-graphic-p)
@@ -334,8 +340,10 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
 
 ;;; fix terminal colors
-(add-hook 'window-setup-hook 'remove-background-color)
-(add-hook 'server-visit-hook 'remove-background-color)
+;; (add-hook 'window-setup-hook 'remove-background-color)
+;; (add-hook 'server-visit-hook 'remove-background-color)
+;; simpler solution to eliminate user functions and the above?
+(custom-set-faces (if (not window-system) '(default ((t (:background "nil"))))))
 
 ;;; tab settings
 (setq indent-tabs-mode nil)
