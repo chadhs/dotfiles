@@ -1,4 +1,9 @@
 ;;;; package management
+
+;;; keep track of start time for load time calculation
+(defconst emacs-start-time  (current-time))
+
+;;; allow package use
 (require 'package)
 
 ;;; package repositories
@@ -56,6 +61,7 @@
                      helm
                      helm-ag
                      helm-projectile
+		     flx-ido
                      projectile
 
                      ;; clojure
@@ -83,6 +89,11 @@
 (dolist (package package-list)
   (unless (package-installed-p package)
     (package-install package)))
+
+;;; show package load time
+(let ((elapsed (float-time (time-subtract (current-time)
+					  emacs-start-time))))
+  (message "Loaded packages in %.3fs" elapsed))
 
 
 
@@ -112,13 +123,23 @@
 (global-evil-search-highlight-persist t)
 
 ;;; project management
+(require 'flx-ido)
+(ido-mode 1)
+(ido-everywhere 1)
+(flx-ido-mode 1)
+;; disable ido faces to see flx highlights.
+(setq ido-enable-flex-matching t)
+(setq ido-use-faces nil)
+;; speed up matchinb by giving emacs garbage collection a more modern threshold
+(setq gc-cons-threshold 20000000)
+
 (require 'projectile)
 (setq projectile-require-project-root nil)
-(setq projectile-enable-caching t)
 (setq projectile-globally-ignored-directories
       (append '(
                 ".git"
                 ".svn"
+                "env"
                 "out"
                 "repl"
                 "target"
@@ -130,7 +151,10 @@
                 ".DS_Store"
                 "*.gz"
                 "*.pyc"
+                "*.png"
+                "*.jpg"
                 "*.jar"
+                "*.svg"
                 "*.tar.gz"
                 "*.tgz"
                 "*.zip"
@@ -258,6 +282,13 @@
     (newline arg)
     (indent-according-to-mode)))
 
+;;; remove trailing whitespace and hard tabs from code
+(defun remove-trailing-whitespace-and-hard-tabs ()
+  (add-hook 'before-save-hook
+	    (lambda ()
+	      (delete-trailing-whitespace)
+	      (untabify (point-max) (point-max)))))
+
 ;;; make escape act like C-g in evil-mode
 (defun minibuffer-keyboard-quit ()
   "Abort recursive edit.
@@ -309,13 +340,17 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; tab settings
 (setq indent-tabs-mode nil)
 
-;;; remove trailing whitespace and hard tabs from code
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (add-hook 'before-save-hook
-                      (lambda ()
-                        (delete-trailing-whitespace)
-                        (untabify (point-min) (point-max))))))
+;;; remove trailing whitespace and hard tabs from specific file types
+;; clojure,coffee,css,html,htmldjango,htmljinja,javascript,python,ruby,sql,yaml
+(add-hook 'clojure-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
+(add-hook 'css-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
+(add-hook 'html-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
+(add-hook 'javascript-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
+(add-hook 'lisp-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
+(add-hook 'python-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
+(add-hook 'ruby-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
+(add-hook 'sql-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
+(add-hook 'yaml-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
 
 ;;; remember cursor position in buffers
 (require 'saveplace)
@@ -331,6 +366,13 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; set file types
 (add-to-list 'auto-mode-alist '(".emacs" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.yml" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.md" . markdown-mode))
+
+;;; set initial evil state for particular modes
+(loop for (mode . state) in '(
+                              (dired-mode . normal)
+                              )
+      do (evil-set-initial-state mode state))
 
 ;;; declutter modeline
 (require 'diminish)
@@ -368,6 +410,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; evil emacs conflicts
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
+
+;;; evil vim inconsistencies
+(define-key evil-visual-state-map (kbd "x") 'evil-delete)
 
 ;;; move to next / prev pane
 (define-key evil-motion-state-map (kbd "C-j") 'evil-window-next)
@@ -422,8 +467,16 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; doc search
 (evil-leader/set-key "d" 'dash-at-point)
 
+;;; bookmarks
+(evil-leader/set-key "ms" 'bookmark-set)
+(evil-leader/set-key "mj" 'bookmark-jump)
+(evil-leader/set-key "ml" 'helm-bookmarks)
+
 ;;; line number toggle
 (evil-leader/set-key "nn" 'linum-mode)
+
+;;; full screen toggle
+(global-set-key (kbd "s-<return>") 'toggle-frame-fullscreen) ; s = super (⌘ on mac)
 
 ;;; (e)dit (e)macs user init file
 (evil-leader/set-key "ee" (lambda () (interactive) (find-file user-init-file)))
@@ -433,6 +486,14 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;; set emacs command hotkey (M-x) to (helm-M-x)
 (global-set-key (kbd "M-x") 'helm-M-x)
+
+
+
+;;;; report total load time
+(let ((elapsed (float-time (time-subtract (current-time)
+					  emacs-start-time))))
+  (message "Loaded emacs in %.3fs" elapsed))
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
