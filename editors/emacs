@@ -182,6 +182,10 @@
 (add-hook 'markdown-mode-hook 'ac-ispell-ac-setup)
 (add-hook 'git-commit-mode-hook 'ac-ispell-ac-setup)
 
+;;; version control
+(require 'git)
+(require 'git-blame)
+
 ;;; code snippets
 (require 'yasnippet)
 ;; (with-eval-after-load 'yasnippet
