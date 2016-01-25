@@ -31,10 +31,7 @@
                      rainbow-delimiters
 
                      ;; auto-completion
-                     auto-complete
-                     ;; ac-html
-                     ac-ispell
-                     yasnippet
+                     company
 
                      ;; syntax checking
                      flycheck
@@ -62,7 +59,7 @@
                      helm
                      helm-ag
                      helm-projectile
-		     flx-ido
+                     flx-ido
                      projectile
 
                      ;; clojure
@@ -93,7 +90,7 @@
 
 ;;; show package load time
 (let ((elapsed (float-time (time-subtract (current-time)
-					  emacs-start-time))))
+            emacs-start-time))))
   (message "Loaded packages in %.3fs" elapsed))
 
 
@@ -164,43 +161,21 @@
 (projectile-global-mode)
 
 ;;; code auto-completion settings
-(ac-config-default)
-
-;; set tab key to do all completion and disable return
-(define-key ac-completing-map "\t" 'ac-complete)
-(define-key ac-completing-map "\r" nil)
-
-;;; ac-ispell spell check
-(custom-set-variables
-  '(ac-ispell-requires 4)
-  '(ac-ispell-fuzzy-limit 2))
-
-(eval-after-load "auto-complete"
-  '(progn
-      (ac-ispell-setup)))
-
-(add-hook 'markdown-mode-hook 'ac-ispell-ac-setup)
-(add-hook 'git-commit-mode-hook 'ac-ispell-ac-setup)
+;; company-mode
+(add-hook 'after-init-hook 'global-company-mode)
+(setq-default
+ company-selection-wrap-around t ; let tab cycle through results
+ company-dabbrev-code-modes t)   ; allow auto-completion to include _
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "<tab>") 'company-select-next)
+  (define-key company-active-map (kbd "S-<return>") 'company-complete-selection)
+  (define-key company-active-map (kbd "<return>") 'nil)
+  (define-key company-active-map (kbd "RET") 'nil)
+  )
 
 ;;; version control
 (require 'git)
 (require 'git-blame)
-
-;;; code snippets
-(require 'yasnippet)
-;; (with-eval-after-load 'yasnippet
-;;   (yas-global-mode 1))
-
-;;; html auto-complete
-;; (defun setup-ac-for-html ()
-;;   (require 'ac-html)
-;;   (require 'ac-html-default-data-provider)
-;;   (ac-html-enable-data-provider 'ac-html-default-data-provider)
-;;   (ac-html-setup)
-;;   (setq ac-sources '(ac-source-html-tag
-;;                      ac-source-html-attr
-;;                      ac-source-html-attrv)))
-;; (add-hook 'html-mode-hook 'setup-ac-for-html)
 
 ;;; syntax checking
 (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -264,12 +239,6 @@
 ;;; yes and no prompts
 (defalias 'yes-or-no-p 'y-or-n-p)
 
-;;; fix terminal colors function // called in user-config below
-;; (defun remove-background-color ()
-;;   "Userful for transparent a terminal."
-;;   (unless (display-graphic-p (selected-frame))
-;;     (set-face-background 'default "unspecified-bg" (selected-frame))))
-
 ;;; electric return functionality
 (defvar electrify-return-match
   "[\]}\)\"]"
@@ -290,9 +259,9 @@
 ;;; remove trailing whitespace and hard tabs from code
 (defun remove-trailing-whitespace-and-hard-tabs ()
   (add-hook 'before-save-hook
-	    (lambda ()
-	      (delete-trailing-whitespace)
-	      (untabify (point-max) (point-max)))))
+      (lambda ()
+        (delete-trailing-whitespace)
+        (untabify (point-max) (point-max)))))
 
 ;;; make escape act like C-g in evil-mode
 (defun minibuffer-keyboard-quit ()
@@ -326,7 +295,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;; font settings
 (set-face-attribute 'default nil
-		    :family "Menlo" :height 140 :weight 'normal)
+        :family "Menlo" :height 140 :weight 'normal)
 
 ;;; ui tweaks
 (if (display-graphic-p)
@@ -344,25 +313,24 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
 
 ;;; fix terminal colors
-;; (add-hook 'window-setup-hook 'remove-background-color)
-;; (add-hook 'server-visit-hook 'remove-background-color)
-;; simpler solution to eliminate user functions and the above?
 (custom-set-faces (if (not window-system) '(default ((t (:background "nil"))))))
 
 ;;; tab settings
 (setq indent-tabs-mode nil)
 
 ;;; remove trailing whitespace and hard tabs from specific file types
-;; clojure,coffee,css,html,htmldjango,htmljinja,javascript,python,ruby,sql,yaml
-(add-hook 'clojure-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
-(add-hook 'css-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
-(add-hook 'html-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
-(add-hook 'javascript-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
-(add-hook 'lisp-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
-(add-hook 'python-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
-(add-hook 'ruby-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
-(add-hook 'sql-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
-(add-hook 'yaml-mode-hook 'remove-trailing-whitespace-and-hard-tabs)
+(mapc (lambda (language-mode-hook) (add-hook language-mode-hook 'remove-trailing-whitespace-and-hard-tabs))
+      '(
+        lisp-mode-hook
+        clojure-mode-hook
+        css-mode-hook
+        html-mode-hook
+        javascript-mode-hook
+        python-mode-hook
+        ruby-mode-hook
+        sql-mode-hook
+        yaml-mode-hook
+        ))
 
 ;;; remember cursor position in buffers
 (require 'saveplace)
@@ -389,7 +357,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; declutter modeline
 (require 'diminish)
 (eval-after-load "paredit" '(diminish 'paredit-mode))
-(eval-after-load "auto-complete" '(diminish 'auto-complete-mode))
+;; (eval-after-load "projectile" '(diminish 'projectile-mode))
 (eval-after-load "flycheck" '(diminish 'flycheck-mode))
 (eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
 
@@ -407,7 +375,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "t" 'helm-projectile-find-file-dwim) ; emulate command-(t)
 (evil-leader/set-key "b" 'helm-buffers-list) ; switch to (b)uffer
 (evil-leader/set-key "kb" 'kill-buffer) ; (k)ill (b)uffer
-(evil-leader/set-key "f" 'helm-projectile-ag) ; (f)ind in files
+(evil-leader/set-key "fi" 'helm-projectile-ag) ; (f)ind (i)n files
 
 ;;; commenting
 (evil-leader/set-key "cl" 'evilnc-comment-or-uncomment-lines)
@@ -458,6 +426,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "ef" 'cider-eval-defun-at-point)   ; (e)val (f)orm
 (evil-leader/set-key "rt" 'cider-test-run-tests)        ; (r)un (t)ests
 (evil-leader/set-key "rb" 'cider-switch-to-repl-buffer) ; (r)epl (b)uffer
+(evil-leader/set-key "ff" 'cider-format-defun)          ; (f)ormat de(f)un
+(evil-leader/set-key "fr" 'cider-format-region)         ; (f)ormat (r)egion
+(evil-leader/set-key "fb" 'cider-format-buffer)         ; (f)ormat (b)uffer
 
 ;; flycheck
 (evil-leader/set-key "cb" 'flycheck-buffer) ; (c)heck (b)uffer
@@ -503,7 +474,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;;; report total load time
 (let ((elapsed (float-time (time-subtract (current-time)
-					  emacs-start-time))))
+            emacs-start-time))))
   (message "Loaded emacs in %.3fs" elapsed))
 
 
