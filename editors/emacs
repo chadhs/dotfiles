@@ -355,7 +355,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (loop for (mode . state) in '(
                               (dired-mode . normal)
                               (magit-mode . normal)
-                              (magit-status-mode . normal)
+                              (magit-status-mode . emacs)
                               (magit-diff-mode . normal)
                               (magit-log-mode . normal)
                               (magit-process-mode . normal)
