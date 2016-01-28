@@ -472,7 +472,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;; ? - show commands
 ;; s - stage S - stage all
 ;; c - commit (then c again to move to commit message and change review)
-;; P - push (then u to push to origin/master)
+;; P - push (then u to push to origin)
+;; b - branch (then b again to choose a branch)
+;; F - pull (then u to pull from origin)
 (evil-leader/set-key "gg" 'magit-dispatch-popup)
 (evil-leader/set-key "gs" 'magit-status)
 (evil-leader/set-key "gco" 'magit-checkout)
