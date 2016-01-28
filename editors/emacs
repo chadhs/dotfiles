@@ -468,6 +468,10 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "ml" 'helm-bookmarks)
 
 ;;; magit
+;; you can also use built-in hotkeys from status mode:
+;; ? - show commands
+;; s - stage S - stage all
+;; c - commit (then c again to move to commit message and change review)
 (evil-leader/set-key "gg" 'magit-dispatch-popup)
 (evil-leader/set-key "gs" 'magit-status)
 (evil-leader/set-key "gl" 'magit-pull-from-upstream)
@@ -475,6 +479,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "gu" 'magit-unstage)
 (evil-leader/set-key "gc" 'magit-commit)
 (evil-leader/set-key "cc" 'with-editor-finish)
+(evil-leader/set-key "cC" 'with-editor-cancel)
 (evil-leader/set-key "gp" 'magit-push-current-to-upstream)
 
 ;;; line number toggle
