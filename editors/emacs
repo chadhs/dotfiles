@@ -474,6 +474,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "ga" 'magit-stage-modified)
 (evil-leader/set-key "gu" 'magit-unstage)
 (evil-leader/set-key "gc" 'magit-commit)
+(evil-leader/set-key "cc" 'with-editor-finish)
 (evil-leader/set-key "gp" 'magit-push-current-to-upstream)
 
 ;;; line number toggle
