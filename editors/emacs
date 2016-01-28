@@ -472,6 +472,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "gs" 'magit-status)
 (evil-leader/set-key "gl" 'magit-pull-from-upstream)
 (evil-leader/set-key "ga" 'magit-stage-modified)
+(evil-leader/set-key "gu" 'magit-unstage)
 (evil-leader/set-key "gc" 'magit-commit)
 (evil-leader/set-key "gp" 'magit-push-current-to-upstream)
 
