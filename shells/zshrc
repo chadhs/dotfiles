@@ -182,7 +182,7 @@ if [ $(uname) = "Darwin" ]; then
 		git add --all
 		git commit -a -m "site content update" && git push
 		cd $curdir
-}
+	}
 
 fi
 
@@ -191,6 +191,11 @@ update-dotfiles(){
 	curdir=$(pwd)
 	cd ~/dotfiles && git pull && sh deploy.sh
 	cd $curdir
+}
+
+## fix emacs packages
+fix-emacs-pkgs(){
+	rm -rf ~/.emacs.d/elpa/*
 }
 
 ## man page color and search hilighting

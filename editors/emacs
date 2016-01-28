@@ -20,13 +20,14 @@
 
 ;;; packages to install
 (setq package-list '(
-                     ;; core
+                     ;; emacs enhancements
                      exec-path-from-shell
                      diminish
 
                      ;; editing enhancements
                      ace-jump-mode
                      paredit
+                     powerline
                      powerline-evil
                      rainbow-delimiters
 
@@ -60,6 +61,7 @@
                      helm-ag
                      helm-projectile
                      flx-ido
+		     magit
                      projectile
 
                      ;; clojure
@@ -70,8 +72,6 @@
                      ;; other syntaxes
                      markdown-mode
                      yaml-mode
-                     salt-mode
-                     ansible
 
                      ;; wishlist / testing
                      ))
@@ -160,6 +160,9 @@
               projectile-globally-ignored-files))
 (projectile-global-mode)
 
+;;; version control
+(setq magit-push-current-set-remote-if-missing t)
+
 ;;; code auto-completion settings
 ;; company-mode
 (add-hook 'after-init-hook 'global-company-mode)
@@ -200,16 +203,18 @@
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 ;;; emacs powerline
+(require 'powerline)
+(powerline-default-theme)
 (require 'powerline-evil)
 (powerline-evil-vim-color-theme)
 (custom-set-faces
- '(powerline-evil-normal-face ((t (:background "#859900" :foreground "#eee8d5"))))
- '(powerline-evil-insert-face ((t (:background "#268bd2" :foreground "#eee8d5"))))
- '(powerline-evil-visual-face ((t (:background "#cb4b16" :foreground "#eee8d5"))))
+ '(powerline-evil-normal-face   ((t (:background "#859900" :foreground "#eee8d5"))))
+ '(powerline-evil-insert-face   ((t (:background "#268bd2" :foreground "#eee8d5"))))
+ '(powerline-evil-visual-face   ((t (:background "#cb4b16" :foreground "#eee8d5"))))
  '(powerline-evil-operator-face ((t (:background "#2aa198" :foreground "#eee8d5"))))
- '(powerline-evil-replace-face ((t (:background "#dc322f" :foreground "#eee8d5"))))
- '(powerline-evil-motion-face ((t (:background "#d33682" :foreground "#eee8d5"))))
- '(powerline-evil-emacs-face ((t (:background "#6c71c4" :foreground "#eee8d5"))))
+ '(powerline-evil-replace-face  ((t (:background "#dc322f" :foreground "#eee8d5"))))
+ '(powerline-evil-motion-face   ((t (:background "#d33682" :foreground "#eee8d5"))))
+ '(powerline-evil-emacs-face    ((t (:background "#6c71c4" :foreground "#eee8d5"))))
  )
 
 ;;; ace-jump - no leading word character needed for ace-jump-word-mode
@@ -223,9 +228,6 @@
 
 ;;; yaml support
 (require 'yaml-mode)
-
-;;; ansible support
-(add-hook 'yaml-mode-hook '(lambda () (ansible 1)))
 
 ;;; slime support
 ;(load (expand-file-name "~/quicklisp/slime-helper.el"))
@@ -346,20 +348,30 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; set file types
 (add-to-list 'auto-mode-alist '(".emacs" . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.yml" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.sls" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.md" . markdown-mode))
 
 ;;; set initial evil state for particular modes
 (loop for (mode . state) in '(
                               (dired-mode . normal)
+                              (magit-mode . normal)
+                              (magit-status-mode . normal)
+                              (magit-diff-mode . normal)
+                              (magit-log-mode . normal)
+                              (magit-process-mode . normal)
+                              (magit-popup-mode . emacs)
                               )
       do (evil-set-initial-state mode state))
 
 ;;; declutter modeline
 (require 'diminish)
-(eval-after-load "paredit" '(diminish 'paredit-mode))
-;; (eval-after-load "projectile" '(diminish 'projectile-mode))
-(eval-after-load "flycheck" '(diminish 'flycheck-mode))
-(eval-after-load "undo-tree" '(diminish 'undo-tree-mode))
+(eval-after-load "paredit"    '(diminish 'paredit-mode))
+(eval-after-load "company"    '(diminish 'company-mode))
+(eval-after-load "flycheck"   '(diminish 'flycheck-mode))
+(eval-after-load "undo-tree"  '(diminish 'undo-tree-mode))
+
+;;; modeline tweaks
+(setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
 
 
 
@@ -454,6 +466,14 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "ms" 'bookmark-set)
 (evil-leader/set-key "mj" 'bookmark-jump)
 (evil-leader/set-key "ml" 'helm-bookmarks)
+
+;;; magit
+(evil-leader/set-key "gg" 'magit-dispatch-popup)
+(evil-leader/set-key "gs" 'magit-status)
+(evil-leader/set-key "gl" 'magit-pull-from-upstream)
+(evil-leader/set-key "ga" 'magit-stage-modified)
+(evil-leader/set-key "gc" 'magit-commit)
+(evil-leader/set-key "gp" 'magit-push-current-to-upstream)
 
 ;;; line number toggle
 (evil-leader/set-key "nn" 'linum-mode)
