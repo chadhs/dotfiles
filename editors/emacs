@@ -23,6 +23,7 @@
                      ;; emacs enhancements
                      exec-path-from-shell
                      diminish
+                     multi-term
 
                      ;; editing enhancements
                      ace-jump-mode
@@ -32,7 +33,9 @@
                      rainbow-delimiters
 
                      ;; auto-completion
-                     company
+                     auto-complete
+                     ac-cider
+                     ;; company
 
                      ;; syntax checking
                      flycheck
@@ -40,6 +43,7 @@
                      flycheck-clojure
 
                      ;; themes
+                     cycle-themes
                      solarized-theme
                      ample-theme
 
@@ -61,13 +65,21 @@
                      helm-ag
                      helm-projectile
                      flx-ido
-		     magit
+                     magit
                      projectile
 
                      ;; clojure
                      cider
                      clojure-mode
                      clojure-mode-extra-font-locking
+
+                     ;; python
+                     ;; elpy
+
+                     ;; ruby
+                     ;; enh-ruby-mode
+                     inf-ruby
+                     ;; robe-mode
 
                      ;; other syntaxes
                      markdown-mode
@@ -120,6 +132,13 @@
 (require 'evil-search-highlight-persist)
 (global-evil-search-highlight-persist t)
 
+;;; terminal settings
+(setq multi-term-program "/usr/local/bin/zsh")
+(setq multi-term-dedicated-window-height 30)
+(add-hook 'term-mode-hook
+          (lambda ()
+            (setq term-buffer-maximum-size 10000)))
+
 ;;; project management
 (require 'flx-ido)
 (ido-mode 1)
@@ -136,8 +155,8 @@
 (setq projectile-globally-ignored-directories
       (append '(
                 ".git"
+                ".cljs_rhino_repl"
                 ".svn"
-                "env"
                 "out"
                 "repl"
                 "target"
@@ -147,6 +166,7 @@
 (setq projectile-globally-ignored-files
       (append '(
                 ".DS_Store"
+                ".lein-repl-history"
                 "*.gz"
                 "*.pyc"
                 "*.png"
@@ -160,21 +180,23 @@
               projectile-globally-ignored-files))
 (projectile-global-mode)
 
-;;; version control
-(setq magit-push-current-set-remote-if-missing t)
-
 ;;; code auto-completion settings
-;; company-mode
-(add-hook 'after-init-hook 'global-company-mode)
-(setq-default
- company-selection-wrap-around t ; let tab cycle through results
- company-dabbrev-code-modes t)   ; allow auto-completion to include _
-(with-eval-after-load 'company
-  (define-key company-active-map (kbd "<tab>") 'company-select-next)
-  (define-key company-active-map (kbd "S-<return>") 'company-complete-selection)
-  (define-key company-active-map (kbd "<return>") 'nil)
-  (define-key company-active-map (kbd "RET") 'nil)
-  )
+;; auto-complete
+(ac-config-default)
+;; set tab key to do all completion and disable return
+(define-key ac-completing-map "\t" 'ac-complete)
+(define-key ac-completing-map "\r" nil)
+(add-to-list 'ac-modes 'yaml-mode)
+(add-to-list 'ac-modes 'markdown-mode)
+(add-to-list 'ac-modes 'html-mode)
+(require 'ac-cider)
+(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+(add-hook 'cider-mode-hook 'ac-cider-setup)
+(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
+(eval-after-load "auto-complete"
+  '(progn
+     (add-to-list 'ac-modes 'cider-mode)
+     (add-to-list 'ac-modes 'cider-repl-mode)))
 
 ;;; version control
 (require 'git)
@@ -208,14 +230,18 @@
 (require 'powerline-evil)
 (powerline-evil-vim-color-theme)
 (custom-set-faces
- '(powerline-evil-normal-face   ((t (:background "#859900" :foreground "#eee8d5"))))
- '(powerline-evil-insert-face   ((t (:background "#268bd2" :foreground "#eee8d5"))))
- '(powerline-evil-visual-face   ((t (:background "#cb4b16" :foreground "#eee8d5"))))
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(powerline-evil-emacs-face ((t (:background "#6c71c4" :foreground "#eee8d5"))))
+ '(powerline-evil-insert-face ((t (:background "#268bd2" :foreground "#eee8d5"))))
+ '(powerline-evil-motion-face ((t (:background "#d33682" :foreground "#eee8d5"))))
+ '(powerline-evil-normal-face ((t (:background "#859900" :foreground "#eee8d5"))))
  '(powerline-evil-operator-face ((t (:background "#2aa198" :foreground "#eee8d5"))))
- '(powerline-evil-replace-face  ((t (:background "#dc322f" :foreground "#eee8d5"))))
- '(powerline-evil-motion-face   ((t (:background "#d33682" :foreground "#eee8d5"))))
- '(powerline-evil-emacs-face    ((t (:background "#6c71c4" :foreground "#eee8d5"))))
- )
+ '(powerline-evil-replace-face ((t (:background "#dc322f" :foreground "#eee8d5"))))
+ '(powerline-evil-visual-face ((t (:background "#cb4b16" :foreground "#eee8d5"))))
+ '(set-face-attribute (quote fringe) nil :background))
 
 ;;; ace-jump - no leading word character needed for ace-jump-word-mode
 (setq ace-jump-word-mode-use-query-char nil)
@@ -225,6 +251,9 @@
 (add-hook 'cider-repl-mode-hook #'paredit-mode)
 (setq cider-repl-pop-to-buffer-on-connect nil)
 (eval-after-load 'flycheck '(flycheck-clojure-setup))
+
+;;; ruby support
+(add-hook 'ruby-mode-hook 'inf-ruby-minor-mode)
 
 ;;; yaml support
 (require 'yaml-mode)
@@ -258,13 +287,6 @@
     (newline arg)
     (indent-according-to-mode)))
 
-;;; remove trailing whitespace and hard tabs from code
-(defun remove-trailing-whitespace-and-hard-tabs ()
-  (add-hook 'before-save-hook
-      (lambda ()
-        (delete-trailing-whitespace)
-        (untabify (point-max) (point-max)))))
-
 ;;; make escape act like C-g in evil-mode
 (defun minibuffer-keyboard-quit ()
   "Abort recursive edit.
@@ -289,11 +311,17 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;; theme
 (if (display-graphic-p)
-    (load-theme 'solarized-dark t) ; graphical theme
-    (load-theme 'ample t) ; terminal theme
-    ;; (load-theme 'solarized-light t) ; terminal theme
-    ;; (load-theme 'solarized-dark t) ; terminal theme
-  )
+    ;; load graphical theme
+    (progn
+      (load-theme 'solarized-dark t)
+      (load-theme 'solarized-light t))
+    ;; load terminal theme
+    (load-theme 'ample t))
+
+;;; cycle themes
+(setq cycle-themes-theme-list
+      '(solarized-dark solarized-light))
+(require 'cycle-themes)
 
 ;;; font settings
 (set-face-attribute 'default nil
@@ -315,13 +343,22 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
 
 ;;; fix terminal colors
-(custom-set-faces (if (not window-system) '(default ((t (:background "nil"))))))
+;; (custom-set-faces (if (not window-system) '(default ((t (:background "nil"))))))
 
 ;;; tab settings
 (setq indent-tabs-mode nil)
 
 ;;; remove trailing whitespace and hard tabs from specific file types
-(mapc (lambda (language-mode-hook) (add-hook language-mode-hook 'remove-trailing-whitespace-and-hard-tabs))
+(mapc (lambda (language-mode-hook)
+        (add-hook language-mode-hook
+                  (lambda ()
+                    (add-hook 'before-save-hook
+                              (lambda ()
+                                (delete-trailing-whitespace)
+                                (untabify (point-min) (point-max)))
+                              ;; `nil t` is required here to make the hook local
+                              ;; per buffer, aka only apply in modes listed below.
+                              nil t))))
       '(
         lisp-mode-hook
         clojure-mode-hook
@@ -435,7 +472,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "ri" 'cider-jack-in)               ; (r)epl (i)nitialize
 (evil-leader/set-key "rc" 'cider-connect)               ; (r)epl (c)onnect
 (evil-leader/set-key "eb" 'cider-eval-buffer)           ; (e)val (b)uffer
-(evil-leader/set-key "ef" 'cider-eval-defun-at-point)   ; (e)val (f)orm
+(evil-leader/set-key "ef" 'cider-eval-defun-at-point)   ; (e)val de(f)un
+(evil-leader/set-key "es" 'cider-eval-last-sexp)        ; (e)val (s)-expression
 (evil-leader/set-key "rt" 'cider-test-run-tests)        ; (r)un (t)ests
 (evil-leader/set-key "rb" 'cider-switch-to-repl-buffer) ; (r)epl (b)uffer
 (evil-leader/set-key "ff" 'cider-format-defun)          ; (f)ormat de(f)un
@@ -463,18 +501,21 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "d" 'dash-at-point)
 
 ;;; bookmarks
-(evil-leader/set-key "ms" 'bookmark-set)
-(evil-leader/set-key "mj" 'bookmark-jump)
 (evil-leader/set-key "ml" 'helm-bookmarks)
+(evil-leader/set-key "mj" 'bookmark-jump)
+(evil-leader/set-key "ms" 'bookmark-set)
+(evil-leader/set-key "md" 'bookmark-delete)
 
 ;;; magit
 ;; you can also use built-in hotkeys from status mode:
 ;; ? - show commands
 ;; s - stage S - stage all
 ;; c - commit (then c again to move to commit message and change review)
-;; P - push (then u to push to origin)
-;; b - branch (then b again to choose a branch)
-;; F - pull (then u to pull from origin)
+;; b u - to set/reset the upstream
+;; P u - push to push to upstream
+;; b b - branch to choose a branch to checkout
+;; b c - branch create and then checkout a branch
+;; F u - pull from upstream
 (evil-leader/set-key "gg" 'magit-dispatch-popup)
 (evil-leader/set-key "gs" 'magit-status)
 (evil-leader/set-key "gco" 'magit-checkout)
@@ -490,8 +531,17 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; line number toggle
 (evil-leader/set-key "nn" 'linum-mode)
 
+;;; cycle themes
+(evil-leader/set-key "ct" 'cycle-themes)
+
 ;;; full screen toggle
 (global-set-key (kbd "s-<return>") 'toggle-frame-fullscreen) ; s = super (⌘ on mac)
+
+;;; toggle/open shell
+(evil-leader/set-key "sv" (lambda () (interactive)
+                            (multi-term-dedicated-toggle)
+                            (multi-term-dedicated-select))) ; toggle (s)hell (v)isor
+(evil-leader/set-key "sn" 'multi-term) ; toggle (s)hell (n)ew
 
 ;;; (e)dit (e)macs user init file
 (evil-leader/set-key "ee" (lambda () (interactive) (find-file user-init-file)))
@@ -502,7 +552,25 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; set emacs command hotkey (M-x) to (helm-M-x)
 (global-set-key (kbd "M-x") 'helm-M-x)
 
+;;; multi term keybind setup - thanks to rawsyntax (eric h)
+(defcustom term-unbind-key-list
+  '("C-z" "C-x" "C-c" "C-h" "C-y" "<ESC>")
+  "The key list that will need to be unbind."
+  :type 'list
+  :group 'multi-term)
 
+(defcustom term-bind-key-alist
+  '(
+    ("C-c C-c" . term-interrupt-subjob)
+    ("s-k" . term-send-up)
+    ("s-j" . term-send-down)
+    ("s-{" . multi-term-prev)
+    ("s-}" . multi-term-next)
+    )
+  "The key alist that will need to be bind.
+  If you do not like default setup, modify it, with (KEY . COMMAND) format."
+  :type 'alist
+  :group 'multi-term)
 
 ;;;; report total load time
 (let ((elapsed (float-time (time-subtract (current-time)
