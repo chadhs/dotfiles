@@ -409,6 +409,9 @@
 ;;; modeline tweaks
 (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
 
+;;; open urls in default browser
+(setq browse-url-browser-function 'browse-url-default-macosx-browser)
+
 
 
 ;;;; keyboard shortcuts
@@ -515,17 +518,17 @@
 ;; b b - branch to choose a branch to checkout
 ;; b c - branch create and then checkout a branch
 ;; F u - pull from upstream
-(evil-leader/set-key "gg" 'magit-dispatch-popup)
-(evil-leader/set-key "gs" 'magit-status)
+(evil-leader/set-key "gg"  'magit-dispatch-popup)
+(evil-leader/set-key "gst" 'magit-status)
 (evil-leader/set-key "gco" 'magit-checkout)
 (evil-leader/set-key "gcb" 'magit-branch-and-checkout)
-(evil-leader/set-key "gl" 'magit-pull-from-upstream)
-(evil-leader/set-key "ga" 'magit-stage-modified)
-(evil-leader/set-key "gu" 'magit-unstage)
+(evil-leader/set-key "gl"  'magit-pull-from-upstream)
+(evil-leader/set-key "gaa" 'magit-stage-modified)
+(evil-leader/set-key "grh" 'magit-reset-head)
 (evil-leader/set-key "gca" 'magit-commit)
-(evil-leader/set-key "cc" 'with-editor-finish)
-(evil-leader/set-key "cC" 'with-editor-cancel)
-(evil-leader/set-key "gp" 'magit-push-current-to-upstream)
+(evil-leader/set-key "cc"  'with-editor-finish)
+(evil-leader/set-key "cC"  'with-editor-cancel)
+(evil-leader/set-key "gp"  'magit-push-current-to-upstream)
 
 ;;; line number toggle
 (evil-leader/set-key "nn" 'linum-mode)
