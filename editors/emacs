@@ -410,7 +410,9 @@
 (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
 
 ;;; open urls in default browser
-(setq browse-url-browser-function 'browse-url-default-macosx-browser)
+(if (display-graphic-p)
+    (progn
+      (setq browse-url-browser-function 'browse-url-default-macosx-browser)))
 
 
 
