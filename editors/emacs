@@ -83,6 +83,7 @@
 
                      ;; other syntaxes
                      markdown-mode
+                     web-mode
                      yaml-mode
 
                      ;; wishlist / testing
@@ -251,6 +252,17 @@
 (add-hook 'cider-repl-mode-hook #'paredit-mode)
 (setq cider-repl-pop-to-buffer-on-connect nil)
 (eval-after-load 'flycheck '(flycheck-clojure-setup))
+
+;;; web templates
+(require 'web-mode)
+(setq web-mode-markup-indent-offset 2)
+(setq web-mode-css-indent-offset 2)
+(setq web-mode-code-indent-offset 2)
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.css?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.scss?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.less?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.js?\\'" . web-mode))
 
 ;;; ruby support
 (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode)
