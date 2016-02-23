@@ -309,18 +309,25 @@
 ;;; os x keybinding fix
 ;; For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option key acts as: > choose +Esc
 
+;;; startup behavior
+(setq inhibit-startup-message t)
+
 ;;; theme
 (if (display-graphic-p)
     ;; load graphical theme
     (progn
+      (load-theme 'solarized-light t)
       (load-theme 'solarized-dark t)
-      (load-theme 'solarized-light t))
-    ;; load terminal theme
-    (load-theme 'ample t))
+      )
+  ;; load terminal theme
+  (load-theme 'ample t))
 
 ;;; cycle themes
 (setq cycle-themes-theme-list
-      '(solarized-dark solarized-light))
+      '(
+        solarized-light
+        solarized-dark
+        ))
 (require 'cycle-themes)
 
 ;;; font settings
