@@ -1,3 +1,11 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Chad Stovern's .emacs config                                               ;
+; Contact hello@chadstovern.com                                              ;
+;                                                                            ;
+; If you're new to emacs check out the fantastic spacemacs kit               ;
+; http://spacemacs.org                                                       ;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 ;;;; package management
 
 ;;; keep track of start time for load time calculation
@@ -35,7 +43,6 @@
                      ;; auto-completion
                      auto-complete
                      ac-cider
-                     ;; company
 
                      ;; syntax checking
                      flycheck
@@ -328,8 +335,8 @@
 (if (display-graphic-p)
     ;; load graphical theme
     (progn
-      (load-theme 'solarized-light t)
       (load-theme 'solarized-dark t)
+      (load-theme 'solarized-light t)
       )
   ;; load terminal theme
   (load-theme 'ample t))
@@ -337,8 +344,8 @@
 ;;; cycle themes
 (setq cycle-themes-theme-list
       '(
-        solarized-light
         solarized-dark
+        solarized-light
         ))
 (require 'cycle-themes)
 
@@ -469,6 +476,11 @@
 ;;; move to next / prev pane
 (define-key evil-motion-state-map (kbd "C-j") 'evil-window-next)
 (define-key evil-motion-state-map (kbd "C-k") 'evil-window-prev)
+(define-key evil-motion-state-map (kbd "C-h") 'evil-window-left)
+(define-key evil-motion-state-map (kbd "C-l") 'evil-window-right)
+
+;;; clear / recenter screen
+(evil-leader/set-key "cs" 'recenter-top-bottom) ; (c)lear (s)creen
 
 ;;; close pane
 ;; evil-mode built in with `C-w c`
@@ -493,6 +505,7 @@
 
 ;;; clojure - cider
 (evil-leader/set-key "ri" 'cider-jack-in)               ; (r)epl (i)nitialize
+(evil-leader/set-key "rr" 'cider-restart)               ; (r)epl (r)estart
 (evil-leader/set-key "rc" 'cider-connect)               ; (r)epl (c)onnect
 (evil-leader/set-key "eb" 'cider-eval-buffer)           ; (e)val (b)uffer
 (evil-leader/set-key "ef" 'cider-eval-defun-at-point)   ; (e)val de(f)un
