@@ -143,7 +143,7 @@ if [ $(uname) = "Darwin" ]; then
 	alias flushdns='dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
 	alias shadowno='defaults write com.apple.screencapture disable-shadow -bool true && killall SystemUIServer'
 	alias shadowyes='defaults delete com.apple.screencapture disable-shadow && killall SystemUIServer'
-	alias sortlaunchpad='rm ~/Library/Application\ Support/Dock/*.db ; killall Dock'
+	alias sortlaunchpad='defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock'
 	alias brewdoc='brew update && brew doctor'
 	alias brewup='brew update && brew doctor && brew upgrade; brew cleanup; brew prune'
 	#alias speedtest='wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip'
@@ -196,6 +196,11 @@ update-dotfiles(){
 ## fix emacs packages
 fix-emacs-pkgs(){
 	rm -rf ~/.emacs.d/elpa/*
+}
+
+## check weather
+checkweather(){
+	curl wttr.in
 }
 
 ## man page color and search hilighting
