@@ -55,7 +55,7 @@ symlink_configs(){
 	[ ! -e ~/.tmux.conf ] && ln -s ~/dotfiles/utils/tmux.conf .tmux.conf
 	[ ! -d ~/tmp ] && mkdir ~/tmp
 	[ ! -e ~/.vimrc ] && ln -s ~/dotfiles/editors/vimrc .vimrc
-	[ ! -d ~/.vim ] && git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+	[ ! -d ~/.vim ] && git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim && vim +PluginInstall +qall
 	[ ! -e ~/.emacs ] && ln -s ~/dotfiles/editors/emacs .emacs
 	[ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig
 }

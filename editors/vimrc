@@ -369,6 +369,11 @@ nmap <silent> ,/ :nohlsearch<CR>
 " jump to line
 map ,jl <Plug>(easymotion-bd-jk)
 
+" nerdcommenter
+"" toggle/invert comment state of selected line(s)
+let NERDCreateDefaultMappings = 0
+map ,cl <plug>NERDCommenterInvert
+
 " toggle line numbers
 nmap <C-N><C-N> :set invnumber<CR>
 
