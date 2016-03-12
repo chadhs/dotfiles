@@ -51,6 +51,8 @@ symlink_configs(){
 	[ ! -e ~/.zshenv ] && ln -s ~/dotfiles/shells/zshenv .zshenv
 	[ ! -e ~/.oh-my-zsh/themes/digitalnomad.zsh-theme ] && \
 		ln -s ~/dotfiles/shells/digitalnomad.zsh-theme ~/.oh-my-zsh/themes/digitalnomad.zsh-theme
+	[ ! -e ~/.bashrc ] && ln -s ~/dotfiles/shells/bashrc .bashrc
+	[ ! -e ~/.bash_profile ] && ln -s ~/dotfiles/shells/bash_profile .bash_profile
 	[ ! -e ~/.inputrc ] && ln -s ~/dotfiles/shells/inputrc .inputrc
 	[ ! -e ~/.tmux.conf ] && ln -s ~/dotfiles/utils/tmux.conf .tmux.conf
 	[ ! -d ~/tmp ] && mkdir ~/tmp

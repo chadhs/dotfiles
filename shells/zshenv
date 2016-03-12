@@ -1,1 +1,2 @@
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+umask 0002 # grant write permsion to group

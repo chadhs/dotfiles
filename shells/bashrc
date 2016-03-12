@@ -3,6 +3,9 @@
 # check for an interative session
 [ -z "$PS1" ] && return
 
+# set archlinux style prompt
+PS1='[\u@\h \W]\$ '
+
 # history settings
 unset HISTFILESIZE
 HISTSIZE=10000
@@ -15,8 +18,6 @@ set -o vi
 
 # turn on ls color support
 CLICOLOR="YES"; export CLICOLOR
-# change osx ls colors to match linux/ubuntu as much as possible
-#LSCOLORS="ExGxFxdxCxDxDxhbadExEx"; export LSCOLORS
 
 # add local paths to path for homebrew etc
 PATH="/usr/local/bin:/usr/local/sbin:${PATH}"
@@ -37,7 +38,7 @@ if [ $(uname) = "Darwin" ]; then
 	alias flushdns='dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
 	alias shadowno='defaults write com.apple.screencapture disable-shadow -bool true && killall SystemUIServer'
 	alias shadowyes='defaults delete com.apple.screencapture disable-shadow && killall SystemUIServer'
-	alias sortlaunchpad='rm ~/Library/Application\ Support/Dock/*.db ; killall Dock'
+	alias sortlaunchpad='defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock'
 	alias brewdoc='brew update && brew doctor'
 	alias brewup='brew update && brew doctor && brew upgrade; brew cleanup; brew prune'
 	alias speedtest='wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip'
@@ -51,37 +52,37 @@ fi
 ## mac development
 if [ $(uname) = "Darwin" ]; then
 	### python
-	export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7
-	alias sv='source venv/bin/activate'
+	#export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7
+	#alias sv='source venv/bin/activate'
 
 	### django
-	source $HOME/mac-prefs/django_bash_completion
+	#source $HOME/mac-prefs/django_bash_completion
 
 	### marks
-	export MARKPATH=$HOME/.marks
-	function jump { 
-		cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
-	}
-	function mark { 
-		mkdir -p "$MARKPATH"; ln -s "$(pwd)" "$MARKPATH/$1"
-	}
-	function unmark { 
-		rm -i "$MARKPATH/$1"
-	}
+	#export MARKPATH=$HOME/.marks
+	#function jump { 
+		#cd -P "$MARKPATH/$1" 2>/dev/null || echo "No such mark: $1"
+	#}
+	#function mark { 
+		#mkdir -p "$MARKPATH"; ln -s "$(pwd)" "$MARKPATH/$1"
+	#}
+	#function unmark { 
+		#rm -i "$MARKPATH/$1"
+	#}
 
 	#### osx
-	function marks {
-		\ls -l "$MARKPATH" | tail -n +2 | sed 's/  / /g' | cut -d' ' -f9- | awk -F ' -> ' '{printf "%-10s -> %s\n", $1, $2}'
-	}
+	#function marks {
+		#\ls -l "$MARKPATH" | tail -n +2 | sed 's/  / /g' | cut -d' ' -f9- | awk -F ' -> ' '{printf "%-10s -> %s\n", $1, $2}'
+	#}
 
-	_completemarks() {
-	  local curw=${COMP_WORDS[COMP_CWORD]}
-	  local wordlist=$(find $MARKPATH -type l | sed -En 's/(.*)\/.(marks)\/(.*)/\3/p')
-	  COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
-	  return 0
-	}
+	#_completemarks() {
+	  #local curw=${COMP_WORDS[COMP_CWORD]}
+	  #local wordlist=$(find $MARKPATH -type l | sed -En 's/(.*)\/.(marks)\/(.*)/\3/p')
+	  #COMPREPLY=($(compgen -W '${wordlist[@]}' -- "$curw"))
+	  #return 0
+	#}
 
-	complete -F _completemarks jump unmark
+	#complete -F _completemarks jump unmark
 
 	### Added by the Heroku Toolbelt
 	export PATH="/usr/local/heroku/bin:$PATH"

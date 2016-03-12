@@ -1,1 +1,2 @@
+umask 0002 # grant write permsion to group
 source ~/.bashrc
