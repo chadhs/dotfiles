@@ -13,7 +13,7 @@ os_setup(){
 	if [ "$system_type" = "Darwin" ]; then
 		system_os="mac"
 		pkg_install="brew install"
-		package_list="macvim --override-system-vim git tmux zsh"
+		package_list="macvim --override-system-vim git tmux zsh emacs --with-cocoa"
 	elif [ "$system_type" = "FreeBSD" ]; then
 		system_os="freebsd"
 		pkg_install="sudo pkg install -y"
