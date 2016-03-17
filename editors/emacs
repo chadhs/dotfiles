@@ -578,6 +578,11 @@
 ;;; full screen toggle
 (global-set-key (kbd "s-<return>") 'toggle-frame-fullscreen) ; s = super (⌘ on mac)
 
+;;; text scale
+(global-set-key (kbd "s-+") 'text-scale-increase)
+(global-set-key (kbd "s--") 'text-scale-decrease)
+(global-set-key (kbd "s-=") 'text-scale-adjust)
+
 ;;; resize splits
 (global-set-key (kbd "s-<right>") 'evil-window-increase-width)
 (global-set-key (kbd "s-<left>") 'evil-window-decrease-width)
