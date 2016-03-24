@@ -58,8 +58,9 @@ Plugin 'derekwyatt/vim-scala'
 Plugin 'rizzatti/dash.vim'
 
 " status bar enhancement
-Plugin 'Lokaltog/vim-powerline'
-Plugin 'stephenmckinney/vim-solarized-powerline'
+Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
+Plugin 'tpope/vim-fugitive' "this is just for airline branch display
 
 " auto-completion engine
 Plugin 'ajh17/VimCompletesMe'
@@ -153,8 +154,8 @@ set shellslash
 " Allow backspacing over indent, eol, and the start of an insert
 set backspace=2
 
-" Chad's status line (**currently off due to using powerline**)
-"set stl=%f 										" file name
+" Chad's status line (**currently off due to using statusbar plugin**)
+"set stl=%f 									" file name
 "set stl+=\ %m 									" modified flag
 "set stl+=\ %r 									" read only flag
 "set stl+=\ line:\ %l/%L 						" cursor line/total lines
@@ -163,7 +164,7 @@ set backspace=2
 "set stl+=\ buf:\ #%n 							" buffer
 "set stl+=%= 									" left/right separator
 "set stl+=\ type:\ %y 							" filetype
-"set stl+=\ %{strlen(&fenc)?&fenc:'none'} 	"file encoding
+"set stl+=\ %{strlen(&fenc)?&fenc:'none'} 		"file encoding
 
 " tell VIM to always put a status line in, even if there is only one window
 set laststatus=2
@@ -278,9 +279,11 @@ syntax enable
 set background=dark
 colorscheme solarized
 
-" powerline
-"" set powerline statusbar theme
-let g:Powerline_colorscheme='solarized16_dark'
+" vim-airline
+"" set airline statusbar options
+let g:airline_theme='solarized'
+let g:airline_left_sep=''
+let g:airline_right_sep=''
 
 " ctrlp
 "" do not autocomplete certain dir or file type patterns
@@ -322,9 +325,9 @@ let g:pymode_virtualenv = 0
 let g:pymode_breakpoint_bind = '<leader>pb'
 let g:pymode_run_bind = '<leader>pr'
 let g:pymode_lint_options_pep8 = {
-			\ 'ignore': 'E501',
-			\ 'max_line_length': 160,
-			\ }
+                                \ 'ignore': 'E501',
+                                \ 'max_line_length': 160,
+                                \ }
 let g:pymode_lint = 1
 
 let g:pymode_options_colorcolumn = 0
