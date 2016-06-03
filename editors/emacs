@@ -535,8 +535,9 @@
 (evil-leader/set-key "><" 'paredit-forward-slurp-sexp)
 (evil-leader/set-key "<<" 'paredit-backward-barf-sexp)
 (evil-leader/set-key "<>" 'paredit-backward-slurp-sexp)
-;; del surrounding parens / brackets / braces
-(evil-leader/set-key "D" 'paredit-splice-sexp)
+(evil-leader/set-key "D" 'paredit-splice-sexp)          ; del surrounding parens/brackets/braces
+(evil-leader/set-key "xs" 'kill-sexp)                   ; (x)delete (s)exp
+(evil-leader/set-key "xS" 'backward-kill-sexp)          ; (x)delete (S)exp backward
 
 ;;; doc search
 (evil-leader/set-key "d" 'dash-at-point)
