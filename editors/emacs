@@ -560,6 +560,7 @@
 ;; F u - pull from upstream
 (evil-leader/set-key "gg"  'magit-dispatch-popup)
 (evil-leader/set-key "gst" 'magit-status)
+(evil-leader/set-key "gd"  'magit-diff-working-tree)
 (evil-leader/set-key "gco" 'magit-checkout)
 (evil-leader/set-key "gcb" 'magit-branch-and-checkout)
 (evil-leader/set-key "gl"  'magit-pull-from-upstream)
