@@ -197,6 +197,7 @@
 (add-to-list 'ac-modes 'yaml-mode)
 (add-to-list 'ac-modes 'markdown-mode)
 (add-to-list 'ac-modes 'html-mode)
+(add-to-list 'ac-modes 'sql-mode)
 (require 'ac-cider)
 (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
 (add-hook 'cider-mode-hook 'ac-cider-setup)
