@@ -1,0 +1,62 @@
+# EditorConfig defaults
+
+## top-most EditorConfig file
+root = true
+
+## global settings
+[*]
+end_of_line = lf
+insert_final_newline = true
+charset = utf-8
+
+## lisp settings
+[*.{clj,cljs,cljc,edn,emacs,lisp,scm}]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+## web settings
+[*.{css,html,js,less,scss}]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+## sql settings
+[*.sql]
+indent_style = space
+trim_trailing_whitespace = true
+
+## yaml settings
+[*.{sls,yml}]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+## markdown settings
+[*.md]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = false
+
+## shell script settings
+[*.sh]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+## ruby settings
+[*.rb]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
+## python settings
+[*.py]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+## makefile settings
+indent_style = tab
+trim_trailing_whitespace = true
+

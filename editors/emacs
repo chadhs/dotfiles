@@ -29,12 +29,13 @@
 ;;; packages to install
 (setq package-list '(
                      ;; emacs enhancements
-                     exec-path-from-shell
-                     diminish
+                     exec-path-from-shell ; make sure PATH makes shell PATH
+                     diminish ; suppress modes from appearing in status bar
                      multi-term
 
                      ;; editing enhancements
                      ace-jump-mode
+                     editorconfig
                      paredit
                      powerline
                      powerline-evil
@@ -65,7 +66,7 @@
                      evil-visualstar
 
                      ;; docs
-                     dash-at-point
+                     dash-at-point ; launch Dash on macOS
 
                      ;; projects / file / buffer mgmt
                      helm
@@ -254,6 +255,10 @@
 
 ;;; ace-jump - no leading word character needed for ace-jump-word-mode
 (setq ace-jump-word-mode-use-query-char nil)
+
+;;; editorconfig: indentation and whitespace settings
+(require 'editorconfig)
+(editorconfig-mode 1)
 
 ;;; clojure support
 (require 'clojure-mode-extra-font-locking)
@@ -580,6 +585,9 @@
 
 ;;; full screen toggle
 (global-set-key (kbd "s-<return>") 'toggle-frame-fullscreen) ; s = super (⌘ on mac)
+
+;;; hide others with macOS default keyboard shortcut of `⌥⌘H`
+(global-set-key (kbd "M-s-˙") 'ns-do-hide-others) ; the `˙` here is due to opt h producing that char
 
 ;;; text scale
 (global-set-key (kbd "s-+") 'text-scale-increase)
