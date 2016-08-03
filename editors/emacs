@@ -384,27 +384,27 @@
 (setq indent-tabs-mode nil)
 
 ;;; remove trailing whitespace and hard tabs from specific file types
-(mapc (lambda (language-mode-hook)
-        (add-hook language-mode-hook
-                  (lambda ()
-                    (add-hook 'before-save-hook
-                              (lambda ()
-                                (delete-trailing-whitespace)
-                                (untabify (point-min) (point-max)))
-                              ;; `nil t` is required here to make the hook local
-                              ;; per buffer, aka only apply in modes listed below.
-                              nil t))))
-      '(
-        lisp-mode-hook
-        clojure-mode-hook
-        css-mode-hook
-        html-mode-hook
-        javascript-mode-hook
-        python-mode-hook
-        ruby-mode-hook
-        sql-mode-hook
-        yaml-mode-hook
-        ))
+;; (mapc (lambda (language-mode-hook)
+;;         (add-hook language-mode-hook
+;;                   (lambda ()
+;;                     (add-hook 'before-save-hook
+;;                               (lambda ()
+;;                                 (delete-trailing-whitespace)
+;;                                 (untabify (point-min) (point-max)))
+;;                               ;; `nil t` is required here to make the hook local
+;;                               ;; per buffer, aka only apply in modes listed below.
+;;                               nil t))))
+;;       '(
+;;         lisp-mode-hook
+;;         clojure-mode-hook
+;;         css-mode-hook
+;;         html-mode-hook
+;;         javascript-mode-hook
+;;         python-mode-hook
+;;         ruby-mode-hook
+;;         sql-mode-hook
+;;         yaml-mode-hook
+;;         ))
 
 ;;; remember cursor position in buffers
 (require 'saveplace)
