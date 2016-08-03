@@ -71,8 +71,8 @@
                      ;; projects / file / buffer mgmt
                      helm
                      helm-ag
+                     helm-flx
                      helm-projectile
-                     flx-ido
                      magit
                      projectile
 
@@ -81,20 +81,13 @@
                      clojure-mode
                      clojure-mode-extra-font-locking
 
-                     ;; python
-                     ;; elpy
-
                      ;; ruby
-                     ;; enh-ruby-mode
                      inf-ruby
-                     ;; robe-mode
 
                      ;; other syntaxes
                      markdown-mode
                      web-mode
                      yaml-mode
-
-                     ;; wishlist / testing
                      ))
 
 ;;; loads packages and activates them
@@ -149,16 +142,21 @@
             (setq term-buffer-maximum-size 10000)))
 
 ;;; project management
-(require 'flx-ido)
-(ido-mode 1)
-(ido-everywhere 1)
-(flx-ido-mode 1)
-;; disable ido faces to see flx highlights.
-(setq ido-enable-flex-matching t)
-(setq ido-use-faces nil)
+;; helm
+(require 'helm)
+(helm-mode 1)
+(helm-autoresize-mode 1)
+(helm-flx-mode +1)
+(setq helm-mode-fuzzy-match t 
+      helm-buffers-fuzzy-matching t
+      helm-recentf-fuzzy-match t
+      helm-M-x-fuzzy-match t
+      helm-semantic-fuzzy-match t
+      helm-imenu-fuzzy-match t
+      helm-completion-in-region-fuzzy-match t)
 ;; speed up matching by giving emacs garbage collection a more modern threshold
 (setq gc-cons-threshold 20000000)
-
+;;projectile
 (require 'projectile)
 (setq projectile-require-project-root nil)
 (setq projectile-globally-ignored-directories
@@ -283,11 +281,6 @@
 ;;; yaml support
 (require 'yaml-mode)
 
-;;; slime support
-;(load (expand-file-name "~/quicklisp/slime-helper.el"))
-;; Replace "sbcl" with the path to your implementation
-;(setq inferior-lisp-program "/usr/local/bin/sbcl")
-
 
 
 ;;;; user functions
@@ -377,34 +370,8 @@
 ;;; initial widow size and position (`left . -1` is the closest i can get to right align)
 (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
 
-;;; fix terminal colors
-;; (custom-set-faces (if (not window-system) '(default ((t (:background "nil"))))))
-
 ;;; tab settings
 (setq indent-tabs-mode nil)
-
-;;; remove trailing whitespace and hard tabs from specific file types
-;; (mapc (lambda (language-mode-hook)
-;;         (add-hook language-mode-hook
-;;                   (lambda ()
-;;                     (add-hook 'before-save-hook
-;;                               (lambda ()
-;;                                 (delete-trailing-whitespace)
-;;                                 (untabify (point-min) (point-max)))
-;;                               ;; `nil t` is required here to make the hook local
-;;                               ;; per buffer, aka only apply in modes listed below.
-;;                               nil t))))
-;;       '(
-;;         lisp-mode-hook
-;;         clojure-mode-hook
-;;         css-mode-hook
-;;         html-mode-hook
-;;         javascript-mode-hook
-;;         python-mode-hook
-;;         ruby-mode-hook
-;;         sql-mode-hook
-;;         yaml-mode-hook
-;;         ))
 
 ;;; remember cursor position in buffers
 (require 'saveplace)
@@ -422,6 +389,7 @@
 (add-to-list 'auto-mode-alist '("\\.yml" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.sls" . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.md" . markdown-mode))
+(add-to-list 'auto-mode-alist '(".editorconfig" . editorconfig-conf-mode))
 
 ;;; set initial evil state for particular modes
 (loop for (mode . state) in '(
@@ -657,3 +625,4 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
   )
+
