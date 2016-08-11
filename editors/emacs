@@ -261,7 +261,8 @@
 ;;; clojure support
 (require 'clojure-mode-extra-font-locking)
 (add-hook 'cider-repl-mode-hook #'paredit-mode)
-(setq cider-repl-pop-to-buffer-on-connect nil)
+(setq cider-repl-pop-to-buffer-on-connect nil
+      cider-auto-select-error-buffer nil)
 (eval-after-load 'flycheck '(flycheck-clojure-setup))
 
 ;;; web templates
@@ -408,6 +409,7 @@
 (eval-after-load "paredit"    '(diminish 'paredit-mode))
 (eval-after-load "flycheck"   '(diminish 'flycheck-mode))
 (eval-after-load "undo-tree"  '(diminish 'undo-tree-mode))
+(eval-after-load "helm"       '(diminish 'helm-mode))
 
 ;;; modeline tweaks
 (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
