@@ -65,6 +65,7 @@ symlink_configs(){
     vim +PluginInstall +qall
     [ ! -e ~/.emacs ] && ln -s ~/dotfiles/editors/emacs .emacs
     [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig
+    [ ! -e ~/.editorconfig ] && ln -s ~/dotfiles/editors/editorconfig .editorconfig
 }
 
 

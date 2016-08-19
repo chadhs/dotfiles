@@ -207,17 +207,6 @@ set incsearch
 " Syntax coloring lines that are too long just slows down the world
 set synmaxcol=2048
 
-" tabstops are 4 spaces and traditional hard tabs unless specified
-set tabstop=4
-set shiftwidth=4
-" tabstops for python are 4 spaces and softtabs used (spaces not hard tabs)
-autocmd FileType python set tabstop=4 shiftwidth=4 expandtab
-" tabstops for many languages 2 spaces and softtabs used (spaces not hard tabs)
-autocmd FileType clojure,coffee,css,html,htmldjango,htmljinja,javascript,lisp,ruby,sql,yaml set tabstop=2 shiftwidth=2 expandtab
-
-" remove trailing whitespace for specified filetypes
-autocmd FileType clojure,coffee,css,html,htmldjango,htmljinja,javascript,python,ruby,sql,yaml autocmd BufWritePre <buffer> :%s/\s\+$//e
-
 " set the search scan so that it ignores case when the search is all lower
 " case but recognizes uppercase if it's specified
 set ignorecase
@@ -279,7 +268,7 @@ set completeopt-=preview
 "" keep color settings
 syntax enable
 set background=dark
-silent: colorscheme solarized
+silent!: colorscheme solarized
 
 " vim-airline
 "" set airline statusbar options
