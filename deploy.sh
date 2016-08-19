@@ -17,16 +17,16 @@ os_setup(){
     elif [ "$system_type" = "FreeBSD" ]; then
         system_os="freebsd"
         pkg_install="sudo pkg install -y"
-        package_list="vim git tmux zsh cmake"
+        package_list="vim git tmux zsh"
     elif [ "$system_type" = "Linux" ]; then
         if [ -n "$(grep -i "ubuntu" /proc/version)" ] || [ -n "$(grep -i "debian" /proc/version)" ]; then
             system_os="debian"
             pkg_install="sudo apt-get install -y"
-            package_list="vim git tmux zsh build-essential"
+            package_list="vim git tmux zsh"
         elif [ -n "$(grep -i "red hat" /proc/version)" ]; then
             system_os="redhat"
             pkg_install="sudo yum install -y"
-            package_list="vim git tmux zsh @development-tools"
+            package_list="vim-enhanced git tmux zsh"
         fi
     fi
     echo "setting up your dotfiles and default packages for a $system_os system..."
