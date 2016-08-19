@@ -279,7 +279,7 @@ set completeopt-=preview
 "" keep color settings
 syntax enable
 set background=dark
-colorscheme solarized
+silent: colorscheme solarized
 
 " vim-airline
 "" set airline statusbar options
