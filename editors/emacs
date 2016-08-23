@@ -81,7 +81,7 @@
                      cider
                      clojure-mode
                      clojure-mode-extra-font-locking
-		     clj-refactor
+                     clj-refactor
 
                      ;; ruby
                      inf-ruby
