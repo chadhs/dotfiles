@@ -23,7 +23,8 @@
 
 ;;; specify which repo to install packages from
 (setq package-pinned-packages '(
-                                (cider    . "melpa-stable")
+                                (cider        . "melpa-stable")
+                                (clj-refactor . "melpa-stable")
                                 ))
 
 ;;; packages to install
@@ -80,6 +81,7 @@
                      cider
                      clojure-mode
                      clojure-mode-extra-font-locking
+		     clj-refactor
 
                      ;; ruby
                      inf-ruby
@@ -264,6 +266,11 @@
 (setq cider-repl-pop-to-buffer-on-connect nil
       cider-auto-select-error-buffer nil)
 (eval-after-load 'flycheck '(flycheck-clojure-setup))
+(require 'clj-refactor)
+(add-hook 'clojure-mode-hook (lambda ()
+			       (clj-refactor-mode 1)
+			       (yas/minor-mode 1)
+			       (cljr-add-keybindings-with-prefix "C-c C-m")))
 
 ;;; web templates
 (require 'web-mode)
@@ -386,21 +393,21 @@
       `((".*" ,my-auto-save-dir t)))
 
 ;;; set file types
-(add-to-list 'auto-mode-alist '(".emacs" . lisp-mode))
-(add-to-list 'auto-mode-alist '("\\.yml" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.sls" . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.md" . markdown-mode))
+(add-to-list 'auto-mode-alist '(".emacs"        . lisp-mode))
+(add-to-list 'auto-mode-alist '("\\.yml"        . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.sls"        . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.md"         . markdown-mode))
 (add-to-list 'auto-mode-alist '(".editorconfig" . editorconfig-conf-mode))
 
 ;;; set initial evil state for particular modes
 (loop for (mode . state) in '(
-                              (dired-mode . normal)
-                              (magit-mode . normal)
-                              (magit-status-mode . emacs)
-                              (magit-diff-mode . normal)
-                              (magit-log-mode . normal)
+                              (dired-mode         . normal)
+                              (magit-mode         . normal)
+                              (magit-status-mode  . emacs)
+                              (magit-diff-mode    . normal)
+                              (magit-log-mode     . normal)
                               (magit-process-mode . normal)
-                              (magit-popup-mode . emacs)
+                              (magit-popup-mode   . emacs)
                               )
       do (evil-set-initial-state mode state))
 
@@ -430,10 +437,11 @@
 (evil-leader/set-key "/" 'evil-search-highlight-persist-remove-all)
 
 ;;; projects / files / buffers
-(evil-leader/set-key "t" 'helm-projectile-find-file-dwim) ; emulate command-(t)
-(evil-leader/set-key "b" 'helm-buffers-list) ; switch to (b)uffer
-(evil-leader/set-key "kb" 'kill-buffer) ; (k)ill (b)uffer
-(evil-leader/set-key "fi" 'helm-projectile-ag) ; (f)ind (i)n files
+(evil-leader/set-key "cd" 'find-file)                      ; (c)hange (d)ir
+(evil-leader/set-key "t"  'helm-projectile-find-file-dwim) ; emulate command-(t)
+(evil-leader/set-key "b"  'helm-buffers-list)              ; switch to (b)uffer
+(evil-leader/set-key "kb" 'kill-buffer)                    ; (k)ill (b)uffer
+(evil-leader/set-key "gf" 'helm-projectile-ag)             ; (g)rep in (f)iles
 
 ;;; commenting
 (evil-leader/set-key "cl" 'evilnc-comment-or-uncomment-lines)
@@ -546,6 +554,11 @@
 (evil-leader/set-key "cc"  'with-editor-finish)
 (evil-leader/set-key "cC"  'with-editor-cancel)
 (evil-leader/set-key "gp"  'magit-push-current-to-upstream)
+;; let's improve evil mode compatability
+(eval-after-load 'magit '(progn
+			   (define-key magit-status-mode-map (kbd "k") #'previous-line)
+			   (define-key magit-status-mode-map (kbd "K") #'magit-discard)
+			   (define-key magit-status-mode-map (kbd "j") #'next-line)))
 
 ;;; line number toggle
 (evil-leader/set-key "nn" 'linum-mode)
@@ -563,6 +576,10 @@
 (global-set-key (kbd "s-+") 'text-scale-increase)
 (global-set-key (kbd "s--") 'text-scale-decrease)
 (global-set-key (kbd "s-=") 'text-scale-adjust)
+
+;;; window splits
+(global-set-key (kbd "C--") 'evil-window-split)
+(global-set-key (kbd "C-\\") 'evil-window-vsplit)
 
 ;;; resize splits
 (global-set-key (kbd "s-<right>") 'evil-window-increase-width)
