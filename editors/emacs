@@ -475,6 +475,7 @@
 
 ;;; close all other panes
 (define-key evil-motion-state-map (kbd "C-z") 'delete-other-windows)
+(evil-leader/set-key "wm" 'delete-other-windows) ; (w)indow (m)ain (lifted from spacemacs)
 
 ;;; jump to line / word
 (evil-leader/set-key "jl" 'evil-ace-jump-line-mode)
