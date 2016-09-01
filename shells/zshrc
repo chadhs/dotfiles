@@ -134,6 +134,9 @@ unset LSCOLORS
 ## aliases
 source ~/.sh_aliases
 
+## additional user ENVs
+[ -e ~/.user-env ] && source ~/.user-env
+
 ## update settings and load tmux automagically on servers intelligently
 if [ ! $(uname) = "Darwin" ] && [ ! $(id -u) = 0 ]; then
 	case "$-" in *i*) [ -z $TMUX ] && if tmux has; then tmux attach; else tmux new; fi && exit 0; esac;

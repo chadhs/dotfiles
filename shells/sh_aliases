@@ -2,8 +2,9 @@
 alias ez='vim ~/.zshrc'
 alias grep='grep --color=auto'
 alias l='ls'
-alias la='ls -lah'
+alias la='ls -ah'
 alias ll='ls -lh'
+alias lla='ls -lah'
 alias cd..='cd ..'
 ## mac only aliases
 if [ $(uname) = "Darwin" ]; then
@@ -40,8 +41,6 @@ if [ $(uname) = "Darwin" ]; then
 	### ruby
 	source /usr/local/opt/chruby/share/chruby/chruby.sh
 	source /usr/local/opt/chruby/share/chruby/auto.sh
-	#### set default ruby when no .ruby-version is present
-	chruby ruby-2.2
 
 ### mac blogging
 	cryogen-publish(){
