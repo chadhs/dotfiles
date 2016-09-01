@@ -76,6 +76,7 @@
                      helm-projectile
                      magit
                      projectile
+		     zoom-window
 
                      ;; clojure
                      cider
@@ -88,6 +89,7 @@
 
                      ;; other syntaxes
                      markdown-mode
+		     php-mode
                      web-mode
                      yaml-mode
                      ))
@@ -141,7 +143,12 @@
 (setq multi-term-dedicated-window-height 30)
 (add-hook 'term-mode-hook
           (lambda ()
-            (setq term-buffer-maximum-size 10000)))
+            (setq term-buffer-maximum-size 10000)
+            (setq yas-dont-activate t)))
+
+;;; window management
+(require 'zoom-window)
+(setq zoom-window-mode-line-color nil)
 
 ;;; project management
 ;; helm
@@ -149,13 +156,25 @@
 (helm-mode 1)
 (helm-autoresize-mode 1)
 (helm-flx-mode +1)
-(setq helm-mode-fuzzy-match t 
-      helm-buffers-fuzzy-matching t
-      helm-recentf-fuzzy-match t
-      helm-M-x-fuzzy-match t
-      helm-semantic-fuzzy-match t
-      helm-imenu-fuzzy-match t
-      helm-completion-in-region-fuzzy-match t)
+
+(setq 
+      ;; global fuzzy matching
+      helm-mode-fuzzy-match                 t
+      helm-completion-in-region-fuzzy-match t
+      ;; additional fuzzy matching
+      helm-apropos-fuzzy-match              t
+      helm-bookmark-show-location           t
+      helm-buffers-fuzzy-matching           t
+      helm-file-cache-fuzzy-match           t
+      helm-imenu-fuzzy-match                t
+      helm-lisp-completion-at-point         t
+      helm-locate-fuzzy-match               t 
+      helm-M-x-fuzzy-match                  t
+      helm-mode-fuzzy-match                 t 
+      helm-recentf-fuzzy-match              t
+      helm-quick-update                     t  ; show only enough candidates to fill the buffer
+      helm-semantic-fuzzy-match             t)
+
 ;; speed up matching by giving emacs garbage collection a more modern threshold
 (setq gc-cons-threshold 20000000)
 ;;projectile
@@ -289,6 +308,9 @@
 ;;; yaml support
 (require 'yaml-mode)
 
+;;; php support
+(require 'php-mode)
+
 
 
 ;;;; user functions
@@ -385,12 +407,17 @@
 (require 'saveplace)
 (setq-default save-place t)
 
-;;; store auto-save and backup files in ~/tmp/
-(defvar my-auto-save-dir "~/tmp/")
-(setq backup-directory-alist
-      `((".*" . ,my-auto-save-dir)))
-(setq auto-save-file-name-transforms
-      `((".*" ,my-auto-save-dir t)))
+;;; store auto-save and backup files in ~/.emacs.d/backups/
+(defvar --backup-dir (concat user-emacs-directory "backups"))
+(if (not (file-exists-p --backup-dir))
+    (make-directory --backup-dir t))
+(setq backup-directory-alist `(("." . ,--backup-dir)))
+(setq backup-by-copying t
+      delete-old-versions t
+      kept-new-versions 6
+      kept-old-versions 2
+      version-control t
+      auto-save-default t)
 
 ;;; set file types
 (add-to-list 'auto-mode-alist '(".emacs"        . lisp-mode))
@@ -437,7 +464,7 @@
 (evil-leader/set-key "/" 'evil-search-highlight-persist-remove-all)
 
 ;;; projects / files / buffers
-(evil-leader/set-key "cd" 'find-file)                      ; (c)hange (d)ir
+(evil-leader/set-key "F"  'find-file)                       ; (F)ind file
 (evil-leader/set-key "t"  'helm-projectile-find-file-dwim) ; emulate command-(t)
 (evil-leader/set-key "b"  'helm-buffers-list)              ; switch to (b)uffer
 (evil-leader/set-key "kb" 'kill-buffer)                    ; (k)ill (b)uffer
@@ -474,7 +501,7 @@
 ;; evil-mode built in with `C-w c`
 
 ;;; close all other panes
-(define-key evil-motion-state-map (kbd "C-z") 'delete-other-windows)
+(define-key evil-motion-state-map (kbd "C-z") 'zoom-window-zoom)
 (evil-leader/set-key "wm" 'delete-other-windows) ; (w)indow (m)ain (lifted from spacemacs)
 
 ;;; jump to line / word
@@ -502,7 +529,7 @@
 (evil-leader/set-key "es" 'cider-eval-last-sexp)        ; (e)val (s)-expression
 (evil-leader/set-key "rt" 'cider-test-run-tests)        ; (r)un (t)ests
 (evil-leader/set-key "rb" 'cider-switch-to-repl-buffer) ; (r)epl (b)uffer
-(evil-leader/set-key "ff" 'cider-format-defun)          ; (f)ormat de(f)un
+(evil-leader/set-key "ff" 'cider-format-defun)          ; (f)ormat (f)orm
 (evil-leader/set-key "fr" 'cider-format-region)         ; (f)ormat (r)egion
 (evil-leader/set-key "fb" 'cider-format-buffer)         ; (f)ormat (b)uffer
 
