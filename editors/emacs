@@ -177,7 +177,7 @@
 
 ;; speed up matching by giving emacs garbage collection a more modern threshold
 (setq gc-cons-threshold 20000000)
-;;projectile
+;; projectile
 (require 'projectile)
 (setq projectile-require-project-root nil)
 (setq projectile-globally-ignored-directories
@@ -207,6 +207,13 @@
                 )
               projectile-globally-ignored-files))
 (projectile-global-mode)
+
+;; dired
+(when (eq system-type 'darwin)
+  (require 'ls-lisp)
+  (setq ls-lisp-use-insert-directory-program nil))
+
+
 
 ;;; code auto-completion settings
 ;; auto-complete
