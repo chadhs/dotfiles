@@ -51,12 +51,15 @@ HIST_STAMPS="yyyy-mm-dd"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 
-## default plugins
-plugins=(git tmux vi-mode)
-
+## mac + emacs plugins
+if [ $(uname) = "Darwin" ] && [ $EMACS ]; then
+    plugins=(bundler git jump vagrant virtualenvwrapper)
 ## mac plugins
-if [ $(uname) = "Darwin" ]; then
-	plugins=(bundler git jump tmux tmuxinator vagrant vi-mode virtualenvwrapper)
+elif [ $(uname) = "Darwin" ]; then
+    plugins=(bundler git jump tmux tmuxinator vagrant vi-mode virtualenvwrapper)
+else
+## default plugins
+    plugins=(git tmux vi-mode)
 fi
 
 # User configuration

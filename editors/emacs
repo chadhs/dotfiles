@@ -83,13 +83,13 @@
                      clojure-mode
                      clojure-mode-extra-font-locking
                      clj-refactor
+                     cljr-helm
 
                      ;; ruby
                      inf-ruby
 
                      ;; other syntaxes
                      markdown-mode
-		     php-mode
                      web-mode
                      yaml-mode
                      ))
@@ -139,8 +139,8 @@
 (global-evil-search-highlight-persist t)
 
 ;;; terminal settings
-(setq multi-term-program "/usr/local/bin/zsh")
-(setq multi-term-dedicated-window-height 30)
+(setq multi-term-dedicated-window-height 30
+      multi-term-program "/usr/local/bin/zsh")
 (add-hook 'term-mode-hook
           (lambda ()
             (setq term-buffer-maximum-size 10000)
@@ -286,10 +286,10 @@
       cider-auto-select-error-buffer nil)
 (eval-after-load 'flycheck '(flycheck-clojure-setup))
 (require 'clj-refactor)
+(require 'cljr-helm)
 (add-hook 'clojure-mode-hook (lambda ()
 			       (clj-refactor-mode 1)
-			       (yas/minor-mode 1)
-			       (cljr-add-keybindings-with-prefix "C-c C-m")))
+			       (yas/minor-mode 1)))
 
 ;;; web templates
 (require 'web-mode)
@@ -297,19 +297,17 @@
 (setq web-mode-css-indent-offset 2)
 (setq web-mode-code-indent-offset 2)
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.css?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.css?\\'"  . web-mode))
 (add-to-list 'auto-mode-alist '("\\.scss?\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.less?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.js?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.js?\\'"   . web-mode))
+(add-to-list 'auto-mode-alist '("\\.php?\\'"  . web-mode))
 
 ;;; ruby support
 (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode)
 
 ;;; yaml support
 (require 'yaml-mode)
-
-;;; php support
-(require 'php-mode)
 
 
 
@@ -424,6 +422,7 @@
 (add-to-list 'auto-mode-alist '("\\.yml"        . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.sls"        . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.md"         . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.txt"        . markdown-mode))
 (add-to-list 'auto-mode-alist '(".editorconfig" . editorconfig-conf-mode))
 
 ;;; set initial evil state for particular modes
@@ -483,6 +482,7 @@
 ;;; evil emacs conflicts
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
+;; (define-key evil-normal-state-map "p"         'term-paste)
 
 ;;; evil vim inconsistencies
 (define-key evil-visual-state-map (kbd "x") 'evil-delete)
@@ -503,6 +503,10 @@
 ;;; close all other panes
 (define-key evil-motion-state-map (kbd "C-z") 'zoom-window-zoom)
 (evil-leader/set-key "wm" 'delete-other-windows) ; (w)indow (m)ain (lifted from spacemacs)
+
+;;; helm menu nav
+(define-key helm-map (kbd "s-j") 'helm-next-line)
+(define-key helm-map (kbd "s-k") 'helm-previous-line)
 
 ;;; jump to line / word
 (evil-leader/set-key "jl" 'evil-ace-jump-line-mode)
@@ -532,6 +536,7 @@
 (evil-leader/set-key "ff" 'cider-format-defun)          ; (f)ormat (f)orm
 (evil-leader/set-key "fr" 'cider-format-region)         ; (f)ormat (r)egion
 (evil-leader/set-key "fb" 'cider-format-buffer)         ; (f)ormat (b)uffer
+(evil-leader/set-key "rf" 'cljr-helm)                   ; (c)lj (r)efactor
 
 ;; flycheck
 (evil-leader/set-key "cb" 'flycheck-buffer) ; (c)heck (b)uffer
@@ -555,7 +560,7 @@
 (evil-leader/set-key "d" 'dash-at-point)
 
 ;;; bookmarks
-(evil-leader/set-key "ml" 'helm-bookmarks)
+(evil-leader/set-key "ml" 'bookmark-jump)
 (evil-leader/set-key "mj" 'bookmark-jump)
 (evil-leader/set-key "ms" 'bookmark-set)
 (evil-leader/set-key "md" 'bookmark-delete)

@@ -56,6 +56,12 @@ indent_style = space
 indent_size = 4
 trim_trailing_whitespace = true
 
+## php settings
+[*.php]
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
 ## makefile settings
 indent_style = tab
 trim_trailing_whitespace = true
