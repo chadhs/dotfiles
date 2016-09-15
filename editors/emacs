@@ -30,26 +30,27 @@
 ;;; packages to install
 (setq package-list '(
                      ;; emacs enhancements
-                     exec-path-from-shell ; make sure PATH makes shell PATH
-                     diminish ; suppress modes from appearing in status bar
-                     multi-term
+		     ;; use-package          ; provides tidy and performant package management
+                     ;; exec-path-from-shell ; make sure PATH makes shell PATH
+                     diminish             ; suppress modes from appearing in status bar
+                     ;; multi-term
 
                      ;; editing enhancements
-                     ace-jump-mode
-                     editorconfig
-                     paredit
-                     powerline
-                     powerline-evil
-                     rainbow-delimiters
+                     ;; ace-jump-mode
+                     ;; editorconfig
+                     ;; paredit
+                     ;; powerline
+                     ;; powerline-evil
+                     ;; rainbow-delimiters
 
                      ;; auto-completion
-                     auto-complete
-                     ac-cider
+                     ;; auto-complete
+                     ;; ac-cider
 
                      ;; syntax checking
-                     flycheck
-                     flycheck-pos-tip
-                     flycheck-clojure
+                     ;; flycheck
+                     ;; flycheck-pos-tip
+                     ;; flycheck-clojure
 
                      ;; themes
                      cycle-themes
@@ -57,14 +58,14 @@
                      ample-theme
 
                      ;; vim mode
-                     evil
-                     evil-leader
-                     evil-matchit
-                     evil-nerd-commenter
-                     evil-paredit
-                     evil-search-highlight-persist
-                     evil-surround
-                     evil-visualstar
+                     ;; evil
+                     ;; evil-leader
+                     ;; evil-matchit
+                     ;; evil-nerd-commenter
+                     ;; evil-paredit
+                     ;; evil-search-highlight-persist
+                     ;; evil-surround
+                     ;; evil-visualstar
 
                      ;; docs
                      dash-at-point ; launch Dash on macOS
@@ -86,7 +87,10 @@
                      cljr-helm
 
                      ;; ruby
-                     inf-ruby
+                     inf-ruby ; execute ruby code
+
+		     ;; python
+		     elpy
 
                      ;; other syntaxes
                      markdown-mode
@@ -98,13 +102,20 @@
 (package-initialize)
 
 ;;; fetch the list of packages available
-(unless package-archive-contents
-  (package-refresh-contents))
+;; (unless package-archive-contents
+;;   (package-refresh-contents))
+
+;;; bootstrap use-package
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+;; set use-package to auto-install all packages
+(setq use-package-always-ensure t)
 
 ;;; install / update packages
-(dolist (package package-list)
-  (unless (package-installed-p package)
-    (package-install package)))
+;; (dolist (package package-list)
+;;   (unless (package-installed-p package)
+;;     (package-install package)))
 
 ;;; show package load time
 (let ((elapsed (float-time (time-subtract (current-time)
@@ -115,176 +126,220 @@
 
 ;;;; package settings
 
+;;; path fix for os x gui mode
+(use-package exec-path-from-shell
+  :if (memq window-system '(mac ns))
+  :init (exec-path-from-shell-initialize))
+
 ;;; evil mode settings
-;; load evil-leader first so it's initialized from the start
-(require 'evil-leader)
-(setq evil-leader/in-all-states 1)
-(global-evil-leader-mode)
-(evil-leader/set-leader ",")
+(use-package evil
+  :config
+  (evil-mode 1))
 
-(require 'evil)
-(evil-mode 1)
+(use-package evil-leader
+  :after evil
+  :config
+  (setq evil-leader/in-all-states 1)
+  (global-evil-leader-mode)
+  (evil-leader/set-leader ","))
 
-(require 'evil-matchit)
-(global-evil-matchit-mode 1)
+(use-package evil-matchit
+  :after evil
+  :config
+  (global-evil-matchit-mode 1))
 
-(evilnc-default-hotkeys)
+(use-package evil-nerd-commenter
+  :after evil
+  :config
+  (evilnc-default-hotkeys))
 
-(require 'evil-surround)
-(global-evil-surround-mode 1)
+(use-package evil-paredit
+  :after evil)
 
-(global-evil-visualstar-mode)
+(use-package evil-search-highlight-persist
+  :after evil
+  :config
+  (global-evil-search-highlight-persist t))
 
-(require 'evil-search-highlight-persist)
-(global-evil-search-highlight-persist t)
+(use-package evil-surround
+  :after evil
+  :config
+  (global-evil-surround-mode 1)
+  (global-evil-visualstar-mode))
+
+(use-package evil-search-highlight-persist
+  :after evil
+  :config
+  (global-evil-search-highlight-persist t))
+
 
 ;;; terminal settings
-(setq multi-term-dedicated-window-height 30
-      multi-term-program "/usr/local/bin/zsh")
-(add-hook 'term-mode-hook
-          (lambda ()
-            (setq term-buffer-maximum-size 10000)
-            (setq yas-dont-activate t)))
+(use-package multi-term
+  :config
+  (setq multi-term-dedicated-window-height 30
+	multi-term-program "/usr/local/bin/zsh"
+	term-buffer-maximum-size 10000
+	yas-dont-activate t)
+  :bind (("C-c C-c" . term-interrupt-subjob)
+	 ("s-k"     . term-send-up)
+	 ("s-j"     . term-send-down)
+	 ("s-{"     . multi-term-prev)
+	 ("s-}"     . multi-term-next)))
 
 ;;; window management
-(require 'zoom-window)
-(setq zoom-window-mode-line-color nil)
+(use-package zoom-window
+  :config
+  (setq zoom-window-mode-line-color nil))
 
 ;;; project management
 ;; helm
-(require 'helm)
-(helm-mode 1)
-(helm-autoresize-mode 1)
-(helm-flx-mode +1)
+(use-package helm
+  :config
+  (helm-mode 1)
+  (helm-autoresize-mode 1)
+  (helm-flx-mode +1)
+  (setq
+   ;; speed up matching by giving emacs garbage collection a more modern threshold
+   gc-cons-threshold 20000000
+   ;; global fuzzy matching
+   helm-mode-fuzzy-match                 t
+   helm-completion-in-region-fuzzy-match t
+   ;; additional fuzzy matching
+   helm-apropos-fuzzy-match              t
+   helm-bookmark-show-location           t
+   helm-buffers-fuzzy-matching           t
+   helm-file-cache-fuzzy-match           t
+   helm-imenu-fuzzy-match                t
+   helm-lisp-completion-at-point         t
+   helm-locate-fuzzy-match               t
+   helm-M-x-fuzzy-match                  t
+   helm-mode-fuzzy-match                 t
+   helm-recentf-fuzzy-match              t
+   helm-quick-update                     t ; show only enough candidates to fill the buffer
+   helm-semantic-fuzzy-match             t))
 
-(setq 
-      ;; global fuzzy matching
-      helm-mode-fuzzy-match                 t
-      helm-completion-in-region-fuzzy-match t
-      ;; additional fuzzy matching
-      helm-apropos-fuzzy-match              t
-      helm-bookmark-show-location           t
-      helm-buffers-fuzzy-matching           t
-      helm-file-cache-fuzzy-match           t
-      helm-imenu-fuzzy-match                t
-      helm-lisp-completion-at-point         t
-      helm-locate-fuzzy-match               t 
-      helm-M-x-fuzzy-match                  t
-      helm-mode-fuzzy-match                 t 
-      helm-recentf-fuzzy-match              t
-      helm-quick-update                     t  ; show only enough candidates to fill the buffer
-      helm-semantic-fuzzy-match             t)
-
-;; speed up matching by giving emacs garbage collection a more modern threshold
-(setq gc-cons-threshold 20000000)
 ;; projectile
-(require 'projectile)
-(setq projectile-require-project-root nil)
-(setq projectile-globally-ignored-directories
-      (append '(
-                ".git"
-                ".cljs_rhino_repl"
-                ".svn"
-                "out"
-                "repl"
-                "target"
-                "venv"
-                )
-              projectile-globally-ignored-directories))
-(setq projectile-globally-ignored-files
-      (append '(
-                ".DS_Store"
-                ".lein-repl-history"
-                "*.gz"
-                "*.pyc"
-                "*.png"
-                "*.jpg"
-                "*.jar"
-                "*.svg"
-                "*.tar.gz"
-                "*.tgz"
-                "*.zip"
-                )
-              projectile-globally-ignored-files))
-(projectile-global-mode)
-
-;; dired
-(when (eq system-type 'darwin)
-  (require 'ls-lisp)
-  (setq ls-lisp-use-insert-directory-program nil))
+(use-package projectile
+  :config
+  (setq
+   projectile-require-project-root         nil
+   projectile-globally-ignored-directories (append
+					    '(".git"
+					      ".cljs_rhino_repl"
+					      ".svn"
+					      "out"
+					      "repl"
+					      "target"
+					      "venv")
+					    projectile-globally-ignored-directories)
+   projectile-globally-ignored-files       (append
+					    '(".DS_Store"
+					      ".lein-repl-history"
+					      "*.gz"
+					      "*.pyc"
+					      "*.png"
+					      "*.jpg"
+					      "*.jar"
+					      "*.svg"
+					      "*.tar.gz"
+					      "*.tgz"
+					      "*.zip")
+					    projectile-globally-ignored-files))
+  (projectile-global-mode))
 
 
 
 ;;; code auto-completion settings
 ;; auto-complete
-(ac-config-default)
-;; set tab key to do all completion and disable return
-(define-key ac-completing-map "\t" 'ac-complete)
-(define-key ac-completing-map "\r" nil)
-(add-to-list 'ac-modes 'yaml-mode)
-(add-to-list 'ac-modes 'markdown-mode)
-(add-to-list 'ac-modes 'html-mode)
-(add-to-list 'ac-modes 'sql-mode)
-(require 'ac-cider)
-(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-(add-hook 'cider-mode-hook 'ac-cider-setup)
-(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-(eval-after-load "auto-complete"
-  '(progn
-     (add-to-list 'ac-modes 'cider-mode)
-     (add-to-list 'ac-modes 'cider-repl-mode)))
+(use-package auto-complete
+  :init
+  (ac-config-default)
+  :config
+  (add-to-list 'ac-modes 'yaml-mode)
+  (add-to-list 'ac-modes 'markdown-mode)
+  (add-to-list 'ac-modes 'html-mode)
+  (add-to-list 'ac-modes 'sql-mode)
+  (add-to-list 'ac-modes 'cider-mode)
+  (add-to-list 'ac-modes 'cider-repl-mode)
+  :bind (:map ac-completing-map
+	      ;; set tab key to do all completion and disable return
+	      ("\t" . ac-complete)
+	      ("\r" . nil)))
+
+(use-package ac-cider
+  :after auto-complete
+  :config
+  (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+  (add-hook 'cider-mode-hook 'ac-cider-setup)
+  (add-hook 'cider-repl-mode-hook 'ac-cider-setup))
+
 
 ;;; version control
-(require 'git)
-(require 'git-blame)
+(use-package git)
+(use-package git-blame)
 
 ;;; syntax checking
-(add-hook 'after-init-hook #'global-flycheck-mode)
+(use-package flycheck
+  :commands flycheck-mode
+  :init
+  ;; (add-hook 'after-init-hook #'global-flycheck-mode)
+  (add-hook 'prog-mode-hook #'flycheck-mode)
+  :config
+  (setq flycheck-check-syntax-automatically '(mode-enabled save)))
+
 ;; floating tooltips only works in graphical mode
-(when (display-graphic-p (selected-frame))
-  (with-eval-after-load 'flycheck
-    (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages)
-    (flycheck-pos-tip-mode)))
-(setq flycheck-check-syntax-automatically '(mode-enabled save))
+(use-package flycheck-pos-tip
+  :after flycheck
+  :if window-system
+  :config
+  (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages)
+  (flycheck-pos-tip-mode))
+
+(use-package flycheck-clojure
+  :after flycheck)
 
 ;;; paredit
-(autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
-(add-hook 'prog-mode-hook #'enable-paredit-mode)
-(add-hook 'prog-mode-hook #'evil-paredit-mode)
-
-;;; show-parens-mode
-(show-paren-mode 1)
-(setq show-paren-delay 0)
+(use-package paredit
+  :config
+  (add-hook 'prog-mode-hook #'enable-paredit-mode)
+  (add-hook 'prog-mode-hook #'evil-paredit-mode))
 
 ;;; rainbow delimiters
-(require 'rainbow-delimiters)
-(add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+(use-package rainbow-delimiters
+  :config
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode))
 
 ;;; emacs powerline
-(require 'powerline)
-(powerline-default-theme)
-(require 'powerline-evil)
-(powerline-evil-vim-color-theme)
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(powerline-evil-emacs-face ((t (:background "#6c71c4" :foreground "#eee8d5"))))
- '(powerline-evil-insert-face ((t (:background "#268bd2" :foreground "#eee8d5"))))
- '(powerline-evil-motion-face ((t (:background "#d33682" :foreground "#eee8d5"))))
- '(powerline-evil-normal-face ((t (:background "#859900" :foreground "#eee8d5"))))
- '(powerline-evil-operator-face ((t (:background "#2aa198" :foreground "#eee8d5"))))
- '(powerline-evil-replace-face ((t (:background "#dc322f" :foreground "#eee8d5"))))
- '(powerline-evil-visual-face ((t (:background "#cb4b16" :foreground "#eee8d5"))))
- '(set-face-attribute (quote fringe) nil :background))
+(use-package powerline
+  :config
+  (powerline-default-theme))
+
+(use-package powerline-evil
+  :after powerline
+  :config
+  (powerline-evil-vim-color-theme)
+  (custom-set-faces
+   '(powerline-evil-emacs-face ((t (:background "#6c71c4" :foreground "#eee8d5"))))
+   '(powerline-evil-insert-face ((t (:background "#268bd2" :foreground "#eee8d5"))))
+   '(powerline-evil-motion-face ((t (:background "#d33682" :foreground "#eee8d5"))))
+   '(powerline-evil-normal-face ((t (:background "#859900" :foreground "#eee8d5"))))
+   '(powerline-evil-operator-face ((t (:background "#2aa198" :foreground "#eee8d5"))))
+   '(powerline-evil-replace-face ((t (:background "#dc322f" :foreground "#eee8d5"))))
+   '(powerline-evil-visual-face ((t (:background "#cb4b16" :foreground "#eee8d5"))))
+   '(set-face-attribute (quote fringe) nil :background)))
 
 ;;; ace-jump - no leading word character needed for ace-jump-word-mode
-(setq ace-jump-word-mode-use-query-char nil)
+(use-package ace-jump-mode
+  :config
+  (setq ace-jump-word-mode-use-query-char nil)
+  (evil-leader/set-key "jl" 'evil-ace-jump-line-mode)
+  (evil-leader/set-key "jw" 'evil-ace-jump-word-mode)
+  (evil-leader/set-key "jc" 'evil-ace-jump-char-mode))
 
 ;;; editorconfig: indentation and whitespace settings
-(require 'editorconfig)
-(editorconfig-mode 1)
+(use-package editorconfig
+  :config
+  (editorconfig-mode 1))
 
 ;;; clojure support
 (require 'clojure-mode-extra-font-locking)
@@ -310,11 +365,29 @@
 (add-to-list 'auto-mode-alist '("\\.js?\\'"   . web-mode))
 (add-to-list 'auto-mode-alist '("\\.php?\\'"  . web-mode))
 
+;;; yaml support
+(require 'yaml-mode)
+
 ;;; ruby support
 (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode)
 
-;;; yaml support
-(require 'yaml-mode)
+;;; python support
+(add-hook 'python-mode-hook 'elpy-enable)
+
+
+
+;;;; elisp / emacs / non-plugin config
+
+;;; fix dired -ls error on macOS
+(when (eq system-type 'darwin)
+  (require 'ls-lisp)
+  (setq ls-lisp-use-insert-directory-program nil))
+;;; show-parens-mode
+(show-paren-mode 1)
+(setq show-paren-delay 0)
+
+
+;;;; elisp / emacs / non-plugin config
 
 
 
@@ -354,10 +427,6 @@
 
 
 ;;;; user configuration
-
-;;; path fix for os x gui mode
-(when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
 
 ;;; os x keybinding fix
 ;; For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option key acts as: > choose +Esc
@@ -446,8 +515,8 @@
 
 ;;; declutter modeline
 (require 'diminish)
-(eval-after-load "paredit"    '(diminish 'paredit-mode))
-(eval-after-load "flycheck"   '(diminish 'flycheck-mode))
+;; (eval-after-load "paredit"    '(diminish 'paredit-mode))
+;; (eval-after-load "flycheck"   '(diminish 'flycheck-mode))
 (eval-after-load "undo-tree"  '(diminish 'undo-tree-mode))
 (eval-after-load "helm"       '(diminish 'helm-mode))
 
@@ -516,9 +585,9 @@
 (define-key helm-map (kbd "s-k") 'helm-previous-line)
 
 ;;; jump to line / word
-(evil-leader/set-key "jl" 'evil-ace-jump-line-mode)
-(evil-leader/set-key "jw" 'evil-ace-jump-word-mode)
-(evil-leader/set-key "jc" 'evil-ace-jump-char-mode)
+;; (evil-leader/set-key "jl" 'evil-ace-jump-line-mode)
+;; (evil-leader/set-key "jw" 'evil-ace-jump-word-mode)
+;; (evil-leader/set-key "jc" 'evil-ace-jump-char-mode)
 
 ;;; use escape for C-g in evil-mode
 (define-key evil-normal-state-map [escape] 'keyboard-quit)
@@ -642,25 +711,6 @@
 ;;; set emacs command hotkey (M-x) to (helm-M-x)
 (global-set-key (kbd "M-x") 'helm-M-x)
 
-;;; multi term keybind setup - thanks to rawsyntax (eric h)
-(defcustom term-unbind-key-list
-  '("C-z" "C-x" "C-c" "C-h" "C-y" "<ESC>")
-  "The key list that will need to be unbind."
-  :type 'list
-  :group 'multi-term)
-
-(defcustom term-bind-key-alist
-  '(
-    ("C-c C-c" . term-interrupt-subjob)
-    ("s-k" . term-send-up)
-    ("s-j" . term-send-down)
-    ("s-{" . multi-term-prev)
-    ("s-}" . multi-term-next)
-    )
-  "The key alist that will need to be bind.
-   If you do not like default setup, modify it, with (KEY . COMMAND) format."
-  :type 'alist
-  :group 'multi-term)
 
 ;;;; report total load time
 (let ((elapsed (float-time (time-subtract (current-time)
