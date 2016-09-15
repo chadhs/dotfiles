@@ -296,7 +296,9 @@
   (flycheck-pos-tip-mode))
 
 (use-package flycheck-clojure
-  :after flycheck)
+  :after flycheck
+  :init 
+  (flycheck-clojure-setup))
 
 ;;; paredit
 (use-package paredit
@@ -342,16 +344,25 @@
   (editorconfig-mode 1))
 
 ;;; clojure support
-(require 'clojure-mode-extra-font-locking)
-(add-hook 'cider-repl-mode-hook #'paredit-mode)
-(setq cider-repl-pop-to-buffer-on-connect nil
-      cider-auto-select-error-buffer nil)
-(eval-after-load 'flycheck '(flycheck-clojure-setup))
-(require 'clj-refactor)
-(require 'cljr-helm)
-(add-hook 'clojure-mode-hook (lambda ()
-			       (clj-refactor-mode 1)
-			       (yas/minor-mode 1)))
+(use-package clojure-mode)
+
+(use-package clojure-mode-extra-font-locking
+  :after clojure-mode)
+
+(use-package cider
+  :config
+  (setq cider-repl-pop-to-buffer-on-connect nil
+	cider-auto-select-error-buffer nil)
+  (add-hook 'cider-repl-mode-hook #'paredit-mode))
+
+(use-package clj-refactor
+  :after clojure-mode
+  :config
+  (clj-refactor-mode 1)
+  (yas/minor-mode 1))
+
+(use-package cljr-helm
+  :after clj-refactor)
 
 ;;; web templates
 (require 'web-mode)
