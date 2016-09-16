@@ -113,7 +113,7 @@
 ;;; project management
 ;; helm
 (use-package helm
-  ;:diminish helm-mode
+  :diminish helm-mode
   :config
   (helm-mode 1)
   (helm-autoresize-mode 1)
@@ -457,13 +457,6 @@
                               (magit-popup-mode   . emacs)
                               )
       do (evil-set-initial-state mode state))
-
-;;; declutter modeline
-;(require 'diminish)
-;; (eval-after-load "paredit"    '(diminish 'paredit-mode))
-;; (eval-after-load "flycheck"   '(diminish 'flycheck-mode))
-;; (eval-after-load "undo-tree"  '(diminish 'undo-tree-mode))
-;; (eval-after-load "helm"       '(diminish 'helm-mode))
 
 ;;; modeline tweaks
 (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
