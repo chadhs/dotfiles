@@ -7,9 +7,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; TODO
-;; reduce load time: make additional use of (eval-after-load "foo" (quote bar))
-;; reduce load time: lose some of the (require 'foo) statements
+;; FIX Flycheck Clojure!!!
+;; reduce load time: make additional use of (with-eval-after-load "foo" (bar))
+;; reduce load time: lose some of the (require 'foo) statements; in favor of relying on autoload cookies
 ;; break up config into packages, user-functions, user-config, keybinds
+;; scratch buffer no contents; markdown mode?
 
 ;;;; package management
 
@@ -91,7 +93,7 @@
                       cljr-helm
 
                       ;; ruby
-                      ;; inf-ruby
+                      inf-ruby
 
 
                       ;; python
@@ -145,66 +147,67 @@
     (setq yas-dont-activate t)))
 
 ;;; window management
-(require 'zoom-window)
 (setq zoom-window-mode-line-color nil)
 
 ;;; project management
 ;; helm
 (require 'helm)
-(helm-mode 1)
-(helm-autoresize-mode 1)
-(helm-flx-mode +1)
+(with-eval-after-load "helm"
+  (helm-mode 1)
+  (helm-autoresize-mode 1)
+  (helm-flx-mode +1)
+  ;; speed up matching by giving emacs garbage collection a more modern threshold
+  (setq gc-cons-threshold 20000000)
+  ;; fuzzy matching
+  (setq
+    ;; global fuzzy matching
+    helm-mode-fuzzy-match                 t
+    helm-completion-in-region-fuzzy-match t
+    ;; additional fuzzy matching
+    helm-apropos-fuzzy-match              t
+    helm-bookmark-show-location           t
+    helm-buffers-fuzzy-matching           t
+    helm-file-cache-fuzzy-match           t
+    helm-imenu-fuzzy-match                t
+    helm-lisp-completion-at-point         t
+    helm-locate-fuzzy-match               t
+    helm-M-x-fuzzy-match                  t
+    helm-mode-fuzzy-match                 t
+    helm-recentf-fuzzy-match              t
+    helm-quick-update                     t  ; show only enough candidates to fill the buffer
+    helm-semantic-fuzzy-match             t))
 
-(setq
-  ;; global fuzzy matching
-  helm-mode-fuzzy-match                 t
-  helm-completion-in-region-fuzzy-match t
-  ;; additional fuzzy matching
-  helm-apropos-fuzzy-match              t
-  helm-bookmark-show-location           t
-  helm-buffers-fuzzy-matching           t
-  helm-file-cache-fuzzy-match           t
-  helm-imenu-fuzzy-match                t
-  helm-lisp-completion-at-point         t
-  helm-locate-fuzzy-match               t
-  helm-M-x-fuzzy-match                  t
-  helm-mode-fuzzy-match                 t
-  helm-recentf-fuzzy-match              t
-  helm-quick-update                     t  ; show only enough candidates to fill the buffer
-  helm-semantic-fuzzy-match             t)
-
-;; speed up matching by giving emacs garbage collection a more modern threshold
-(setq gc-cons-threshold 20000000)
 ;; projectile
 (require 'projectile)
-(setq projectile-require-project-root nil)
-(setq projectile-globally-ignored-directories
-  (append '(
-             ".git"
-             ".cljs_rhino_repl"
-             ".svn"
-             "out"
-             "repl"
-             "target"
-             "venv"
-             )
-    projectile-globally-ignored-directories))
-(setq projectile-globally-ignored-files
-  (append '(
-             ".DS_Store"
-             ".lein-repl-history"
-             "*.gz"
-             "*.pyc"
-             "*.png"
-             "*.jpg"
-             "*.jar"
-             "*.svg"
-             "*.tar.gz"
-             "*.tgz"
-             "*.zip"
-             )
-    projectile-globally-ignored-files))
-(projectile-global-mode)
+(with-eval-after-load "projectile"
+  (setq projectile-require-project-root nil)
+  (setq projectile-globally-ignored-directories
+    (append '(
+               ".git"
+               ".cljs_rhino_repl"
+               ".svn"
+               "out"
+               "repl"
+               "target"
+               "venv"
+               )
+      projectile-globally-ignored-directories))
+  (setq projectile-globally-ignored-files
+    (append '(
+               ".DS_Store"
+               ".lein-repl-history"
+               "*.gz"
+               "*.pyc"
+               "*.png"
+               "*.jpg"
+               "*.jar"
+               "*.svg"
+               "*.tar.gz"
+               "*.tgz"
+               "*.zip"
+               )
+      projectile-globally-ignored-files))
+  (projectile-global-mode))
 
 ;; dired
 (when (eq system-type 'darwin)
@@ -216,26 +219,24 @@
 ;;; code auto-completion settings
 ;; auto-complete
 (ac-config-default)
-;; set tab key to do all completion and disable return
-(define-key ac-completing-map "\t" 'ac-complete)
-(define-key ac-completing-map "\r" nil)
+(define-key ac-completing-map "\t" 'ac-complete) ; set tab key to do all completion
+(define-key ac-completing-map "\r" nil) ; disable return
 (add-to-list 'ac-modes 'yaml-mode)
 (add-to-list 'ac-modes 'markdown-mode)
 (add-to-list 'ac-modes 'html-mode)
 (add-to-list 'ac-modes 'sql-mode)
-(require 'ac-cider)
-(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-(add-hook 'cider-mode-hook 'ac-cider-setup)
-(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-(eval-after-load "auto-complete"
-  '(progn
-     (add-to-list 'ac-modes 'cider-mode)
-     (add-to-list 'ac-modes 'cider-repl-mode)))
+(add-to-list 'ac-modes 'cider-mode)
+(add-to-list 'ac-modes 'cider-repl-mode)
+
+(with-eval-after-load "cider"
+  (require 'ac-cider)
+  (add-hook 'cider-mode-hook 'ac-flyspell-workaround)
+  (add-hook 'cider-mode-hook 'ac-cider-setup)
+  (add-hook 'cider-repl-mode-hook 'ac-cider-setup))
 
 ;;; version control
-(setq vc-follow-symlinks t)
 (require 'git)
-(require 'git-blame)
+(setq vc-follow-symlinks t)
 
 ;;; syntax checking
 (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -256,12 +257,9 @@
 (setq show-paren-delay 0)
 
 ;;; rainbow delimiters
-(require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 ;;; emacs powerline
-(require 'powerline)
-(powerline-default-theme)
 (require 'powerline-evil)
 (powerline-evil-vim-color-theme)
 (custom-set-faces
@@ -278,11 +276,10 @@
   '(powerline-evil-visual-face ((t (:background "#cb4b16" :foreground "#eee8d5"))))
   '(set-face-attribute (quote fringe) nil :background))
 
-;;; ace-jump - no leading word character needed for ace-jump-word-mode
-(setq ace-jump-word-mode-use-query-char nil)
+;;; ace-jump
+(setq ace-jump-word-mode-use-query-char nil) ; no leading word character needed for ace-jump-word-mode
 
 ;;; editorconfig: indentation and whitespace settings
-(require 'editorconfig)
 (editorconfig-mode 1)
 
 ;;; clojure support
@@ -291,14 +288,14 @@
 (setq cider-repl-pop-to-buffer-on-connect nil
   cider-auto-select-error-buffer nil)
 (eval-after-load 'flycheck '(flycheck-clojure-setup))
-(require 'clj-refactor)
-(require 'cljr-helm)
 (add-hook 'clojure-mode-hook (lambda ()
                                (clj-refactor-mode 1)
                                (yas/minor-mode 1)))
+(require 'clj-refactor)
+(require 'cljr-helm)
 
 ;;; web templates
-;; (require 'web-mode)
+(require 'web-mode)
 (setq web-mode-markup-indent-offset 2)
 (setq web-mode-css-indent-offset 2)
 (setq web-mode-code-indent-offset 2)
