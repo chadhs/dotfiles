@@ -6,6 +6,11 @@
 ; http://spacemacs.org                                                       ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; TODO
+;; reduce load time: make additional use of (eval-after-load "foo" (quote bar))
+;; reduce load time: lose some of the (require 'foo) statements
+;; break up config into packages, user-functions, user-config, keybinds
+
 ;;;; package management
 
 ;;; keep track of start time for load time calculation
@@ -16,83 +21,87 @@
 
 ;;; package repositories
 (setq package-archives '(
-                         ("gnu"           . "http://elpa.gnu.org/packages/")
-                         ("melpa"         . "http://melpa.org/packages/")
-                         ("melpa-stable"  . "http://stable.melpa.org/packages/")
-                         ))
+                          ("gnu"           . "http://elpa.gnu.org/packages/")
+                          ("melpa"         . "http://melpa.org/packages/")
+                          ("melpa-stable"  . "http://stable.melpa.org/packages/")
+                          ))
 
 ;;; specify which repo to install packages from
 (setq package-pinned-packages '(
-                                (cider        . "melpa-stable")
-                                (clj-refactor . "melpa-stable")
-                                ))
+                                 (cider        . "melpa-stable")
+                                 (clj-refactor . "melpa-stable")
+                                 ))
 
 ;;; packages to install
 (setq package-list '(
-                     ;; emacs enhancements
-                     exec-path-from-shell ; make sure PATH makes shell PATH
-                     diminish ; suppress modes from appearing in status bar
-                     multi-term
+                      ;; emacs enhancements
+                      exec-path-from-shell ; make sure PATH makes shell PATH
+                      diminish ; suppress modes from appearing in status bar
+                      multi-term
 
-                     ;; editing enhancements
-                     ace-jump-mode
-                     editorconfig
-                     paredit
-                     powerline
-                     powerline-evil
-                     rainbow-delimiters
+                      ;; editing enhancements
+                      ace-jump-mode
+                      editorconfig
+                      paredit
+                      powerline
+                      powerline-evil
+                      rainbow-delimiters
 
-                     ;; auto-completion
-                     auto-complete
-                     ac-cider
+                      ;; auto-completion
+                      auto-complete
+                      ac-cider
 
-                     ;; syntax checking
-                     flycheck
-                     flycheck-pos-tip
-                     flycheck-clojure
+                      ;; syntax checking
+                      flycheck
+                      flycheck-pos-tip
+                      flycheck-clojure
 
-                     ;; themes
-                     cycle-themes
-                     solarized-theme
-                     ample-theme
+                      ;; themes
+                      cycle-themes
+                      solarized-theme
+                      ample-theme
 
-                     ;; vim mode
-                     evil
-                     evil-leader
-                     evil-matchit
-                     evil-nerd-commenter
-                     evil-paredit
-                     evil-search-highlight-persist
-                     evil-surround
-                     evil-visualstar
+                      ;; vim mode
+                      evil
+                      evil-leader
+                      evil-matchit
+                      evil-nerd-commenter
+                      evil-paredit
+                      evil-search-highlight-persist
+                      evil-surround
+                      evil-visualstar
 
-                     ;; docs
-                     dash-at-point ; launch Dash on macOS
+                      ;; docs
+                      dash-at-point ; launch Dash on macOS
 
-                     ;; projects / file / buffer mgmt
-                     helm
-                     helm-ag
-                     helm-flx
-                     helm-projectile
-                     magit
-                     projectile
-		     zoom-window
+                      ;; projects / file / buffer mgmt
+                      helm
+                      helm-ag
+                      helm-flx
+                      helm-projectile
+                      magit
+                      projectile
+                      zoom-window
 
-                     ;; clojure
-                     cider
-                     clojure-mode
-                     clojure-mode-extra-font-locking
-                     clj-refactor
-                     cljr-helm
+                      ;; clojure
+                      cider
+                      clojure-mode
+                      clojure-mode-extra-font-locking
+                      clj-refactor
+                      cljr-helm
 
-                     ;; ruby
-                     inf-ruby
+                      ;; ruby
+                      ;; inf-ruby
 
-                     ;; other syntaxes
-                     markdown-mode
-                     web-mode
-                     yaml-mode
-                     ))
+
+                      ;; python
+                      ;; elpy
+
+                      ;; other syntaxes
+                      markdown-mode
+                      web-mode
+                      yaml-mode
+                      ))
 
 ;;; loads packages and activates them
 (package-initialize)
@@ -108,7 +117,7 @@
 
 ;;; show package load time
 (let ((elapsed (float-time (time-subtract (current-time)
-            emacs-start-time))))
+                             emacs-start-time))))
   (message "Loaded packages in %.3fs" elapsed))
 
 
@@ -116,35 +125,24 @@
 ;;;; package settings
 
 ;;; evil mode settings
-;; load evil-leader first so it's initialized from the start
-(require 'evil-leader)
+(require 'evil-leader) ; load evil-leader first so it's initialized from the start
 (setq evil-leader/in-all-states 1)
 (global-evil-leader-mode)
 (evil-leader/set-leader ",")
-
-(require 'evil)
 (evil-mode 1)
-
-(require 'evil-matchit)
 (global-evil-matchit-mode 1)
-
 (evilnc-default-hotkeys)
-
-(require 'evil-surround)
 (global-evil-surround-mode 1)
-
 (global-evil-visualstar-mode)
-
-(require 'evil-search-highlight-persist)
 (global-evil-search-highlight-persist t)
 
 ;;; terminal settings
 (setq multi-term-dedicated-window-height 30
-      multi-term-program "/usr/local/bin/zsh")
+  multi-term-program "/usr/local/bin/zsh")
 (add-hook 'term-mode-hook
-          (lambda ()
-            (setq term-buffer-maximum-size 10000)
-            (setq yas-dont-activate t)))
+  (lambda ()
+    (setq term-buffer-maximum-size 10000)
+    (setq yas-dont-activate t)))
 
 ;;; window management
 (require 'zoom-window)
@@ -157,23 +155,23 @@
 (helm-autoresize-mode 1)
 (helm-flx-mode +1)
 
-(setq 
-      ;; global fuzzy matching
-      helm-mode-fuzzy-match                 t
-      helm-completion-in-region-fuzzy-match t
-      ;; additional fuzzy matching
-      helm-apropos-fuzzy-match              t
-      helm-bookmark-show-location           t
-      helm-buffers-fuzzy-matching           t
-      helm-file-cache-fuzzy-match           t
-      helm-imenu-fuzzy-match                t
-      helm-lisp-completion-at-point         t
-      helm-locate-fuzzy-match               t 
-      helm-M-x-fuzzy-match                  t
-      helm-mode-fuzzy-match                 t 
-      helm-recentf-fuzzy-match              t
-      helm-quick-update                     t  ; show only enough candidates to fill the buffer
-      helm-semantic-fuzzy-match             t)
+(setq
+  ;; global fuzzy matching
+  helm-mode-fuzzy-match                 t
+  helm-completion-in-region-fuzzy-match t
+  ;; additional fuzzy matching
+  helm-apropos-fuzzy-match              t
+  helm-bookmark-show-location           t
+  helm-buffers-fuzzy-matching           t
+  helm-file-cache-fuzzy-match           t
+  helm-imenu-fuzzy-match                t
+  helm-lisp-completion-at-point         t
+  helm-locate-fuzzy-match               t
+  helm-M-x-fuzzy-match                  t
+  helm-mode-fuzzy-match                 t
+  helm-recentf-fuzzy-match              t
+  helm-quick-update                     t  ; show only enough candidates to fill the buffer
+  helm-semantic-fuzzy-match             t)
 
 ;; speed up matching by giving emacs garbage collection a more modern threshold
 (setq gc-cons-threshold 20000000)
@@ -181,31 +179,31 @@
 (require 'projectile)
 (setq projectile-require-project-root nil)
 (setq projectile-globally-ignored-directories
-      (append '(
-                ".git"
-                ".cljs_rhino_repl"
-                ".svn"
-                "out"
-                "repl"
-                "target"
-                "venv"
-                )
-              projectile-globally-ignored-directories))
+  (append '(
+             ".git"
+             ".cljs_rhino_repl"
+             ".svn"
+             "out"
+             "repl"
+             "target"
+             "venv"
+             )
+    projectile-globally-ignored-directories))
 (setq projectile-globally-ignored-files
-      (append '(
-                ".DS_Store"
-                ".lein-repl-history"
-                "*.gz"
-                "*.pyc"
-                "*.png"
-                "*.jpg"
-                "*.jar"
-                "*.svg"
-                "*.tar.gz"
-                "*.tgz"
-                "*.zip"
-                )
-              projectile-globally-ignored-files))
+  (append '(
+             ".DS_Store"
+             ".lein-repl-history"
+             "*.gz"
+             "*.pyc"
+             "*.png"
+             "*.jpg"
+             "*.jar"
+             "*.svg"
+             "*.tar.gz"
+             "*.tgz"
+             "*.zip"
+             )
+    projectile-globally-ignored-files))
 (projectile-global-mode)
 
 ;; dired
@@ -235,6 +233,7 @@
      (add-to-list 'ac-modes 'cider-repl-mode)))
 
 ;;; version control
+(setq vc-follow-symlinks t)
 (require 'git)
 (require 'git-blame)
 
@@ -266,18 +265,18 @@
 (require 'powerline-evil)
 (powerline-evil-vim-color-theme)
 (custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(powerline-evil-emacs-face ((t (:background "#6c71c4" :foreground "#eee8d5"))))
- '(powerline-evil-insert-face ((t (:background "#268bd2" :foreground "#eee8d5"))))
- '(powerline-evil-motion-face ((t (:background "#d33682" :foreground "#eee8d5"))))
- '(powerline-evil-normal-face ((t (:background "#859900" :foreground "#eee8d5"))))
- '(powerline-evil-operator-face ((t (:background "#2aa198" :foreground "#eee8d5"))))
- '(powerline-evil-replace-face ((t (:background "#dc322f" :foreground "#eee8d5"))))
- '(powerline-evil-visual-face ((t (:background "#cb4b16" :foreground "#eee8d5"))))
- '(set-face-attribute (quote fringe) nil :background))
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+  '(powerline-evil-emacs-face ((t (:background "#6c71c4" :foreground "#eee8d5"))))
+  '(powerline-evil-insert-face ((t (:background "#268bd2" :foreground "#eee8d5"))))
+  '(powerline-evil-motion-face ((t (:background "#d33682" :foreground "#eee8d5"))))
+  '(powerline-evil-normal-face ((t (:background "#859900" :foreground "#eee8d5"))))
+  '(powerline-evil-operator-face ((t (:background "#2aa198" :foreground "#eee8d5"))))
+  '(powerline-evil-replace-face ((t (:background "#dc322f" :foreground "#eee8d5"))))
+  '(powerline-evil-visual-face ((t (:background "#cb4b16" :foreground "#eee8d5"))))
+  '(set-face-attribute (quote fringe) nil :background))
 
 ;;; ace-jump - no leading word character needed for ace-jump-word-mode
 (setq ace-jump-word-mode-use-query-char nil)
@@ -290,16 +289,16 @@
 (require 'clojure-mode-extra-font-locking)
 (add-hook 'cider-repl-mode-hook #'paredit-mode)
 (setq cider-repl-pop-to-buffer-on-connect nil
-      cider-auto-select-error-buffer nil)
+  cider-auto-select-error-buffer nil)
 (eval-after-load 'flycheck '(flycheck-clojure-setup))
 (require 'clj-refactor)
 (require 'cljr-helm)
 (add-hook 'clojure-mode-hook (lambda ()
-			       (clj-refactor-mode 1)
-			       (yas/minor-mode 1)))
+                               (clj-refactor-mode 1)
+                               (yas/minor-mode 1)))
 
 ;;; web templates
-(require 'web-mode)
+;; (require 'web-mode)
 (setq web-mode-markup-indent-offset 2)
 (setq web-mode-css-indent-offset 2)
 (setq web-mode-code-indent-offset 2)
@@ -347,7 +346,7 @@
    then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive)
   (if (and delete-selection-mode transient-mark-mode mark-active)
-      (setq deactivate-mark  t)
+    (setq deactivate-mark  t)
     (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
     (abort-recursive-edit)))
 
@@ -367,25 +366,25 @@
 
 ;;; theme
 (if (display-graphic-p)
-    ;; load graphical theme
-    (progn
-      (load-theme 'solarized-dark t)
-      (load-theme 'solarized-light t)
-      )
+  ;; load graphical theme
+  (progn
+    (load-theme 'solarized-dark t)
+    (load-theme 'solarized-light t)
+    )
   ;; load terminal theme
   (load-theme 'ample t))
 
 ;;; cycle themes
 (setq cycle-themes-theme-list
-      '(
-        solarized-dark
-        solarized-light
-        ))
+  '(
+     solarized-dark
+     solarized-light
+     ))
 (require 'cycle-themes)
 
 ;;; font settings
 (set-face-attribute 'default nil
-        :family "Menlo" :height 140 :weight 'normal)
+  :family "Menlo" :height 140 :weight 'normal)
 
 ;;; ui tweaks
 (if (display-graphic-p)
@@ -399,8 +398,8 @@
 
 ;;; smoother scrolling
 (setq scroll-margin 8
-      scroll-conservatively 9999
-      scroll-step 1)
+  scroll-conservatively 9999
+  scroll-step 1)
 
 ;;; initial widow size and position (`left . -1` is the closest i can get to right align)
 (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
@@ -415,14 +414,14 @@
 ;;; store auto-save and backup files in ~/.emacs.d/backups/
 (defvar --backup-dir (concat user-emacs-directory "backups"))
 (if (not (file-exists-p --backup-dir))
-    (make-directory --backup-dir t))
+  (make-directory --backup-dir t))
 (setq backup-directory-alist `(("." . ,--backup-dir)))
 (setq backup-by-copying t
-      delete-old-versions t
-      kept-new-versions 6
-      kept-old-versions 2
-      version-control t
-      auto-save-default t)
+  delete-old-versions t
+  kept-new-versions 6
+  kept-old-versions 2
+  version-control t
+  auto-save-default t)
 
 ;;; set file types
 (add-to-list 'auto-mode-alist '(".emacs"        . lisp-mode))
@@ -434,15 +433,15 @@
 
 ;;; set initial evil state for particular modes
 (loop for (mode . state) in '(
-                              (dired-mode         . normal)
-                              (magit-mode         . normal)
-                              (magit-status-mode  . emacs)
-                              (magit-diff-mode    . normal)
-                              (magit-log-mode     . normal)
-                              (magit-process-mode . normal)
-                              (magit-popup-mode   . emacs)
-                              )
-      do (evil-set-initial-state mode state))
+                               (dired-mode         . normal)
+                               (magit-mode         . normal)
+                               (magit-status-mode  . emacs)
+                               (magit-diff-mode    . normal)
+                               (magit-log-mode     . normal)
+                               (magit-process-mode . normal)
+                               (magit-popup-mode   . emacs)
+                               )
+  do (evil-set-initial-state mode state))
 
 ;;; declutter modeline
 (require 'diminish)
@@ -456,8 +455,8 @@
 
 ;;; open urls in default browser
 (if (display-graphic-p)
-    (progn
-      (setq browse-url-browser-function 'browse-url-default-macosx-browser)))
+  (progn
+    (setq browse-url-browser-function 'browse-url-default-macosx-browser)))
 
 
 
@@ -596,9 +595,9 @@
 (evil-leader/set-key "gp"  'magit-push-current-to-upstream)
 ;; let's improve evil mode compatability
 (eval-after-load 'magit '(progn
-			   (define-key magit-status-mode-map (kbd "k") #'previous-line)
-			   (define-key magit-status-mode-map (kbd "K") #'magit-discard)
-			   (define-key magit-status-mode-map (kbd "j") #'next-line)))
+                           (define-key magit-status-mode-map (kbd "k") #'previous-line)
+                           (define-key magit-status-mode-map (kbd "K") #'magit-discard)
+                           (define-key magit-status-mode-map (kbd "j") #'next-line)))
 
 ;;; line number toggle
 (evil-leader/set-key "nn" 'linum-mode)
@@ -651,12 +650,12 @@
 
 (defcustom term-bind-key-alist
   '(
-    ("C-c C-c" . term-interrupt-subjob)
-    ("s-k" . term-send-up)
-    ("s-j" . term-send-down)
-    ("s-{" . multi-term-prev)
-    ("s-}" . multi-term-next)
-    )
+     ("C-c C-c" . term-interrupt-subjob)
+     ("s-k" . term-send-up)
+     ("s-j" . term-send-down)
+     ("s-{" . multi-term-prev)
+     ("s-}" . multi-term-next)
+     )
   "The key alist that will need to be bind.
    If you do not like default setup, modify it, with (KEY . COMMAND) format."
   :type 'alist
@@ -664,7 +663,7 @@
 
 ;;;; report total load time
 (let ((elapsed (float-time (time-subtract (current-time)
-            emacs-start-time))))
+                             emacs-start-time))))
   (message "Loaded emacs in %.3fs" elapsed))
 
 
@@ -684,4 +683,3 @@
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
   )
-
