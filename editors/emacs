@@ -14,108 +14,21 @@
 ;;; allow package use
 (require 'package)
 
+;;; disable automatic package loading
+(setq package-enable-at-startup nil)
+
 ;;; package repositories
-(setq package-archives '(
-                         ("gnu"           . "http://elpa.gnu.org/packages/")
+(setq package-archives '(("gnu"           . "http://elpa.gnu.org/packages/")
                          ("melpa"         . "http://melpa.org/packages/")
-                         ("melpa-stable"  . "http://stable.melpa.org/packages/")
-                         ))
-
-;;; specify which repo to install packages from
-(setq package-pinned-packages '(
-                                (cider        . "melpa-stable")
-                                (clj-refactor . "melpa-stable")
-                                ))
-
-;;; packages to install
-(setq package-list '(
-                     ;; emacs enhancements
-		     ;; use-package          ; provides tidy and performant package management
-                     ;; exec-path-from-shell ; make sure PATH makes shell PATH
-                     diminish             ; suppress modes from appearing in status bar
-                     ;; multi-term
-
-                     ;; editing enhancements
-                     ;; ace-jump-mode
-                     ;; editorconfig
-                     ;; paredit
-                     ;; powerline
-                     ;; powerline-evil
-                     ;; rainbow-delimiters
-
-                     ;; auto-completion
-                     ;; auto-complete
-                     ;; ac-cider
-
-                     ;; syntax checking
-                     ;; flycheck
-                     ;; flycheck-pos-tip
-                     ;; flycheck-clojure
-
-                     ;; themes
-                     cycle-themes
-                     solarized-theme
-                     ample-theme
-
-                     ;; vim mode
-                     ;; evil
-                     ;; evil-leader
-                     ;; evil-matchit
-                     ;; evil-nerd-commenter
-                     ;; evil-paredit
-                     ;; evil-search-highlight-persist
-                     ;; evil-surround
-                     ;; evil-visualstar
-
-                     ;; docs
-                     dash-at-point ; launch Dash on macOS
-
-                     ;; projects / file / buffer mgmt
-                     helm
-                     helm-ag
-                     helm-flx
-                     helm-projectile
-                     magit
-                     projectile
-		     zoom-window
-
-                     ;; clojure
-                     cider
-                     clojure-mode
-                     clojure-mode-extra-font-locking
-                     clj-refactor
-                     cljr-helm
-
-                     ;; ruby
-                     inf-ruby ; execute ruby code
-
-		     ;; python
-		     elpy
-
-                     ;; other syntaxes
-                     markdown-mode
-                     web-mode
-                     yaml-mode
-                     ))
+                         ("melpa-stable"  . "http://stable.melpa.org/packages/")))
 
 ;;; loads packages and activates them
 (package-initialize)
-
-;;; fetch the list of packages available
-;; (unless package-archive-contents
-;;   (package-refresh-contents))
 
 ;;; bootstrap use-package
 (unless (package-installed-p 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
-;; set use-package to auto-install all packages
-(setq use-package-always-ensure t)
-
-;;; install / update packages
-;; (dolist (package package-list)
-;;   (unless (package-installed-p package)
-;;     (package-install package)))
 
 ;;; show package load time
 (let ((elapsed (float-time (time-subtract (current-time)
@@ -125,6 +38,13 @@
 
 
 ;;;; package settings
+
+;;; use-package
+(eval-when-compile
+  (require 'use-package))
+(require 'diminish) ;; suppress modes from appearing in status bar
+(require 'bind-key) ;; key-binding support
+(setq use-package-always-ensure t) ;; set use-package to auto-install all packages
 
 ;;; path fix for os x gui mode
 (use-package exec-path-from-shell
@@ -164,13 +84,12 @@
 (use-package evil-surround
   :after evil
   :config
-  (global-evil-surround-mode 1)
-  (global-evil-visualstar-mode))
+  (global-evil-surround-mode 1))
 
-(use-package evil-search-highlight-persist
+(use-package evil-visualstar
   :after evil
   :config
-  (global-evil-search-highlight-persist t))
+  (global-evil-visualstar-mode))
 
 
 ;;; terminal settings
@@ -194,6 +113,7 @@
 ;;; project management
 ;; helm
 (use-package helm
+  ;:diminish helm-mode
   :config
   (helm-mode 1)
   (helm-autoresize-mode 1)
@@ -217,6 +137,10 @@
    helm-recentf-fuzzy-match              t
    helm-quick-update                     t ; show only enough candidates to fill the buffer
    helm-semantic-fuzzy-match             t))
+
+(use-package helm-ag)
+(use-package helm-flx)
+(use-package helm-projectile)
 
 ;; projectile
 (use-package projectile
@@ -273,13 +197,21 @@
   (add-hook 'cider-mode-hook 'ac-cider-setup)
   (add-hook 'cider-repl-mode-hook 'ac-cider-setup))
 
+;;; doc lookup
+(use-package dash-at-point)
+
+;;; undo
+(use-package undo-tree
+  :diminish undo-tree-mode)
 
 ;;; version control
 (use-package git)
 (use-package git-blame)
+(use-package magit)
 
 ;;; syntax checking
 (use-package flycheck
+  :diminish flycheck-mode
   :commands flycheck-mode
   :init
   ;; (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -297,11 +229,12 @@
 
 (use-package flycheck-clojure
   :after flycheck
-  :init 
+  :init
   (flycheck-clojure-setup))
 
 ;;; paredit
 (use-package paredit
+  :diminish paredit-mode
   :config
   (add-hook 'prog-mode-hook #'enable-paredit-mode)
   (add-hook 'prog-mode-hook #'evil-paredit-mode))
@@ -350,12 +283,14 @@
   :after clojure-mode)
 
 (use-package cider
+  :pin melpa-stable
   :config
   (setq cider-repl-pop-to-buffer-on-connect nil
 	cider-auto-select-error-buffer nil)
   (add-hook 'cider-repl-mode-hook #'paredit-mode))
 
 (use-package clj-refactor
+  :pin melpa-stable
   :after clojure-mode
   :config
   (clj-refactor-mode 1)
@@ -365,25 +300,29 @@
   :after clj-refactor)
 
 ;;; web templates
-(require 'web-mode)
-(setq web-mode-markup-indent-offset 2)
-(setq web-mode-css-indent-offset 2)
-(setq web-mode-code-indent-offset 2)
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.css?\\'"  . web-mode))
-(add-to-list 'auto-mode-alist '("\\.scss?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.less?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.js?\\'"   . web-mode))
-(add-to-list 'auto-mode-alist '("\\.php?\\'"  . web-mode))
+(use-package web-mode
+  :config
+  (setq web-mode-markup-indent-offset 2
+	web-mode-css-indent-offset    2
+	web-mode-code-indent-offset   2)
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.css?\\'"  . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.scss?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.less?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.js?\\'"   . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.php?\\'"  . web-mode)))
+
+;;; markdown support
+(use-package markdown-mode)
 
 ;;; yaml support
-(require 'yaml-mode)
+(use-package yaml-mode)
 
 ;;; ruby support
-(add-hook 'ruby-mode-hook 'inf-ruby-minor-mode)
+;; (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode)
 
 ;;; python support
-(add-hook 'python-mode-hook 'elpy-enable)
+;; (add-hook 'python-mode-hook 'elpy-enable)
 
 
 
@@ -446,22 +385,17 @@
 (setq inhibit-startup-message t)
 
 ;;; theme
-(if (display-graphic-p)
-    ;; load graphical theme
-    (progn
-      (load-theme 'solarized-dark t)
-      (load-theme 'solarized-light t)
-      )
-  ;; load terminal theme
-  (load-theme 'ample t))
+(use-package solarized-theme
+  :config
+  (load-theme 'solarized-dark t)
+  (load-theme 'solarized-light t))
 
 ;;; cycle themes
-(setq cycle-themes-theme-list
-      '(
-        solarized-dark
-        solarized-light
-        ))
-(require 'cycle-themes)
+(use-package cycle-themes
+  :init
+  (setq cycle-themes-theme-list
+	'(solarized-dark
+	  solarized-light)))
 
 ;;; font settings
 (set-face-attribute 'default nil
@@ -525,11 +459,11 @@
       do (evil-set-initial-state mode state))
 
 ;;; declutter modeline
-(require 'diminish)
+;(require 'diminish)
 ;; (eval-after-load "paredit"    '(diminish 'paredit-mode))
 ;; (eval-after-load "flycheck"   '(diminish 'flycheck-mode))
-(eval-after-load "undo-tree"  '(diminish 'undo-tree-mode))
-(eval-after-load "helm"       '(diminish 'helm-mode))
+;; (eval-after-load "undo-tree"  '(diminish 'undo-tree-mode))
+;; (eval-after-load "helm"       '(diminish 'helm-mode))
 
 ;;; modeline tweaks
 (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
