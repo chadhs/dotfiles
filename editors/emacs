@@ -6,7 +6,11 @@
 ; http://spacemacs.org                                                       ;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;;; package management
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; package management                                                   ;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; keep track of start time for load time calculation
 (defconst emacs-start-time  (current-time))
@@ -115,9 +119,11 @@
 
 
 
-;;;; package settings
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; package config                                                       ;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; evil mode settings
+;;; evil-mode settings
 (require 'evil-leader) ; load evil-leader first so it's initialized from the start
 (setq evil-leader/in-all-states 1)
 (global-evil-leader-mode)
@@ -152,7 +158,7 @@
 (require 'zoom-window)
 (setq zoom-window-mode-line-color nil)
 
-;;; project management
+;;; navigation
 (require 'helm)
 (helm-mode 1)
 (helm-autoresize-mode 1)
@@ -179,6 +185,7 @@
 ;; speed up matching by giving emacs garbage collection a more modern threshold
 (setq gc-cons-threshold 20000000)
 
+;;; project management
 (require 'projectile)
 (setq projectile-require-project-root nil)
 (setq projectile-globally-ignored-directories
@@ -209,13 +216,6 @@
     projectile-globally-ignored-files))
 (projectile-global-mode)
 
-;; dired
-(when (eq system-type 'darwin)
-  (require 'ls-lisp)
-  (setq ls-lisp-use-insert-directory-program nil))
-
-
-
 ;;; code auto-completion settings
 (ac-config-default)
 (define-key ac-completing-map "\t" 'ac-complete) ; set tab key to do all completion
@@ -224,19 +224,8 @@
 (add-to-list 'ac-modes 'markdown-mode)
 (add-to-list 'ac-modes 'html-mode)
 (add-to-list 'ac-modes 'sql-mode)
-(require 'ac-cider)
-(add-hook 'cider-mode-hook 'ac-flyspell-workaround)
-(add-hook 'cider-mode-hook 'ac-cider-setup)
-(add-hook 'cider-repl-mode-hook 'ac-cider-setup)
-(eval-after-load "auto-complete"
-  '(progn
-    (add-to-list 'ac-modes 'cider-mode)
-    (add-to-list 'ac-modes 'cider-repl-mode)))
-
-;;; version control
-;(require 'git)
-;(require 'git-blame)
-(setq vc-follow-symlinks t)
+(add-to-list 'ac-modes 'cider-mode)
+(add-to-list 'ac-modes 'cider-repl-mode)
 
 ;;; syntax checking
 (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -288,16 +277,23 @@
 
 ;;; clojure support
 (require 'clojure-mode-extra-font-locking)
-(add-hook 'cider-repl-mode-hook #'paredit-mode)
+(require 'ac-cider)
+(require 'clj-refactor)
+(require 'cljr-helm)
 (setq
   cider-repl-pop-to-buffer-on-connect nil
   cider-auto-select-error-buffer nil)
-(eval-after-load 'flycheck '(flycheck-clojure-setup))
-(require 'clj-refactor)
-(require 'cljr-helm)
 (add-hook 'clojure-mode-hook (lambda ()
                                (clj-refactor-mode 1)
                                (yas/minor-mode 1)))
+(add-hook 'cider-repl-mode-hook (lambda ()
+                                  (paredit-mode)
+                                  (ac-cider-setup)))
+(add-hook 'cider-mode-hook (lambda ()
+                             (ac-flyspell-workaround)
+                             (ac-cider-setup)))
+(eval-after-load 'flycheck '(flycheck-clojure-setup))
+
 
 ;;; web templates
 (require 'web-mode)
@@ -320,7 +316,9 @@
 
 
 
-;;;; user functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; user functions                                                       ;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; yes and no prompts
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -355,7 +353,9 @@
 
 
 
-;;;; user configuration
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; user config                                                          ;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; path fix for os x gui mode
 (when (memq window-system '(mac ns))
@@ -405,6 +405,11 @@
   scroll-conservatively 9999
   scroll-step 1)
 
+;;; fix ls warning when dired launches on macOS
+(when (eq system-type 'darwin)
+  (require 'ls-lisp)
+  (setq ls-lisp-use-insert-directory-program nil))
+
 ;;; initial widow size and position (`left . -1` is the closest i can get to right align)
 (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
 
@@ -428,13 +433,16 @@
   version-control t
   auto-save-default t)
 
-;;; set file types
+;;; file type to mode mappings
 (add-to-list 'auto-mode-alist '(".emacs"        . lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.yml"        . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.sls"        . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.md"         . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.txt"        . markdown-mode))
 (add-to-list 'auto-mode-alist '(".editorconfig" . editorconfig-conf-mode))
+
+;;; version control
+(setq vc-follow-symlinks t)
 
 ;;; set initial evil state for particular modes
 (loop for (mode . state) in '(
@@ -448,7 +456,7 @@
                                )
   do (evil-set-initial-state mode state))
 
-;;; declutter modeline
+;;; declutter the modeline
 (require 'diminish)
 (eval-after-load "paredit"    '(diminish 'paredit-mode))
 (eval-after-load "flycheck"   '(diminish 'flycheck-mode))
@@ -465,7 +473,9 @@
 
 
 
-;;;; keyboard shortcuts
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; key bindings                                                         ;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; electric return
 (global-set-key (kbd "RET") 'electrify-return-if-match)
@@ -474,7 +484,7 @@
 (evil-leader/set-key "/" 'evil-search-highlight-persist-remove-all)
 
 ;;; projects / files / buffers
-(evil-leader/set-key "F"  'find-file)                       ; (F)ind file
+(evil-leader/set-key "F"  'find-file)                      ; (F)ind file
 (evil-leader/set-key "t"  'helm-projectile-find-file-dwim) ; emulate command-(t)
 (evil-leader/set-key "b"  'helm-buffers-list)              ; switch to (b)uffer
 (evil-leader/set-key "kb" 'kill-buffer)                    ; (k)ill (b)uffer
@@ -598,11 +608,11 @@
 (evil-leader/set-key "cc"  'with-editor-finish)
 (evil-leader/set-key "cC"  'with-editor-cancel)
 (evil-leader/set-key "gp"  'magit-push-current-to-upstream)
-;; let's improve evil mode compatability
-(eval-after-load 'magit '(progn
-                           (define-key magit-status-mode-map (kbd "k") #'previous-line)
-                           (define-key magit-status-mode-map (kbd "K") #'magit-discard)
-                           (define-key magit-status-mode-map (kbd "j") #'next-line)))
+;; let's improve evil-mode compatability
+(with-eval-after-load "magit"
+  (define-key magit-status-mode-map (kbd "k") #'previous-line)
+  (define-key magit-status-mode-map (kbd "K") #'magit-discard)
+  (define-key magit-status-mode-map (kbd "j") #'next-line))
 
 ;;; line number toggle
 (evil-leader/set-key "nn" 'linum-mode)
@@ -632,10 +642,10 @@
 (global-set-key (kbd "s-<down>") 'evil-window-decrease-height)
 
 ;;; toggle/open shell
-(evil-leader/set-key "sv" (lambda () (interactive)
+(evil-leader/set-key "sv" (lambda () (interactive) ; toggle (s)hell (v)isor
                             (multi-term-dedicated-toggle)
-                            (multi-term-dedicated-select))) ; toggle (s)hell (v)isor
-(evil-leader/set-key "sn" 'multi-term) ; toggle (s)hell (n)ew
+                            (multi-term-dedicated-select)))
+(evil-leader/set-key "sn" 'multi-term)             ; toggle (s)hell (n)ew
 
 ;;; (e)dit (e)macs user init file
 (evil-leader/set-key "ee" (lambda () (interactive) (find-file user-init-file)))
@@ -673,9 +683,9 @@
 
 
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Values Set via Customize ;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Values Set via Customize                                             ;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
