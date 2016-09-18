@@ -10,7 +10,7 @@ insert_final_newline = true
 charset = utf-8
 
 ## lisp settings
-[*.{clj,cljs,cljc,edn,emacs,lisp,scm}]
+[{*.{clj,cljs,cljc,edn,emacs,lisp,scm},emacs}]
 indent_style = space
 indent_size = 2
 trim_trailing_whitespace = true
