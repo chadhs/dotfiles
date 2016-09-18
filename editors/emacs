@@ -367,7 +367,10 @@
 ;;; startup behavior
 (setq inhibit-startup-message t)
 
-;;; theme
+;;; pretty symbols
+(global-prettify-symbols-mode)
+
+;;; themes
 (if (display-graphic-p)
   ;; load graphical theme
   (progn
@@ -389,12 +392,12 @@
 (set-face-attribute 'default nil
   :family "Menlo" :height 140 :weight 'normal)
 
-;;; ui tweaks
+;;; turn off menu-bar, tool-bar, and scroll-bar
+(menu-bar-mode -1)
 (if (display-graphic-p)
   (progn
-    (scroll-bar-mode -1)
-    (tool-bar-mode -1)))
-(menu-bar-mode -1)
+    (tool-bar-mode -1)
+    (scroll-bar-mode -1)))
 
 ;;; hi-light current line
 (global-hl-line-mode)
