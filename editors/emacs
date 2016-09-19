@@ -15,7 +15,7 @@
 ;;; keep track of start time for load time calculation
 (defconst emacs-start-time  (current-time))
 
-;;; allow package use
+;;; load package support
 (require 'package)
 
 ;;; package repositories
@@ -25,7 +25,7 @@
                           ("melpa-stable"  . "http://stable.melpa.org/packages/")
                           ))
 
-;;; specify which repo to install packages from
+;;; the latest version of a package is installed unless pinned to a specific repo
 (setq package-pinned-packages '(
                                  (cider        . "melpa-stable")
                                  (clj-refactor . "melpa-stable")
