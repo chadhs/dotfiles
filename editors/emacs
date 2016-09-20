@@ -94,6 +94,7 @@
                       robe
 
                       ;; python
+                      elpy
 
                       ;; other syntaxes
                       markdown-mode
@@ -305,14 +306,17 @@
 (add-to-list 'auto-mode-alist '("\\.js?\\'"   . web-mode))
 (add-to-list 'auto-mode-alist '("\\.php?\\'"  . web-mode))
 
+;;; yaml support
+(require 'yaml-mode)
+
 ;;; ruby support
 (add-hook 'ruby-mode-hook (lambda ()
                             (inf-ruby-minor-mode)
                             (robe-mode)))
 (add-hook 'robe-mode-hook 'ac-robe-setup)
 
-;;; yaml support
-(require 'yaml-mode)
+;;; python support
+(add-hook 'python-mode-hook 'elpy-enable)
 
 
 
@@ -692,6 +696,12 @@
    If you do not like default setup, modify it, with (KEY . COMMAND) format."
   :type 'alist
   :group 'multi-term)
+
+;;; ruby-mode
+;; TODO keybinds for buffer eval
+
+;;; python-mode
+;; TODO keybinds for buffer eval
 
 ;;;; report total load time
 (let ((elapsed (float-time (time-subtract (current-time)
