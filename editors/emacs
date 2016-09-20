@@ -91,6 +91,7 @@
 
                       ;; ruby
                       inf-ruby
+                      robe
 
                       ;; python
 
@@ -241,10 +242,6 @@
 (add-hook 'prog-mode-hook #'enable-paredit-mode)
 (add-hook 'prog-mode-hook #'evil-paredit-mode)
 
-;;; show-parens-mode
-(show-paren-mode 1)
-(setq show-paren-delay 0)
-
 ;;; rainbow delimiters
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
@@ -255,18 +252,18 @@
 (require 'powerline-evil)
 (powerline-evil-vim-color-theme)
 (custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
-  '(powerline-evil-emacs-face ((t (:background "#6c71c4" :foreground "#eee8d5"))))
-  '(powerline-evil-insert-face ((t (:background "#268bd2" :foreground "#eee8d5"))))
-  '(powerline-evil-motion-face ((t (:background "#d33682" :foreground "#eee8d5"))))
-  '(powerline-evil-normal-face ((t (:background "#859900" :foreground "#eee8d5"))))
-  '(powerline-evil-operator-face ((t (:background "#2aa198" :foreground "#eee8d5"))))
-  '(powerline-evil-replace-face ((t (:background "#dc322f" :foreground "#eee8d5"))))
-  '(powerline-evil-visual-face ((t (:background "#cb4b16" :foreground "#eee8d5"))))
-  '(set-face-attribute (quote fringe) nil :background))
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(powerline-evil-emacs-face ((t (:background "#6c71c4" :foreground "#eee8d5"))))
+ '(powerline-evil-insert-face ((t (:background "#268bd2" :foreground "#eee8d5"))))
+ '(powerline-evil-motion-face ((t (:background "#d33682" :foreground "#eee8d5"))))
+ '(powerline-evil-normal-face ((t (:background "#859900" :foreground "#eee8d5"))))
+ '(powerline-evil-operator-face ((t (:background "#2aa198" :foreground "#eee8d5"))))
+ '(powerline-evil-replace-face ((t (:background "#dc322f" :foreground "#eee8d5"))))
+ '(powerline-evil-visual-face ((t (:background "#cb4b16" :foreground "#eee8d5"))))
+ '(set-face-attribute (quote fringe) nil :background))
 
 ;;; ace-jump
 (setq ace-jump-word-mode-use-query-char nil) ; no leading word character needed
@@ -309,7 +306,10 @@
 (add-to-list 'auto-mode-alist '("\\.php?\\'"  . web-mode))
 
 ;;; ruby support
-(add-hook 'ruby-mode-hook 'inf-ruby-minor-mode)
+(add-hook 'ruby-mode-hook (lambda ()
+                            (inf-ruby-minor-mode)
+                            (robe-mode)))
+(add-hook 'robe-mode-hook 'ac-robe-setup)
 
 ;;; yaml support
 (require 'yaml-mode)
@@ -367,8 +367,19 @@
 ;;; startup behavior
 (setq inhibit-startup-message t)
 
+;;; default to utf8
+(prefer-coding-system 'utf-8)
+
 ;;; pretty symbols
 (global-prettify-symbols-mode)
+
+;;; highlight matching parens
+(show-paren-mode 1)
+(setq show-paren-delay 0)
+
+;;; show end of buffer in editing modes (easily see empty lines)
+(add-hook 'prog-mode-hook (lambda () (setq indicate-empty-lines t)))
+(add-hook 'markdown-mode-hook (lambda () (setq indicate-empty-lines t)))
 
 ;;; themes
 (if (display-graphic-p)
@@ -420,8 +431,11 @@
 (setq indent-tabs-mode nil)
 
 ;;; remember cursor position in buffers
-(require 'saveplace)
-(setq-default save-place t)
+(if (version< emacs-version "25.1")
+  (lambda ()
+    (require 'saveplace)
+    (setq-default save-place t))
+  (save-place-mode 1))
 
 ;;; store auto-save and backup files in ~/.emacs.d/backups/
 (defvar --backup-dir (concat user-emacs-directory "backups"))
@@ -689,16 +703,3 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Values Set via Customize                                             ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
-  )
-(custom-set-faces
-  ;; custom-set-faces was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
-  )
