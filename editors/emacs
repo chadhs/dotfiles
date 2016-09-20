@@ -498,28 +498,11 @@
 ;;;; key bindings                                                         ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;; electric return
-(global-set-key (kbd "RET") 'electrify-return-if-match)
+;;; (e)dit (e)macs user init file
+(evil-leader/set-key "ee" (lambda () (interactive) (find-file user-init-file)))
 
-;;; evil - global
-(evil-leader/set-key "/" 'evil-search-highlight-persist-remove-all)
-
-;;; projects / files / buffers
-(evil-leader/set-key "F"  'find-file)                      ; (F)ind file
-(evil-leader/set-key "t"  'helm-projectile-find-file-dwim) ; emulate command-(t)
-(evil-leader/set-key "b"  'helm-buffers-list)              ; switch to (b)uffer
-(evil-leader/set-key "kb" 'kill-buffer)                    ; (k)ill (b)uffer
-(evil-leader/set-key "gf" 'helm-projectile-ag)             ; (g)rep in (f)iles
-
-;;; commenting
-(evil-leader/set-key "cl" 'evilnc-comment-or-uncomment-lines)
-(evil-leader/set-key "cp" 'evilnc-comment-or-uncomment-paragraphs)
-
-;;; evil line movement tweaks
-(define-key evil-motion-state-map "j" 'evil-next-visual-line)
-(define-key evil-motion-state-map "k" 'evil-previous-visual-line)
-(define-key evil-visual-state-map "j" 'evil-next-visual-line)
-(define-key evil-visual-state-map "k" 'evil-previous-visual-line)
+;;; (s)ource (e)macs user init file
+(evil-leader/set-key "se" (lambda () (interactive) (load-file user-init-file)))
 
 ;;; evil emacs conflicts
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
@@ -529,33 +512,7 @@
 ;;; evil vim inconsistencies
 (define-key evil-visual-state-map (kbd "x") 'evil-delete)
 
-;;; move to next / prev pane
-(define-key evil-motion-state-map (kbd "C-j") 'evil-window-next)
-(define-key evil-motion-state-map (kbd "C-k") 'evil-window-prev)
-(define-key evil-motion-state-map (kbd "C-h") 'evil-window-left)
-(define-key evil-motion-state-map (kbd "C-l") 'evil-window-right)
-
-;;; clear / recenter screen
-(evil-leader/set-key "cs" 'recenter-top-bottom)     ; (c)lear (s)creen
-(evil-leader/set-key "cr" 'cider-repl-clear-buffer) ; (c)lear (r)epl
-
-;;; close pane
-;; evil-mode built in with `C-w c`
-
-;;; close all other panes
-(define-key evil-motion-state-map (kbd "C-z") 'zoom-window-zoom)
-(evil-leader/set-key "wm" 'delete-other-windows) ; (w)indow (m)ain (lifted from spacemacs)
-
-;;; helm menu nav
-(define-key helm-map (kbd "s-j") 'helm-next-line)
-(define-key helm-map (kbd "s-k") 'helm-previous-line)
-
-;;; jump to line / word
-(evil-leader/set-key "jl" 'evil-ace-jump-line-mode)
-(evil-leader/set-key "jw" 'evil-ace-jump-word-mode)
-(evil-leader/set-key "jc" 'evil-ace-jump-char-mode)
-
-;;; use escape for C-g in evil-mode
+;;; evil escape (use escape for C-g in evil-mode)
 (define-key evil-normal-state-map [escape] 'keyboard-quit)
 (define-key evil-visual-state-map [escape] 'keyboard-quit)
 (define-key minibuffer-local-map [escape] 'minibuffer-keyboard-quit)
@@ -565,20 +522,119 @@
 (define-key minibuffer-local-isearch-map [escape] 'minibuffer-keyboard-quit)
 (global-set-key [escape] 'evil-exit-emacs-state)
 
-;;; clojure - cider
-(evil-leader/set-key "ri" 'cider-jack-in)               ; (r)epl (i)nitialize
-(evil-leader/set-key "rr" 'cider-restart)               ; (r)epl (r)estart
-(evil-leader/set-key "rq" 'cider-quit)                  ; (r)epl (q)uit
-(evil-leader/set-key "rc" 'cider-connect)               ; (r)epl (c)onnect
-(evil-leader/set-key "eb" 'cider-eval-buffer)           ; (e)val (b)uffer
-(evil-leader/set-key "ef" 'cider-eval-defun-at-point)   ; (e)val de(f)un
-(evil-leader/set-key "es" 'cider-eval-last-sexp)        ; (e)val (s)-expression
-(evil-leader/set-key "rt" 'cider-test-run-tests)        ; (r)un (t)ests
-(evil-leader/set-key "rb" 'cider-switch-to-repl-buffer) ; (r)epl (b)uffer
-(evil-leader/set-key "ff" 'cider-format-defun)          ; (f)ormat (f)orm
-(evil-leader/set-key "fr" 'cider-format-region)         ; (f)ormat (r)egion
-(evil-leader/set-key "fb" 'cider-format-buffer)         ; (f)ormat (b)uffer
-(evil-leader/set-key "rf" 'cljr-helm)                   ; (c)lj (r)efactor
+;;; evil line movement tweaks
+(define-key evil-motion-state-map "j" 'evil-next-visual-line)
+(define-key evil-motion-state-map "k" 'evil-previous-visual-line)
+(define-key evil-visual-state-map "j" 'evil-next-visual-line)
+(define-key evil-visual-state-map "k" 'evil-previous-visual-line)
+
+;;; cycle themes
+(evil-leader/set-key "ct" 'cycle-themes)
+
+;;; full screen toggle
+(global-set-key (kbd "s-<return>") 'toggle-frame-fullscreen) ; s = super (⌘ on mac)
+
+;;; hide others with macOS default keyboard shortcut of `⌥⌘H`
+(global-set-key (kbd "M-s-˙") 'ns-do-hide-others) ; the `˙` here is due to opt h producing that char
+
+;;; window splitting
+(global-set-key (kbd "C--") 'evil-window-split)
+(global-set-key (kbd "C-\\") 'evil-window-vsplit)
+
+;;; resize windows
+(global-set-key (kbd "s-<right>") 'evil-window-increase-width)
+(global-set-key (kbd "s-<left>") 'evil-window-decrease-width)
+(global-set-key (kbd "s-<up>") 'evil-window-increase-height)
+(global-set-key (kbd "s-<down>") 'evil-window-decrease-height)
+
+;;; move to next / prev window
+(define-key evil-motion-state-map (kbd "C-j") 'evil-window-next)
+(define-key evil-motion-state-map (kbd "C-k") 'evil-window-prev)
+(define-key evil-motion-state-map (kbd "C-h") 'evil-window-left)
+(define-key evil-motion-state-map (kbd "C-l") 'evil-window-right)
+
+;;; close windows
+;; evil-mode built in with `C-w c`
+
+;;; close all other windows
+(define-key evil-motion-state-map (kbd "C-z") 'zoom-window-zoom)
+(evil-leader/set-key "wm" 'delete-other-windows) ; (w)indow (m)ain (lifted from spacemacs)
+
+;;; clear / recenter screen
+(evil-leader/set-key "cs" 'recenter-top-bottom)     ; (c)lear (s)creen
+(evil-leader/set-key "cr" 'cider-repl-clear-buffer) ; (c)lear (r)epl
+
+;;; text scale
+(global-set-key (kbd "s-+") 'text-scale-increase)
+(global-set-key (kbd "s--") 'text-scale-decrease)
+(global-set-key (kbd "s-=") 'text-scale-adjust)
+
+;;; bookmarks
+(evil-leader/set-key "ml" 'bookmark-jump)
+(evil-leader/set-key "mj" 'bookmark-jump)
+(evil-leader/set-key "ms" 'bookmark-set)
+(evil-leader/set-key "md" 'bookmark-delete)
+
+;;; set emacs command hotkey (M-x) to (helm-M-x)
+(global-set-key (kbd "M-x") 'helm-M-x)
+
+;;; helm menu nav
+(define-key helm-map (kbd "s-j") 'helm-next-line)
+(define-key helm-map (kbd "s-k") 'helm-previous-line)
+
+;;; projects / files / buffers
+(evil-leader/set-key "F"  'find-file)                      ; (F)ind file
+(evil-leader/set-key "t"  'helm-projectile-find-file-dwim) ; emulate command-(t)
+(evil-leader/set-key "b"  'helm-buffers-list)              ; switch to (b)uffer
+(evil-leader/set-key "kb" 'kill-buffer)                    ; (k)ill (b)uffer
+(evil-leader/set-key "gf" 'helm-projectile-ag)             ; (g)rep in (f)iles
+
+;;; toggle/open shell
+(evil-leader/set-key "sv" (lambda () (interactive) ; toggle (s)hell (v)isor
+                            (multi-term-dedicated-toggle)
+                            (multi-term-dedicated-select)))
+(evil-leader/set-key "sn" 'multi-term)             ; toggle (s)hell (n)ew
+
+;;; multi term keybind setup - thanks to rawsyntax (eric h)
+(defcustom term-unbind-key-list
+  '("C-z" "C-x" "C-c" "C-h" "C-y" "<ESC>")
+  "The key list that will need to be unbind."
+  :type 'list
+  :group 'multi-term)
+
+(defcustom term-bind-key-alist
+  '(
+     ("C-c C-c" . term-interrupt-subjob)
+     ("s-k" . term-send-up)
+     ("s-j" . term-send-down)
+     ("s-{" . multi-term-prev)
+     ("s-}" . multi-term-next)
+     )
+  "The key alist that will need to be bind.
+   If you do not like default setup, modify it, with (KEY . COMMAND) format."
+  :type 'alist
+  :group 'multi-term)
+
+;;; electric return
+(global-set-key (kbd "RET") 'electrify-return-if-match)
+
+;;; jump to line / word
+(evil-leader/set-key "jl" 'evil-ace-jump-line-mode)
+(evil-leader/set-key "jw" 'evil-ace-jump-word-mode)
+(evil-leader/set-key "jc" 'evil-ace-jump-char-mode)
+
+;;; remove search highlight
+(evil-leader/set-key "/" 'evil-search-highlight-persist-remove-all)
+
+;;; commenting
+(evil-leader/set-key "cl" 'evilnc-comment-or-uncomment-lines)
+(evil-leader/set-key "cp" 'evilnc-comment-or-uncomment-paragraphs)
+
+;;; doc search
+(evil-leader/set-key "d" 'dash-at-point)
+
+;;; line number toggle
+(evil-leader/set-key "nn" 'linum-mode)
 
 ;; flycheck
 (evil-leader/set-key "cb" 'flycheck-buffer) ; (c)heck (b)uffer
@@ -597,15 +653,6 @@
 (evil-leader/set-key "D" 'paredit-splice-sexp)          ; del surrounding parens/brackets/braces
 (evil-leader/set-key "xs" 'kill-sexp)                   ; (x)delete (s)exp
 (evil-leader/set-key "xS" 'backward-kill-sexp)          ; (x)delete (S)exp backward
-
-;;; doc search
-(evil-leader/set-key "d" 'dash-at-point)
-
-;;; bookmarks
-(evil-leader/set-key "ml" 'bookmark-jump)
-(evil-leader/set-key "mj" 'bookmark-jump)
-(evil-leader/set-key "ms" 'bookmark-set)
-(evil-leader/set-key "md" 'bookmark-delete)
 
 ;;; magit
 ;; you can also use built-in hotkeys from status mode:
@@ -635,67 +682,20 @@
   (define-key magit-status-mode-map (kbd "K") #'magit-discard)
   (define-key magit-status-mode-map (kbd "j") #'next-line))
 
-;;; line number toggle
-(evil-leader/set-key "nn" 'linum-mode)
-
-;;; cycle themes
-(evil-leader/set-key "ct" 'cycle-themes)
-
-;;; full screen toggle
-(global-set-key (kbd "s-<return>") 'toggle-frame-fullscreen) ; s = super (⌘ on mac)
-
-;;; hide others with macOS default keyboard shortcut of `⌥⌘H`
-(global-set-key (kbd "M-s-˙") 'ns-do-hide-others) ; the `˙` here is due to opt h producing that char
-
-;;; text scale
-(global-set-key (kbd "s-+") 'text-scale-increase)
-(global-set-key (kbd "s--") 'text-scale-decrease)
-(global-set-key (kbd "s-=") 'text-scale-adjust)
-
-;;; window splits
-(global-set-key (kbd "C--") 'evil-window-split)
-(global-set-key (kbd "C-\\") 'evil-window-vsplit)
-
-;;; resize splits
-(global-set-key (kbd "s-<right>") 'evil-window-increase-width)
-(global-set-key (kbd "s-<left>") 'evil-window-decrease-width)
-(global-set-key (kbd "s-<up>") 'evil-window-increase-height)
-(global-set-key (kbd "s-<down>") 'evil-window-decrease-height)
-
-;;; toggle/open shell
-(evil-leader/set-key "sv" (lambda () (interactive) ; toggle (s)hell (v)isor
-                            (multi-term-dedicated-toggle)
-                            (multi-term-dedicated-select)))
-(evil-leader/set-key "sn" 'multi-term)             ; toggle (s)hell (n)ew
-
-;;; (e)dit (e)macs user init file
-(evil-leader/set-key "ee" (lambda () (interactive) (find-file user-init-file)))
-
-;;; (s)ource (e)macs user init file
-(evil-leader/set-key "se" (lambda () (interactive) (load-file user-init-file)))
-
-;;; set emacs command hotkey (M-x) to (helm-M-x)
-(global-set-key (kbd "M-x") 'helm-M-x)
-
-;;; multi term keybind setup - thanks to rawsyntax (eric h)
-(defcustom term-unbind-key-list
-  '("C-z" "C-x" "C-c" "C-h" "C-y" "<ESC>")
-  "The key list that will need to be unbind."
-  :type 'list
-  :group 'multi-term)
-
-(defcustom term-bind-key-alist
-  '(
-     ("C-c C-c" . term-interrupt-subjob)
-     ("s-k" . term-send-up)
-     ("s-j" . term-send-down)
-     ("s-{" . multi-term-prev)
-     ("s-}" . multi-term-next)
-     )
-  "The key alist that will need to be bind.
-   If you do not like default setup, modify it, with (KEY . COMMAND) format."
-  :type 'alist
-  :group 'multi-term)
+;;; clojure - cider
+(evil-leader/set-key "ri" 'cider-jack-in)               ; (r)epl (i)nitialize
+(evil-leader/set-key "rr" 'cider-restart)               ; (r)epl (r)estart
+(evil-leader/set-key "rq" 'cider-quit)                  ; (r)epl (q)uit
+(evil-leader/set-key "rc" 'cider-connect)               ; (r)epl (c)onnect
+(evil-leader/set-key "eb" 'cider-eval-buffer)           ; (e)val (b)uffer
+(evil-leader/set-key "ef" 'cider-eval-defun-at-point)   ; (e)val de(f)un
+(evil-leader/set-key "es" 'cider-eval-last-sexp)        ; (e)val (s)-expression
+(evil-leader/set-key "rt" 'cider-test-run-tests)        ; (r)un (t)ests
+(evil-leader/set-key "rb" 'cider-switch-to-repl-buffer) ; (r)epl (b)uffer
+(evil-leader/set-key "ff" 'cider-format-defun)          ; (f)ormat (f)orm
+(evil-leader/set-key "fr" 'cider-format-region)         ; (f)ormat (r)egion
+(evil-leader/set-key "fb" 'cider-format-buffer)         ; (f)ormat (b)uffer
+(evil-leader/set-key "rf" 'cljr-helm)                   ; (c)lj (r)efactor
 
 ;;; ruby-mode
 ;; TODO keybinds for buffer eval
