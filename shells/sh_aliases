@@ -26,7 +26,6 @@ if [ $(uname) = "Darwin" ]; then
 
 ### mac development
 	### homebrew
-	export HOMEBREW_GITHUB_API_TOKEN=4da4afd78bcd05ec169285a1dfca84a27481e961
 	export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 	### python
 	#export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7
