@@ -42,9 +42,8 @@
                       ace-jump-mode
                       editorconfig
                       paredit
-                      powerline
-                      powerline-evil
                       rainbow-delimiters
+                      spaceline
 
                       ;; auto-completion
                       auto-complete
@@ -247,24 +246,11 @@
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
-;;; emacs powerline
-(require 'powerline)
-(powerline-default-theme)
-(require 'powerline-evil)
-(powerline-evil-vim-color-theme)
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(powerline-evil-emacs-face ((t (:background "#6c71c4" :foreground "#eee8d5"))))
- '(powerline-evil-insert-face ((t (:background "#268bd2" :foreground "#eee8d5"))))
- '(powerline-evil-motion-face ((t (:background "#d33682" :foreground "#eee8d5"))))
- '(powerline-evil-normal-face ((t (:background "#859900" :foreground "#eee8d5"))))
- '(powerline-evil-operator-face ((t (:background "#2aa198" :foreground "#eee8d5"))))
- '(powerline-evil-replace-face ((t (:background "#dc322f" :foreground "#eee8d5"))))
- '(powerline-evil-visual-face ((t (:background "#cb4b16" :foreground "#eee8d5"))))
- '(set-face-attribute (quote fringe) nil :background))
+;;; spaceline
+(setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
+(setq powerline-default-separator nil)
+(require 'spaceline-config)
+(spaceline-spacemacs-theme)
 
 ;;; ace-jump
 (setq ace-jump-word-mode-use-query-char nil) ; no leading word character needed
@@ -717,11 +703,3 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Values Set via Customize                                             ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (zoom-window yaml-mode web-mode solarized-theme robe rainbow-delimiters powerline-evil multi-term markdown-mode magit helm-projectile helm-flx helm-ag flycheck-pos-tip flycheck-clojure exec-path-from-shell evil-visualstar evil-surround evil-search-highlight-persist evil-paredit evil-nerd-commenter evil-matchit evil-leader elpy editorconfig diminish dash-at-point cycle-themes clojure-mode-extra-font-locking cljr-helm ample-theme ace-jump-mode ac-cider))))
