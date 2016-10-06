@@ -64,6 +64,9 @@ fix-emacs-pkgs(){
 	rm -rf ~/.emacs.d/elpa/*
 }
 
+## when in a shell in emacs, remind yourself not to launch vim there
+[ $(uname) = "Darwin" ] && [ $EMACS ] && alias vim='echo "Do not run Vim in a shell within Emacs; use Emacs to edit"'
+
 ## check weather
 checkweather(){
 	curl wttr.in
