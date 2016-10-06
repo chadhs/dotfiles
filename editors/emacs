@@ -652,6 +652,7 @@
 (evil-leader/set-key "<<" 'paredit-backward-barf-sexp)
 (evil-leader/set-key "<>" 'paredit-backward-slurp-sexp)
 (evil-leader/set-key "D" 'paredit-splice-sexp)          ; del surrounding parens/brackets/braces
+(evil-leader/set-key "rs" 'raise-sexp)                  ; (r)aise (s)exp
 (evil-leader/set-key "xs" 'kill-sexp)                   ; (x)delete (s)exp
 (evil-leader/set-key "xS" 'backward-kill-sexp)          ; (x)delete (S)exp backward
 
@@ -698,6 +699,16 @@
 (evil-leader/set-key "fr" 'cider-format-region)         ; (f)ormat (r)egion
 (evil-leader/set-key "fb" 'cider-format-buffer)         ; (f)ormat (b)uffer
 (evil-leader/set-key "rf" 'cljr-helm)                   ; (c)lj (r)efactor
+
+;;; markdown
+(evil-leader/set-key "Mb" 'markdown-insert-bold)
+(evil-leader/set-key "Me" 'markdown-insert-italic)
+(evil-leader/set-key "Ms" 'markdown-insert-strike-through)
+(evil-leader/set-key "Ml" 'markdown-insert-link)
+(evil-leader/set-key "Mu" 'markdown-insert-uri)
+(evil-leader/set-key "Mi" 'markdown-insert-image)
+(evil-leader/set-key "Mh" 'markdown-insert-hr)
+(evil-leader/set-key "Mf" 'markdown-insert-footnote)
 
 ;;; ruby-mode
 ;; TODO keybinds for buffer eval
