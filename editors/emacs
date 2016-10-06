@@ -153,7 +153,10 @@
 (add-hook 'term-mode-hook
   (lambda ()
     (setq term-buffer-maximum-size 10000)
-    (setq yas-dont-activate t)))
+    (setq yas-dont-activate t)
+    (setq-local scroll-margin 0)
+    (setq-local scroll-conservatively 0)
+    (setq-local scroll-step 1)))
 
 ;;; window management
 (require 'zoom-window)
@@ -499,7 +502,6 @@
 ;;; evil emacs conflicts
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
 (define-key evil-visual-state-map (kbd "C-u") 'evil-scroll-up)
-;; (define-key evil-normal-state-map "p"         'term-paste)
 
 ;;; evil vim inconsistencies
 (define-key evil-visual-state-map (kbd "x") 'evil-delete)
@@ -595,17 +597,21 @@
   :group 'multi-term)
 
 (defcustom term-bind-key-alist
-  '(
-     ("C-c C-c" . term-interrupt-subjob)
-     ("s-k" . term-send-up)
-     ("s-j" . term-send-down)
-     ("s-{" . multi-term-prev)
-     ("s-}" . multi-term-next)
-     )
+  '(("C-c C-c" . term-interrupt-subjob)
+     ("s-k"     . term-send-up)
+     ("s-j"     . term-send-down)
+     ("s-{"     . multi-term-prev)
+     ("s-}"     . multi-term-next))
   "The key alist that will need to be bind.
    If you do not like default setup, modify it, with (KEY . COMMAND) format."
   :type 'alist
   :group 'multi-term)
+
+(evil-define-key 'normal term-raw-map "p" 'term-paste)
+(evil-define-key 'normal term-raw-map "j" 'term-send-down)
+(evil-define-key 'normal term-raw-map "k" 'term-send-up)
+(evil-define-key 'normal term-raw-map (kbd "C-c") 'term-send-raw)
+(evil-define-key 'insert term-raw-map (kbd "C-c") 'term-send-raw)
 
 ;;; electric return
 (global-set-key (kbd "RET") 'electrify-return-if-match)
@@ -709,3 +715,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Values Set via Customize                                             ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+    (evil-escape zoom-window yaml-mode web-mode spaceline solarized-theme robe rainbow-delimiters multi-term markdown-mode magit helm-projectile helm-flx helm-ag flycheck-pos-tip flycheck-clojure exec-path-from-shell evil-visualstar evil-surround evil-search-highlight-persist evil-paredit evil-nerd-commenter evil-matchit evil-leader elpy editorconfig diminish dash-at-point cycle-themes clojure-mode-extra-font-locking cljr-helm ample-theme ace-jump-mode ac-cider))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
