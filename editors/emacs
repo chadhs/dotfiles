@@ -44,6 +44,7 @@
                       paredit
                       rainbow-delimiters
                       spaceline
+                      which-key
 
                       ;; auto-completion
                       auto-complete
@@ -250,8 +251,9 @@
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 ;;; spaceline
-(setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state)
-(setq powerline-default-separator nil)
+(setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
+      powerline-default-separator nil
+      spaceline-buffer-size-p nil)
 (require 'spaceline-config)
 (spaceline-spacemacs-theme)
 (set-face-attribute 'spaceline-evil-emacs    nil :background "#6c71c4" :foreground "#eee8d5")
@@ -260,6 +262,10 @@
 (set-face-attribute 'spaceline-evil-visual   nil :background "#cb4b16" :foreground "#eee8d5")
 (set-face-attribute 'spaceline-evil-replace  nil :background "#dc322f" :foreground "#eee8d5")
 (set-face-attribute 'spaceline-evil-motion   nil :background "#d33682" :foreground "#eee8d5")
+
+;;; keybind discovery
+(require 'which-key)
+(which-key-mode)
 
 ;;; ace-jump
 (setq ace-jump-word-mode-use-query-char nil) ; no leading word character needed
@@ -274,8 +280,12 @@
 (require 'clj-refactor)
 (require 'cljr-helm)
 (setq
-  cider-repl-pop-to-buffer-on-connect nil
-  cider-auto-select-error-buffer nil)
+  cider-repl-pop-to-buffer-on-connect nil ; don't show repl buffer on launch
+  cider-auto-select-error-buffer nil      ; don't auto-switch to error buffer on errors
+  cider-repl-use-clojure-font-lock t      ; nicer repl output
+  cider-repl-history-file (concat user-emacs-directory "cider-history")
+  cider-repl-wrap-history t
+  cider-repl-history-size 3000)
 (add-hook 'clojure-mode-hook (lambda ()
                                (clj-refactor-mode 1)
                                (yas/minor-mode 1)))
@@ -286,7 +296,6 @@
                              (ac-flyspell-workaround)
                              (ac-cider-setup)))
 (eval-after-load 'flycheck '(flycheck-clojure-setup))
-
 
 ;;; web templates
 (require 'web-mode)
@@ -450,7 +459,7 @@
   auto-save-default t)
 
 ;;; file type to mode mappings
-(add-to-list 'auto-mode-alist '(".emacs"        . lisp-mode))
+(add-to-list 'auto-mode-alist '(".emacs"        . emacs-lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.yml"        . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.sls"        . yaml-mode))
 (add-to-list 'auto-mode-alist '("\\.md"         . markdown-mode))
@@ -686,19 +695,20 @@
   (define-key magit-status-mode-map (kbd "j") #'next-line))
 
 ;;; clojure - cider
-(evil-leader/set-key "ri" 'cider-jack-in)               ; (r)epl (i)nitialize
-(evil-leader/set-key "rr" 'cider-restart)               ; (r)epl (r)estart
-(evil-leader/set-key "rq" 'cider-quit)                  ; (r)epl (q)uit
-(evil-leader/set-key "rc" 'cider-connect)               ; (r)epl (c)onnect
-(evil-leader/set-key "eb" 'cider-eval-buffer)           ; (e)val (b)uffer
-(evil-leader/set-key "ef" 'cider-eval-defun-at-point)   ; (e)val de(f)un
-(evil-leader/set-key "es" 'cider-eval-last-sexp)        ; (e)val (s)-expression
-(evil-leader/set-key "rt" 'cider-test-run-tests)        ; (r)un (t)ests
-(evil-leader/set-key "rb" 'cider-switch-to-repl-buffer) ; (r)epl (b)uffer
-(evil-leader/set-key "ff" 'cider-format-defun)          ; (f)ormat (f)orm
-(evil-leader/set-key "fr" 'cider-format-region)         ; (f)ormat (r)egion
-(evil-leader/set-key "fb" 'cider-format-buffer)         ; (f)ormat (b)uffer
-(evil-leader/set-key "rf" 'cljr-helm)                   ; (c)lj (r)efactor
+(evil-leader/set-key "ri" 'cider-jack-in)                     ; (r)epl (i)nitialize
+(evil-leader/set-key "rr" 'cider-restart)                     ; (r)epl (r)estart
+(evil-leader/set-key "rq" 'cider-quit)                        ; (r)epl (q)uit
+(evil-leader/set-key "rc" 'cider-connect)                     ; (r)epl (c)onnect
+(evil-leader/set-key "eb" 'cider-eval-buffer)                 ; (e)val (b)uffer
+(evil-leader/set-key "ef" 'cider-eval-defun-at-point)         ; (e)val de(f)un
+(evil-leader/set-key "es" 'cider-eval-last-sexp)              ; (e)val (s)-expression
+(evil-leader/set-key "rt" 'cider-test-run-tests)              ; (r)un (t)ests
+(evil-leader/set-key "rb" 'cider-switch-to-repl-buffer)       ; (r)epl (b)uffer
+(evil-leader/set-key "rp" 'cider-repl-toggle-pretty-printing) ; (r)epl (p)retty printing
+(evil-leader/set-key "ff" 'cider-format-defun)                ; (f)ormat (f)orm
+(evil-leader/set-key "fr" 'cider-format-region)               ; (f)ormat (r)egion
+(evil-leader/set-key "fb" 'cider-format-buffer)               ; (f)ormat (b)uffer
+(evil-leader/set-key "rf" 'cljr-helm)                         ; (c)lj (r)efactor
 
 ;;; markdown
 (evil-leader/set-key "Mb" 'markdown-insert-bold)
@@ -726,3 +736,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Values Set via Customize                                             ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+  '(package-selected-packages
+     (quote
+       (which-key zoom-window yaml-mode web-mode spaceline solarized-theme robe rainbow-delimiters multi-term markdown-mode magit helm-projectile helm-flx helm-ag flycheck-pos-tip flycheck-clojure exec-path-from-shell evil-visualstar evil-surround evil-search-highlight-persist evil-paredit evil-nerd-commenter evil-matchit evil-leader evil-escape elpy editorconfig diminish dash-at-point cycle-themes clojure-mode-extra-font-locking cljr-helm ample-theme ace-jump-mode ac-cider))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
