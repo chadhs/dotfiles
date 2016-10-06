@@ -251,10 +251,10 @@
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
 
 ;;; spaceline
+(require 'spaceline-config)
 (setq spaceline-highlight-face-func 'spaceline-highlight-face-evil-state
       powerline-default-separator nil
       spaceline-buffer-size-p nil)
-(require 'spaceline-config)
 (spaceline-spacemacs-theme)
 (set-face-attribute 'spaceline-evil-emacs    nil :background "#6c71c4" :foreground "#eee8d5")
 (set-face-attribute 'spaceline-evil-normal   nil :background "#859900" :foreground "#eee8d5")
