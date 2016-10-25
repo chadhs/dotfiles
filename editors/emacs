@@ -69,6 +69,7 @@
                       evil-search-highlight-persist
                       evil-surround
                       evil-visualstar
+                      vi-tilde-fringe
 
                       ;; docs
                       dash-at-point ; launch Dash on macOS
@@ -281,6 +282,7 @@
 (require 'cljr-helm)
 (setq
   cider-repl-pop-to-buffer-on-connect nil ; don't show repl buffer on launch
+  cider-show-error-buffer nil             ; don't error buffer automatically
   cider-auto-select-error-buffer nil      ; don't auto-switch to error buffer on errors
   cider-repl-use-clojure-font-lock t      ; nicer repl output
   cider-repl-history-file (concat user-emacs-directory "cider-history")
@@ -303,12 +305,13 @@
   web-mode-markup-indent-offset 2
   web-mode-css-indent-offset 2
   web-mode-code-indent-offset 2)
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.css?\\'"  . web-mode))
-(add-to-list 'auto-mode-alist '("\\.scss?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.less?\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.js?\\'"   . web-mode))
-(add-to-list 'auto-mode-alist '("\\.php?\\'"  . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'"   . web-mode))
+(add-to-list 'auto-mode-alist '("\\.css?\\'"    . web-mode))
+(add-to-list 'auto-mode-alist '("\\.scss?\\'"   . web-mode))
+(add-to-list 'auto-mode-alist '("\\.less?\\'"   . web-mode))
+(add-to-list 'auto-mode-alist '("\\.js?\\'"     . web-mode))
+(add-to-list 'auto-mode-alist '("\\.php?\\'"    . web-mode))
+(add-to-list 'auto-mode-alist '("\\.jinja?\\'"  . web-mode))
 
 ;;; yaml support
 (require 'yaml-mode)
@@ -333,14 +336,13 @@
 
 ;;; electric return functionality
 (defvar electrify-return-match
-  "[\]}\)\"]"
-  "If this regexp matches the text after the cursor, do an \"electric\"
-  return.")
+  "[\]}\)]"
+  "If this regexp matches the text after the cursor, do an \"electric\" return.")
 
 (defun electrify-return-if-match (arg)
-  "If the text after the cursor matches `electrify-return-match' then
-   open and indent an empty line between the cursor and the text.  Move the
-   cursor to the new line."
+  "If the text after the cursor matches `electrify-return-match' then open and
+  indent an empty line between the cursor and the text.  Move the cursor to the
+  new line."
   (interactive "P")
   (let ((case-fold-search nil))
     (if (looking-at electrify-return-match)
@@ -351,8 +353,8 @@
 ;;; make escape act like C-g in evil-mode
 (defun minibuffer-keyboard-quit ()
   "Abort recursive edit.
-   In Delete Selection mode, if the mark is active, just deactivate it;
-   then it takes a second \\[keyboard-quit] to abort the minibuffer."
+  In Delete Selection mode, if the mark is active, just deactivate it;
+  then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive)
   (if (and delete-selection-mode transient-mark-mode mark-active)
     (setq deactivate-mark  t)
@@ -386,8 +388,8 @@
 (setq show-paren-delay 0)
 
 ;;; show end of buffer in editing modes (easily see empty lines)
-(add-hook 'prog-mode-hook (lambda () (setq indicate-empty-lines t)))
-(add-hook 'markdown-mode-hook (lambda () (setq indicate-empty-lines t)))
+(add-hook 'prog-mode-hook 'vi-tilde-fringe-mode)
+(add-hook 'markdown-mode-hook 'vi-tilde-fringe-mode)
 
 ;;; themes
 (if (display-graphic-p)
@@ -470,15 +472,15 @@
 (setq vc-follow-symlinks t)
 
 ;;; set initial evil state for particular modes
-(loop for (mode . state) in '(
-                               (dired-mode         . normal)
-                               (magit-mode         . normal)
-                               (magit-status-mode  . emacs)
-                               (magit-diff-mode    . normal)
-                               (magit-log-mode     . normal)
-                               (magit-process-mode . normal)
-                               (magit-popup-mode   . emacs)
-                               )
+(cl-loop for (mode . state) in '(
+                                  (dired-mode         . normal)
+                                  (magit-mode         . normal)
+                                  (magit-status-mode  . emacs)
+                                  (magit-diff-mode    . normal)
+                                  (magit-log-mode     . normal)
+                                  (magit-process-mode . normal)
+                                  (magit-popup-mode   . emacs)
+                                  )
   do (evil-set-initial-state mode state))
 
 ;;; declutter the modeline
@@ -488,6 +490,7 @@
 (eval-after-load "undo-tree"  '(diminish 'undo-tree-mode))
 (eval-after-load "helm"       '(diminish 'helm-mode))
 (eval-after-load "which-key"  '(diminish 'which-key-mode))
+(eval-after-load "yasnippet"  '(diminish 'yas-minor-mode))
 
 ;;; modeline tweaks
 (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
@@ -744,7 +747,7 @@
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
    (quote
-    (which-key zoom-window yaml-mode web-mode spaceline solarized-theme robe rainbow-delimiters multi-term markdown-mode magit helm-projectile helm-flx helm-ag flycheck-pos-tip flycheck-clojure exec-path-from-shell evil-visualstar evil-surround evil-search-highlight-persist evil-paredit evil-nerd-commenter evil-matchit evil-leader evil-escape elpy editorconfig diminish dash-at-point cycle-themes clojure-mode-extra-font-locking cljr-helm ample-theme ace-jump-mode ac-cider))))
+    (vi-tilde-fringe which-key zoom-window yaml-mode web-mode spaceline solarized-theme robe rainbow-delimiters multi-term markdown-mode magit helm-projectile helm-flx helm-ag flycheck-pos-tip flycheck-clojure exec-path-from-shell evil-visualstar evil-surround evil-search-highlight-persist evil-paredit evil-nerd-commenter evil-matchit evil-leader evil-escape elpy editorconfig diminish dash-at-point cycle-themes clojure-mode-extra-font-locking cljr-helm ample-theme ace-jump-mode ac-cider))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
