@@ -1,10 +1,52 @@
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Chad Stovern's .emacs config                                               ;
-; Contact hello@chadstovern.com                                              ;
-;                                                                            ;
-; If you're new to emacs check out the fantastic spacemacs kit               ;
-; http://spacemacs.org                                                       ;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; .emacs --- A monolithic Emacs config.
+;;
+;; Copyright (c) 2015-2016, Chad Stovern
+;;
+;; Author: Chad Stovern <chad@stovern.me>
+;; URL: https://github.com/chadhs/dotfiles
+;; Version: 1.0.0
+;; Keywords: convenience
+
+;; This file is not part of GNU Emacs.
+
+;;; Commentary:
+
+;; This file bootstraps a complete Emacs environment to my liking.
+;; If you're new to Emacs check out the spacemacs starter kit: http://spacemacs.org
+
+;;; License:
+
+;; BSD 3-Clause License
+;;
+;; Copyright (c) 2015-2016, Chad Stovern
+;; All rights reserved.
+;;
+;; Redistribution and use in source and binary forms, with or without
+;; modification, are permitted provided that the following conditions are met:
+;;
+;; * Redistributions of source code must retain the above copyright notice, this
+;;   list of conditions and the following disclaimer.
+;;
+;; * Redistributions in binary form must reproduce the above copyright notice,
+;;   this list of conditions and the following disclaimer in the documentation
+;;   and/or other materials provided with the distribution.
+;;
+;; * Neither the name of the copyright holder nor the names of its
+;;   contributors may be used to endorse or promote products derived from
+;;   this software without specific prior written permission.
+
+;; THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+;; AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+;; IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+;; DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+;; FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+;; DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+;; SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+;; CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+;; OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+;; OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+;;; Code:
 
 
 
@@ -220,7 +262,7 @@
              "*.zip"
              )
     projectile-globally-ignored-files))
-(projectile-global-mode)
+(projectile-mode)
 
 ;;; code auto-completion settings
 (ac-config-default)
@@ -290,7 +332,7 @@
   cider-repl-history-size 3000)
 (add-hook 'clojure-mode-hook (lambda ()
                                (clj-refactor-mode 1)
-                               (yas/minor-mode 1)))
+                               (yas-minor-mode)))
 (add-hook 'cider-repl-mode-hook (lambda ()
                                   (paredit-mode)
                                   (ac-cider-setup)))
@@ -340,9 +382,8 @@
   "If this regexp matches the text after the cursor, do an \"electric\" return.")
 
 (defun electrify-return-if-match (arg)
-  "If the text after the cursor matches `electrify-return-match' then open and
-  indent an empty line between the cursor and the text.  Move the cursor to the
-  new line."
+  "When text after cursor and ARG match, open and indent an empty line.
+Do this between the cursor and the text.  Then move the cursor to the new line."
   (interactive "P")
   (let ((case-fold-search nil))
     (if (looking-at electrify-return-match)
@@ -353,13 +394,17 @@
 ;;; make escape act like C-g in evil-mode
 (defun minibuffer-keyboard-quit ()
   "Abort recursive edit.
-  In Delete Selection mode, if the mark is active, just deactivate it;
-  then it takes a second \\[keyboard-quit] to abort the minibuffer."
+In Delete Selection mode, if the mark is active, just deactivate it;
+then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (interactive)
   (if (and delete-selection-mode transient-mark-mode mark-active)
     (setq deactivate-mark  t)
     (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
     (abort-recursive-edit)))
+
+;;; suppress function not defined warnings caused by with-eval-after-load.
+(declare-function flycheck-pos-tip-error-messages nil)
+(declare-function magit-discard nil)
 
 
 
@@ -616,7 +661,7 @@
      ("s-{"     . multi-term-prev)
      ("s-}"     . multi-term-next))
   "The key alist that will need to be bind.
-   If you do not like default setup, modify it, with (KEY . COMMAND) format."
+If you do not like default setup, modify it, with (KEY . COMMAND) format."
   :type 'alist
   :group 'multi-term)
 
@@ -651,7 +696,10 @@
 (evil-leader/set-key "nn" 'linum-mode)
 
 ;; flycheck
-(evil-leader/set-key "cb" 'flycheck-buffer) ; (c)heck (b)uffer
+(evil-leader/set-key "fcb" 'flycheck-buffer)         ; (f)ly(c)heck (b)uffer
+(evil-leader/set-key "fcn" 'flycheck-next-error)     ; (f)ly(c)heck (n)ext error
+(evil-leader/set-key "fcp" 'flycheck-previous-error) ; (f)ly(c)heck (p)revious error
+(evil-leader/set-key "fcl" 'flycheck-list-errors)    ; (f)ly(c)heck (l)ist errors
 
 ;;; paredit
 (evil-leader/set-key "W" 'paredit-wrap-sexp)
@@ -738,19 +786,31 @@
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;; Emacs file footer settings                                           ;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Local Variables:
+;; byte-compile-warnings: (not free-vars)
+;; End:
+
+;;; emacs ends here
+
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;; Values Set via Customize                                             ;;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   (quote
-    (vi-tilde-fringe which-key zoom-window yaml-mode web-mode spaceline solarized-theme robe rainbow-delimiters multi-term markdown-mode magit helm-projectile helm-flx helm-ag flycheck-pos-tip flycheck-clojure exec-path-from-shell evil-visualstar evil-surround evil-search-highlight-persist evil-paredit evil-nerd-commenter evil-matchit evil-leader evil-escape elpy editorconfig diminish dash-at-point cycle-themes clojure-mode-extra-font-locking cljr-helm ample-theme ace-jump-mode ac-cider))))
+ )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+
