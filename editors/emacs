@@ -79,9 +79,11 @@
                       exec-path-from-shell ; make sure PATH makes shell PATH
                       diminish ; suppress modes from appearing in status bar
                       multi-term
+                      restart-emacs ; restart emacs from within emacs
 
                       ;; editing enhancements
                       ace-jump-mode
+                      column-enforce-mode
                       editorconfig
                       paredit
                       rainbow-delimiters
@@ -266,6 +268,7 @@
 
 ;;; code auto-completion settings
 (ac-config-default)
+(setq ac-disable-faces nil)
 (define-key ac-completing-map "\t" 'ac-complete) ; set tab key to do all completion
 (define-key ac-completing-map "\r" nil) ; disable return
 (add-to-list 'ac-modes 'yaml-mode)
@@ -285,13 +288,19 @@
 (setq flycheck-check-syntax-automatically '(mode-enabled save))
 
 ;;; paredit
-(autoload 'enable-paredit-mode "paredit" "Turn on pseudo-structural editing of Lisp code." t)
+(autoload 'enable-paredit-mode "Pseudo-structural editing of Lisp code." t)
 (add-hook 'prog-mode-hook #'enable-paredit-mode)
 (add-hook 'prog-mode-hook #'evil-paredit-mode)
 
 ;;; rainbow delimiters
 (require 'rainbow-delimiters)
 (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+
+;;; 80 column enforcement
+(setq
+  column-enforce-column 81
+  column-enforce-comments t)
+(add-hook 'prog-mode-hook 'column-enforce-mode)
 
 ;;; spaceline
 (require 'spaceline-config)
@@ -496,7 +505,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (defvar --backup-dir (concat user-emacs-directory "backups"))
 (if (not (file-exists-p --backup-dir))
   (make-directory --backup-dir t))
-(setq backup-directory-alist `(("." . ,--backup-dir)))
+(setq backup-directory-alist `((".*" . ,--backup-dir)))
+(setq auto-save-file-name-transforms `((".*" ,--backup-dir t)))
 (setq
   backup-by-copying t
   delete-old-versions t
@@ -556,6 +566,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;; (s)ource (e)macs user init file
 (evil-leader/set-key "se" (lambda () (interactive) (load-file user-init-file)))
+
+;;; (r)estart (e)macs
+(evil-leader/set-key "re" 'restart-emacs)
 
 ;;; evil emacs conflicts
 (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
@@ -813,4 +826,3 @@ If you do not like default setup, modify it, with (KEY . COMMAND) format."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
