@@ -540,12 +540,13 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;; declutter the modeline
 (require 'diminish)
-(eval-after-load "paredit"    '(diminish 'paredit-mode))
-(eval-after-load "flycheck"   '(diminish 'flycheck-mode))
-(eval-after-load "undo-tree"  '(diminish 'undo-tree-mode))
-(eval-after-load "helm"       '(diminish 'helm-mode))
-(eval-after-load "which-key"  '(diminish 'which-key-mode))
-(eval-after-load "yasnippet"  '(diminish 'yas-minor-mode))
+(eval-after-load "column-enforce-mode" '(diminish 'column-enforce-mode))
+(eval-after-load "flycheck"            '(diminish 'flycheck-mode))
+(eval-after-load "helm"                '(diminish 'helm-mode))
+(eval-after-load "paredit"             '(diminish 'paredit-mode))
+(eval-after-load "undo-tree"           '(diminish 'undo-tree-mode))
+(eval-after-load "which-key"           '(diminish 'which-key-mode))
+(eval-after-load "yasnippet"           '(diminish 'yas-minor-mode))
 
 ;;; modeline tweaks
 (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
@@ -806,7 +807,7 @@ If you do not like default setup, modify it, with (KEY . COMMAND) format."
 ;; byte-compile-warnings: (not free-vars)
 ;; End:
 
-;;; emacs ends here
+;;; .emacs ends here
 
 
 
