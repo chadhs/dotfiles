@@ -1,4 +1,4 @@
-;;; .emacs --- A monolithic Emacs config.
+;;; emacs.el --- A monolithic Emacs config.
 ;;
 ;; Copyright (c) 2015-2016, Chad Stovern
 ;;
@@ -807,7 +807,7 @@ If you do not like default setup, modify it, with (KEY . COMMAND) format."
 ;; byte-compile-warnings: (not free-vars)
 ;; End:
 
-;;; .emacs ends here
+;;; emacs.el ends here
 
 
 
