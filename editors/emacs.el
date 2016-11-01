@@ -250,20 +250,25 @@
              )
     projectile-globally-ignored-directories))
 (setq projectile-globally-ignored-files
-  (append '(
-             ".DS_Store"
-             ".lein-repl-history"
-             "*.gz"
-             "*.pyc"
-             "*.png"
-             "*.jpg"
-             "*.jar"
-             "*.svg"
-             "*.tar.gz"
-             "*.tgz"
-             "*.zip"
-             )
-    projectile-globally-ignored-files))
+      (append '(
+		".DS_Store"
+		".lein-repl-history"
+		"*.gz"
+		"*.pyc"
+		"*.png"
+		"*.jpg"
+		"*.jar"
+		"*.svg"
+		"*.tar.gz"
+		"*.tgz"
+		"*.zip"
+		)
+	      projectile-globally-ignored-files))
+(setq projectile-globally-unignored-files
+      (append '(
+		"profiles.clj"
+		)
+	      projectile-globally-unignored-files))
 (projectile-mode)
 
 ;;; code auto-completion settings
