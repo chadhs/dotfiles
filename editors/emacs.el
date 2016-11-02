@@ -764,24 +764,24 @@ If you do not like default setup, modify it, with (KEY . COMMAND) format."
   (define-key magit-status-mode-map (kbd "j") #'next-line))
 
 ;;; clojure - cider
-(evil-leader/set-key "ri" #'cider-jack-in)                     ; (r)epl (i)nitialize
-(evil-leader/set-key "rr" #'cider-restart)                     ; (r)epl (r)estart
-(evil-leader/set-key "rq" #'cider-quit)                        ; (r)epl (q)uit
-(evil-leader/set-key "rc" #'cider-connect)                     ; (r)epl (c)onnect
-(evil-leader/set-key "eb" #'cider-eval-buffer)                 ; (e)val (b)uffer
-(evil-leader/set-key "ef" #'cider-eval-defun-at-point)         ; (e)val de(f)un
-(evil-leader/set-key "es" #'cider-eval-last-sexp)              ; (e)val (s)-expression
-(evil-leader/set-key "rt" #'cider-test-run-ns-tests)           ; (r)un (t)ests (n)amespace
-(evil-leader/set-key "rt" #'cider-test-run-project-tests)      ; (r)un (t)ests (p)roject
-(evil-leader/set-key "rt" #'cider-test-run-loaded-tests)       ; (r)un (t)ests (l)oaded namespaces
-(evil-leader/set-key "rt" #'cider-test-rerun-failed-tests)     ; (r)un (t)ests (f)ailed tests
-(evil-leader/set-key "rt" #'cider-auto-test-mode)              ; (r)un (t)ests (a)utomatically
-(evil-leader/set-key "rb" #'cider-switch-to-repl-buffer)       ; (r)epl (b)uffer
-(evil-leader/set-key "rp" #'cider-repl-toggle-pretty-printing) ; (r)epl (p)retty print
-(evil-leader/set-key "ff" #'cider-format-defun)                ; (f)ormat (f)orm
-(evil-leader/set-key "fr" #'cider-format-region)               ; (f)ormat (r)egion
-(evil-leader/set-key "fb" #'cider-format-buffer)               ; (f)ormat (b)uffer
-(evil-leader/set-key "rf" #'cljr-helm)                         ; (c)lj (r)efactor
+(evil-leader/set-key "ri"  #'cider-jack-in)                     ; (r)epl (i)nitialize
+(evil-leader/set-key "rr"  #'cider-restart)                     ; (r)epl (r)estart
+(evil-leader/set-key "rq"  #'cider-quit)                        ; (r)epl (q)uit
+(evil-leader/set-key "rc"  #'cider-connect)                     ; (r)epl (c)onnect
+(evil-leader/set-key "eb"  #'cider-eval-buffer)                 ; (e)val (b)uffer
+(evil-leader/set-key "ef"  #'cider-eval-defun-at-point)         ; (e)val de(f)un
+(evil-leader/set-key "es"  #'cider-eval-last-sexp)              ; (e)val (s)-expression
+(evil-leader/set-key "rtn" #'cider-test-run-ns-tests)           ; (r)un (t)ests (n)amespace
+(evil-leader/set-key "rtp" #'cider-test-run-project-tests)      ; (r)un (t)ests (p)roject
+(evil-leader/set-key "rtl" #'cider-test-run-loaded-tests)       ; (r)un (t)ests (l)oaded namespaces
+(evil-leader/set-key "rtf" #'cider-test-rerun-failed-tests)     ; (r)un (t)ests (f)ailed tests
+(evil-leader/set-key "rta" #'cider-auto-test-mode)              ; (r)un (t)ests (a)utomatically
+(evil-leader/set-key "rb"  #'cider-switch-to-repl-buffer)       ; (r)epl (b)uffer
+(evil-leader/set-key "rp"  #'cider-repl-toggle-pretty-printing) ; (r)epl (p)retty print
+(evil-leader/set-key "ff"  #'cider-format-defun)                ; (f)ormat (f)orm
+(evil-leader/set-key "fr"  #'cider-format-region)               ; (f)ormat (r)egion
+(evil-leader/set-key "fb"  #'cider-format-buffer)               ; (f)ormat (b)uffer
+(evil-leader/set-key "rf"  #'cljr-helm)                         ; (c)lj (r)efactor
 
 ;;; markdown
 (evil-leader/set-key "Mb" #'markdown-insert-bold)
