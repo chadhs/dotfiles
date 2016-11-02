@@ -262,7 +262,7 @@
 (ac-config-default)
 (setq ac-disable-faces nil)
 (define-key ac-completing-map "\t" 'ac-complete) ; set tab key for completion
-(define-key ac-completing-map "\r" nil) ; disable return
+(define-key ac-completing-map "\r" nil)          ; disable return
 (add-to-list 'ac-modes #'yaml-mode)
 (add-to-list 'ac-modes #'markdown-mode)
 (add-to-list 'ac-modes #'html-mode)
@@ -290,7 +290,7 @@
 
 ;;; 80 column enforcement
 (setq column-enforce-column 81
-      column-enforce-comments t)
+      column-enforce-comments nil)
 (add-hook 'prog-mode-hook #'column-enforce-mode)
 
 ;;; spaceline
@@ -328,14 +328,10 @@
 (require 'ac-cider)
 (require 'clj-refactor)
 (require 'cljr-helm)
-(setq cider-repl-pop-to-buffer-on-connect nil
-      ;; ^ don't show repl buffer on launch
-      cider-show-error-buffer nil
-      ;; ^ don't show error buffer automatically
-      cider-auto-select-error-buffer nil
-      ;; ^ don't switch to error buffer on error
-      cider-repl-use-clojure-font-lock t
-      ;; ^ nicer repl output
+(setq cider-repl-pop-to-buffer-on-connect nil ; don't show repl buffer on launch
+      cider-show-error-buffer nil             ; don't show error buffer automatically
+      cider-auto-select-error-buffer nil      ; don't switch to error buffer on error
+      cider-repl-use-clojure-font-lock t      ; nicer repl output
       cider-repl-history-file (concat user-emacs-directory "cider-history")
       cider-repl-wrap-history t
       cider-repl-history-size 3000)
@@ -410,11 +406,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
     (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
     (abort-recursive-edit)))
 
-;;; suppress function not defined warnings caused by referring to functions not
-;;; yet loaded with #' (sharp quotes).
+;;; suppress function not defined warnings caused by referring to functions not yet loaded with #' (sharp quotes).
 (declare-function browse-url-default-macosx-browser nil)
 (declare-function cider-repl-mode nil)
-(declare-function cider-test-run-tests nil)
 (declare-function flycheck-buffer nil)
 (declare-function flycheck-list-errors nil)
 (declare-function flycheck-next-error nil)
@@ -443,8 +437,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
   (exec-path-from-shell-initialize))
 
 ;;; os x keybinding fix
-;; For iTerm: Go to Preferences > Profiles > (your profile)
-;; > Keys > Left option key acts as: > choose +Esc
+;; For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option key acts as: > choose +Esc
 
 ;;; startup behavior
 (setq inhibit-startup-message t)
@@ -527,12 +520,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
       auto-save-default t)
 
 ;;; file type to mode mappings
-(add-to-list 'auto-mode-alist '(".emacs"        . emacs-lisp-mode))
-(add-to-list 'auto-mode-alist '("\\.yml"        . yaml-mode))
-(add-to-list 'auto-mode-alist '("\\.sls"        . yaml-mode))
+(add-to-list 'auto-mode-alist '(".editorconfig" . editorconfig-conf-mode))
+(add-to-list 'auto-mode-alist '("\\.emacs"      . emacs-lisp-mode))
 (add-to-list 'auto-mode-alist '("\\.md"         . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.txt"        . markdown-mode))
-(add-to-list 'auto-mode-alist '(".editorconfig" . editorconfig-conf-mode))
+(add-to-list 'auto-mode-alist '("\\.sls"        . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yml"        . yaml-mode))
 
 ;;; version control
 (setq vc-follow-symlinks t)
@@ -606,7 +599,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "ct" #'cycle-themes)
 
 ;;; full screen toggle
-(global-set-key (kbd "s-<return>") #'toggle-frame-fullscreen) ; s = super (⌘ mac)
+(global-set-key (kbd "s-<return>") #'toggle-frame-fullscreen) ; s = super (⌘ on mac)
 
 ;;; hide others with macOS default keyboard shortcut of `⌥⌘H`
 (global-set-key (kbd "M-s-˙") #'ns-do-hide-others)
@@ -615,6 +608,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; window splitting
 (global-set-key (kbd "C--")  #'evil-window-split)
 (global-set-key (kbd "C-\\") #'evil-window-vsplit)
+(global-set-key (kbd "C-=")  #'balance-windows)
 
 ;;; resize windows
 (global-set-key (kbd "s-<right>") #'evil-window-increase-width)
@@ -665,10 +659,10 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "gf" #'helm-projectile-ag)             ; (g)rep in (f)iles
 
 ;;; toggle/open shell
-(evil-leader/set-key "sv" (lambda () (interactive) ; toggle (s)hell (v)isor
+(evil-leader/set-key "sv" (lambda () (interactive)               ; toggle (s)hell (v)isor
 			    (multi-term-dedicated-toggle)
 			    (multi-term-dedicated-select)))
-(evil-leader/set-key "sn" 'multi-term)        ; toggle (s)hell (n)ew
+(evil-leader/set-key "sn" 'multi-term)                      ; toggle (s)hell (n)ew
 
 ;;; multi term keybind setup - thanks to rawsyntax (eric h)
 (defcustom term-unbind-key-list
@@ -735,10 +729,10 @@ If you do not like default setup, modify it, with (KEY . COMMAND) format."
 (evil-leader/set-key "><" #'paredit-forward-slurp-sexp)
 (evil-leader/set-key "<<" #'paredit-backward-barf-sexp)
 (evil-leader/set-key "<>" #'paredit-backward-slurp-sexp)
-(evil-leader/set-key "D"  #'paredit-splice-sexp) ; del surrounding ()[]{}
-(evil-leader/set-key "rs" #'raise-sexp)          ; (r)aise (s)exp
-(evil-leader/set-key "xs" #'kill-sexp)           ; (x)delete (s)exp
-(evil-leader/set-key "xS" #'backward-kill-sexp)  ; (x)delete (S)exp backward
+(evil-leader/set-key "D"  #'paredit-splice-sexp)         ; del surrounding ()[]{}
+(evil-leader/set-key "rs" #'raise-sexp)                  ; (r)aise (s)exp
+(evil-leader/set-key "xs" #'kill-sexp)                   ; (x)delete (s)exp
+(evil-leader/set-key "xS" #'backward-kill-sexp)          ; (x)delete (S)exp backward
 
 ;;; magit
 ;; you can also use built-in hotkeys from status mode:
@@ -770,21 +764,24 @@ If you do not like default setup, modify it, with (KEY . COMMAND) format."
   (define-key magit-status-mode-map (kbd "j") #'next-line))
 
 ;;; clojure - cider
-(evil-leader/set-key "ri" #'cider-jack-in)               ; (r)epl (i)nitialize
-(evil-leader/set-key "rr" #'cider-restart)               ; (r)epl (r)estart
-(evil-leader/set-key "rq" #'cider-quit)                  ; (r)epl (q)uit
-(evil-leader/set-key "rc" #'cider-connect)               ; (r)epl (c)onnect
-(evil-leader/set-key "eb" #'cider-eval-buffer)           ; (e)val (b)uffer
-(evil-leader/set-key "ef" #'cider-eval-defun-at-point)   ; (e)val de(f)un
-(evil-leader/set-key "es" #'cider-eval-last-sexp)        ; (e)val (s)-expression
-(evil-leader/set-key "rt" #'cider-test-run-tests)        ; (r)un (t)ests
-(evil-leader/set-key "rb" #'cider-switch-to-repl-buffer) ; (r)epl (b)uffer
-(evil-leader/set-key
-  "rp" #'cider-repl-toggle-pretty-printing)              ; (r)epl (p)retty print
-(evil-leader/set-key "ff" #'cider-format-defun)          ; (f)ormat (f)orm
-(evil-leader/set-key "fr" #'cider-format-region)         ; (f)ormat (r)egion
-(evil-leader/set-key "fb" #'cider-format-buffer)         ; (f)ormat (b)uffer
-(evil-leader/set-key "rf" #'cljr-helm)                   ; (c)lj (r)efactor
+(evil-leader/set-key "ri" #'cider-jack-in)                     ; (r)epl (i)nitialize
+(evil-leader/set-key "rr" #'cider-restart)                     ; (r)epl (r)estart
+(evil-leader/set-key "rq" #'cider-quit)                        ; (r)epl (q)uit
+(evil-leader/set-key "rc" #'cider-connect)                     ; (r)epl (c)onnect
+(evil-leader/set-key "eb" #'cider-eval-buffer)                 ; (e)val (b)uffer
+(evil-leader/set-key "ef" #'cider-eval-defun-at-point)         ; (e)val de(f)un
+(evil-leader/set-key "es" #'cider-eval-last-sexp)              ; (e)val (s)-expression
+(evil-leader/set-key "rt" #'cider-test-run-ns-tests)           ; (r)un (t)ests (n)amespace
+(evil-leader/set-key "rt" #'cider-test-run-project-tests)      ; (r)un (t)ests (p)roject
+(evil-leader/set-key "rt" #'cider-test-run-loaded-tests)       ; (r)un (t)ests (l)oaded namespaces
+(evil-leader/set-key "rt" #'cider-test-rerun-failed-tests)     ; (r)un (t)ests (f)ailed tests
+(evil-leader/set-key "rt" #'cider-auto-test-mode)              ; (r)un (t)ests (a)utomatically
+(evil-leader/set-key "rb" #'cider-switch-to-repl-buffer)       ; (r)epl (b)uffer
+(evil-leader/set-key "rp" #'cider-repl-toggle-pretty-printing) ; (r)epl (p)retty print
+(evil-leader/set-key "ff" #'cider-format-defun)                ; (f)ormat (f)orm
+(evil-leader/set-key "fr" #'cider-format-region)               ; (f)ormat (r)egion
+(evil-leader/set-key "fb" #'cider-format-buffer)               ; (f)ormat (b)uffer
+(evil-leader/set-key "rf" #'cljr-helm)                         ; (c)lj (r)efactor
 
 ;;; markdown
 (evil-leader/set-key "Mb" #'markdown-insert-bold)
