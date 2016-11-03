@@ -62,9 +62,9 @@
 
 ;;; package repositories
 (setq
- package-archives '(("gnu"           . "http://elpa.gnu.org/packages/")
-                    ("melpa"         . "http://melpa.org/packages/")
-                    ("melpa-stable"  . "http://stable.melpa.org/packages/")))
+ package-archives '(("gnu"           . "https://elpa.gnu.org/packages/")
+                    ("melpa"         . "https://melpa.org/packages/")
+                    ("melpa-stable"  . "https://stable.melpa.org/packages/")))
 
 ;;; the latest version of a package is installed unless pinned to a specific repo
 (setq package-pinned-packages '((cider        . "melpa-stable")
