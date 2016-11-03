@@ -442,6 +442,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; startup behavior
 (setq inhibit-startup-message t)
 
+;;; set default starting directory (avoid launching projectile at HOME or src root)
+(defvar --src-scratch-dir (concat (getenv "HOME") "/src/scratch/"))
+(unless (file-exists-p --src-scratch-dir)
+  (make-directory --src-scratch-dir t))
+(setq default-directory --src-scratch-dir)
+
 ;;; default to utf8
 (prefer-coding-system 'utf-8)
 
@@ -531,13 +537,14 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (setq vc-follow-symlinks t)
 
 ;;; set initial evil state for particular modes
-(cl-loop for (mode . state) in '((dired-mode         . normal)
-				 (magit-mode         . normal)
-				 (magit-status-mode  . emacs)
-				 (magit-diff-mode    . normal)
-				 (magit-log-mode     . normal)
-				 (magit-process-mode . normal)
-				 (magit-popup-mode   . emacs))
+(cl-loop for (mode . state) in '((cider-test-report-mode . emacs)
+                                 (dired-mode             . normal)
+				 (magit-mode             . normal)
+				 (magit-status-mode      . emacs)
+				 (magit-diff-mode        . normal)
+				 (magit-log-mode         . normal)
+				 (magit-process-mode     . normal)
+				 (magit-popup-mode       . emacs))
 	 do (evil-set-initial-state mode state))
 
 ;;; declutter the modeline
@@ -731,8 +738,11 @@ If you do not like default setup, modify it, with (KEY . COMMAND) format."
 (evil-leader/set-key "<>" #'paredit-backward-slurp-sexp)
 (evil-leader/set-key "D"  #'paredit-splice-sexp)         ; del surrounding ()[]{}
 (evil-leader/set-key "rs" #'raise-sexp)                  ; (r)aise (s)exp
+(evil-leader/set-key "ss" #'paredit-split-sexp)          ; (s)plit (s)exp
 (evil-leader/set-key "xs" #'kill-sexp)                   ; (x)delete (s)exp
 (evil-leader/set-key "xS" #'backward-kill-sexp)          ; (x)delete (S)exp backward
+;; use `Y` not `yy` for yanking a line maintaining balance parens
+;; use `y%` for yanking a s-expression
 
 ;;; magit
 ;; you can also use built-in hotkeys from status mode:
@@ -782,6 +792,10 @@ If you do not like default setup, modify it, with (KEY . COMMAND) format."
 (evil-leader/set-key "fr"  #'cider-format-region)               ; (f)ormat (r)egion
 (evil-leader/set-key "fb"  #'cider-format-buffer)               ; (f)ormat (b)uffer
 (evil-leader/set-key "rf"  #'cljr-helm)                         ; (c)lj (r)efactor
+;; set evil style j and k in cider-test-report-mode
+(with-eval-after-load "cider"
+  (define-key cider-test-report-mode-map (kbd "k") #'previous-line)
+  (define-key cider-test-report-mode-map (kbd "j") #'next-line))
 
 ;;; markdown
 (evil-leader/set-key "Mb" #'markdown-insert-bold)
