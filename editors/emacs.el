@@ -741,7 +741,7 @@ If you do not like default setup, modify it, with (KEY . COMMAND) format."
 (evil-leader/set-key "ss" #'paredit-split-sexp)          ; (s)plit (s)exp
 (evil-leader/set-key "xs" #'kill-sexp)                   ; (x)delete (s)exp
 (evil-leader/set-key "xS" #'backward-kill-sexp)          ; (x)delete (S)exp backward
-;; use `Y` not `yy` for yanking a line maintaining balance parens
+;; use `Y` not `yy` for yanking a line maintaining balanced parens
 ;; use `y%` for yanking a s-expression
 
 ;;; magit
@@ -784,7 +784,7 @@ If you do not like default setup, modify it, with (KEY . COMMAND) format."
 (evil-leader/set-key "rtn" #'cider-test-run-ns-tests)           ; (r)un (t)ests (n)amespace
 (evil-leader/set-key "rtp" #'cider-test-run-project-tests)      ; (r)un (t)ests (p)roject
 (evil-leader/set-key "rtl" #'cider-test-run-loaded-tests)       ; (r)un (t)ests (l)oaded namespaces
-(evil-leader/set-key "rtf" #'cider-test-rerun-failed-tests)     ; (r)un (t)ests (f)ailed tests
+(evil-leader/set-key "rtf" #'cider-test-rerun-failed-tests)     ; (r)erun (t)ests (f)ailed tests
 (evil-leader/set-key "rta" #'cider-auto-test-mode)              ; (r)un (t)ests (a)utomatically
 (evil-leader/set-key "rb"  #'cider-switch-to-repl-buffer)       ; (r)epl (b)uffer
 (evil-leader/set-key "rp"  #'cider-repl-toggle-pretty-printing) ; (r)epl (p)retty print
