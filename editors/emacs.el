@@ -550,6 +550,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; declutter the modeline
 (require 'diminish)
 (eval-after-load "column-enforce-mode" '(diminish #'column-enforce-mode))
+(eval-after-load "editorconfig"        '(diminish #'editorconfig-mode))
 (eval-after-load "flycheck"            '(diminish #'flycheck-mode))
 (eval-after-load "helm"                '(diminish #'helm-mode))
 (eval-after-load "paredit"             '(diminish #'paredit-mode))
@@ -664,6 +665,11 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "b"  #'helm-buffers-list)              ; switch to (b)uffer
 (evil-leader/set-key "kb" #'kill-buffer)                    ; (k)ill (b)uffer
 (evil-leader/set-key "gf" #'helm-projectile-ag)             ; (g)rep in (f)iles
+
+;;; dired navigation
+;; g to update dired buffer info
+;; s to toggle between sort by name and by date/time
+;; for creating, deleting, renaming, just toggle shell visor, then update dired
 
 ;;; toggle/open shell
 (evil-leader/set-key "sv" (lambda () (interactive)               ; toggle (s)hell (v)isor
