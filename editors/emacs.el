@@ -443,10 +443,15 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (setq inhibit-startup-message t)
 
 ;;; set default starting directory (avoid launching projectile at HOME or src root)
-(defvar --src-scratch-dir (concat (getenv "HOME") "/src/scratch/"))
-(unless (file-exists-p --src-scratch-dir)
-  (make-directory --src-scratch-dir t))
-(setq default-directory --src-scratch-dir)
+(defvar --user-home-dir (concat (getenv "HOME") "/"))
+(defvar --user-src-dir (concat --user-home-dir "src/"))
+(defvar --user-scratch-dir (concat --user-src-dir "scratch/"))
+(unless (file-exists-p --user-scratch-dir)
+  (make-directory --user-scratch-dir t))
+(when (or (string= default-directory "~/")
+          (string= default-directory --user-home-dir)
+          (string= default-directory --user-src-dir))
+  (setq default-directory --user-scratch-dir))
 
 ;;; default to utf8
 (prefer-coding-system 'utf-8)
@@ -549,12 +554,18 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;; declutter the modeline
 (require 'diminish)
+;; altered
+(eval-after-load "auto-complete"       '(diminish #'auto-complete-mode "⇥"))
+                                        (diminish #'auto-revert-mode "↺")
+(eval-after-load "clj-refactor"        '(diminish #'clj-refactor-mode "↻"))
+(eval-after-load "editorconfig"        '(diminish #'editorconfig-mode "↹"))
+(eval-after-load "flycheck"            '(diminish #'flycheck-mode "✓"))
+(eval-after-load "paredit"             '(diminish #'paredit-mode "‹›"))
+;; hidden
 (eval-after-load "column-enforce-mode" '(diminish #'column-enforce-mode))
-(eval-after-load "editorconfig"        '(diminish #'editorconfig-mode))
-(eval-after-load "flycheck"            '(diminish #'flycheck-mode))
 (eval-after-load "helm"                '(diminish #'helm-mode))
-(eval-after-load "paredit"             '(diminish #'paredit-mode))
 (eval-after-load "undo-tree"           '(diminish #'undo-tree-mode))
+(eval-after-load "vi-tilde-fringe"     '(diminish #'vi-tilde-fringe-mode))
 (eval-after-load "which-key"           '(diminish #'which-key-mode))
 (eval-after-load "yasnippet"           '(diminish #'yas-minor-mode))
 
