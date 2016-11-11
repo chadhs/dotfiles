@@ -73,7 +73,7 @@
 ;;; packages to install
 (setq package-list '(;; emacs enhancements
                      exec-path-from-shell ; make sure PATH makes shell PATH
-                     diminish ; suppress modes from appearing in status bar
+                     delight ; customize modeline appearance
                      multi-term
                      restart-emacs ; restart emacs from within emacs
                      which-key
@@ -553,24 +553,23 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 	 do (evil-set-initial-state mode state))
 
 ;;; declutter the modeline
-(require 'diminish)
-;; altered
-(eval-after-load "auto-complete"       '(diminish #'auto-complete-mode "⇥"))
-                                        (diminish #'auto-revert-mode "↺")
-(eval-after-load "clj-refactor"        '(diminish #'clj-refactor-mode "↻"))
-(eval-after-load "editorconfig"        '(diminish #'editorconfig-mode "↹"))
-(eval-after-load "flycheck"            '(diminish #'flycheck-mode "✓"))
-(eval-after-load "paredit"             '(diminish #'paredit-mode "‹›"))
-;; hidden
-(eval-after-load "column-enforce-mode" '(diminish #'column-enforce-mode))
-(eval-after-load "helm"                '(diminish #'helm-mode))
-(eval-after-load "undo-tree"           '(diminish #'undo-tree-mode))
-(eval-after-load "vi-tilde-fringe"     '(diminish #'vi-tilde-fringe-mode))
-(eval-after-load "which-key"           '(diminish #'which-key-mode))
-(eval-after-load "yasnippet"           '(diminish #'yas-minor-mode))
+(require 'delight)
+(delight '((auto-complete-mode   "⇥"  auto-complete)
+           (auto-revert-mode     "↺"  emacs)
+           (clj-refactor-mode    "↻"  clj-refactor)
+           (editorconfig-mode    "↹"  editorconfig)
+           (flycheck-mode        "✓"  flycheck)
+           (paredit-mode         "‹›" paredit)
+           (column-enforce-mode  nil  column-enforce-mode)
+           (helm-mode            nil  helm)
+           (undo-tree-mode       nil  undo-tree)
+           (vi-tilde-fringe-mode nil  vi-tilde-fringe)
+           (which-key-mode       nil  which-key)
+           (yas-minor-mode       nil  yasnippet)))
 
 ;;; modeline tweaks
 (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
+(setq cider-mode-line '(:eval (format " [%s]" (cider--modeline-info))))
 
 ;;; open urls in default browser
 (when (display-graphic-p)
