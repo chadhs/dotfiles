@@ -263,12 +263,13 @@
 (setq ac-disable-faces nil)
 (define-key ac-completing-map "\t" 'ac-complete) ; set tab key for completion
 (define-key ac-completing-map "\r" nil)          ; disable return
-(add-to-list 'ac-modes #'yaml-mode)
-(add-to-list 'ac-modes #'markdown-mode)
-(add-to-list 'ac-modes #'html-mode)
-(add-to-list 'ac-modes #'sql-mode)
 (add-to-list 'ac-modes #'cider-mode)
 (add-to-list 'ac-modes #'cider-repl-mode)
+(add-to-list 'ac-modes #'conf-space-mode)
+(add-to-list 'ac-modes #'html-mode)
+(add-to-list 'ac-modes #'markdown-mode)
+(add-to-list 'ac-modes #'sql-mode)
+(add-to-list 'ac-modes #'yaml-mode)
 
 ;;; syntax checking
 (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -466,6 +467,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; show end of buffer in editing modes (easily see empty lines)
 (add-hook 'prog-mode-hook #'vi-tilde-fringe-mode)
 (add-hook 'markdown-mode-hook #'vi-tilde-fringe-mode)
+(add-hook 'conf-space-mode-hook #'vi-tilde-fringe-mode)
 
 ;;; themes
 (if (display-graphic-p)
@@ -555,7 +557,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; declutter the modeline
 (require 'delight)
 (delight '((auto-complete-mode   "⇥"  auto-complete)
-           (auto-revert-mode     "↺"  emacs)
+           (auto-revert-mode     "↺"  t)
            (clj-refactor-mode    "↻"  clj-refactor)
            (editorconfig-mode    "↹"  editorconfig)
            (flycheck-mode        "✓"  flycheck)
