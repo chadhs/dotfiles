@@ -209,6 +209,9 @@
 (if (bound-and-true-p persp-mode)
     (message "persp-mode already enabled")
   (persp-mode))
+;; kill buffers if removed from a perspective or if the containing perspective is killed
+(with-eval-after-load "persp-mode"
+  (setq persp-autokill-buffer-on-remove 'kill))
 
 ;;; navigation
 (require 'helm)
