@@ -116,12 +116,13 @@
                      ;; docs
                      dash-at-point ; launch Dash on macOS
 
-                     ;; projects / file / buffer mgmt
+                     ;; workspace / project / file / buffer mgmt
                      helm
                      helm-ag
                      helm-flx
                      helm-projectile
                      magit
+                     persp-mode ; workspace manager
                      projectile
                      zoom-window
 
@@ -203,6 +204,10 @@
 ;;; window management
 (require 'zoom-window)
 (setq zoom-window-mode-line-color nil)
+;; prevent reloading persp-mode when reloading emacs config
+(if (bound-and-true-p persp-mode)
+    (message "persp-mode already enabled")
+  (persp-mode))
 
 ;;; navigation
 (require 'helm)
@@ -424,6 +429,11 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (declare-function markdown-insert-link nil)
 (declare-function markdown-insert-strike-through nil)
 (declare-function markdown-insert-uri nil)
+(declare-function persp-switch nil)
+(declare-function persp-kill nil)
+(declare-function persp-add-buffer nil)
+(declare-function persp-remove-buffer nil)
+(declare-function persp-switch-to-buffer nil)
 (declare-function with-editor-cancel nil)
 (declare-function with-editor-finish nil)
 
@@ -564,6 +574,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
            (paredit-mode         "‹›" paredit)
            (column-enforce-mode  nil  column-enforce-mode)
            (helm-mode            nil  helm)
+           (persp-mode           nil persp-mode)
            (undo-tree-mode       nil  undo-tree)
            (vi-tilde-fringe-mode nil  vi-tilde-fringe)
            (which-key-mode       nil  which-key)
@@ -677,6 +688,13 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "b"  #'helm-buffers-list)              ; switch to (b)uffer
 (evil-leader/set-key "kb" #'kill-buffer)                    ; (k)ill (b)uffer
 (evil-leader/set-key "gf" #'helm-projectile-ag)             ; (g)rep in (f)iles
+
+;;; workspaces
+(evil-leader/set-key "ps" #'persp-switch)
+(evil-leader/set-key "pk" #'persp-kill)
+(evil-leader/set-key "pa" #'persp-add-buffer)
+(evil-leader/set-key "pr" #'persp-remove-buffer)
+(evil-leader/set-key "pb" #'persp-switch-to-buffer)
 
 ;;; dired navigation
 ;; g to update dired buffer info
@@ -805,6 +823,7 @@ If you do not like default setup, modify it, with (KEY . COMMAND) format."
 (evil-leader/set-key "rtf" #'cider-test-rerun-failed-tests)     ; (r)erun (t)ests (f)ailed tests
 (evil-leader/set-key "rta" #'cider-auto-test-mode)              ; (r)un (t)ests (a)utomatically
 (evil-leader/set-key "rb"  #'cider-switch-to-repl-buffer)       ; (r)epl (b)uffer
+(evil-leader/set-key "rn"  #'cider-repl-set-ns)                 ; (r)epl set (n)amespace
 (evil-leader/set-key "rp"  #'cider-repl-toggle-pretty-printing) ; (r)epl (p)retty print
 (evil-leader/set-key "ff"  #'cider-format-defun)                ; (f)ormat (f)orm
 (evil-leader/set-key "fr"  #'cider-format-region)               ; (f)ormat (r)egion
