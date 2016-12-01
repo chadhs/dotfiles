@@ -9,6 +9,7 @@ alias cd..='cd ..'
 ## mac only aliases
 if [ $(uname) = "Darwin" ]; then
 	alias flushdns='dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
+	alias restart_en0='sudo ifconfig en0 down && sudo ifconfig en0 up'
 	alias shadowno='defaults write com.apple.screencapture disable-shadow -bool true && killall SystemUIServer'
 	alias shadowyes='defaults delete com.apple.screencapture disable-shadow && killall SystemUIServer'
 	alias sortlaunchpad='defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock'
