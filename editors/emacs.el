@@ -98,6 +98,7 @@
                      cycle-themes
                      solarized-theme
                      ample-theme
+                     emojify
 
                      ;; modeline
                      spaceline
@@ -317,6 +318,9 @@
  'spaceline-evil-replace nil :background "#dc322f" :foreground "#eee8d5")
 (set-face-attribute
  'spaceline-evil-motion  nil :background "#d33682" :foreground "#eee8d5")
+
+;;; emoji / unicode support 😎👍🏼🚀
+(add-hook 'after-init-hook #'global-emojify-mode)
 
 ;;; keybind discovery
 (require 'which-key)
