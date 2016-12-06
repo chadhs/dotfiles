@@ -569,7 +569,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 				 (magit-diff-mode        . normal)
 				 (magit-log-mode         . normal)
 				 (magit-process-mode     . normal)
-				 (magit-popup-mode       . emacs))
+				 (magit-popup-mode       . emacs)
+                                 ;; this allows vi-mode in zsh shells
+                                 (term-mode              . emacs))
 	 do (evil-set-initial-state mode state))
 
 ;;; declutter the modeline
@@ -718,29 +720,13 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 			    (multi-term-dedicated-select)))
 (evil-leader/set-key "sn" 'multi-term)                      ; toggle (s)hell (n)ew
 
-;;; multi term keybind setup - thanks to rawsyntax (eric h)
-(defcustom term-unbind-key-list
-  '("C-z" "C-x" "C-c" "C-h" "C-y" "<ESC>")
-  "The key list that will need to be unbind."
-  :type 'list
-  :group 'multi-term)
-
-(defcustom term-bind-key-alist
-  '(("C-c C-c" . term-interrupt-subjob)
-    ("s-k"     . term-send-up)
-    ("s-j"     . term-send-down)
-    ("s-{"     . multi-term-prev)
-    ("s-}"     . multi-term-next))
-  "The key alist that will need to be bind.
-If you do not like default setup, modify it, with (KEY . COMMAND) format."
-  :type  'alist
-  :group 'multi-term)
-
-(evil-define-key 'normal term-raw-map "p"         #'term-paste)
-(evil-define-key 'normal term-raw-map "j"         #'term-send-down)
-(evil-define-key 'normal term-raw-map "k"         #'term-send-up)
-(evil-define-key 'normal term-raw-map (kbd "C-c") #'term-send-raw)
-(evil-define-key 'insert term-raw-map (kbd "C-c") #'term-send-raw)
+;;; multi term keybind setup - full vi-mode in zsh within emacs
+(evil-define-key 'emacs  term-raw-map [escape]           #'term-send-esc)
+(evil-define-key 'emacs  term-raw-map (kbd "s-<escape>") #'evil-exit-emacs-state)
+(evil-define-key 'normal term-raw-map (kbd "s-<escape>") #'evil-emacs-state)
+(evil-define-key 'normal term-raw-map "i"                #'evil-emacs-state)
+(evil-define-key 'normal term-raw-map (kbd "C-c")        #'term-send-raw)
+(evil-define-key 'emacs  term-raw-map (kbd "C-c")        #'term-send-raw)
 
 ;;; electric return
 (global-set-key (kbd "RET") #'electrify-return-if-match)

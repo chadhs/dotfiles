@@ -53,7 +53,7 @@ HIST_STAMPS="yyyy-mm-dd"
 
 ## mac + emacs plugins
 if [ $(uname) = "Darwin" ] && [ $EMACS ]; then
-    plugins=(bundler git jump vagrant virtualenvwrapper)
+    plugins=(bundler git jump vagrant vi-mode virtualenvwrapper)
 ## mac plugins
 elif [ $(uname) = "Darwin" ]; then
     plugins=(bundler git jump tmux tmuxinator vagrant vi-mode virtualenvwrapper)
