@@ -123,7 +123,7 @@
                      helm-flx
                      helm-projectile
                      magit
-                     persp-mode ; workspace manager
+                     perspective ; workspace manager
                      projectile
                      zoom-window
 
@@ -209,9 +209,6 @@
 (if (bound-and-true-p persp-mode)
     (message "persp-mode already enabled")
   (persp-mode))
-;; kill buffers if removed from a perspective or if the containing perspective is killed
-(with-eval-after-load "persp-mode"
-  (setq persp-autokill-buffer-on-remove 'kill))
 
 ;;; navigation
 (require 'helm)
@@ -437,10 +434,14 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (declare-function markdown-insert-strike-through nil)
 (declare-function markdown-insert-uri nil)
 (declare-function persp-switch nil)
-(declare-function persp-kill nil)
-(declare-function persp-add-buffer nil)
 (declare-function persp-remove-buffer nil)
-(declare-function persp-switch-to-buffer nil)
+(declare-function persp-kill nil)
+(declare-function persp-rename nil)
+(declare-function persp-add-buffer nil)
+(declare-function persp-set-buffer nil)
+(declare-function persp-import nil)
+(declare-function persp-next nil)
+(declare-function persp-prev nil)
 (declare-function with-editor-cancel nil)
 (declare-function with-editor-finish nil)
 
@@ -581,7 +582,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
            (paredit-mode         "‹›" paredit)
            (column-enforce-mode  nil  column-enforce-mode)
            (helm-mode            nil  helm)
-           (persp-mode           nil persp-mode)
            (undo-tree-mode       nil  undo-tree)
            (vi-tilde-fringe-mode nil  vi-tilde-fringe)
            (which-key-mode       nil  which-key)
@@ -698,10 +698,14 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;; workspaces
 (evil-leader/set-key "ps" #'persp-switch)
-(evil-leader/set-key "pk" #'persp-kill)
+(evil-leader/set-key "pk" #'persp-remove-buffer)
+(evil-leader/set-key "pc" #'persp-kill)
+(evil-leader/set-key "pr" #'persp-rename)
 (evil-leader/set-key "pa" #'persp-add-buffer)
-(evil-leader/set-key "pr" #'persp-remove-buffer)
-(evil-leader/set-key "pb" #'persp-switch-to-buffer)
+(evil-leader/set-key "pA" #'persp-set-buffer)
+(evil-leader/set-key "pi" #'persp-import)
+(evil-leader/set-key "pn" #'persp-next)
+(evil-leader/set-key "pp" #'persp-prev)
 
 ;;; dired navigation
 ;; g to update dired buffer info
@@ -835,7 +839,7 @@ If you do not like default setup, modify it, with (KEY . COMMAND) format."
 (evil-leader/set-key "ff"  #'cider-format-defun)                ; (f)ormat (f)orm
 (evil-leader/set-key "fr"  #'cider-format-region)               ; (f)ormat (r)egion
 (evil-leader/set-key "fb"  #'cider-format-buffer)               ; (f)ormat (b)uffer
-(evil-leader/set-key "rf"  #'cljr-helm)                         ; (c)lj (r)efactor
+(evil-leader/set-key "rf"  #'cljr-helm)                         ; clj (r)e(f)actor
 ;; set evil style j and k in cider-test-report-mode
 (with-eval-after-load "cider"
   (define-key cider-test-report-mode-map (kbd "k") #'previous-line)
