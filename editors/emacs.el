@@ -721,12 +721,21 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "sn" 'multi-term)                      ; toggle (s)hell (n)ew
 
 ;;; multi term keybind setup - full vi-mode in zsh within emacs
+;; don't leave emacs mode when pressing esc, pass through for vim compatability
 (evil-define-key 'emacs  term-raw-map [escape]           #'term-send-esc)
+;; super-esc toggle emacs and evil modes
 (evil-define-key 'emacs  term-raw-map (kbd "s-<escape>") #'evil-exit-emacs-state)
 (evil-define-key 'normal term-raw-map (kbd "s-<escape>") #'evil-emacs-state)
+;; never use evil insert mode in term-mode, prefer our shell's vi-mode
 (evil-define-key 'normal term-raw-map "i"                #'evil-emacs-state)
+;; trample "C-c" emacs bind so it behaves like a normal shell interrupt
 (evil-define-key 'normal term-raw-map (kbd "C-c")        #'term-send-raw)
 (evil-define-key 'emacs  term-raw-map (kbd "C-c")        #'term-send-raw)
+;; fix pasting into terminal without needing line-mode
+(evil-define-key 'emacs  term-raw-map (kbd "s-v")        #'term-paste)
+;; vi-mode and vim compatability
+(evil-define-key 'emacs  term-raw-map (kbd "C-v")        #'term-send-raw)
+(evil-define-key 'emacs  term-raw-map (kbd "C-r")        #'term-send-raw)
 
 ;;; electric return
 (global-set-key (kbd "RET") #'electrify-return-if-match)
