@@ -736,6 +736,11 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;; vi-mode and vim compatability
 (evil-define-key 'emacs  term-raw-map (kbd "C-v")        #'term-send-raw)
 (evil-define-key 'emacs  term-raw-map (kbd "C-r")        #'term-send-raw)
+;; move to next / prev window
+(evil-define-key 'emacs  term-raw-map (kbd "C-j")        #'evil-window-next)
+(evil-define-key 'emacs  term-raw-map (kbd "C-k")        #'evil-window-prev)
+(evil-define-key 'emacs  term-raw-map (kbd "C-h")        #'evil-window-left)
+(evil-define-key 'emacs  term-raw-map (kbd "C-l")        #'evil-window-right)
 
 ;;; electric return
 (global-set-key (kbd "RET") #'electrify-return-if-match)
