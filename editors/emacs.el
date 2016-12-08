@@ -118,6 +118,7 @@
                      dash-at-point ; launch Dash on macOS
 
                      ;; workspace / project / file / buffer mgmt
+                     buffer-move
                      helm
                      helm-ag
                      helm-flx
@@ -205,10 +206,13 @@
 ;;; window management
 (require 'zoom-window)
 (setq zoom-window-mode-line-color nil)
+
 ;; prevent reloading persp-mode when reloading emacs config
 (if (bound-and-true-p persp-mode)
     (message "persp-mode already enabled")
   (persp-mode))
+
+(require 'buffer-move)
 
 ;;; navigation
 (require 'helm)
@@ -661,6 +665,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (define-key evil-motion-state-map (kbd "C-k") #'evil-window-prev)
 (define-key evil-motion-state-map (kbd "C-h") #'evil-window-left)
 (define-key evil-motion-state-map (kbd "C-l") #'evil-window-right)
+
+;;; move/swap buffers between windows
+(define-key evil-motion-state-map (kbd "C-S-J") #'buf-move-down)
+(define-key evil-motion-state-map (kbd "C-S-K") #'buf-move-up)
+(define-key evil-motion-state-map (kbd "C-S-H") #'buf-move-left)
+(define-key evil-motion-state-map (kbd "C-S-L") #'buf-move-right)
 
 ;;; close windows
 ;; evil-mode built in with `C-w c`
