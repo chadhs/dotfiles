@@ -783,6 +783,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "w(" #'paredit-wrap-sexp)
 (evil-leader/set-key "w[" #'paredit-wrap-square)
 (evil-leader/set-key "w{" #'paredit-wrap-curly)
+(evil-leader/set-key "w<" #'paredit-wrap-angled)
 ;; barf == push out of current sexp
 ;; slurp == pull into current sexp
 (evil-leader/set-key ">>" #'paredit-forward-barf-sexp)
