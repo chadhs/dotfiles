@@ -662,16 +662,16 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (global-set-key (kbd "s-<down>")  #'evil-window-decrease-height)
 
 ;;; move to next / prev window
-(bind-key*      "C-k"       'evil-window-up)
-(bind-key*      "C-j"       'evil-window-down)
-(global-set-key (kbd "C-h") 'evil-window-left)
-(global-set-key (kbd "C-l") 'evil-window-right)
+(bind-key*      "C-k"       #'evil-window-up)
+(bind-key*      "C-j"       #'evil-window-down)
+(global-set-key (kbd "C-h") #'evil-window-left)
+(global-set-key (kbd "C-l") #'evil-window-right)
 
 ;;; move/swap buffers between windows
-(global-set-key (kbd "C-S-K") 'buf-move-up)
-(global-set-key (kbd "C-S-J") 'buf-move-down)
-(global-set-key (kbd "C-S-H") 'buf-move-left)
-(global-set-key (kbd "C-S-L") 'buf-move-right)
+(global-set-key (kbd "C-S-K") #'buf-move-up)
+(global-set-key (kbd "C-S-J") #'buf-move-down)
+(global-set-key (kbd "C-S-H") #'buf-move-left)
+(global-set-key (kbd "C-S-L") #'buf-move-right)
 
 ;;; close windows
 ;; evil-mode built in with `C-w c`
