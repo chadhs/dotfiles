@@ -72,6 +72,7 @@
 
 ;;; packages to install
 (setq package-list '(;; emacs enhancements
+                     bind-key ; allow overriding of any keybinds
                      exec-path-from-shell ; make sure PATH makes shell PATH
                      delight ; customize modeline appearance
                      multi-term
@@ -661,16 +662,16 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (global-set-key (kbd "s-<down>")  #'evil-window-decrease-height)
 
 ;;; move to next / prev window
-(define-key evil-motion-state-map (kbd "C-j") #'evil-window-next)
-(define-key evil-motion-state-map (kbd "C-k") #'evil-window-prev)
-(define-key evil-motion-state-map (kbd "C-h") #'evil-window-left)
-(define-key evil-motion-state-map (kbd "C-l") #'evil-window-right)
+(bind-key*      "C-k"       'evil-window-up)
+(bind-key*      "C-j"       'evil-window-down)
+(global-set-key (kbd "C-h") 'evil-window-left)
+(global-set-key (kbd "C-l") 'evil-window-right)
 
 ;;; move/swap buffers between windows
-(define-key evil-motion-state-map (kbd "C-S-J") #'buf-move-down)
-(define-key evil-motion-state-map (kbd "C-S-K") #'buf-move-up)
-(define-key evil-motion-state-map (kbd "C-S-H") #'buf-move-left)
-(define-key evil-motion-state-map (kbd "C-S-L") #'buf-move-right)
+(global-set-key (kbd "C-S-K") 'buf-move-up)
+(global-set-key (kbd "C-S-J") 'buf-move-down)
+(global-set-key (kbd "C-S-H") 'buf-move-left)
+(global-set-key (kbd "C-S-L") 'buf-move-right)
 
 ;;; close windows
 ;; evil-mode built in with `C-w c`
@@ -746,11 +747,6 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;; vi-mode and vim compatability
 (evil-define-key 'emacs  term-raw-map (kbd "C-v")        #'term-send-raw)
 (evil-define-key 'emacs  term-raw-map (kbd "C-r")        #'term-send-raw)
-;; move to next / prev window
-(evil-define-key 'emacs  term-raw-map (kbd "C-j")        #'evil-window-next)
-(evil-define-key 'emacs  term-raw-map (kbd "C-k")        #'evil-window-prev)
-(evil-define-key 'emacs  term-raw-map (kbd "C-h")        #'evil-window-left)
-(evil-define-key 'emacs  term-raw-map (kbd "C-l")        #'evil-window-right)
 
 ;;; electric return
 (global-set-key (kbd "RET") #'electrify-return-if-match)
