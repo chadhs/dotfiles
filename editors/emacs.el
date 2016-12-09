@@ -847,6 +847,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (evil-leader/set-key "fr"  #'cider-format-region)               ; (f)ormat (r)egion
 (evil-leader/set-key "fb"  #'cider-format-buffer)               ; (f)ormat (b)uffer
 (evil-leader/set-key "rf"  #'cljr-helm)                         ; clj (r)e(f)actor
+;; replace C-j keybind in cider-repl with S-<return>
+(bind-key "S-<return>" #'cider-repl-newline-and-indent cider-repl-mode-map)
 ;; set evil style j and k in cider-test-report-mode
 (with-eval-after-load "cider"
   (define-key cider-test-report-mode-map (kbd "k") #'previous-line)
