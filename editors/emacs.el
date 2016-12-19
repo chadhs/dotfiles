@@ -243,30 +243,30 @@
 (require 'projectile)
 (setq projectile-require-project-root nil)
 (setq projectile-globally-ignored-directories
-      (append '(".git"
-                ".cljs_rhino_repl"
-                ".svn"
-                "out"
-                "repl"
-                "target"
-                "venv")
-              projectile-globally-ignored-directories))
+      (cl-union projectile-globally-ignored-directories
+                '(".git"
+                  ".cljs_rhino_repl"
+                  ".svn"
+                  "out"
+                  "repl"
+                  "target"
+                  "venv")))
 (setq projectile-globally-ignored-files
-      (append '(".DS_Store"
-                ".lein-repl-history"
-                "*.gz"
-                "*.pyc"
-                "*.png"
-                "*.jpg"
-                "*.jar"
-                "*.svg"
-                "*.tar.gz"
-                "*.tgz"
-                "*.zip")
-              projectile-globally-ignored-files))
+      (cl-union projectile-globally-ignored-files
+                '(".DS_Store"
+                  ".lein-repl-history"
+                  "*.gz"
+                  "*.pyc"
+                  "*.png"
+                  "*.jpg"
+                  "*.jar"
+                  "*.svg"
+                  "*.tar.gz"
+                  "*.tgz"
+                  "*.zip")))
 (setq projectile-globally-unignored-files
-      (append '("profiles.clj")
-              projectile-globally-unignored-files))
+      (cl-union projectile-globally-unignored-files
+                '("profiles.clj")))
 (projectile-mode)
 
 ;;; code auto-completion settings
@@ -325,6 +325,10 @@
  'spaceline-evil-motion  nil :background "#d33682" :foreground "#eee8d5")
 
 ;;; emoji / unicode support 😎👍🏼🚀
+(require 'emojify)
+(setq emojify-inhibit-major-modes
+      (cl-union emojify-inhibit-major-modes
+                '(term-mode)))
 (add-hook 'after-init-hook #'global-emojify-mode)
 
 ;;; keybind discovery
@@ -664,8 +668,8 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; move to next / prev window
 (bind-key*      "C-k"       #'evil-window-up)
 (bind-key*      "C-j"       #'evil-window-down)
-(global-set-key (kbd "C-h") #'evil-window-left)
-(global-set-key (kbd "C-l") #'evil-window-right)
+(bind-key*      "C-h"       #'evil-window-left)
+(bind-key*      "C-l"       #'evil-window-right)
 
 ;;; move/swap buffers between windows
 (global-set-key (kbd "C-S-K") #'buf-move-up)
@@ -771,6 +775,9 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;; line number toggle
 (evil-leader/set-key "nn" #'linum-mode)
+
+;;; column enforcement toggle
+(evil-leader/set-key "ce" #'column-enforce-mode)
 
 ;; flycheck
 (evil-leader/set-key "fcb" #'flycheck-buffer)         ; (f)ly(c)heck (b)uffer
