@@ -779,7 +779,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; column enforcement toggle
 (evil-leader/set-key "ce" #'column-enforce-mode)
 
-;; flycheck
+;;; flycheck
 (evil-leader/set-key "fcb" #'flycheck-buffer)         ; (f)ly(c)heck (b)uffer
 (evil-leader/set-key "fcn" #'flycheck-next-error)     ; (f)ly(c)heck (n)ext
 (evil-leader/set-key "fcp" #'flycheck-previous-error) ; (f)ly(c)heck (p)revious
