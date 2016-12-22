@@ -1,2 +1,2 @@
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="$HOME/bin:/usr/local/bin:/usr/local/sbin:${PATH}"
 umask 0002 # grant write permsion to group

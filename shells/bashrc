@@ -19,8 +19,8 @@ set -o vi
 # turn on ls color support
 CLICOLOR="YES"; export CLICOLOR
 
-# add local paths to path for homebrew etc
-PATH="/usr/local/bin:/usr/local/sbin:${PATH}"
+# set path and umask
+source ~/.zshenv
 
 # set default editor
 EDITOR="vim"
