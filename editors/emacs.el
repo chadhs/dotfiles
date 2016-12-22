@@ -348,6 +348,7 @@
 (require 'clj-refactor)
 (require 'cljr-helm)
 (setq cider-repl-pop-to-buffer-on-connect nil ; don't show repl buffer on launch
+      cider-repl-display-in-current-window t  ; open repl buffer in current window
       cider-show-error-buffer nil             ; don't show error buffer automatically
       cider-auto-select-error-buffer nil      ; don't switch to error buffer on error
       cider-repl-use-clojure-font-lock t      ; nicer repl output
@@ -525,7 +526,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 
 ;;; smoother scrolling
 (setq scroll-margin 8
-      scroll-conservatively 9999
+      scroll-conservatively 100
       scroll-step 1)
 
 ;;; fix ls warning when dired launches on macOS
