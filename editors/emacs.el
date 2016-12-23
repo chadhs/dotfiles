@@ -622,6 +622,12 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 ;;; (r)estart (e)macs
 (evil-leader/set-key "re" #'restart-emacs)
 
+;;; package management
+(evil-leader/set-key "Pl" #'package-list-packages) ; (P)ackage (l)ist
+(evil-leader/set-key "Pu" #'package-list-packages) ; (P)ackage (u)pgrade
+(evil-leader/set-key "Pd" #'package-delete)        ; (P)ackage (d)elete
+(evil-leader/set-key "Pa" #'package-autoremove)    ; (P)ackage (a)utoremove
+
 ;;; evil emacs conflicts
 (define-key evil-normal-state-map (kbd "C-u") #'evil-scroll-up)
 (define-key evil-visual-state-map (kbd "C-u") #'evil-scroll-up)
