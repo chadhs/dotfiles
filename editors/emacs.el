@@ -129,6 +129,9 @@
                      projectile
                      zoom-window
 
+                     ;; org-mode
+                     org-bullets
+
                      ;; clojure
                      cider
                      clojure-mode
@@ -391,6 +394,37 @@
 ;;; python support
 (add-hook 'python-mode-hook #'elpy-enable)
 
+;;; org-mode
+(setq org-insert-mode-line-in-empty-file t) ; for .txt file compatability
+
+;; gtd settings
+(setq org-todo-keywords
+      '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELLED")))
+(setq org-agenda-files '("~/Dropbox/org/"))
+(setq org-agenda-text-search-extra-files '(agenda-archives))
+;; (setq org-blank-before-new-entry (quote ((heading) (plain-list-item))))
+(setq org-enforce-todo-dependencies t)
+(setq org-log-done (quote time))
+(setq org-log-redeadline (quote time))
+(setq org-log-reschedule (quote time))
+
+;; display
+(add-hook 'org-mode-hook
+          (lambda ()
+            (org-bullets-mode t)))
+(setq org-ellipsis "⤵")
+(setq org-src-fontify-natively t)
+(setq org-src-tab-acts-natively t)
+(setq org-src-window-setup 'current-window)
+
+;; exporting
+(add-hook 'org-mode-hook
+          (lambda ()
+            (require 'ox-md)
+            (require 'ox-beamer)))
+(setq org-export-with-smart-quotes t)
+(setq org-html-postamble nil)
+
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -444,6 +478,7 @@ then it takes a second \\[keyboard-quit] to abort the minibuffer."
 (declare-function markdown-insert-strike-through nil)
 (declare-function markdown-insert-uri nil)
 (declare-function persp-switch nil)
+(declare-function org-bullets-mode nil)
 (declare-function persp-remove-buffer nil)
 (declare-function persp-kill nil)
 (declare-function persp-rename nil)
