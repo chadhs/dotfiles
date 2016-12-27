@@ -6,6 +6,9 @@ alias la='ls -ah'
 alias ll='ls -lh'
 alias lla='ls -lah'
 alias cd..='cd ..'
+## fix backspace in vim in zsh in emacs :grin:
+stty erase '^?'
+
 ## mac only aliases
 if [ $(uname) = "Darwin" ]; then
 	alias flushdns='dscacheutil -flushcache;sudo killall -HUP mDNSResponder'

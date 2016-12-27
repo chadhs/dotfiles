@@ -205,7 +205,8 @@
             (setq yas-dont-activate t)
             (setq-local scroll-margin 0)
             (setq-local scroll-conservatively 0)
-            (setq-local scroll-step 1)))
+            (setq-local scroll-step 1)
+            (setq-local evil-emacs-state-cursor 'bar)))
 
 ;;; window management
 (require 'zoom-window)
