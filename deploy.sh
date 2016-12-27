@@ -63,7 +63,9 @@ symlink_configs(){
     [ ! -d ~/.vim ] && git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
     vim +PluginClean +qall
     vim +PluginInstall +qall
+    [ ! -d ~/.emacs.d ] && mkdir ~/.emacs.d
     [ ! -e ~/.emacs ] && ln -s ~/dotfiles/editors/emacs.el .emacs
+    [ ! -e ~/.emacs.d/emacs-config.org ] && ln -s ~/dotfiles/editors/emacs-config.org ~/.emacs.d/emacs-config.org
     [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig
     [ ! -e ~/.editorconfig ] && ln -s ~/dotfiles/editors/editorconfig .editorconfig
 }
