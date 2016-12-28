@@ -55,7 +55,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; keep track of start time for load time calculation
-(defconst emacs-start-time  (current-time))
+(defconst emacs-start-time (current-time))
 
 ;;; load package support
 (require 'package)
