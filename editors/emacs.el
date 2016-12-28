@@ -6,5 +6,5 @@
 ;; always follow the emacs-config.org symlink without prompting
 (setq vc-follow-symlinks t)
 
-;; emacs-config.org is where the full emacs configuration lives
+;; load the fully documented emacs-config.org configuration
 (org-babel-load-file "~/.emacs.d/emacs-config.org")
