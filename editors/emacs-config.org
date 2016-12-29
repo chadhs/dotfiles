@@ -5,18 +5,26 @@ If you're new to Emacs check out spacemacs: http://spacemacs.org
 
 Chad Stovern <hello@chadstovern.com>
 
-* Package Management
+** Package Management
+   
+I like to keep track of how long it takes emacs to load, so this will establish a starting timestamp.
+
 #+BEGIN_SRC emacs-lisp
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;; package management                                                   ;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-  ;;; keep track of start time for load time calculation
   (defconst emacs-start-time (current-time))
+#+END_SRC
 
-  ;;; load package support
+Many people like to use =use-package= or =Cask= and =pallet=, but I prefer limiting dependencies and managing packages myself.
+
+First we need to load =package= support.
+#+BEGIN_SRC emacs-lisp
   (require 'package)
+#+END_SRC
 
+
+
+** Yet to be documeted...
+
+#+BEGIN_SRC emacs-lisp
   ;;; package repositories
   (setq
    package-archives '(("gnu"           . "https://elpa.gnu.org/packages/")
