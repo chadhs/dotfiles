@@ -8,18 +8,17 @@ If you're new to Emacs check out spacemacs: http://spacemacs.org.
 Chad Stovern [[mailto:hello@chadstovern.com][hello@chadstovern.com]]
 
 
-** Track emacs load time
+** Package Management
+
+Many people like to use =use-package= or =Cask= and =pallet=, but I prefer limiting dependencies and managing packages myself.
+
+*** Track emacs load time
 
 I like to keep track of how long it takes emacs to load, so this will establish a starting timestamp.
 
 #+BEGIN_SRC emacs-lisp
   (defconst emacs-start-time (current-time))
 #+END_SRC
-
-
-** Package Management
-
-Many people like to use =use-package= or =Cask= and =pallet=, but I prefer limiting dependencies and managing packages myself.
 
 *** Load package support
 
@@ -131,7 +130,7 @@ Packages to be installed are defined in one big list.  Information about these p
                        yaml-mode))
 #+END_SRC
 
-*** more pkg stuff
+*** more pkg stuff to document
 
 #+BEGIN_SRC emacs-lisp
   ;;; loads packages and activates them
@@ -156,6 +155,8 @@ Packages to be installed are defined in one big list.  Information about these p
 ** Package specific configuration
 
 This section describes all the packages in use as well as their options.
+
+TODO: add documentation
 
 #+BEGIN_SRC emacs-lisp
   ;;; evil-mode settings
@@ -422,6 +423,8 @@ This section describes all the packages in use as well as their options.
 
 This section contains any functions and their purpose.
 
+TODO: add documentation
+
 #+BEGIN_SRC emacs-lisp
   ;;; yes and no prompts
   (defalias 'yes-or-no-p 'y-or-n-p)
@@ -487,6 +490,8 @@ This section contains any functions and their purpose.
 ** User configuration
 
 This section is where all general emacs configuration lives.
+
+TODO: add documentation
 
 #+BEGIN_SRC emacs-lisp
   ;;; path fix for os x gui mode
@@ -640,6 +645,8 @@ This section is where all general emacs configuration lives.
 ** Key bindings
 
 This section contains all my emacs key bindings.  I like keeping all my key bindings in one place rather than with each package.
+
+TODO: add documentation
 
 #+BEGIN_SRC emacs-lisp
   ;;; (e)dit (e)macs user init file
