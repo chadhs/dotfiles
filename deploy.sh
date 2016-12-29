@@ -11,7 +11,7 @@ update_repo(){
 os_setup(){
   system_type="$(uname)"
   if [ "$system_type" = "Darwin" ]; then
-    system_os="mac"
+    system_os="macos"
     pkg_install="brew install"
     package_list="editorconfig emacs --with-cocoa git macvim --override-system-vim tmux zsh"
   elif [ "$system_type" = "FreeBSD" ]; then
