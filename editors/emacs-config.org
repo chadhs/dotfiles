@@ -7,6 +7,7 @@ If you're new to Emacs check out spacemacs: http://spacemacs.org.
 
 Chad Stovern [[mailto:hello@chadstovern.com][hello@chadstovern.com]]
 
+
 ** Track emacs load time
 
 I like to keep track of how long it takes emacs to load, so this will establish a starting timestamp.
@@ -14,6 +15,7 @@ I like to keep track of how long it takes emacs to load, so this will establish 
 #+BEGIN_SRC emacs-lisp
   (defconst emacs-start-time (current-time))
 #+END_SRC
+
 
 ** Package Management
 
@@ -129,10 +131,9 @@ Packages to be installed are defined in one big list.  Information about these p
                        yaml-mode))
 #+END_SRC
 
-** Yet to be documeted...
+*** more pkg stuff
 
 #+BEGIN_SRC emacs-lisp
-
   ;;; loads packages and activates them
   (package-initialize)
 
@@ -149,13 +150,14 @@ Packages to be installed are defined in one big list.  Information about these p
   (let ((elapsed (float-time (time-subtract (current-time)
                                             emacs-start-time))))
     (message "Loaded packages in %.3fs" elapsed))
+#+END_SRC
 
 
+** Package specific configuration
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;; package config                                                       ;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+This section describes all the packages in use as well as their options.
 
+#+BEGIN_SRC emacs-lisp
   ;;; evil-mode settings
   (require 'evil-leader) ; load evil-leader first so it's initialized for evil
   (setq evil-leader/in-all-states 1)
@@ -413,13 +415,14 @@ Packages to be installed are defined in one big list.  Information about these p
               (require 'ox-beamer)))
   (setq org-export-with-smart-quotes t)
   (setq org-html-postamble nil)
+#+END_SRC
 
 
+** User functions
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;; user functions                                                       ;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+This section contains any functions and their purpose.
 
+#+BEGIN_SRC emacs-lisp
   ;;; yes and no prompts
   (defalias 'yes-or-no-p 'y-or-n-p)
 
@@ -478,13 +481,14 @@ Packages to be installed are defined in one big list.  Information about these p
   (declare-function persp-prev nil)
   (declare-function with-editor-cancel nil)
   (declare-function with-editor-finish nil)
+#+END_SRC
 
 
+** User configuration
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;; user config                                                          ;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+This section is where all general emacs configuration lives.
 
+#+BEGIN_SRC emacs-lisp
   ;;; path fix for os x gui mode
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize))
@@ -630,13 +634,14 @@ Packages to be installed are defined in one big list.  Information about these p
   ;;; open urls in default browser
   (when (display-graphic-p)
     (setq browse-url-browser-function #'browse-url-default-macosx-browser))
+#+END_SRC
 
 
+** Key bindings
 
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-  ;;;; key bindings                                                         ;;;;
-  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+This section contains all my emacs key bindings.  I like keeping all my key bindings in one place rather than with each package.
 
+#+BEGIN_SRC emacs-lisp
   ;;; (e)dit (e)macs user init file
   (defvar --emacs-config (concat user-emacs-directory "emacs-config.org"))
   (evil-leader/set-key "ee" (lambda () (interactive) (find-file --emacs-config)))
