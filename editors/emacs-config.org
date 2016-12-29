@@ -245,6 +245,9 @@ Chad Stovern <hello@chadstovern.com>
 
   ;;; syntax checking
   (add-hook 'after-init-hook #'global-flycheck-mode)
+  ;; disable documentation related emacs lisp checker
+  (with-eval-after-load 'flycheck
+    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
   ;; floating tooltips only works in graphical mode
   (when (display-graphic-p (selected-frame))
     (with-eval-after-load 'flycheck
@@ -289,7 +292,7 @@ Chad Stovern <hello@chadstovern.com>
   (require 'emojify)
   (setq emojify-inhibit-major-modes
         (cl-union emojify-inhibit-major-modes
-                  '(term-mode)))
+                  '(cider-mode cider-repl-mode term-mode)))
   (add-hook 'after-init-hook #'global-emojify-mode)
 
   ;;; keybind discovery
@@ -611,9 +614,7 @@ Chad Stovern <hello@chadstovern.com>
   (evil-leader/set-key "ee" (lambda () (interactive) (find-file --emacs-config)))
 
   ;;; (s)ource (e)macs user init file
-  (evil-leader/set-key "se" (lambda () (interactive) 
-                              (load-file user-init-file)
-                              (find-file --emacs-config)))
+  (evil-leader/set-key "se" (lambda () (interactive) (load-file user-init-file)))
 
   ;;; (r)estart (e)macs
   (evil-leader/set-key "re" #'restart-emacs)
@@ -828,9 +829,10 @@ Chad Stovern <hello@chadstovern.com>
   (evil-leader/set-key "gaa" #'magit-stage-modified)
   (evil-leader/set-key "grh" #'magit-reset-head)
   (evil-leader/set-key "gca" #'magit-commit)
-  (evil-leader/set-key "cc"  #'with-editor-finish)
-  (evil-leader/set-key "cC"  #'with-editor-cancel)
   (evil-leader/set-key "gp"  #'magit-push-current-to-upstream)
+  ;; specific within magit-mode
+  (evil-leader/set-key-for-mode 'text-mode "cc" #'with-editor-finish)
+  (evil-leader/set-key-for-mode 'text-mode "cC" #'with-editor-cancel)
   ;; let's improve evil-mode compatability
   (with-eval-after-load "magit"
     (define-key magit-status-mode-map (kbd "k") #'previous-line)
@@ -873,6 +875,11 @@ Chad Stovern <hello@chadstovern.com>
   (evil-leader/set-key "Mi" #'markdown-insert-image)
   (evil-leader/set-key "Mh" #'markdown-insert-hr)
   (evil-leader/set-key "Mf" #'markdown-insert-footnote)
+
+  ;;; org-mode
+  (evil-leader/set-key-for-mode 'org-mode "es" 'org-edit-special)
+  (evil-leader/set-key "cc" 'org-edit-src-exit)
+  (evil-leader/set-key "cC" 'org-edit-src-abort)
 
   ;;; ruby-mode
   ;; TODO keybinds for buffer eval
