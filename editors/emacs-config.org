@@ -1,0 +1,965 @@
+#+TITLE: Emacs Configuration
+
+This file bootstraps a complete Emacs environment to my liking.
+If you're new to Emacs check out spacemacs: http://spacemacs.org.
+
+** Personal info
+
+Chad Stovern [[mailto:hello@chadstovern.com][hello@chadstovern.com]]
+
+
+** Package Management
+
+Many people like to use =use-package= or =Cask= and =pallet=, but I prefer limiting dependencies and managing packages myself.
+
+*** Track emacs load time
+
+I like to keep track of how long it takes emacs to load, so this will establish a starting timestamp.
+
+#+BEGIN_SRC emacs-lisp
+  (defconst emacs-start-time (current-time))
+#+END_SRC
+
+*** Load package support
+
+#+BEGIN_SRC emacs-lisp
+  (require 'package)
+#+END_SRC
+
+*** Define package repositories
+
+#+BEGIN_SRC emacs-lisp
+  (setq
+   package-archives '(("gnu"           . "https://elpa.gnu.org/packages/")
+                      ("melpa"         . "https://melpa.org/packages/")
+                      ("melpa-stable"  . "https://stable.melpa.org/packages/")))
+#+END_SRC
+
+*** Pin packages
+
+The lastest packages are nice, but sometimes you want to stick with stable releases.  Package will always install the lastest packages available unless a package is pinned to a repository.
+
+#+BEGIN_SRC emacs-lisp
+  (setq package-pinned-packages '((cider        . "melpa-stable")
+                                  (clj-refactor . "melpa-stable")))
+#+END_SRC
+
+*** Package list
+
+Packages to be installed are defined in one big list.  Information about these packages and how they're used will be in the sections to follow this one.
+
+#+BEGIN_SRC emacs-lisp
+  (setq package-list '(;; emacs enhancements
+                       bind-key ; allow overriding of any keybinds
+                       exec-path-from-shell ; make sure PATH makes shell PATH
+                       delight ; customize modeline appearance
+                       multi-term
+                       restart-emacs ; restart emacs from within emacs
+                       which-key
+
+                       ;; editing enhancements
+                       ace-jump-mode
+                       column-enforce-mode
+                       editorconfig
+                       paredit
+                       rainbow-delimiters
+
+                       ;; auto-completion
+                       auto-complete
+                       ac-cider
+
+                       ;; syntax checking
+                       flycheck
+                       flycheck-pos-tip
+                       flycheck-clojure
+
+                       ;; themes
+                       cycle-themes
+                       solarized-theme
+                       ample-theme
+                       emojify
+
+                       ;; modeline
+                       spaceline
+
+                       ;; vim mode
+                       evil
+                       evil-leader
+                       evil-matchit
+                       evil-nerd-commenter
+                       evil-paredit
+                       evil-search-highlight-persist
+                       evil-surround
+                       evil-visualstar
+                       vi-tilde-fringe
+
+                       ;; docs
+                       dash-at-point ; launch Dash on macOS
+
+                       ;; workspace / project / file / buffer mgmt
+                       buffer-move
+                       helm
+                       helm-ag
+                       helm-flx
+                       helm-projectile
+                       magit
+                       perspective ; workspace manager
+                       projectile
+                       zoom-window
+
+                       ;; org-mode
+                       org-bullets
+
+                       ;; clojure
+                       cider
+                       clojure-mode
+                       clojure-mode-extra-font-locking
+                       clj-refactor
+                       cljr-helm
+
+                       ;; ruby
+                       inf-ruby
+                       robe
+
+                       ;; python
+                       elpy
+
+                       ;; other syntaxes
+                       markdown-mode
+                       web-mode
+                       yaml-mode))
+#+END_SRC
+
+*** more pkg stuff to document
+
+#+BEGIN_SRC emacs-lisp
+  ;;; loads packages and activates them
+  (package-initialize)
+
+  ;;; fetch the list of packages available
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+  ;;; install / update packages
+  (dolist (package package-list)
+    (unless (package-installed-p package)
+      (package-install package)))
+
+  ;;; show package load time
+  (let ((elapsed (float-time (time-subtract (current-time)
+                                            emacs-start-time))))
+    (message "Loaded packages in %.3fs" elapsed))
+#+END_SRC
+
+
+** Package specific configuration
+
+This section describes all the packages in use as well as their options.
+
+TODO: add documentation
+
+#+BEGIN_SRC emacs-lisp
+  ;;; evil-mode settings
+  (require 'evil-leader) ; load evil-leader first so it's initialized for evil
+  (setq evil-leader/in-all-states 1)
+  (global-evil-leader-mode)
+  (evil-leader/set-leader ",")
+
+  (require 'evil)
+  (evil-mode 1)
+
+  (require 'evil-matchit)
+  (global-evil-matchit-mode 1)
+
+  (evilnc-default-hotkeys)
+
+  (require 'evil-surround)
+  (global-evil-surround-mode 1)
+
+  (global-evil-visualstar-mode)
+
+  (require 'evil-search-highlight-persist)
+  (global-evil-search-highlight-persist t)
+
+  ;;; terminal settings
+  (setq multi-term-dedicated-window-height 30
+        multi-term-program "/usr/local/bin/zsh")
+  (add-hook 'term-mode-hook
+            (lambda ()
+              (setq term-buffer-maximum-size 10000)
+              (setq yas-dont-activate t)
+              (setq-local scroll-margin 0)
+              (setq-local scroll-conservatively 0)
+              (setq-local scroll-step 1)
+              (setq-local evil-emacs-state-cursor 'bar)))
+
+  ;;; window management
+  (require 'zoom-window)
+  (setq zoom-window-mode-line-color nil)
+
+  ;; prevent reloading persp-mode when reloading emacs config
+  (if (bound-and-true-p persp-mode)
+      (message "persp-mode already enabled")
+    (persp-mode))
+
+  (require 'buffer-move)
+
+  ;;; navigation
+  (require 'helm)
+  (helm-mode 1)
+  (helm-autoresize-mode 1)
+  (helm-flx-mode +1)
+
+  (setq helm-mode-fuzzy-match t ; global
+        helm-completion-in-region-fuzzy-match t ; global
+        helm-apropos-fuzzy-match t
+        helm-bookmark-show-location t
+        helm-buffers-fuzzy-matching t
+        helm-file-cache-fuzzy-match t
+        helm-imenu-fuzzy-match t
+        helm-lisp-completion-at-point t
+        helm-locate-fuzzy-match t
+        helm-M-x-fuzzy-match t
+        helm-mode-fuzzy-match t
+        helm-recentf-fuzzy-match t
+        helm-quick-update t ; show only enough candidates to fill the buffer
+        helm-semantic-fuzzy-match t)
+
+  ;; speed up matching by giving emacs garbage collection a more modern threshold
+  (setq gc-cons-threshold 20000000)
+
+  ;;; project management
+  (require 'projectile)
+  (setq projectile-require-project-root nil)
+  (setq projectile-globally-ignored-directories
+        (cl-union projectile-globally-ignored-directories
+                  '(".git"
+                    ".cljs_rhino_repl"
+                    ".svn"
+                    "out"
+                    "repl"
+                    "target"
+                    "venv")))
+  (setq projectile-globally-ignored-files
+        (cl-union projectile-globally-ignored-files
+                  '(".DS_Store"
+                    ".lein-repl-history"
+                    "*.gz"
+                    "*.pyc"
+                    "*.png"
+                    "*.jpg"
+                    "*.jar"
+                    "*.svg"
+                    "*.tar.gz"
+                    "*.tgz"
+                    "*.zip")))
+  (setq projectile-globally-unignored-files
+        (cl-union projectile-globally-unignored-files
+                  '("profiles.clj")))
+  (projectile-mode)
+
+  ;;; code auto-completion settings
+  (ac-config-default)
+  (setq ac-disable-faces nil)
+  (define-key ac-completing-map "\t" 'ac-complete) ; set tab key for completion
+  (define-key ac-completing-map "\r" nil)          ; disable return
+  (add-to-list 'ac-modes #'cider-mode)
+  (add-to-list 'ac-modes #'cider-repl-mode)
+  (add-to-list 'ac-modes #'conf-space-mode)
+  (add-to-list 'ac-modes #'html-mode)
+  (add-to-list 'ac-modes #'markdown-mode)
+  (add-to-list 'ac-modes #'org-mode)
+  (add-to-list 'ac-modes #'sql-mode)
+  (add-to-list 'ac-modes #'yaml-mode)
+
+  ;;; syntax checking
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+  ;; disable documentation related emacs lisp checker
+  (with-eval-after-load 'flycheck
+    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+  ;; floating tooltips only works in graphical mode
+  (when (display-graphic-p (selected-frame))
+    (with-eval-after-load 'flycheck
+      (setq flycheck-display-errors-function #'flycheck-pos-tip-error-messages)
+      (flycheck-pos-tip-mode)))
+  (setq flycheck-check-syntax-automatically '(mode-enabled save))
+
+  ;;; paredit
+  (autoload 'enable-paredit-mode "Pseudo-structural editing of Lisp code." t)
+  (add-hook 'prog-mode-hook #'enable-paredit-mode)
+  (add-hook 'org-mode-hook  #'enable-paredit-mode)
+  (add-hook 'prog-mode-hook #'evil-paredit-mode)
+  (add-hook 'org-mode-hook  #'evil-paredit-mode)
+
+  ;;; rainbow delimiters
+  (require 'rainbow-delimiters)
+  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+
+  ;;; 80 column enforcement
+  (setq column-enforce-column 81
+        column-enforce-comments nil)
+  (add-hook 'prog-mode-hook #'column-enforce-mode)
+
+  ;;; spaceline
+  (require 'spaceline-config)
+  (setq spaceline-highlight-face-func #'spaceline-highlight-face-evil-state
+        powerline-default-separator nil
+        spaceline-buffer-size-p nil)
+  (spaceline-spacemacs-theme)
+  (set-face-attribute
+   'spaceline-evil-emacs   nil :background "#6c71c4" :foreground "#eee8d5")
+  (set-face-attribute
+   'spaceline-evil-normal  nil :background "#859900" :foreground "#eee8d5")
+  (set-face-attribute
+   'spaceline-evil-insert  nil :background "#268bd2" :foreground "#eee8d5")
+  (set-face-attribute
+   'spaceline-evil-visual  nil :background "#cb4b16" :foreground "#eee8d5")
+  (set-face-attribute
+   'spaceline-evil-replace nil :background "#dc322f" :foreground "#eee8d5")
+  (set-face-attribute
+   'spaceline-evil-motion  nil :background "#d33682" :foreground "#eee8d5")
+
+  ;;; emoji / unicode support 😎👍🏼🚀
+  (require 'emojify)
+  (setq emojify-inhibit-major-modes
+        (cl-union emojify-inhibit-major-modes
+                  '(cider-mode cider-repl-mode term-mode)))
+  (add-hook 'after-init-hook #'global-emojify-mode)
+
+  ;;; keybind discovery
+  (require 'which-key)
+  (which-key-mode)
+
+  ;;; ace-jump
+  (setq ace-jump-word-mode-use-query-char nil) ; no leading word character needed
+
+  ;;; editorconfig: indentation and whitespace settings
+  (require 'editorconfig)
+  (editorconfig-mode 1)
+
+  ;;; clojure support
+  (require 'clojure-mode-extra-font-locking)
+  (require 'ac-cider)
+  (require 'clj-refactor)
+  (require 'cljr-helm)
+  (setq cider-repl-pop-to-buffer-on-connect nil ; don't show repl buffer on launch
+        cider-repl-display-in-current-window t  ; open repl buffer in current window
+        cider-show-error-buffer nil             ; don't show error buffer automatically
+        cider-auto-select-error-buffer nil      ; don't switch to error buffer on error
+        cider-repl-use-clojure-font-lock t      ; nicer repl output
+        cider-repl-history-file (concat user-emacs-directory "cider-history")
+        cider-repl-wrap-history t
+        cider-repl-history-size 3000)
+  (add-hook 'clojure-mode-hook (lambda ()
+                                 (clj-refactor-mode 1)
+                                 (yas-minor-mode)))
+  (add-hook 'cider-repl-mode-hook (lambda ()
+                                    (paredit-mode)
+                                    (ac-cider-setup)))
+  (add-hook 'cider-mode-hook (lambda ()
+                               (ac-flyspell-workaround)
+                               (ac-cider-setup)))
+  (eval-after-load 'flycheck '(flycheck-clojure-setup))
+
+  ;;; web templates
+  (require 'web-mode)
+  (setq web-mode-markup-indent-offset 2
+        web-mode-css-indent-offset 2
+        web-mode-code-indent-offset 2)
+  (add-to-list 'auto-mode-alist '("\\.html?\\'"   . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.css?\\'"    . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.scss?\\'"   . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.less?\\'"   . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.js?\\'"     . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.php?\\'"    . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.jinja?\\'"  . web-mode))
+
+  ;;; yaml support
+  (require 'yaml-mode)
+
+  ;;; ruby support
+  (add-hook 'ruby-mode-hook (lambda ()
+                              (inf-ruby-minor-mode)
+                              (robe-mode)))
+  (add-hook 'robe-mode-hook #'ac-robe-setup)
+
+  ;;; python support
+  (add-hook 'python-mode-hook #'elpy-enable)
+
+  ;;; org-mode
+  (setq org-insert-mode-line-in-empty-file t) ; for .txt file compatability
+
+  ;; gtd settings
+  (setq org-todo-keywords
+        '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELLED")))
+  (setq org-agenda-files '("~/Dropbox/org/"))
+  (setq org-agenda-text-search-extra-files '(agenda-archives))
+  ;; (setq org-blank-before-new-entry (quote ((heading) (plain-list-item))))
+  (setq org-enforce-todo-dependencies t)
+  (setq org-log-done (quote time))
+  (setq org-log-redeadline (quote time))
+  (setq org-log-reschedule (quote time))
+
+  ;; display
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (org-bullets-mode t)))
+  (setq org-ellipsis "⤵")
+  (setq org-src-fontify-natively t)
+  (setq org-src-tab-acts-natively t)
+  (setq org-src-window-setup 'current-window)
+
+  ;; exporting
+  (add-hook 'org-mode-hook
+            (lambda ()
+              (require 'ox-md)
+              (require 'ox-beamer)))
+  (setq org-export-with-smart-quotes t)
+  (setq org-html-postamble nil)
+#+END_SRC
+
+
+** User functions
+
+This section contains any functions and their purpose.
+
+TODO: add documentation
+
+#+BEGIN_SRC emacs-lisp
+  ;;; yes and no prompts
+  (defalias 'yes-or-no-p 'y-or-n-p)
+
+  ;;; electric return functionality
+  (defvar electrify-return-match
+    "[\]}\)]"
+    "If this regexp matches the text after the cursor, do an \"electric\" return.")
+
+  (defun electrify-return-if-match (arg)
+    "When text after cursor and ARG match, open and indent an empty line.
+  Do this between the cursor and the text.  Then move the cursor to the new line."
+    (interactive "P")
+    (let ((case-fold-search nil))
+      (if (looking-at electrify-return-match)
+          (save-excursion (newline-and-indent)))
+      (newline arg)
+      (indent-according-to-mode)))
+
+  ;;; make escape act like C-g in evil-mode
+  (defun minibuffer-keyboard-quit ()
+    "Abort recursive edit.
+  In Delete Selection mode, if the mark is active, just deactivate it;
+  then it takes a second \\[keyboard-quit] to abort the minibuffer."
+    (interactive)
+    (if (and delete-selection-mode transient-mark-mode mark-active)
+        (setq deactivate-mark  t)
+      (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+      (abort-recursive-edit)))
+
+  ;;; suppress function not defined warnings caused by referring to functions not yet loaded with #' (sharp quotes).
+  (declare-function browse-url-default-macosx-browser nil)
+  (declare-function cider-repl-mode nil)
+  (declare-function flycheck-buffer nil)
+  (declare-function flycheck-list-errors nil)
+  (declare-function flycheck-next-error nil)
+  (declare-function flycheck-pos-tip-error-messages nil)
+  (declare-function flycheck-previous-error nil)
+  (declare-function magit-discard nil)
+  (declare-function markdown-insert-bold nil)
+  (declare-function markdown-insert-footnote nil)
+  (declare-function markdown-insert-hr nil)
+  (declare-function markdown-insert-image nil)
+  (declare-function markdown-insert-italic nil)
+  (declare-function markdown-insert-link nil)
+  (declare-function markdown-insert-strike-through nil)
+  (declare-function markdown-insert-uri nil)
+  (declare-function persp-switch nil)
+  (declare-function org-bullets-mode nil)
+  (declare-function persp-remove-buffer nil)
+  (declare-function persp-kill nil)
+  (declare-function persp-rename nil)
+  (declare-function persp-add-buffer nil)
+  (declare-function persp-set-buffer nil)
+  (declare-function persp-import nil)
+  (declare-function persp-next nil)
+  (declare-function persp-prev nil)
+  (declare-function with-editor-cancel nil)
+  (declare-function with-editor-finish nil)
+#+END_SRC
+
+
+** User configuration
+
+This section is where all general emacs configuration lives.
+
+TODO: add documentation
+
+#+BEGIN_SRC emacs-lisp
+  ;;; path fix for os x gui mode
+  (when (memq window-system '(mac ns))
+    (exec-path-from-shell-initialize))
+
+  ;;; os x keybinding fix
+  ;; For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option key acts as: > choose +Esc
+
+  ;;; startup behavior
+  (setq inhibit-startup-message t)
+
+  ;;; set default starting directory (avoid launching projectile at HOME or src root)
+  (defvar --user-home-dir (concat (getenv "HOME") "/"))
+  (defvar --user-src-dir (concat --user-home-dir "src/"))
+  (defvar --user-scratch-dir (concat --user-src-dir "scratch/"))
+  (unless (file-exists-p --user-scratch-dir)
+    (make-directory --user-scratch-dir t))
+  (when (or (string= default-directory "~/")
+            (string= default-directory --user-home-dir)
+            (string= default-directory --user-src-dir))
+    (setq default-directory --user-scratch-dir))
+
+  ;;; default to utf8
+  (prefer-coding-system 'utf-8)
+
+  ;;; pretty symbols
+  (global-prettify-symbols-mode)
+
+  ;;; highlight matching parens
+  (show-paren-mode 1)
+  (setq show-paren-delay 0)
+
+  ;;; show end of buffer in editing modes (easily see empty lines)
+  (add-hook 'prog-mode-hook #'vi-tilde-fringe-mode)
+  (add-hook 'markdown-mode-hook #'vi-tilde-fringe-mode)
+  (add-hook 'conf-space-mode-hook #'vi-tilde-fringe-mode)
+
+  ;;; themes
+  (if (display-graphic-p)
+      ;; load graphical theme
+      (progn
+        (load-theme 'solarized-dark t)
+        (load-theme 'solarized-light t))
+    ;; load terminal theme
+    (load-theme 'ample t))
+
+  ;;; cycle themes
+  (setq cycle-themes-theme-list
+        '(solarized-dark
+          solarized-light))
+  (require 'cycle-themes)
+
+  ;;; font settings
+  (set-face-attribute 'default nil :family "Menlo" :height 140 :weight 'normal)
+
+  ;;; turn off menu-bar, tool-bar, and scroll-bar
+  (menu-bar-mode -1)
+  (when (display-graphic-p)
+    (tool-bar-mode -1)
+    (scroll-bar-mode -1))
+
+  ;;; hi-light current line
+  (global-hl-line-mode)
+
+  ;;; smoother scrolling
+  (setq scroll-margin 8
+        scroll-conservatively 100
+        scroll-step 1)
+
+  ;;; fix ls warning when dired launches on macOS
+  (when (eq system-type 'darwin)
+    (require 'ls-lisp)
+    (setq ls-lisp-use-insert-directory-program nil))
+
+  ;;; initial widow size and position (`left . -1` is to get close to right align)
+  (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
+
+  ;;; tab settings
+  (setq indent-tabs-mode nil)
+
+  ;;; remember cursor position in buffers
+  (if (version< emacs-version "25.1")
+      (lambda ()
+        (require 'saveplace)
+        (setq-default save-place t))
+    (save-place-mode 1))
+
+  ;;; store auto-save and backup files in ~/.emacs.d/backups/
+  (defvar --backup-dir (concat user-emacs-directory "backups"))
+  (unless (file-exists-p --backup-dir)
+    (make-directory --backup-dir t))
+  (setq backup-directory-alist `((".*" . ,--backup-dir)))
+  (setq auto-save-file-name-transforms `((".*" ,--backup-dir t)))
+  (setq backup-by-copying t
+        delete-old-versions t
+        kept-new-versions 6
+        kept-old-versions 2
+        version-control t
+        auto-save-default t)
+
+  ;;; file type to mode mappings
+  (add-to-list 'auto-mode-alist '(".editorconfig" . editorconfig-conf-mode))
+  (add-to-list 'auto-mode-alist '("\\.emacs"      . emacs-lisp-mode))
+  (add-to-list 'auto-mode-alist '("\\.md"         . markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.txt"        . markdown-mode))
+  (add-to-list 'auto-mode-alist '("\\.sls"        . yaml-mode))
+  (add-to-list 'auto-mode-alist '("\\.yml"        . yaml-mode))
+
+  ;;; version control
+  (setq vc-follow-symlinks t)
+
+  ;;; set initial evil state for particular modes
+  (cl-loop for (mode . state) in '((cider-test-report-mode . emacs)
+                                   (dired-mode             . normal)
+                                   (magit-mode             . normal)
+                                   (magit-status-mode      . emacs)
+                                   (magit-diff-mode        . normal)
+                                   (magit-log-mode         . normal)
+                                   (magit-process-mode     . normal)
+                                   (magit-popup-mode       . emacs)
+                                   ;; this allows vi-mode in zsh shells
+                                   (term-mode              . emacs))
+           do (evil-set-initial-state mode state))
+
+  ;;; declutter the modeline
+  (require 'delight)
+  (delight '((auto-complete-mode   "⇥"  auto-complete)
+             (auto-revert-mode     "↺"  t)
+             (clj-refactor-mode    "↻"  clj-refactor)
+             (editorconfig-mode    "↹"  editorconfig)
+             (flycheck-mode        "✓"  flycheck)
+             (paredit-mode         "‹›" paredit)
+             (column-enforce-mode  nil  column-enforce-mode)
+             (helm-mode            nil  helm)
+             (undo-tree-mode       nil  undo-tree)
+             (vi-tilde-fringe-mode nil  vi-tilde-fringe)
+             (which-key-mode       nil  which-key)
+             (yas-minor-mode       nil  yasnippet)))
+
+  ;;; modeline tweaks
+  (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
+  (setq cider-mode-line '(:eval (format " [%s]" (cider--modeline-info))))
+
+  ;;; open urls in default browser
+  (when (display-graphic-p)
+    (setq browse-url-browser-function #'browse-url-default-macosx-browser))
+#+END_SRC
+
+
+** Key bindings
+
+This section contains all my emacs key bindings.  I like keeping all my key bindings in one place rather than with each package.
+
+TODO: add documentation
+
+#+BEGIN_SRC emacs-lisp
+  ;;; (e)dit (e)macs user init file
+  (defvar --emacs-config (concat user-emacs-directory "emacs-config.org"))
+  (evil-leader/set-key "ee" (lambda () (interactive) (find-file --emacs-config)))
+
+  ;;; (s)ource (e)macs user init file
+  (evil-leader/set-key "se" (lambda () (interactive) (load-file user-init-file)))
+
+  ;;; (r)estart (e)macs
+  (evil-leader/set-key "re" #'restart-emacs)
+
+  ;;; package management
+  (evil-leader/set-key "Pl" #'package-list-packages) ; (P)ackage (l)ist
+  (evil-leader/set-key "Pu" #'package-list-packages) ; (P)ackage (u)pgrade
+  (evil-leader/set-key "Pd" #'package-delete)        ; (P)ackage (d)elete
+  (evil-leader/set-key "Pa" #'package-autoremove)    ; (P)ackage (a)utoremove
+
+  ;;; evil emacs conflicts
+  (define-key evil-normal-state-map (kbd "C-u") #'evil-scroll-up)
+  (define-key evil-visual-state-map (kbd "C-u") #'evil-scroll-up)
+
+  ;;; evil vim inconsistencies
+  (define-key evil-visual-state-map (kbd "x") #'evil-delete)
+
+  ;;; evil escape (use escape for C-g in evil-mode)
+  (define-key evil-normal-state-map           [escape] #'keyboard-quit)
+  (define-key evil-visual-state-map           [escape] #'keyboard-quit)
+  (define-key minibuffer-local-map            [escape] #'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-ns-map         [escape] #'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-completion-map [escape] #'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-isearch-map    [escape] #'minibuffer-keyboard-quit)
+  (global-set-key                             [escape] #'evil-exit-emacs-state)
+
+  ;;; evil line movement tweaks
+  (define-key evil-motion-state-map "j" #'evil-next-visual-line)
+  (define-key evil-motion-state-map "k" #'evil-previous-visual-line)
+  (define-key evil-visual-state-map "j" #'evil-next-visual-line)
+  (define-key evil-visual-state-map "k" #'evil-previous-visual-line)
+
+  ;;; cycle themes
+  (evil-leader/set-key "ct" #'cycle-themes)
+
+  ;;; full screen toggle
+  (global-set-key (kbd "s-<return>") #'toggle-frame-fullscreen) ; s = super (⌘ on mac)
+
+  ;;; hide others with macOS default keyboard shortcut of `⌥⌘H`
+  (global-set-key (kbd "M-s-˙") #'ns-do-hide-others)
+  ;; the `˙` in the above keybind is due to opt h producing that char
+
+  ;;; window splitting
+  (global-set-key (kbd "C--")  #'evil-window-split)
+  (global-set-key (kbd "C-\\") #'evil-window-vsplit)
+  (global-set-key (kbd "C-=")  #'balance-windows)
+
+  ;;; resize windows
+  (global-set-key (kbd "s-<right>") #'evil-window-increase-width)
+  (global-set-key (kbd "s-<left>")  #'evil-window-decrease-width)
+  (global-set-key (kbd "s-<up>")    #'evil-window-increase-height)
+  (global-set-key (kbd "s-<down>")  #'evil-window-decrease-height)
+
+  ;;; move to next / prev window
+  (bind-key*      "C-k"       #'evil-window-up)
+  (bind-key*      "C-j"       #'evil-window-down)
+  (bind-key*      "C-h"       #'evil-window-left)
+  (bind-key*      "C-l"       #'evil-window-right)
+
+  ;;; move/swap buffers between windows
+  (global-set-key (kbd "C-S-K") #'buf-move-up)
+  (global-set-key (kbd "C-S-J") #'buf-move-down)
+  (global-set-key (kbd "C-S-H") #'buf-move-left)
+  (global-set-key (kbd "C-S-L") #'buf-move-right)
+
+  ;;; close windows
+  ;; evil-mode built in with `C-w c`
+
+  ;;; close all other windows
+  (define-key evil-motion-state-map (kbd "C-z") #'zoom-window-zoom)
+  (evil-leader/set-key "wm" #'delete-other-windows) ; (w)indow (m)ain
+
+  ;;; clear / recenter screen
+  (evil-leader/set-key "cs" #'recenter-top-bottom)     ; (c)lear (s)creen
+  (evil-leader/set-key "cr" #'cider-repl-clear-buffer) ; (c)lear (r)epl
+
+  ;;; text scale
+  (global-set-key (kbd "s-+") #'text-scale-increase)
+  (global-set-key (kbd "s--") #'text-scale-decrease)
+  (global-set-key (kbd "s-=") #'text-scale-adjust)
+
+  ;;; bookmarks
+  (evil-leader/set-key "ml" #'bookmark-jump)
+  (evil-leader/set-key "mj" #'bookmark-jump)
+  (evil-leader/set-key "ms" #'bookmark-set)
+  (evil-leader/set-key "md" #'bookmark-delete)
+
+  ;;; set emacs command hotkey (M-x) to (helm-M-x)
+  (global-set-key (kbd "M-x") #'helm-M-x)
+
+  ;;; helm menu nav
+  (define-key helm-map (kbd "s-j") #'helm-next-line)
+  (define-key helm-map (kbd "s-k") #'helm-previous-line)
+
+  ;;; projects / files / buffers
+  (evil-leader/set-key "F"  #'find-file)                      ; (F)ind file
+  (evil-leader/set-key "t"  #'helm-projectile-find-file-dwim) ; emulate command-(t)
+  (evil-leader/set-key "b"  #'helm-buffers-list)              ; switch to (b)uffer
+  (evil-leader/set-key "kb" #'kill-buffer)                    ; (k)ill (b)uffer
+  (evil-leader/set-key "gf" #'helm-projectile-ag)             ; (g)rep in (f)iles
+
+  ;;; workspaces
+  (evil-leader/set-key "ps" #'persp-switch)
+  (evil-leader/set-key "pk" #'persp-remove-buffer)
+  (evil-leader/set-key "pc" #'persp-kill)
+  (evil-leader/set-key "pr" #'persp-rename)
+  (evil-leader/set-key "pa" #'persp-add-buffer)
+  (evil-leader/set-key "pA" #'persp-set-buffer)
+  (evil-leader/set-key "pi" #'persp-import)
+  (evil-leader/set-key "pn" #'persp-next)
+  (evil-leader/set-key "pp" #'persp-prev)
+
+  ;;; dired navigation
+  ;; g to update dired buffer info
+  ;; s to toggle between sort by name and by date/time
+  ;; for creating, deleting, renaming, just toggle shell visor, then update dired
+
+  ;;; toggle/open shell
+  (evil-leader/set-key "sv" (lambda () (interactive)               ; toggle (s)hell (v)isor
+                              (multi-term-dedicated-toggle)
+                              (multi-term-dedicated-select)))
+  (evil-leader/set-key "sn" 'multi-term)                      ; toggle (s)hell (n)ew
+
+  ;;; multi term keybind setup - full vi-mode in zsh within emacs
+  ;; don't leave emacs mode when pressing esc, pass through for vim compatability
+  (evil-define-key 'emacs  term-raw-map [escape]           #'term-send-esc)
+  ;; super-esc toggle emacs and evil modes
+  (evil-define-key 'emacs  term-raw-map (kbd "s-<escape>") #'evil-exit-emacs-state)
+  (evil-define-key 'normal term-raw-map (kbd "s-<escape>") #'evil-emacs-state)
+  ;; never use evil insert mode in term-mode, prefer our shell's vi-mode
+  (evil-define-key 'normal term-raw-map "i"                #'evil-emacs-state)
+  ;; trample "C-c" emacs bind so it behaves like a normal shell interrupt
+  (evil-define-key 'normal term-raw-map (kbd "C-c")        #'term-send-raw)
+  (evil-define-key 'emacs  term-raw-map (kbd "C-c")        #'term-send-raw)
+  ;; fix pasting into terminal without needing line-mode
+  (evil-define-key 'emacs  term-raw-map (kbd "s-v")        #'term-paste)
+  ;; vi-mode and vim compatability
+  (evil-define-key 'emacs  term-raw-map (kbd "C-v")        #'term-send-raw)
+  (evil-define-key 'emacs  term-raw-map (kbd "C-r")        #'term-send-raw)
+
+  ;;; electric return
+  (global-set-key (kbd "RET") #'electrify-return-if-match)
+
+  ;;; jump to line / word
+  (evil-leader/set-key "jl" #'evil-ace-jump-line-mode)
+  (evil-leader/set-key "jw" #'evil-ace-jump-word-mode)
+  (evil-leader/set-key "jc" #'evil-ace-jump-char-mode)
+
+  ;;; remove search highlight
+  (evil-leader/set-key "/" #'evil-search-highlight-persist-remove-all)
+
+  ;;; commenting
+  (evil-leader/set-key "cl" #'evilnc-comment-or-uncomment-lines)
+  (evil-leader/set-key "cp" #'evilnc-comment-or-uncomment-paragraphs)
+
+  ;;; kill-ring
+  (evil-leader/set-key "kr" #'helm-show-kill-ring)
+
+  ;;; doc search
+  (evil-leader/set-key "d" #'dash-at-point)
+
+  ;;; line number toggle
+  (evil-leader/set-key "nn" #'linum-mode)
+
+  ;;; column enforcement toggle
+  (evil-leader/set-key "ce" #'column-enforce-mode)
+
+  ;;; flycheck
+  (evil-leader/set-key "fcb" #'flycheck-buffer)         ; (f)ly(c)heck (b)uffer
+  (evil-leader/set-key "fcn" #'flycheck-next-error)     ; (f)ly(c)heck (n)ext
+  (evil-leader/set-key "fcp" #'flycheck-previous-error) ; (f)ly(c)heck (p)revious
+  (evil-leader/set-key "fcl" #'flycheck-list-errors)    ; (f)ly(c)heck (l)ist
+
+  ;;; paredit
+  (evil-leader/set-key "W"  #'paredit-wrap-sexp)
+  (evil-leader/set-key "w(" #'paredit-wrap-sexp)
+  (evil-leader/set-key "w[" #'paredit-wrap-square)
+  (evil-leader/set-key "w{" #'paredit-wrap-curly)
+  (evil-leader/set-key "w<" #'paredit-wrap-angled)
+  ;; barf == push out of current sexp
+  ;; slurp == pull into current sexp
+  (evil-leader/set-key ">>" #'paredit-forward-barf-sexp)
+  (evil-leader/set-key "><" #'paredit-forward-slurp-sexp)
+  (evil-leader/set-key "<<" #'paredit-backward-barf-sexp)
+  (evil-leader/set-key "<>" #'paredit-backward-slurp-sexp)
+  (evil-leader/set-key "D"  #'paredit-splice-sexp)         ; del surrounding ()[]{}
+  (evil-leader/set-key "rs" #'raise-sexp)                  ; (r)aise (s)exp
+  (evil-leader/set-key "ss" #'paredit-split-sexp)          ; (s)plit (s)exp
+  (evil-leader/set-key "xs" #'kill-sexp)                   ; (x)delete (s)exp
+  (evil-leader/set-key "xS" #'backward-kill-sexp)          ; (x)delete (S)exp backward
+  ;; use `Y` not `yy` for yanking a line maintaining balanced parens
+  ;; use `y%` for yanking a s-expression
+
+  ;;; magit
+  ;; you can also use built-in hotkeys from status mode:
+  ;; ? - show commands
+  ;; s - stage S - stage all
+  ;; c - commit (then c again to move to commit message and change review)
+  ;; b u - to set/reset the upstream
+  ;; P u - push to push to upstream
+  ;; b b - branch to choose a branch to checkout
+  ;; b c - branch create and then checkout a branch
+  ;; F u - pull from upstream
+  (evil-leader/set-key "gg"  #'magit-dispatch-popup)
+  (evil-leader/set-key "gst" #'magit-status)
+  (evil-leader/set-key "gd"  #'magit-diff-working-tree)
+  (evil-leader/set-key "gco" #'magit-checkout)
+  (evil-leader/set-key "gcm" #'magit-checkout)
+  (evil-leader/set-key "gcb" #'magit-branch-and-checkout)
+  (evil-leader/set-key "gl"  #'magit-pull-from-upstream)
+  (evil-leader/set-key "gaa" #'magit-stage-modified)
+  (evil-leader/set-key "grh" #'magit-reset-head)
+  (evil-leader/set-key "gca" #'magit-commit)
+  (evil-leader/set-key "gp"  #'magit-push-current-to-upstream)
+  ;; specific within magit-mode
+  (evil-leader/set-key-for-mode 'text-mode "cc" #'with-editor-finish)
+  (evil-leader/set-key-for-mode 'text-mode "cC" #'with-editor-cancel)
+  ;; let's improve evil-mode compatability
+  (with-eval-after-load "magit"
+    (define-key magit-status-mode-map (kbd "k") #'previous-line)
+    (define-key magit-status-mode-map (kbd "K") #'magit-discard)
+    (define-key magit-status-mode-map (kbd "j") #'next-line))
+
+  ;;; clojure - cider
+  (evil-leader/set-key "ri"  #'cider-jack-in)                     ; (r)epl (i)nitialize
+  (evil-leader/set-key "rr"  #'cider-restart)                     ; (r)epl (r)estart
+  (evil-leader/set-key "rq"  #'cider-quit)                        ; (r)epl (q)uit
+  (evil-leader/set-key "rc"  #'cider-connect)                     ; (r)epl (c)onnect
+  (evil-leader/set-key "eb"  #'cider-eval-buffer)                 ; (e)val (b)uffer
+  (evil-leader/set-key "ef"  #'cider-eval-defun-at-point)         ; (e)val de(f)un
+  (evil-leader/set-key "es"  #'cider-eval-last-sexp)              ; (e)val (s)-expression
+  (evil-leader/set-key "rtn" #'cider-test-run-ns-tests)           ; (r)un (t)ests (n)amespace
+  (evil-leader/set-key "rtp" #'cider-test-run-project-tests)      ; (r)un (t)ests (p)roject
+  (evil-leader/set-key "rtl" #'cider-test-run-loaded-tests)       ; (r)un (t)ests (l)oaded namespaces
+  (evil-leader/set-key "rtf" #'cider-test-rerun-failed-tests)     ; (r)erun (t)ests (f)ailed tests
+  (evil-leader/set-key "rta" #'cider-auto-test-mode)              ; (r)un (t)ests (a)utomatically
+  (evil-leader/set-key "rb"  #'cider-switch-to-repl-buffer)       ; (r)epl (b)uffer
+  (evil-leader/set-key "rn"  #'cider-repl-set-ns)                 ; (r)epl set (n)amespace
+  (evil-leader/set-key "rp"  #'cider-repl-toggle-pretty-printing) ; (r)epl (p)retty print
+  (evil-leader/set-key "ff"  #'cider-format-defun)                ; (f)ormat (f)orm
+  (evil-leader/set-key "fr"  #'cider-format-region)               ; (f)ormat (r)egion
+  (evil-leader/set-key "fb"  #'cider-format-buffer)               ; (f)ormat (b)uffer
+  (evil-leader/set-key "rf"  #'cljr-helm)                         ; clj (r)e(f)actor
+  ;; replace C-j keybind in cider-repl with S-<return>
+  (bind-key "S-<return>" #'cider-repl-newline-and-indent cider-repl-mode-map)
+  ;; set evil style j and k in cider-test-report-mode
+  (with-eval-after-load "cider"
+    (define-key cider-test-report-mode-map (kbd "k") #'previous-line)
+    (define-key cider-test-report-mode-map (kbd "j") #'next-line))
+
+  ;;; markdown
+  (evil-leader/set-key "Mb" #'markdown-insert-bold)
+  (evil-leader/set-key "Me" #'markdown-insert-italic)
+  (evil-leader/set-key "Ms" #'markdown-insert-strike-through)
+  (evil-leader/set-key "Ml" #'markdown-insert-link)
+  (evil-leader/set-key "Mu" #'markdown-insert-uri)
+  (evil-leader/set-key "Mi" #'markdown-insert-image)
+  (evil-leader/set-key "Mh" #'markdown-insert-hr)
+  (evil-leader/set-key "Mf" #'markdown-insert-footnote)
+
+  ;;; org-mode
+  (evil-leader/set-key-for-mode 'org-mode "es" 'org-edit-special)
+  (evil-leader/set-key "cc" 'org-edit-src-exit)
+  (evil-leader/set-key "cC" 'org-edit-src-abort)
+
+  ;;; ruby-mode
+  ;; TODO keybinds for buffer eval
+
+  ;;; python-mode
+  ;; TODO keybinds for buffer eval
+
+  ;;;; report total load time
+  (let ((elapsed (float-time (time-subtract (current-time)
+                                            emacs-start-time))))
+    (message "Loaded emacs in %.3fs" elapsed))
+
+
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;; Emacs file footer settings                                           ;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  ;; Local Variables:
+  ;; byte-compile-warnings: (not free-vars)
+  ;; End:
+
+  ;;; emacs.el ends here
+
+
+
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  ;;;; Values Set via Customize                                             ;;;;
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+  (custom-set-variables
+   ;; custom-set-variables was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   )
+  (custom-set-faces
+   ;; custom-set-faces was added by Custom.
+   ;; If you edit it by hand, you could mess it up, so be careful.
+   ;; Your init file should contain only one such instance.
+   ;; If there is more than one, they won't work right.
+   )
+#+END_SRC

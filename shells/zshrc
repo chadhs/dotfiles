@@ -67,7 +67,6 @@ fi
 ######################################
 ### see .zshenv for PATH defintion ###
 ######################################
-#export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 # export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
@@ -101,14 +100,6 @@ export LANG=en_US.UTF-8
 ########################################
 #####            CUSTOM            #####
 ########################################
-
-## add local paths to path for homebrew etc
-path=(
-    /usr/local/bin
-    /usr/local/sbin
-    $path
-)
-export path
 
 ## set default editor
 EDITOR="vim"
