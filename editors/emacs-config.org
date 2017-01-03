@@ -499,8 +499,9 @@ TODO: add documentation
 
   ;;; show end of buffer in editing modes (easily see empty lines)
   (add-hook 'prog-mode-hook #'vi-tilde-fringe-mode)
-  (add-hook 'markdown-mode-hook #'vi-tilde-fringe-mode)
   (add-hook 'conf-space-mode-hook #'vi-tilde-fringe-mode)
+  (add-hook 'markdown-mode-hook #'vi-tilde-fringe-mode)
+  (add-hook 'org-mode-hook #'vi-tilde-fringe-mode)
 
   ;;; themes
   (if (not (display-graphic-p))
