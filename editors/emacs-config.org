@@ -490,6 +490,9 @@ TODO: add documentation
   ;;; pretty symbols
   (global-prettify-symbols-mode)
 
+  ;;; always end with a newline
+  (setq require-final-newline t)
+
   ;;; highlight matching parens
   (show-paren-mode 1)
   (setq show-paren-delay 0)
