@@ -473,6 +473,9 @@ TODO: add documentation
   ;;; startup behavior
   (setq inhibit-startup-message t)
 
+  ;;; don't save customizations to init file
+  (setq custom-file (concat user-emacs-directory ".emacs-customize.el"))
+
   ;;; set default starting directory (avoid launching projectile at HOME or src root)
   (defvar --user-home-dir (concat (getenv "HOME") "/"))
   (defvar --user-src-dir (concat --user-home-dir "src/"))
