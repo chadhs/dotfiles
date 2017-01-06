@@ -5,7 +5,7 @@ If you're new to Emacs check out spacemacs: http://spacemacs.org.
 
 ** Table of contents
 :TOC:
-  - [[#Package%20Management][Package Management]]
+  - [[#package-management][Package Management]]
 
 ** Personal info
 
