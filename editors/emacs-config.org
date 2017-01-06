@@ -1,9 +1,9 @@
 * Emacs Configuration
 
-This file bootstraps a complete Emacs environment to my liking.
+This file bootstraps a complete Emacs environment to my liking. \\
 If you're new to Emacs check out spacemacs: http://spacemacs.org.
 
-If you need some help, send me some electronic mail.
+If you need some help, send me some electronic mail. \\
 Chad Stovern: [[mailto:hello@chadstovern.com][hello@chadstovern.com]]
 
 ** Table of contents
