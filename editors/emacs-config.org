@@ -1,3 +1,5 @@
+#+OPTIONS: toc:2
+
 * Emacs Configuration
 
 This file bootstraps a complete Emacs environment to my liking.
