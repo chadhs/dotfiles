@@ -93,10 +93,10 @@ Packages to be installed are defined in one big list.  Information about these p
 
           ;; vim mode
           evil
+          evil-cleverparens
           evil-leader
           evil-matchit
           evil-nerd-commenter
-          evil-paredit
           evil-search-highlight-persist
           evil-surround
           evil-visualstar
@@ -299,8 +299,8 @@ TODO: add documentation
   (autoload 'enable-paredit-mode "Pseudo-structural editing of Lisp code." t)
   (add-hook 'prog-mode-hook #'enable-paredit-mode)
   (add-hook 'org-mode-hook  #'enable-paredit-mode)
-  (add-hook 'prog-mode-hook #'evil-paredit-mode)
-  (add-hook 'org-mode-hook  #'evil-paredit-mode)
+  (add-hook 'prog-mode-hook #'evil-cleverparens-mode)
+  (add-hook 'org-mode-hook  #'evil-cleverparens-mode)
 
   ;;; rainbow delimiters
   (require 'rainbow-delimiters)
@@ -610,18 +610,19 @@ TODO: add documentation
 
   ;;; declutter the modeline
   (require 'delight)
-  (delight '((auto-complete-mode   "⇥"  auto-complete)
-             (auto-revert-mode     "↺"  t)
-             (clj-refactor-mode    "↻"  clj-refactor)
-             (editorconfig-mode    "↹"  editorconfig)
-             (flycheck-mode        "✓"  flycheck)
-             (paredit-mode         "‹›" paredit)
-             (column-enforce-mode  nil  column-enforce-mode)
-             (helm-mode            nil  helm)
-             (undo-tree-mode       nil  undo-tree)
-             (vi-tilde-fringe-mode nil  vi-tilde-fringe)
-             (which-key-mode       nil  which-key)
-             (yas-minor-mode       nil  yasnippet)))
+  (delight '((auto-complete-mode     "⇥"  auto-complete)
+             (auto-revert-mode       "↺"  t)
+             (clj-refactor-mode      "↻"  clj-refactor)
+             (editorconfig-mode      "↹"  editorconfig)
+             (flycheck-mode          "✓"  flycheck)
+             (paredit-mode           "‹›" paredit)
+             (column-enforce-mode    nil  column-enforce-mode)
+             (evil-cleverparens-mode nil  evil-cleverparens)
+             (helm-mode              nil  helm)
+             (undo-tree-mode         nil  undo-tree)
+             (vi-tilde-fringe-mode   nil  vi-tilde-fringe)
+             (which-key-mode         nil  which-key)
+             (yas-minor-mode         nil  yasnippet)))
 
   ;;; modeline tweaks
   (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
