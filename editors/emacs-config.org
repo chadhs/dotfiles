@@ -135,6 +135,7 @@ Packages to be installed are defined in one big list.  Information about these p
 
           ;; other syntaxes
           markdown-mode
+          salt-mode
           web-mode
           yaml-mode))
 #+END_SRC
@@ -281,6 +282,7 @@ TODO: add documentation
                     html-mode
                     markdown-mode
                     org-mode
+                    salt-mode
                     sql-mode
                     yaml-mode)))
 
@@ -298,14 +300,21 @@ TODO: add documentation
 
   ;;; paredit
   (autoload 'enable-paredit-mode "Pseudo-structural editing of Lisp code." t)
-  (add-hook 'prog-mode-hook #'enable-paredit-mode)
-  (add-hook 'org-mode-hook  #'enable-paredit-mode)
-  (add-hook 'prog-mode-hook #'evil-cleverparens-mode)
-  (add-hook 'org-mode-hook  #'evil-cleverparens-mode)
+  (add-hook 'prog-mode-hook (lambda ()
+                              (enable-paredit-mode)
+                              (evil-cleverparens-mode)))
+  (add-hook 'org-mode-hook (lambda ()
+                              (enable-paredit-mode)
+                              (evil-cleverparens-mode)))
+  (add-hook 'yaml-mode-hook (lambda ()
+                              (enable-paredit-mode)
+                              (electric-pair-mode)
+                              (evil-cleverparens-mode)))
 
   ;;; rainbow delimiters
   (require 'rainbow-delimiters)
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+  (add-hook 'yaml-mode-hook #'rainbow-delimiters-mode)
 
   ;;; 80 column enforcement
   (setq column-enforce-column 81
@@ -513,6 +522,7 @@ TODO: add documentation
   (add-hook 'conf-space-mode-hook #'vi-tilde-fringe-mode)
   (add-hook 'markdown-mode-hook #'vi-tilde-fringe-mode)
   (add-hook 'org-mode-hook #'vi-tilde-fringe-mode)
+  (add-hook 'yaml-mode-hook #'vi-tilde-fringe-mode)
 
   ;;; themes
   (if (not (display-graphic-p))
@@ -590,7 +600,6 @@ TODO: add documentation
                     ("\\.js?\\'"     . web-mode)
                     ("\\.php?\\'"    . web-mode)
                     ("\\.jinja?\\'"  . web-mode)
-                    ("\\.sls"        . yaml-mode)
                     ("\\.yml"        . yaml-mode))))
 
   ;;; version control
@@ -620,6 +629,7 @@ TODO: add documentation
              (column-enforce-mode    nil  column-enforce-mode)
              (evil-cleverparens-mode nil  evil-cleverparens)
              (helm-mode              nil  helm)
+             (mmm-mode               nil  mmm-mode)
              (undo-tree-mode         nil  undo-tree)
              (vi-tilde-fringe-mode   nil  vi-tilde-fringe)
              (which-key-mode         nil  which-key)
