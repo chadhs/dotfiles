@@ -134,6 +134,7 @@ Packages to be installed are defined in one big list.  Information about these p
           elpy
 
           ;; other syntaxes
+          ansible
           markdown-mode
           salt-mode
           web-mode
@@ -392,6 +393,7 @@ TODO: add documentation
 
   ;;; yaml support
   (require 'yaml-mode)
+  (add-hook 'yaml-mode-hook (lambda () (ansible 1)))
 
   ;;; ruby support
   (add-hook 'ruby-mode-hook (lambda ()
