@@ -135,7 +135,9 @@ Packages to be installed are defined in one big list.  Information about these p
 
           ;; other syntaxes
           markdown-mode
+          json-mode
           salt-mode
+          terraform-mode
           web-mode
           yaml-mode))
 #+END_SRC
@@ -666,6 +668,7 @@ TODO: add documentation
   (evil-leader/set-key
     "Pl" #'package-list-packages ; (P)ackage (l)ist
     "Pu" #'package-list-packages ; (P)ackage (u)pgrade
+    "Pi" #'package-install       ; (P)ackage (i)nstall
     "Pd" #'package-delete        ; (P)ackage (d)elete
     "Pa" #'package-autoremove)   ; (P)ackage (a)utoremove
 
