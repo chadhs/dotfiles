@@ -11,6 +11,8 @@ stty erase '^?'
 
 ## mac only aliases
 if [ $(uname) = "Darwin" ]; then
+        alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs "$@"'
+        alias vim='mvim -v'
 	alias flushdns='dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
 	alias restart_en0='sudo ifconfig en0 down && sudo ifconfig en0 up'
 	alias shadowno='defaults write com.apple.screencapture disable-shadow -bool true && killall SystemUIServer'

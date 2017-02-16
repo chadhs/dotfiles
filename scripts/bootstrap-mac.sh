@@ -5,7 +5,7 @@ sleep 3
 
 echo "bootstraping install tools..."
 xcode-select --install
-/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+[ -z $(command -v brew) ] && /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 brew install mas
 brew tap caskroom/cask
 
@@ -28,8 +28,8 @@ mas signin ${appleid}
 mas install 931657367 918858936 496437906 411643860 407963104 872515009 557168941 992076693 847496013 413965349 482898991 924726344 445189367
 
 echo "installing open-source tools..."
-brew install ansible aspell awscli bash ctags emacs --with-cocoa editorconfig git leiningen macvim --override-system-vim mit-scheme nmap node pandoc planck rlwrap ssh-copy-id terraform the_silver_searcher tmux tree wget zsh
-brew linkapps
+brew install ansible aspell awscli bash ctags editorconfig git leiningen mit-scheme nmap node pandoc planck rlwrap ssh-copy-id terraform the_silver_searcher tmux tree wget zsh
+brew cask install emacs macvim
 
 echo "seting up dotfiles..."
 cd ~ || exit 1

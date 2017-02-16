@@ -13,7 +13,8 @@ os_setup(){
   if [ "$system_type" = "Darwin" ]; then
     system_os="macos"
     pkg_install="brew install"
-    package_list="editorconfig emacs --with-cocoa git macvim --override-system-vim tmux zsh"
+    package_list="editorconfig git tmux zsh"
+    cask_package_list="emacs macvim"
   elif [ "$system_type" = "FreeBSD" ]; then
     system_os="freebsd"
     pkg_install="sudo pkg install -y"
@@ -37,6 +38,7 @@ os_setup(){
 
 verify_packages(){
   $pkg_install $package_list
+  [ "$system_os" = "mac" ] && brew tap caskroom/cask && brew cask install $cask_package_list
 }
 
 symlink_configs(){
