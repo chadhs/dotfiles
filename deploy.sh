@@ -43,7 +43,6 @@ symlink_configs(){
   cd ~ || exit 1
 
   # mac
-  [ "$system_os" = "mac" ] && [ ! -d ~/.ssh ] && ln -s ~/Dropbox/configs/ssh .ssh
   [ "$system_os" = "mac" ] && [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig .gitconfig
   [ "$system_os" = "mac" ] && [ ! -d ~/.lein ] && mkdir .lein
   [ "$system_os" = "mac" ] && [ ! -e ~/.lein/profiles.clj ] && ln -s ~/dotfiles/utils/lein_profiles.clj .lein/profiles.clj
