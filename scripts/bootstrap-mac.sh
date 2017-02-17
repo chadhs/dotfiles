@@ -1,6 +1,7 @@
 #!/bin/sh
 
-echo "the **only** prompts in this script are for your appleid and password once install tools are bootstrapped. then you can leave your machine to installing. ^_^"
+echo "you will be prompted for your appleid and password once install tools are bootstrapped."
+echo "be aware there will also be various password prompts during the install process for some packages."
 sleep 3
 
 echo "bootstraping install tools..."
