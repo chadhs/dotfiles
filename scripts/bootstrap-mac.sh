@@ -18,7 +18,8 @@ mas signin ${appleid}
 mas install 931657367 918858936 496437906 411643860 407963104 557168941 992076693 847496013 413965349 482898991 924726344 445189367
 
 echo "installing open-source tools..."
-brew install ansible aspell awscli bash ctags editorconfig git leiningen mit-scheme nmap node pandoc planck rlwrap ssh-copy-id terraform the_silver_searcher tmux tree wget zsh
+brew install ansible aspell awscli bash chruby ctags editorconfig git leiningen mit-scheme nmap node pandoc planck rlwrap ssh-copy-id terraform the_silver_searcher tmux tree wget zsh
+pip install virtualenvwrapper
 brew cask install emacs macvim
 
 echo "seting up dotfiles..."
