@@ -38,16 +38,23 @@ os_setup(){
 
 verify_packages(){
   $pkg_install $package_list
-  [ "$system_os" = "mac" ] && brew tap caskroom/cask && brew cask install $cask_package_list
+  [ "$system_os" = "macos" ] && brew tap caskroom/cask && brew cask install $cask_package_list
 }
 
 symlink_configs(){
   cd ~ || exit 1
 
   # mac
-  [ "$system_os" = "mac" ] && [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig .gitconfig
-  [ "$system_os" = "mac" ] && [ ! -d ~/.lein ] && mkdir .lein
-  [ "$system_os" = "mac" ] && [ ! -e ~/.lein/profiles.clj ] && ln -s ~/dotfiles/utils/lein_profiles.clj .lein/profiles.clj
+  if [ "$system_os" = "macos" ]; then
+    [ ! -d ~/.ssh ] && mkdir ~/.ssh
+    [ ! -e ~/.ssh/known_hosts ] || [ $(cat .ssh/known_hosts | wc -l) = 1 ] && ln -sF ~/Dropbox/configs/ssh/known_hosts ~/.ssh/known_hosts
+    [ ! -e ~/.ssh/config ] && ln -s ~/Dropbox/configs/ssh/config ~/.ssh/config
+    [ ! -e ~/.ssh/rc ] && ln -s ~/Dropbox/configs/ssh/rc ~/.ssh/rc
+    [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig .gitconfig
+    [ ! -d ~/.lein ] && mkdir .lein
+    [ ! -e ~/.lein/profiles.clj ] && ln -s ~/dotfiles/utils/lein_profiles.clj .lein/profiles.clj
+  fi
+
 
   # all
   [ ! -d ~/.oh-my-zsh ] && curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh; rm ~/.zshrc
@@ -63,8 +70,8 @@ symlink_configs(){
   [ ! -d ~/tmp ] && mkdir ~/tmp
   [ ! -e ~/.vimrc ] && ln -s ~/dotfiles/editors/vimrc .vimrc
   [ ! -d ~/.vim ] && git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-  vim +PluginClean +qall
-  vim +PluginInstall +qall
+  #vim +PluginClean +qall
+  #vim +PluginInstall +qall
   [ ! -d ~/.emacs.d ] && mkdir ~/.emacs.d
   [ ! -e ~/.emacs ] && ln -s ~/dotfiles/editors/emacs.el .emacs
   [ ! -e ~/.emacs.d/emacs-config.org ] && ln -s ~/dotfiles/editors/emacs-config.org ~/.emacs.d/emacs-config.org
