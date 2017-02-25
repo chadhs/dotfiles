@@ -70,8 +70,8 @@ symlink_configs(){
   [ ! -d ~/tmp ] && mkdir ~/tmp
   [ ! -e ~/.vimrc ] && ln -s ~/dotfiles/editors/vimrc .vimrc
   [ ! -d ~/.vim ] && git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-  #vim +PluginClean +qall
-  #vim +PluginInstall +qall
+  vim +PluginClean +qall
+  vim +PluginInstall +qall
   [ ! -d ~/.emacs.d ] && mkdir ~/.emacs.d
   [ ! -e ~/.emacs ] && ln -s ~/dotfiles/editors/emacs.el .emacs
   [ ! -e ~/.emacs.d/emacs-config.org ] && ln -s ~/dotfiles/editors/emacs-config.org ~/.emacs.d/emacs-config.org
