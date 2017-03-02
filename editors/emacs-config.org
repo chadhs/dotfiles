@@ -112,6 +112,7 @@ Packages to be installed are defined in one big list.  Information about these p
           helm-flx
           helm-projectile
           magit
+          neotree
           perspective ; workspace manager
           projectile
           zoom-window
@@ -237,6 +238,8 @@ TODO: add documentation
         helm-recentf-fuzzy-match t
         helm-quick-update t ; show only enough candidates to fill the buffer
         helm-semantic-fuzzy-match t)
+
+  (require 'neotree)
 
   ;; speed up matching by giving emacs garbage collection a more modern threshold
   (setq gc-cons-threshold 20000000)
@@ -768,6 +771,13 @@ TODO: add documentation
     "b"  #'helm-buffers-list              ; switch to (b)uffer
     "kb" #'kill-buffer                    ; (k)ill (b)uffer
     "gf" #'helm-projectile-ag)            ; (g)rep in (f)iles
+
+  ;;; neotree
+  (evil-leader/set-key "nt" #'neotree-toggle)
+  (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
+  (evil-define-key 'normal neotree-mode-map (kbd "SPC") 'neotree-enter)
+  (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
+  (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter)
 
   ;;; workspaces
   (evil-leader/set-key
