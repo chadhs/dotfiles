@@ -890,7 +890,9 @@ TODO: add documentation
     "gaa" #'magit-stage-modified
     "grh" #'magit-reset-head
     "gca" #'magit-commit
-    "gp"  #'magit-push-current-to-upstream)
+    "gpu" #'magit-push-current-to-upstream
+    "gt"  #'magit-tag
+    "gpt" #'magit-push-tags)
   ;; specific within magit-mode
   (evil-leader/set-key-for-mode 'text-mode
     "cc" 'with-editor-finish
