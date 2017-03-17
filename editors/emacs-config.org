@@ -135,6 +135,7 @@ Packages to be installed are defined in one big list.  Information about these p
           elpy
 
           ;; other syntaxes
+          dockerfile-mode
           markdown-mode
           json-mode
           salt-mode
@@ -605,7 +606,8 @@ TODO: add documentation
                     ("\\.js?\\'"     . web-mode)
                     ("\\.php?\\'"    . web-mode)
                     ("\\.jinja?\\'"  . web-mode)
-                    ("\\.yml"        . yaml-mode))))
+                    ("\\.yml"        . yaml-mode)
+                    ("Dockerfile\\'" . dockerfile-mode))))
 
   ;;; version control
   (setq vc-follow-symlinks t)
