@@ -519,6 +519,9 @@ TODO: add documentation
   ;;; always end with a newline
   (setq require-final-newline t)
 
+  ;;; word wrapping
+  (setq-default word-wrap t)
+
   ;;; highlight matching parens
   (show-paren-mode 1)
   (setq show-paren-delay 0)
