@@ -28,7 +28,7 @@ cd ~ || exit 1
 sh dotfiles/deploy.sh
 
 echo "installing non mac app store apps..."
-brew cask install 1password alfred anvil appcleaner bartender caffeine choosy dash dropbox dropzone fantastical flux google-chrome google-hangouts hazel iterm2 keyboard-maestro moom nvalt omnifocus omnifocus-clip-o-tron slack spotify taskpaper textexpander textual the-unarchiver tripmode tunnelblick vagrant vagrant-manager virtualbox virtualbox-extension-pack
+brew cask install 1password alfred anvil appcleaner bartender caffeine choosy dash dropbox dropzone fantastical flux google-chrome google-hangouts hazel iterm2 keyboard-maestro moom nvalt omnifocus slack spotify taskpaper textexpander textual the-unarchiver tripmode tunnelblick vagrant vagrant-manager virtualbox virtualbox-extension-pack
 
 echo "don't forget to fetch any ssh keys you need from your secure vault!"
 
