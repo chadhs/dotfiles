@@ -48,6 +48,9 @@ if [ $(uname) = "Darwin" ]; then
 	### ruby
 	source /usr/local/opt/chruby/share/chruby/chruby.sh
 	source /usr/local/opt/chruby/share/chruby/auto.sh
+	### minikube
+	alias mkset='eval $(minikube docker-env)'
+	alias mkunset='eval $(minikube docker-env -u)'
 
 ### mac blogging
 	cryogen-publish(){
