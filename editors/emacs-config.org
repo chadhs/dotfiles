@@ -136,6 +136,7 @@ Packages to be installed are defined in one big list.  Information about these p
 
           ;; other syntaxes
           dockerfile-mode
+          lua-mode
           markdown-mode
           json-mode
           salt-mode
@@ -302,7 +303,6 @@ TODO: add documentation
     (with-eval-after-load 'flycheck
       (setq flycheck-display-errors-function 'flycheck-pos-tip-error-messages)
       (flycheck-pos-tip-mode)))
-  (setq flycheck-check-syntax-automatically '(mode-enabled save))
 
   ;;; paredit
   (autoload 'enable-paredit-mode "Pseudo-structural editing of Lisp code." t)
