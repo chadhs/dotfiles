@@ -316,6 +316,8 @@ TODO: add documentation
                               (enable-paredit-mode)
                               (electric-pair-mode)
                               (evil-cleverparens-mode)))
+  (with-eval-after-load 'smartparens
+    (setq sp-autoescape-string-quote nil))
 
   ;;; rainbow delimiters
   (require 'rainbow-delimiters)
