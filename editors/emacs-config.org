@@ -316,8 +316,6 @@ TODO: add documentation
                               (enable-paredit-mode)
                               (electric-pair-mode)
                               (evil-cleverparens-mode)))
-  (with-eval-after-load 'smartparens
-    (setq sp-autoescape-string-quote nil))
 
   ;;; rainbow delimiters
   (require 'rainbow-delimiters)
@@ -636,10 +634,10 @@ TODO: add documentation
              (auto-revert-mode       "↺"  t)
              (clj-refactor-mode      "↻"  clj-refactor)
              (editorconfig-mode      "↹"  editorconfig)
+             (evil-cleverparens-mode "⒞"  evil-cleverparens)
              (flycheck-mode          "✓"  flycheck)
-             (paredit-mode           "‹›" paredit)
+             (paredit-mode           "⒫" paredit)
              (column-enforce-mode    nil  column-enforce-mode)
-             (evil-cleverparens-mode nil  evil-cleverparens)
              (helm-mode              nil  helm)
              (mmm-mode               nil  mmm-mode)
              (undo-tree-mode         nil  undo-tree)
@@ -882,7 +880,9 @@ TODO: add documentation
     "rs" #'raise-sexp                  ; (r)aise (s)exp
     "ss" #'paredit-split-sexp          ; (s)plit (s)exp
     "xs" #'kill-sexp                   ; (x)delete (s)exp
-    "xS" #'backward-kill-sexp)         ; (x)delete (S)exp backward
+    "xS" #'backward-kill-sexp          ; (x)delete (S)exp backward
+    "pt" #'evil-cleverparens-mode)     ; clever(p)arens (t)oggle
+
 
   ;;; magit
   ;; ? will pop up the built-in hotkeys from status mode
