@@ -561,13 +561,19 @@ Explain.
 
 This section contains any functions and their purpose.
 
-TODO: add documentation
+*** command aliases
+
+Explain: yes and no prompts
 
 #+BEGIN_SRC emacs-lisp
-  ;;; yes and no prompts
   (defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
 
-  ;;; electric return functionality
+*** electric return
+
+Explain: Electric return functionality
+
+#+BEGIN_SRC emacs-lisp
   (defvar electrify-return-match
     "[\]}\)]"
     "If this regexp matches the text after the cursor, do an \"electric\" return.")
@@ -581,8 +587,13 @@ TODO: add documentation
           (save-excursion (newline-and-indent)))
       (newline arg)
       (indent-according-to-mode)))
+#+END_SRC
 
-  ;;; make escape act like C-g in evil-mode
+*** evil escape
+
+Explain: Make escape act like C-g in evil-mode
+
+#+BEGIN_SRC emacs-lisp
   (defun minibuffer-keyboard-quit ()
     "Abort recursive edit.
   In Delete Selection mode, if the mark is active, just deactivate it;
