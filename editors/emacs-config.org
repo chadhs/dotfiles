@@ -145,21 +145,32 @@ Packages to be installed are defined in one big list.  Information about these p
           yaml-mode))
 #+END_SRC
 
-*** more pkg stuff to document
+*** Load packages and activate them
 
 #+BEGIN_SRC emacs-lisp
-  ;;; loads packages and activates them
   (package-initialize)
+#+END_SRC
 
-  ;;; fetch the list of packages available
+*** Refresh package list
+
+#+BEGIN_SRC emacs-lisp
   (unless package-archive-contents
     (package-refresh-contents))
+#+END_SRC
 
-  ;;; install / update packages
+*** Ensure packages are installed
+
+#+BEGIN_SRC emacs-lisp
   (dolist (package package-list)
     (unless (package-installed-p package)
       (package-install package)))
+#+END_SRC
 
+*** Show package load time
+
+Here's where we report how long it took to load all installed packages to the Messages buffer.
+
+#+BEGIN_SRC emacs-lisp
   ;;; show package load time
   (let ((elapsed (float-time (time-subtract (current-time)
                                             emacs-start-time))))
