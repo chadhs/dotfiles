@@ -182,10 +182,11 @@ Here's where we report how long it took to load all installed packages to the Me
 
 This section describes all the packages in use as well as their options.
 
-TODO: add documentation
+*** evil-mode settings
+
+Explain.
 
 #+BEGIN_SRC emacs-lisp
-  ;;; evil-mode settings
   (require 'evil-leader) ; load evil-leader first so it's initialized for evil
   (setq evil-leader/in-all-states 1)
   (global-evil-leader-mode)
@@ -206,8 +207,13 @@ TODO: add documentation
 
   (require 'evil-search-highlight-persist)
   (global-evil-search-highlight-persist t)
+#+END_SRC
 
-  ;;; terminal settings
+*** terminal settings
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (setq multi-term-dedicated-window-height 30
         multi-term-program "/usr/local/bin/zsh")
   (add-hook 'term-mode-hook
@@ -219,8 +225,13 @@ TODO: add documentation
               (setq-local scroll-step 1)
               (setq-local evil-emacs-state-cursor 'bar)
               (setq-local global-hl-line-mode nil)))
+#+END_SRC
 
-  ;;; window management
+*** window management
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (require 'zoom-window)
   (setq zoom-window-mode-line-color nil)
 
@@ -230,8 +241,13 @@ TODO: add documentation
     (persp-mode))
 
   (require 'buffer-move)
+#+END_SRC
 
-  ;;; navigation
+*** navigation
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (require 'helm)
   (helm-mode 1)
   (helm-autoresize-mode 1)
@@ -252,11 +268,17 @@ TODO: add documentation
         helm-quick-update t ; show only enough candidates to fill the buffer
         helm-semantic-fuzzy-match t)
 
-  (require 'neotree)
-
   ;; speed up matching by giving emacs garbage collection a more modern threshold
   (setq gc-cons-threshold 20000000)
 
+  (require 'neotree)
+#+END_SRC
+
+*** project management
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   ;;; project management
   (require 'projectile)
   (setq projectile-require-project-root nil)
@@ -286,8 +308,13 @@ TODO: add documentation
         (cl-union projectile-globally-unignored-files
                   '("profiles.clj")))
   (projectile-mode)
+#+END_SRC
 
-  ;;; code auto-completion settings
+*** code auto-completion settings
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (ac-config-default)
   (setq ac-disable-faces nil)
   (define-key ac-completing-map "\t" 'ac-complete) ; set tab key for completion
@@ -303,8 +330,13 @@ TODO: add documentation
                     salt-mode
                     sql-mode
                     yaml-mode)))
+#+END_SRC
 
-  ;;; syntax checking
+*** syntax checking
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (add-hook 'after-init-hook #'global-flycheck-mode)
   ;; disable documentation related emacs lisp checker
   (with-eval-after-load 'flycheck
@@ -314,8 +346,13 @@ TODO: add documentation
     (with-eval-after-load 'flycheck
       (setq flycheck-display-errors-function 'flycheck-pos-tip-error-messages)
       (flycheck-pos-tip-mode)))
+#+END_SRC
 
-  ;;; paredit
+*** paredit
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (autoload 'enable-paredit-mode "Pseudo-structural editing of Lisp code." t)
   (add-hook 'prog-mode-hook (lambda ()
                               (enable-paredit-mode)
@@ -327,18 +364,33 @@ TODO: add documentation
                               (enable-paredit-mode)
                               (electric-pair-mode)
                               (evil-cleverparens-mode)))
+#+END_SRC
 
-  ;;; rainbow delimiters
+*** rainbow delimiters
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (require 'rainbow-delimiters)
   (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
   (add-hook 'yaml-mode-hook #'rainbow-delimiters-mode)
+#+END_SRC
 
-  ;;; 80 column enforcement
+*** 80 column enforcement
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (setq column-enforce-column 81
         column-enforce-comments nil)
   (add-hook 'prog-mode-hook #'column-enforce-mode)
+#+END_SRC
 
-  ;;; spaceline
+*** spaceline
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (require 'spaceline-config)
   (setq spaceline-highlight-face-func #'spaceline-highlight-face-evil-state
         powerline-default-separator nil
@@ -356,8 +408,13 @@ TODO: add documentation
    'spaceline-evil-replace nil :background "#dc322f" :foreground "#eee8d5")
   (set-face-attribute
    'spaceline-evil-motion  nil :background "#d33682" :foreground "#eee8d5")
+#+END_SRC
 
-  ;;; emoji / unicode support 😎👍🏼🚀
+*** emoji / unicode support 😎👍🏼🚀
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (require 'emojify)
   (setq emojify-inhibit-major-modes
         (cl-union emojify-inhibit-major-modes
@@ -365,19 +422,39 @@ TODO: add documentation
                     cider-repl-mode
                     term-mode)))
   (add-hook 'after-init-hook #'global-emojify-mode)
+#+END_SRC
 
-  ;;; keybind discovery
+*** keybind discovery
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (require 'which-key)
   (which-key-mode)
+#+END_SRC
 
-  ;;; ace-jump
+*** ace-jump
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (setq ace-jump-word-mode-use-query-char nil) ; no leading word character needed
+#+END_SRC
 
-  ;;; editorconfig: indentation and whitespace settings
+*** editorconfig: indentation and whitespace settings
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (require 'editorconfig)
   (editorconfig-mode 1)
+#+END_SRC
 
-  ;;; clojure support
+*** clojure support
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (require 'clojure-mode-extra-font-locking)
   (require 'ac-cider)
   (require 'clj-refactor)
@@ -400,25 +477,54 @@ TODO: add documentation
                                (ac-flyspell-workaround)
                                (ac-cider-setup)))
   (eval-after-load 'flycheck '(flycheck-clojure-setup))
+#+END_SRC
 
-  ;;; web templates
+*** web templates
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (require 'web-mode)
   (setq web-mode-markup-indent-offset 2
         web-mode-css-indent-offset 2
         web-mode-code-indent-offset 2)
+#+END_SRC
 
+
+*** yaml support
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   ;;; yaml support
   (require 'yaml-mode)
+#+END_SRC
 
+*** ruby support
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   ;;; ruby support
   (add-hook 'ruby-mode-hook (lambda ()
                               (inf-ruby-minor-mode)
                               (robe-mode)))
   (add-hook 'robe-mode-hook #'ac-robe-setup)
+#+END_SRC
 
-  ;;; python support
+*** python support
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   (add-hook 'python-mode-hook #'elpy-enable)
+#+END_SRC
 
+*** org-mode
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
   ;;; org-mode
   (setq org-insert-mode-line-in-empty-file t) ; for .txt file compatability
 
