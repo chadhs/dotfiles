@@ -490,7 +490,6 @@ Explain.
         web-mode-code-indent-offset 2)
 #+END_SRC
 
-
 *** yaml support
 
 Explain.
