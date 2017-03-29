@@ -864,7 +864,7 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 
 This section contains all my emacs key bindings.  I like keeping all my key bindings in one place rather than with each package.
 
-TODO: add documentation
+*** emacs settings
 
 #+BEGIN_SRC emacs-lisp
   ;;; (e)dit (e)macs user init file
@@ -876,6 +876,11 @@ TODO: add documentation
 
   ;;; (r)estart (e)macs
   (evil-leader/set-key "re" #'restart-emacs)
+#+END_SRC
+
+*** package management
+
+#+BEGIN_SRC emacs-lisp
 
   ;;; package management
   (evil-leader/set-key
@@ -884,7 +889,11 @@ TODO: add documentation
     "Pi" #'package-install       ; (P)ackage (i)nstall
     "Pd" #'package-delete        ; (P)ackage (d)elete
     "Pa" #'package-autoremove)   ; (P)ackage (a)utoremove
+#+END_SRC
 
+*** evil-mode
+
+#+BEGIN_SRC emacs-lisp
   ;;; evil emacs conflicts
   (define-key evil-normal-state-map (kbd "C-u") #'evil-scroll-up)
   (define-key evil-visual-state-map (kbd "C-u") #'evil-scroll-up)
@@ -907,7 +916,11 @@ TODO: add documentation
   (define-key evil-motion-state-map "k" #'evil-previous-visual-line)
   (define-key evil-visual-state-map "j" #'evil-next-visual-line)
   (define-key evil-visual-state-map "k" #'evil-previous-visual-line)
+#+END_SRC
 
+*** window control
+
+#+BEGIN_SRC emacs-lisp
   ;;; cycle themes
   (evil-leader/set-key "ct" #'cycle-themes)
 
@@ -959,7 +972,11 @@ TODO: add documentation
   (global-set-key (kbd "s-+") #'text-scale-increase)
   (global-set-key (kbd "s--") #'text-scale-decrease)
   (global-set-key (kbd "s-=") #'text-scale-adjust)
+#+END_SRC
 
+*** project navigation
+
+#+BEGIN_SRC emacs-lisp
   ;;; bookmarks
   (evil-leader/set-key
     "ml" #'bookmark-jump
@@ -1005,7 +1022,11 @@ TODO: add documentation
   ;; g to update dired buffer info
   ;; s to toggle between sort by name and by date/time
   ;; for creating, deleting, renaming, just toggle shell visor, then update dired
+#+END_SRC
 
+*** terminal
+
+#+BEGIN_SRC emacs-lisp
   ;;; toggle/open shell
   (evil-leader/set-key
     "sv" (lambda () (interactive)              ; toggle (s)hell (v)isor
@@ -1029,44 +1050,74 @@ TODO: add documentation
   ;; vi-mode and vim compatability
   (evil-define-key 'emacs  term-raw-map (kbd "C-v")        #'term-send-raw)
   (evil-define-key 'emacs  term-raw-map (kbd "C-r")        #'term-send-raw)
+#+END_SRC
 
-  ;;; electric return
+*** electric return
+
+#+BEGIN_SRC emacs-lisp
   (global-set-key (kbd "RET") #'electrify-return-if-match)
+#+END_SRC
 
-  ;;; jump to line / word
+*** jump to line / word
+
+#+BEGIN_SRC emacs-lisp
   (evil-leader/set-key
     "jl" #'evil-ace-jump-line-mode
     "jw" #'evil-ace-jump-word-mode
     "jc" #'evil-ace-jump-char-mode)
+#+END_SRC
 
-  ;;; remove search highlight
+*** remove search highlight
+
+#+BEGIN_SRC emacs-lisp
   (evil-leader/set-key "/" #'evil-search-highlight-persist-remove-all)
+#+END_SRC
 
-  ;;; commenting
+*** commenting
+
+#+BEGIN_SRC emacs-lisp
   (evil-leader/set-key
     "cl" #'evilnc-comment-or-uncomment-lines
     "cp" #'evilnc-comment-or-uncomment-paragraphs)
+#+END_SRC
 
-  ;;; kill-ring
+*** yank / kill history
+
+#+BEGIN_SRC emacs-lisp
   (evil-leader/set-key "kr" #'helm-show-kill-ring)
+#+END_SRC
 
-  ;;; doc search
+*** doc search
+
+#+BEGIN_SRC emacs-lisp
   (evil-leader/set-key "d" #'dash-at-point)
+#+END_SRC
 
-  ;;; line number toggle
+*** line number toggle
+
+#+BEGIN_SRC emacs-lisp
   (evil-leader/set-key "nn" #'linum-mode)
+#+END_SRC
 
-  ;;; column enforcement toggle
+*** column enforcement toggle
+
+#+BEGIN_SRC emacs-lisp
   (evil-leader/set-key "ce" #'column-enforce-mode)
+#+END_SRC
 
-  ;;; flycheck
+*** flycheck
+
+#+BEGIN_SRC emacs-lisp
   (evil-leader/set-key
     "fcb" 'flycheck-buffer         ; (f)ly(c)heck (b)uffer
     "fcn" 'flycheck-next-error     ; (f)ly(c)heck (n)ext
     "fcp" 'flycheck-previous-error ; (f)ly(c)heck (p)revious
     "fcl" 'flycheck-list-errors)   ; (f)ly(c)heck (l)ist
+#+END_SRC
 
-  ;;; paredit
+*** paredit
+
+#+BEGIN_SRC emacs-lisp
   ;; barf == push out of current sexp
   ;; slurp == pull into current sexp
   ;; use `Y` not `yy` for yanking a line maintaining balanced parens
@@ -1087,8 +1138,11 @@ TODO: add documentation
     "xs" #'kill-sexp                   ; (x)delete (s)exp
     "xS" #'backward-kill-sexp          ; (x)delete (S)exp backward
     "pt" #'evil-cleverparens-mode)     ; clever(p)arens (t)oggle
+#+END_SRC
 
+*** git
 
+#+BEGIN_SRC emacs-lisp
   ;;; magit
   ;; ? will pop up the built-in hotkeys from status mode
   (evil-leader/set-key
@@ -1114,8 +1168,11 @@ TODO: add documentation
     (define-key magit-status-mode-map (kbd "k") #'previous-line)
     (define-key magit-status-mode-map (kbd "K") 'magit-discard)
     (define-key magit-status-mode-map (kbd "j") #'next-line))
+#+END_SRC
 
-  ;;; clojure - cider
+*** clojure / cider
+
+#+BEGIN_SRC emacs-lisp
   (evil-leader/set-key
     "ri"  #'cider-jack-in                     ; (r)epl (i)nitialize
     "rr"  #'cider-restart                     ; (r)epl (r)estart
@@ -1142,8 +1199,11 @@ TODO: add documentation
   (with-eval-after-load "cider"
     (define-key cider-test-report-mode-map (kbd "k") #'previous-line)
     (define-key cider-test-report-mode-map (kbd "j") #'next-line))
+#+END_SRC
 
-  ;;; markdown
+*** markdown
+
+#+BEGIN_SRC emacs-lisp
   (evil-leader/set-key
     "Mb" 'markdown-insert-bold
     "Me" 'markdown-insert-italic
@@ -1153,27 +1213,41 @@ TODO: add documentation
     "Mi" 'markdown-insert-image
     "Mh" 'markdown-insert-hr
     "Mf" 'markdown-insert-footnote)
+#+END_SRC
 
-  ;;; org-mode
+*** org-mode
+
+#+BEGIN_SRC emacs-lisp
   (evil-leader/set-key-for-mode 'org-mode "es" 'org-edit-special)
   (evil-leader/set-key
     "cc" 'org-edit-src-exit
     "cC" 'org-edit-src-abort)
+#+END_SRC
 
-  ;;; ruby-mode
+*** ruby-mode
+
+#+BEGIN_SRC emacs-lisp
   ;; TODO keybinds for buffer eval
+#+END_SRC
 
-  ;;; python-mode
+*** python-mode
+
+#+BEGIN_SRC emacs-lisp
   ;; TODO keybinds for buffer eval
+#+END_SRC
 
-  ;;;; report total load time
+*** report emacs total load time
+
+#+BEGIN_SRC emacs-lisp
   (let ((elapsed (float-time (time-subtract (current-time)
                                             emacs-start-time))))
     (message "Loaded emacs in %.3fs" elapsed))
+#+END_SRC
 
-  ;;; suppress flycheck warnings about free-vars in emacs config
+*** suppress flycheck warnings in emacs config
+
+#+BEGIN_SRC emacs-lisp
   ;; Local Variables:
   ;; byte-compile-warnings: (not free-vars)
   ;; End:
-
 #+END_SRC
