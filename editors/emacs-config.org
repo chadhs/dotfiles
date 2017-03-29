@@ -610,23 +610,32 @@ Explain: Make escape act like C-g in evil-mode
 
 This section is where all general emacs configuration lives.
 
-TODO: add documentation
+*** path fix for macOS gui mode
 
 #+BEGIN_SRC emacs-lisp
-  ;;; path fix for macOS gui mode
   (when (memq window-system '(mac ns))
     (exec-path-from-shell-initialize))
+#+END_SRC
 
-  ;;; macOS keybinding fix
-  ;; For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option key acts as: > choose +Esc
+*** macOS keybinding fix
 
-  ;;; startup behavior
+For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option key acts as: > choose +Esc
+
+*** startup behavior
+
+#+BEGIN_SRC emacs-lisp
   (setq inhibit-startup-message t)
+#+END_SRC
 
-  ;;; don't save customizations to init file
+*** don't save customizations to init file
+
+#+BEGIN_SRC emacs-lisp
   (setq custom-file (concat user-emacs-directory ".emacs-customize.el"))
+#+END_SRC
 
-  ;;; set default starting directory (avoid launching projectile at HOME or src root)
+*** set default starting directory (avoid launching projectile at HOME or src root)
+
+#+BEGIN_SRC emacs-lisp
   (defvar --user-home-dir (concat (getenv "HOME") "/"))
   (defvar --user-src-dir (concat --user-home-dir "src/"))
   (defvar --user-scratch-dir (concat --user-src-dir "scratch/"))
@@ -636,80 +645,131 @@ TODO: add documentation
             (string= default-directory --user-home-dir)
             (string= default-directory --user-src-dir))
     (setq default-directory --user-scratch-dir))
+#+END_SRC
 
-  ;;; default to utf8
+*** default to utf8
+
+#+BEGIN_SRC emacs-lisp
   (prefer-coding-system 'utf-8)
+#+END_SRC
 
-  ;;; pretty symbols
+*** pretty symbols
+
+#+BEGIN_SRC emacs-lisp
   (global-prettify-symbols-mode)
+#+END_SRC
 
-  ;;; always end with a newline
+*** always end with a newline
+
+#+BEGIN_SRC emacs-lisp
   (setq require-final-newline t)
+#+END_SRC
 
-  ;;; word wrapping
+*** word wrapping
+
+#+BEGIN_SRC emacs-lisp
   (setq-default word-wrap t)
+#+END_SRC
 
-  ;;; highlight matching parens
+*** highlight matching parens
+
+#+BEGIN_SRC emacs-lisp
   (show-paren-mode 1)
   (setq show-paren-delay 0)
+#+END_SRC
 
-  ;;; show end of buffer in editing modes (easily see empty lines)
+*** show end of buffer in editing modes (easily see empty lines)
+
+#+BEGIN_SRC emacs-lisp
   (add-hook 'prog-mode-hook #'vi-tilde-fringe-mode)
   (add-hook 'conf-space-mode-hook #'vi-tilde-fringe-mode)
   (add-hook 'markdown-mode-hook #'vi-tilde-fringe-mode)
   (add-hook 'org-mode-hook #'vi-tilde-fringe-mode)
   (add-hook 'yaml-mode-hook #'vi-tilde-fringe-mode)
+#+END_SRC
 
-  ;;; themes
+*** themes
+
+#+BEGIN_SRC emacs-lisp
   (if (not (display-graphic-p))
       ;; load terminal theme
       (load-theme 'ample t)
     ;; load graphical themes
     (load-theme 'solarized-dark t)
     (load-theme 'solarized-light t))
+#+END_SRC
 
-  ;;; cycle themes
+*** cycle themes
+
+#+BEGIN_SRC emacs-lisp
   (setq cycle-themes-theme-list
         '(solarized-dark
           solarized-light))
   (require 'cycle-themes)
+#+END_SRC
 
-  ;;; font settings
+*** font settings
+
+#+BEGIN_SRC emacs-lisp
   (set-face-attribute 'default nil :family "Menlo" :height 140 :weight 'normal)
+#+END_SRC
 
-  ;;; turn off menu-bar, tool-bar, and scroll-bar
+*** turn off menu-bar, tool-bar, and scroll-bar
+
+#+BEGIN_SRC emacs-lisp
   (menu-bar-mode -1)
   (when (display-graphic-p)
     (tool-bar-mode -1)
     (scroll-bar-mode -1))
+#+END_SRC
 
-  ;;; hi-light current line
+*** hi-light current line
+
+#+BEGIN_SRC emacs-lisp
   (global-hl-line-mode)
+#+END_SRC
 
-  ;;; smoother scrolling
+*** smoother scrolling
+
+#+BEGIN_SRC emacs-lisp
   (setq scroll-margin 8
         scroll-conservatively 100
         scroll-step 1)
+#+END_SRC
 
-  ;;; fix ls warning when dired launches on macOS
+*** fix ls warning when dired launches on macOS
+
+#+BEGIN_SRC emacs-lisp
   (when (eq system-type 'darwin)
     (require 'ls-lisp)
     (setq ls-lisp-use-insert-directory-program nil))
+#+END_SRC
 
-  ;;; initial widow size and position (`left . -1` is to get close to right align)
+*** initial widow size and position (`left . -1` is to get close to right align)
+
+#+BEGIN_SRC emacs-lisp
   (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
+#+END_SRC
 
-  ;;; tab settings
+*** tab settings
+
+#+BEGIN_SRC emacs-lisp
   (setq indent-tabs-mode nil)
+#+END_SRC
 
-  ;;; remember cursor position in buffers
+*** remember cursor position in buffers
+
+#+BEGIN_SRC emacs-lisp
   (if (version< emacs-version "25.1")
       (lambda ()
         (require 'saveplace)
         (setq-default save-place t))
     (save-place-mode 1))
+#+END_SRC
 
-  ;;; store auto-save and backup files in ~/.emacs.d/backups/
+*** store auto-save and backup files in ~/.emacs.d/backups/
+
+#+BEGIN_SRC emacs-lisp
   (defvar --backup-dir (concat user-emacs-directory "backups"))
   (unless (file-exists-p --backup-dir)
     (make-directory --backup-dir t))
@@ -721,8 +781,11 @@ TODO: add documentation
         kept-old-versions 2
         version-control t
         auto-save-default t)
+#+END_SRC
 
-  ;;; file type to mode mappings
+*** file type to mode mappings
+
+#+BEGIN_SRC emacs-lisp
   (setq auto-mode-alist
         (cl-union auto-mode-alist
                   '((".editorconfig" . editorconfig-conf-mode)
@@ -738,11 +801,17 @@ TODO: add documentation
                     ("\\.jinja?\\'"  . web-mode)
                     ("\\.yml"        . yaml-mode)
                     ("Dockerfile\\'" . dockerfile-mode))))
+#+END_SRC
 
-  ;;; version control
+*** version control
+
+#+BEGIN_SRC emacs-lisp
   (setq vc-follow-symlinks t)
+#+END_SRC
 
-  ;;; set initial evil state for particular modes
+*** set initial evil state for particular modes
+
+#+BEGIN_SRC emacs-lisp
   (cl-loop for (mode . state) in '((cider-test-report-mode . emacs)
                                    (dired-mode             . normal)
                                    (magit-mode             . normal)
@@ -754,8 +823,11 @@ TODO: add documentation
                                    ;; this allows vi-mode in zsh shells
                                    (term-mode              . emacs))
            do (evil-set-initial-state mode state))
+#+END_SRC
 
-  ;;; declutter the modeline
+*** declutter the modeline
+
+#+BEGIN_SRC emacs-lisp
   (require 'delight)
   (delight '((auto-complete-mode     "⇥"  auto-complete)
              (auto-revert-mode       "↺"  t)
@@ -771,12 +843,18 @@ TODO: add documentation
              (vi-tilde-fringe-mode   nil  vi-tilde-fringe)
              (which-key-mode         nil  which-key)
              (yas-minor-mode         nil  yasnippet)))
+#+END_SRC
 
-  ;;; modeline tweaks
+*** modeline tweaks
+
+#+BEGIN_SRC emacs-lisp
   (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
   (setq cider-mode-line '(:eval (format " [%s]" (cider--modeline-info))))
+#+END_SRC
 
-  ;;; open urls in default browser
+*** open urls in default browser
+
+#+BEGIN_SRC emacs-lisp
   (when (display-graphic-p)
     (setq browse-url-browser-function 'browse-url-default-macosx-browser))
 #+END_SRC
