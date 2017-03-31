@@ -8,6 +8,8 @@ alias lla='ls -lah'
 alias cd..='cd ..'
 ## fix backspace in vim in zsh in emacs :grin:
 stty erase '^?'
+## check weather
+alias checkweather='curl wttr.in'
 
 ## mac only aliases
 if [ $(uname) = "Darwin" ]; then
@@ -77,11 +79,6 @@ fix-emacs-pkgs(){
 
 ## when in a shell in emacs, remind yourself not to launch vim there
 [ $(uname) = "Darwin" ] && [ $EMACS ] && alias vim='echo "Do not run Vim in a shell within Emacs; use Emacs to edit"'
-
-## check weather
-checkweather(){
-	curl wttr.in
-}
 
 ## man page color and search hilighting
 export PAGER="less"
