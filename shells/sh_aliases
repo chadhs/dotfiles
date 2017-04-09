@@ -21,13 +21,12 @@ if [ $(uname) = "Darwin" ]; then
 	alias shadowyes='defaults delete com.apple.screencapture disable-shadow && killall SystemUIServer'
 	alias sortlaunchpad='defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock'
 	alias brewdoc='brew update && brew doctor'
-	alias brewup='brew update && brew upgrade; brew cleanup; brew prune'
+	alias brewup='brew update && brew doctor && brew upgrade; brew cleanup; brew prune'
+	alias brewforce='brew update && brew doctor; brew upgrade; brew cleanup; brew prune'
 	alias caskup='brew cask list | xargs brew cask install; brew cask cleanup'
 	alias masup='mas upgrade'
-	#alias speedtest='wget -O /dev/null http://speedtest.wdc01.softlayer.com/downloads/test10.zip'
 	alias speedtest='speedtest-cli'
 	#alias scheme="rlwrap scheme"
-	#alias scheme="rlwrap scheme-r5rs"
 	### stop correction intrusion
 	alias sass='nocorrect sass'
 	alias vagrant='nocorrect vagrant'
@@ -38,13 +37,8 @@ if [ $(uname) = "Darwin" ]; then
 	### homebrew
 	export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 	### python
-	#export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python2.7
-	#alias sv='source venv/bin/activate'
-	#alias mkvirtualenv2='mkvirtualenv -p /usr/local/bin/python2.7'
-	#alias mkvirtualenv3='mkvirtualenv -p /usr/local/bin/python3'
 	export WORKON_HOME=~/.virtualenvs
 	export PROJECT_HOME=~/src
-	#source /usr/local/bin/virtualenvwrapper.sh
 	### vagrant
 	alias vssh='vagrant up && vagrant ssh'
 	### ruby
