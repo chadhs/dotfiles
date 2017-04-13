@@ -1,6 +1,5 @@
 [user]
-	name = Chad Stovern
-	email = chad@stovern.me
+	useconfigonly = true
 [push]
 	default = simple
 [color]
