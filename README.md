@@ -4,7 +4,6 @@ configs and systems preferences for all the machines i frequent now and in the f
 
 obviously you **want to read** the best part... [emacs-config.org](editors/emacs-config.org) 
 
-
 ## deployment
 
 `sh deploy.sh` is idempotent and safe to run on every login.
