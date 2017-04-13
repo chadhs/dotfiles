@@ -184,7 +184,7 @@ This section describes all the packages in use as well as their options.
 
 *** evil-mode settings
 
-Explain.
+Emacs is great and has many amazing features, modal editing is not one of them.  I like to edit text at the speed of thought, so evil-mode gives me a complete Vim implementation within Emacs.
 
 #+BEGIN_SRC emacs-lisp
   (require 'evil-leader) ; load evil-leader first so it's initialized for evil
@@ -545,6 +545,7 @@ Explain.
   (setq org-ellipsis "⤵")
   (setq org-src-fontify-natively t)
   (setq org-src-tab-acts-natively t)
+  (setq org-startup-truncated nil)
   (setq org-src-window-setup 'current-window)
 
   ;; exporting
