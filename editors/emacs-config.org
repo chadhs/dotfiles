@@ -420,6 +420,7 @@ Explain.
         (cl-union emojify-inhibit-major-modes
                   '(cider-mode
                     cider-repl-mode
+                    cider-test-report-mode
                     term-mode)))
   (add-hook 'after-init-hook #'global-emojify-mode)
 #+END_SRC
