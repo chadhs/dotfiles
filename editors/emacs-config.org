@@ -491,6 +491,17 @@ Explain.
         web-mode-code-indent-offset 2)
 #+END_SRC
 
+remove ~{}~ auto pairing in electric-pair-pairs for web-mode
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook
+   'web-mode-hook
+   (lambda ()
+     (setq-local electric-pair-inhibit-predicate
+                 (lambda (c)
+                   (if (char-equal c ?{) t (electric-pair-default-inhibit c))))))
+#+END_SRC
+
 *** yaml support
 
 Explain.
@@ -618,6 +629,7 @@ Explain: Make escape act like C-g in evil-mode
              (shell-quote-argument (buffer-file-name)))))
 #+END_SRC
 
+
 ** User configuration
 
 This section is where all general emacs configuration lives.
@@ -681,13 +693,20 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 
 #+BEGIN_SRC emacs-lisp
   (setq-default word-wrap t)
+  (visual-line-mode 1)
+#+END_SRC
+
+*** move through camelCaseWords
+#+BEGIN_SRC emacs-lisp
+  (global-subword-mode 1)
 #+END_SRC
 
 *** highlight matching parens
 
 #+BEGIN_SRC emacs-lisp
+  (setq show-paren-style 'parenthesis
+        show-paren-delay 0)
   (show-paren-mode 1)
-  (setq show-paren-delay 0)
 #+END_SRC
 
 *** show end of buffer in editing modes (easily see empty lines)
