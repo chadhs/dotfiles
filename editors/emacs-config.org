@@ -418,7 +418,8 @@ Explain.
   (require 'emojify)
   (setq emojify-inhibit-major-modes
         (cl-union emojify-inhibit-major-modes
-                  '(cider-mode
+                  '(clojure-mode
+                    cider-mode
                     cider-repl-mode
                     cider-test-report-mode
                     term-mode)))
