@@ -769,6 +769,13 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
         scroll-step 1)
 #+END_SRC
 
+*** slower smoother trackpad scrolling
+
+#+BEGIN_SRC emacs-lisp
+  (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
+  (setq mouse-wheel-progressive-speed nil)
+#+END_SRC
+
 *** fix ls warning when dired launches on macOS
 
 #+BEGIN_SRC emacs-lisp
