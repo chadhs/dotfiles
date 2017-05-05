@@ -1176,6 +1176,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
     "D"   #'paredit-splice-sexp         ; del surrounding ()[]{}
     "rs"  #'raise-sexp                  ; (r)aise (s)exp
     "ss"  #'paredit-split-sexp          ; (s)plit (s)exp
+    "js"  #'paredit-join-sexps          ; (j)oin (s)exps
     "xs"  #'kill-sexp                   ; (x)delete (s)exp
     "xS"  #'backward-kill-sexp          ; (x)delete (S)exp backward
     "pt"  #'evil-cleverparens-mode)     ; clever(p)arens (t)oggle
