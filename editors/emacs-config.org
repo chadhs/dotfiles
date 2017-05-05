@@ -1163,21 +1163,22 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
   ;; use `Y` not `yy` for yanking a line maintaining balanced parens
   ;; use `y%` for yanking a s-expression
   (evil-leader/set-key
-    "W"  #'paredit-wrap-sexp
-    "w(" #'paredit-wrap-sexp
-    "w[" #'paredit-wrap-square
-    "w{" #'paredit-wrap-curly
-    "w<" #'paredit-wrap-angled
-    ">>" #'paredit-forward-barf-sexp
-    "><" #'paredit-forward-slurp-sexp
-    "<<" #'paredit-backward-barf-sexp
-    "<>" #'paredit-backward-slurp-sexp
-    "D"  #'paredit-splice-sexp         ; del surrounding ()[]{}
-    "rs" #'raise-sexp                  ; (r)aise (s)exp
-    "ss" #'paredit-split-sexp          ; (s)plit (s)exp
-    "xs" #'kill-sexp                   ; (x)delete (s)exp
-    "xS" #'backward-kill-sexp          ; (x)delete (S)exp backward
-    "pt" #'evil-cleverparens-mode)     ; clever(p)arens (t)oggle
+    "W"   #'paredit-wrap-sexp
+    "w("  #'paredit-wrap-sexp
+    "w["  #'paredit-wrap-square
+    "w{"  #'paredit-wrap-curly
+    "w<"  #'paredit-wrap-angled
+    "w\"" #'paredit-meta-doublequote
+    ">>"  #'paredit-forward-barf-sexp
+    "><"  #'paredit-forward-slurp-sexp
+    "<<"  #'paredit-backward-barf-sexp
+    "<>"  #'paredit-backward-slurp-sexp
+    "D"   #'paredit-splice-sexp         ; del surrounding ()[]{}
+    "rs"  #'raise-sexp                  ; (r)aise (s)exp
+    "ss"  #'paredit-split-sexp          ; (s)plit (s)exp
+    "xs"  #'kill-sexp                   ; (x)delete (s)exp
+    "xS"  #'backward-kill-sexp          ; (x)delete (S)exp backward
+    "pt"  #'evil-cleverparens-mode)     ; clever(p)arens (t)oggle
 #+END_SRC
 
 *** git
