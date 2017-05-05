@@ -1,5 +1,7 @@
 [user]
 	useconfigonly = true
+[core]
+	ignorecase = false
 [push]
 	default = simple
 [color]
