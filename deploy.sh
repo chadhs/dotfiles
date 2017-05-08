@@ -57,6 +57,7 @@ symlink_configs(){
 
 
   # all
+  [ ! -e ~/.profile ] && ln -s ~/dotfiles/shells/profile .profile
   [ ! -d ~/.oh-my-zsh ] && curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh; rm ~/.zshrc
   [ ! -e ~/.zshrc ] && ln -s ~/dotfiles/shells/zshrc .zshrc
   [ ! -e ~/.zshenv ] && ln -s ~/dotfiles/shells/zshenv .zshenv
