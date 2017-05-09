@@ -1,7 +1,7 @@
 export PATH="$HOME/bin\
-	:/usr/local/opt/openssl/bin\
-	:/usr/local/opt/curl/bin\
-	:/usr/local/bin\
-	:/usr/local/sbin\
-	:${PATH}"
+:/usr/local/opt/openssl/bin\
+:/usr/local/opt/curl/bin\
+:/usr/local/bin\
+:/usr/local/sbin\
+:${PATH}"
 umask 0002 # grant write permsion to group

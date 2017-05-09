@@ -60,7 +60,7 @@ symlink_configs(){
   [ ! -e ~/.profile ] && ln -s ~/dotfiles/shells/profile .profile
   [ ! -d ~/.oh-my-zsh ] && curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh; rm ~/.zshrc
   [ ! -e ~/.zshrc ] && ln -s ~/dotfiles/shells/zshrc .zshrc
-  [ ! -e ~/.zshenv ] && ln -s ~/dotfiles/shells/zshenv .zshenv
+  [ ! -e ~/.zprofile ] && ln -s ~/dotfiles/shells/zprofile .zprofile
   [ ! -e ~/.oh-my-zsh/themes/digitalnomad.zsh-theme ] && \
     ln -s ~/dotfiles/shells/digitalnomad.zsh-theme ~/.oh-my-zsh/themes/digitalnomad.zsh-theme
   [ ! -e ~/.bashrc ] && ln -s ~/dotfiles/shells/bashrc .bashrc
