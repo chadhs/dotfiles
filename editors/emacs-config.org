@@ -48,8 +48,11 @@ The lastest packages are nice, but sometimes you want to stick with stable relea
 
 #+BEGIN_SRC emacs-lisp
   (setq package-pinned-packages
-        '((cider        . "melpa-stable")
-          (clj-refactor . "melpa-stable")))
+        '(
+          ;; (cider            . "melpa-stable")
+          ;; (clj-refactor     . "melpa-stable")
+          ;; (flycheck-clojure . "melpa-stable")
+          ))
 #+END_SRC
 
 *** Package list
