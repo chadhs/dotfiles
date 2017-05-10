@@ -421,11 +421,11 @@ Explain.
   (require 'emojify)
   (setq emojify-inhibit-major-modes
         (cl-union emojify-inhibit-major-modes
-                  '(clojure-mode
-                    cider-mode
+                  '(cider-mode
                     cider-repl-mode
                     cider-test-report-mode
-                    term-mode)))
+                    term-mode))
+        emojify-prog-contexts "comments")
   (add-hook 'after-init-hook #'global-emojify-mode)
 #+END_SRC
 
@@ -468,6 +468,7 @@ Explain.
         cider-repl-display-in-current-window t  ; open repl buffer in current window
         cider-show-error-buffer nil             ; don't show error buffer automatically
         cider-auto-select-error-buffer nil      ; don't switch to error buffer on error
+        cider-font-lock-dynamically t           ; font-lock as much as possible
         cider-repl-use-clojure-font-lock t      ; nicer repl output
         cider-repl-history-file (concat user-emacs-directory "cider-history")
         cider-repl-wrap-history t
@@ -941,6 +942,9 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
   ;;; evil emacs conflicts
   (define-key evil-normal-state-map (kbd "C-u") #'evil-scroll-up)
   (define-key evil-visual-state-map (kbd "C-u") #'evil-scroll-up)
+
+  ;;; enter evil-emacs-state for interacting with certain buffers
+  (evil-leader/set-key "em" #'evil-emacs-state)
 
   ;;; evil vim inconsistencies
   (define-key evil-visual-state-map (kbd "x") #'evil-delete)
