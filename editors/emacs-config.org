@@ -71,6 +71,7 @@ Packages to be installed are defined in one big list.  Information about these p
 
           ;; editing enhancements
           ace-jump-mode
+          aggressive-indent
           column-enforce-mode
           editorconfig
           paredit
@@ -367,6 +368,13 @@ Explain.
                               (enable-paredit-mode)
                               (electric-pair-mode)
                               (evil-cleverparens-mode)))
+#+END_SRC
+
+*** aggressive indentation
+
+#+BEGIN_SRC emacs-lisp
+  (global-aggressive-indent-mode 1)
+  (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
 #+END_SRC
 
 *** rainbow delimiters
