@@ -1,34 +1,51 @@
 #!/bin/sh
 
+# - set group write perms for admin in cellar and cask areas
+
+## preflight checks
+[ $(dirname "${0}") != "." ] && { echo "please run from within scripts dir, exiting..." ; exit 1; }
+[ ! -r mas-pkgs.txt ] && cp -pv mas-pkgs.txt.example mas-pkgs.txt && edit_pkg_lists="true"
+[ ! -r brew-pkgs.txt ] && cp -pv brew-pkgs.txt.example brew-pkgs.txt && edit_pkg_lists="true"
+[ ! -r cask-pkgs.txt ] && cp -pv cask-pkgs.txt.example cask-pkgs.txt && edit_pkg_lists="true"
+[ "${edit_pkg_lists}" = "true" ] && { echo "*-pkgs.txt files created, please edit and re-run this script, exiting..." ; exit 1; }
+[ ! -r mas-pkgs.txt ] || [ ! -r brew-pkgs.txt ] || [ ! -r cask-pkgs.txt ] && { echo "missing package lists, exiting..." ; exit 1; }
+
+## read in packages to install
+mas_pkgs="$(grep '^[^#[:blank:]]' mas-pkgs.txt | tr '\n' ' ')"
+brew_pkgs="$(grep '^[^#[:blank:]]' brew-pkgs.txt | tr '\n' ' ')"
+cask_pkgs="$(grep '^[^#[:blank:]]' cask-pkgs.txt | tr '\n' ' ')"
+
+## do it!
 echo "you will be prompted for your appleid and password once install tools are bootstrapped."
 echo "be aware there will also be various password prompts during the install process for some packages."
 sleep 3
 
 echo "bootstraping install tools..."
 xcode-select --install
-[ -z $(command -v brew) ] && /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+[ -z "$(command -v brew)" ] && /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 brew install mas
 brew tap caskroom/cask
 
 echo "installing mac app store apps..."
-## here are the app to id mappings for convenience:
-## 918858936 Airmail, 931657367 Calcbot, 411643860 DaisyDisk, 847496013 Deckset, 924726344 Deliveries, 482898991 LiveReload, 992076693 MindNode, 407963104 Pixelmator, 445189367 PopClip 496437906 Shush, 413965349 Soulver, 531349534 Tadam, 557168941 Tweetbot,
-read -p "enter your appleid email address: " appleid
-mas signin ${appleid}
-mas install 918858936 931657367 411643860 847496013 924726344 482898991 992076693 407963104 445189367 496437906 413965349 531349534 557168941
+read -rp "enter your appleid email address: " appleid
+mas signin "${appleid}"
+mas install "${mas_pkgs}"
+
+exit 0
 
 echo "installing open-source tools..."
-brew install ansible aspell awscli bash chruby ctags editorconfig git leiningen mit-scheme nmap node pandoc planck rlwrap ssh-copy-id terraform the_silver_searcher tmux tree wget yarn zsh
-pip install virtualenvwrapper
-brew cask install emacs macvim
+brew install "${brew_pkgs}"
+
+echo "installing non mac app store apps..."
+brew cask install "${cask_pkgs}"
 
 echo "seting up dotfiles..."
 cd ~ || exit 1
+pip install virtualenvwrapper
 [ ! -d ~/dotfiles ] && git clone https://github.com/chadhs/dotfiles.git
 sh dotfiles/deploy.sh
 
-echo "installing non mac app store apps..."
-brew cask install 1password alfred anvil appcleaner bartender caffeine choosy dash dropbox dropzone fantastical flux google-chrome google-hangouts hazel iterm2 keyboard-maestro moom nvalt omnifocus slack spotify taskpaper textexpander textual the-unarchiver tripmode tunnelblick vagrant vagrant-manager virtualbox virtualbox-extension-pack
+#echo "fixing homebrew & homebrew cask permissions"
 
 echo "don't forget to fetch any ssh keys you need from your secure vault!"
 

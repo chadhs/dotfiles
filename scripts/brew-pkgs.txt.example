@@ -1,0 +1,30 @@
+# brew install list
+
+## include an uncommented list of homebrew packages to install
+
+#aspell
+#awscli
+#bash
+#chruby
+#editorconfig
+#git
+#heroku
+#leiningen
+#mit-scheme
+#nmap
+#node
+#pandoc
+#planck
+#python
+#readline
+#rlwrap
+#ruby-install
+#ssh-copy-id
+#shellcheck
+#terraform
+#the_silver_searcher
+#tmux
+#tree
+#wget
+#yarn
+#zsh
