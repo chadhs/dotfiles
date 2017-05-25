@@ -29,15 +29,13 @@ brew tap caskroom/cask
 echo "installing mac app store apps..."
 read -rp "enter your appleid email address: " appleid
 mas signin "${appleid}"
-mas install "${mas_pkgs}"
-
-exit 0
+mas install $(echo "${mas_pkgs}") # wrapping echo is for array->string conversion
 
 echo "installing open-source tools..."
-brew install "${brew_pkgs}"
+brew install $(echo "${brew_pkgs}") # wrapping echo is for array->string conversion
 
 echo "installing non mac app store apps..."
-brew cask install "${cask_pkgs}"
+brew cask install $(echo "${cask_pkgs}") # wrapping echo is for array->string conversion
 
 echo "seting up dotfiles..."
 cd ~ || exit 1
