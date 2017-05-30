@@ -60,7 +60,7 @@ The lastest packages are nice, but sometimes you want to stick with stable relea
 Packages to be installed are defined in one big list.  Information about these packages and how they're used will be in the sections to follow this one.
 
 #+BEGIN_SRC emacs-lisp
-  (setq package-list
+  (setq package-selected-packages
         '(;; emacs enhancements
           bind-key ; allow overriding of any keybinds
           exec-path-from-shell ; make sure PATH makes shell PATH
@@ -165,7 +165,7 @@ Packages to be installed are defined in one big list.  Information about these p
 *** Ensure packages are installed
 
 #+BEGIN_SRC emacs-lisp
-  (dolist (package package-list)
+  (dolist (package package-selected-packages)
     (unless (package-installed-p package)
       (package-install package)))
 #+END_SRC
