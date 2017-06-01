@@ -1,7 +1,5 @@
 #!/bin/sh
 
-# - set group write perms for admin in cellar and cask areas
-
 ## preflight checks
 [ $(dirname "${0}") != "." ] && { echo "please run from within scripts dir, exiting..." ; exit 1; }
 [ ! -r mas-pkgs.txt ] && cp -pv mas-pkgs.txt.example mas-pkgs.txt && edit_pkg_lists="true"
