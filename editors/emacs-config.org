@@ -170,6 +170,24 @@ Packages to be installed are defined in one big list.  Information about these p
       (package-install package)))
 #+END_SRC
 
+*** Bootstrap use-package
+
+use-package is great for lazy-loading packages efficiently.
+i'm currently experimenting with using this with some packages before i commit to using it for all packages.
+
+#+BEGIN_SRC emacs-lisp
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+
+(eval-when-compile
+  (require 'use-package))
+(require 'diminish)
+(require 'bind-key)
+
+(setq use-package-always-ensure t)
+#+END_SRC
+
 *** Show package load time
 
 Here's where we report how long it took to load all installed packages to the Messages buffer.
@@ -357,7 +375,9 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (autoload 'enable-paredit-mode "Pseudo-structural editing of Lisp code." t)
+  ;(autoload 'enable-paredit-mode "Pseudo-structural editing of Lisp code." t)
+  (use-package paredit
+    :defer t)
   (add-hook 'prog-mode-hook (lambda ()
                               (enable-paredit-mode)
                               (evil-cleverparens-mode)))
@@ -468,29 +488,40 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'clojure-mode-extra-font-locking)
-  (require 'ac-cider)
-  (require 'clj-refactor)
-  (require 'cljr-helm)
-  (setq cider-repl-pop-to-buffer-on-connect nil ; don't show repl buffer on launch
-        cider-repl-display-in-current-window t  ; open repl buffer in current window
-        cider-show-error-buffer nil             ; don't show error buffer automatically
-        cider-auto-select-error-buffer nil      ; don't switch to error buffer on error
-        cider-font-lock-dynamically t           ; font-lock as much as possible
-        cider-repl-use-clojure-font-lock t      ; nicer repl output
-        cider-repl-history-file (concat user-emacs-directory "cider-history")
-        cider-repl-wrap-history t
-        cider-repl-history-size 3000)
-  (add-hook 'clojure-mode-hook (lambda ()
-                                 (clj-refactor-mode 1)
-                                 (yas-minor-mode)))
-  (add-hook 'cider-repl-mode-hook (lambda ()
-                                    (paredit-mode)
-                                    (ac-cider-setup)))
-  (add-hook 'cider-mode-hook (lambda ()
-                               (ac-flyspell-workaround)
-                               (ac-cider-setup)))
-  (eval-after-load 'flycheck '(flycheck-clojure-setup))
+  (use-package clojure-mode
+    :defer t
+    :init
+    (add-hook 'clojure-mode-hook (lambda ()
+                                   (clj-refactor-mode 1)
+                                   (yas-minor-mode)))
+    :config
+    (eval-after-load 'flycheck '(flycheck-clojure-setup)))
+  (use-package clojure-mode-extra-font-locking
+    :defer t)
+  (use-package cider
+    :defer t
+    :init
+    (setq cider-repl-pop-to-buffer-on-connect nil ; don't show repl buffer on launch
+          cider-repl-display-in-current-window t  ; open repl buffer in current window
+          cider-show-error-buffer nil             ; don't show error buffer automatically
+          cider-auto-select-error-buffer nil      ; don't switch to error buffer on error
+          cider-font-lock-dynamically t           ; font-lock as much as possible
+          cider-repl-use-clojure-font-lock t      ; nicer repl output
+          cider-repl-history-file (concat user-emacs-directory "cider-history")
+          cider-repl-wrap-history t
+          cider-repl-history-size 3000)
+    (add-hook 'cider-mode-hook (lambda ()
+                                 (ac-flyspell-workaround)
+                                 (ac-cider-setup)))
+    (add-hook 'cider-repl-mode-hook (lambda ()
+                                      (paredit-mode)
+                                      (ac-cider-setup))))
+  (use-package ac-cider
+    :defer t)
+  (use-package clj-refactor
+    :defer t)
+  (use-package cljr-helm
+    :defer t)
 #+END_SRC
 
 *** web templates
@@ -1261,9 +1292,9 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
     "fb"  #'cider-format-buffer                 ; (f)ormat (b)uffer
     "rf"  #'cljr-helm)                          ; clj (r)e(f)actor
   ;; replace C-j keybind in cider-repl with S-<return>
-  (bind-key "S-<return>" #'cider-repl-newline-and-indent cider-repl-mode-map)
   ;; set evil style j and k in cider-test-report-mode
   (with-eval-after-load "cider"
+    (bind-key "S-<return>" #'cider-repl-newline-and-indent cider-repl-mode-map)
     (define-key cider-test-report-mode-map (kbd "k") #'previous-line)
     (define-key cider-test-report-mode-map (kbd "j") #'next-line))
 #+END_SRC
