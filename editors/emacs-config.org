@@ -63,7 +63,6 @@ Packages to be installed are defined in one big list.  Information about these p
   (setq package-selected-packages
         '(;; emacs enhancements
           bind-key ; allow overriding of any keybinds
-          exec-path-from-shell ; make sure PATH makes shell PATH
           delight ; customize modeline appearance
           multi-term
           restart-emacs ; restart emacs from within emacs
@@ -375,19 +374,19 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  ;(autoload 'enable-paredit-mode "Pseudo-structural editing of Lisp code." t)
   (use-package paredit
-    :defer t)
-  (add-hook 'prog-mode-hook (lambda ()
-                              (enable-paredit-mode)
-                              (evil-cleverparens-mode)))
-  (add-hook 'org-mode-hook (lambda ()
-                              (enable-paredit-mode)
-                              (evil-cleverparens-mode)))
-  (add-hook 'yaml-mode-hook (lambda ()
-                              (enable-paredit-mode)
-                              (electric-pair-mode)
-                              (evil-cleverparens-mode)))
+    :defer t
+    :init
+    (add-hook 'prog-mode-hook (lambda ()
+                                (enable-paredit-mode)
+                                (evil-cleverparens-mode)))
+    (add-hook 'org-mode-hook (lambda ()
+                               (enable-paredit-mode)
+                               (evil-cleverparens-mode)))
+    (add-hook 'yaml-mode-hook (lambda ()
+                                (enable-paredit-mode)
+                                (electric-pair-mode)
+                                (evil-cleverparens-mode))))
 #+END_SRC
 
 *** aggressive indentation
@@ -427,18 +426,12 @@ Explain.
         powerline-default-separator nil
         spaceline-buffer-size-p nil)
   (spaceline-spacemacs-theme)
-  (set-face-attribute
-   'spaceline-evil-emacs   nil :background "#6c71c4" :foreground "#eee8d5")
-  (set-face-attribute
-   'spaceline-evil-normal  nil :background "#859900" :foreground "#eee8d5")
-  (set-face-attribute
-   'spaceline-evil-insert  nil :background "#268bd2" :foreground "#eee8d5")
-  (set-face-attribute
-   'spaceline-evil-visual  nil :background "#cb4b16" :foreground "#eee8d5")
-  (set-face-attribute
-   'spaceline-evil-replace nil :background "#dc322f" :foreground "#eee8d5")
-  (set-face-attribute
-   'spaceline-evil-motion  nil :background "#d33682" :foreground "#eee8d5")
+  (set-face-attribute 'spaceline-evil-emacs   nil :background "#6c71c4" :foreground "#eee8d5")
+  (set-face-attribute 'spaceline-evil-normal  nil :background "#859900" :foreground "#eee8d5")
+  (set-face-attribute 'spaceline-evil-insert  nil :background "#268bd2" :foreground "#eee8d5")
+  (set-face-attribute 'spaceline-evil-visual  nil :background "#cb4b16" :foreground "#eee8d5")
+  (set-face-attribute 'spaceline-evil-replace nil :background "#dc322f" :foreground "#eee8d5")
+  (set-face-attribute 'spaceline-evil-motion  nil :background "#d33682" :foreground "#eee8d5")
 #+END_SRC
 
 *** emoji / unicode support 😎👍🏼🚀
@@ -493,9 +486,7 @@ Explain.
     :init
     (add-hook 'clojure-mode-hook (lambda ()
                                    (clj-refactor-mode 1)
-                                   (yas-minor-mode)))
-    :config
-    (eval-after-load 'flycheck '(flycheck-clojure-setup)))
+                                   (yas-minor-mode))))
   (use-package clojure-mode-extra-font-locking
     :defer t)
   (use-package cider
@@ -515,7 +506,9 @@ Explain.
                                  (ac-cider-setup)))
     (add-hook 'cider-repl-mode-hook (lambda ()
                                       (paredit-mode)
-                                      (ac-cider-setup))))
+                                      (ac-cider-setup)))
+    :config
+    (eval-after-load 'flycheck '(flycheck-clojure-setup)))
   (use-package ac-cider
     :defer t)
   (use-package clj-refactor
@@ -682,7 +675,7 @@ This section is where all general emacs configuration lives.
 
 #+BEGIN_SRC emacs-lisp
   (when (memq window-system '(mac ns))
-    (exec-path-from-shell-initialize))
+    (setenv "PATH" (shell-command-to-string "source ~/.profile && printf $PATH")))
 #+END_SRC
 
 *** macOS keybinding fix
