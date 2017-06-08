@@ -675,7 +675,8 @@ This section is where all general emacs configuration lives.
 
 #+BEGIN_SRC emacs-lisp
   (when (memq window-system '(mac ns))
-    (setenv "PATH" (shell-command-to-string "source ~/.profile && printf $PATH")))
+    (setenv "PATH" (shell-command-to-string "source ~/.profile && printf $PATH"))
+    (setq exec-path (cl-union (split-string (shell-command-to-string "source ~/.profile && printf $PATH") ":") exec-path)))
 #+END_SRC
 
 *** macOS keybinding fix
