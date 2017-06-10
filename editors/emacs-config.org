@@ -66,6 +66,7 @@ Packages to be installed are defined in one big list.  Information about these p
           delight ; customize modeline appearance
           multi-term
           restart-emacs ; restart emacs from within emacs
+          use-package ; lazy-loading of packages
           which-key
 
           ;; editing enhancements
@@ -110,10 +111,8 @@ Packages to be installed are defined in one big list.  Information about these p
 
           ;; workspace / project / file / buffer mgmt
           buffer-move
-          helm
-          helm-ag
-          helm-flx
-          helm-projectile
+          counsel
+          counsel-projectile
           magit
           neotree
           perspective ; workspace manager
@@ -128,7 +127,6 @@ Packages to be installed are defined in one big list.  Information about these p
           clojure-mode
           clojure-mode-extra-font-locking
           clj-refactor
-          cljr-helm
 
           ;; ruby
           inf-ruby
@@ -269,28 +267,14 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'helm)
-  (helm-mode 1)
-  (helm-autoresize-mode 1)
-  (helm-flx-mode +1)
-
-  (setq helm-mode-fuzzy-match t ; global
-        helm-completion-in-region-fuzzy-match t ; global
-        helm-apropos-fuzzy-match t
-        helm-bookmark-show-location t
-        helm-buffers-fuzzy-matching t
-        helm-file-cache-fuzzy-match t
-        helm-imenu-fuzzy-match t
-        helm-lisp-completion-at-point t
-        helm-locate-fuzzy-match t
-        helm-M-x-fuzzy-match t
-        helm-mode-fuzzy-match t
-        helm-recentf-fuzzy-match t
-        helm-quick-update t ; show only enough candidates to fill the buffer
-        helm-semantic-fuzzy-match t)
+  (ivy-mode 1)
+  (setq ivy-use-virtual-buffers t
+        ivy-height 15
+        ivy-count-format "(%d/%d) "
+        ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
 
   ;; speed up matching by giving emacs garbage collection a more modern threshold
-  (setq gc-cons-threshold 20000000)
+  (setq gc-cons-threshold 20000000) ; ~20MB
 
   (require 'neotree)
 #+END_SRC
@@ -487,6 +471,7 @@ Explain.
     (add-hook 'clojure-mode-hook (lambda ()
                                    (clj-refactor-mode 1)
                                    (yas-minor-mode))))
+  ;; add keybindings here to replace cljr-helm (,rf)
   (use-package clojure-mode-extra-font-locking
     :defer t)
   (use-package cider
@@ -512,8 +497,6 @@ Explain.
   (use-package ac-cider
     :defer t)
   (use-package clj-refactor
-    :defer t)
-  (use-package cljr-helm
     :defer t)
 #+END_SRC
 
@@ -914,7 +897,7 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
              (flycheck-mode          "✓"  flycheck)
              (paredit-mode           "⒫" paredit)
              (column-enforce-mode    nil  column-enforce-mode)
-             (helm-mode              nil  helm)
+             (ivy-mode               nil  ivy)
              (mmm-mode               nil  mmm-mode)
              (subword-mode           nil  t)
              (undo-tree-mode         nil  undo-tree)
@@ -991,6 +974,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
   (define-key minibuffer-local-completion-map [escape] #'minibuffer-keyboard-quit)
   (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
   (define-key minibuffer-local-isearch-map    [escape] #'minibuffer-keyboard-quit)
+  (define-key ivy-minibuffer-map              [escape] #'minibuffer-keyboard-quit)
   (global-set-key                             [escape] #'evil-exit-emacs-state)
 
   ;;; evil line movement tweaks
@@ -1066,20 +1050,20 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
     "ms" #'bookmark-set
     "md" #'bookmark-delete)
 
-  ;;; set emacs command hotkey (M-x) to (helm-M-x)
-  (global-set-key (kbd "M-x") #'helm-M-x)
+  ;;; set a nicer M-x
+  (global-set-key (kbd "M-x") #'counsel-M-x)
 
-  ;;; helm menu nav
-  (define-key helm-map (kbd "s-j") #'helm-next-line)
-  (define-key helm-map (kbd "s-k") #'helm-previous-line)
+  ;;; allow for jk menu nav
+  (define-key ivy-minibuffer-map (kbd "s-j") #'ivy-next-line)
+  (define-key ivy-minibuffer-map (kbd "s-k") #'ivy-previous-line)
 
   ;;; projects / files / buffers
   (evil-leader/set-key
     "F"  #'find-file                      ; (F)ind file
-    "t"  #'helm-projectile-find-file-dwim ; emulate command-(t)
-    "b"  #'helm-buffers-list              ; switch to (b)uffer
+    "t"  #'counsel-projectile-find-file   ; emulate command-(t)
+    "b"  #'ivy-switch-buffer              ; switch to (b)uffer
     "kb" #'kill-buffer                    ; (k)ill (b)uffer
-    "gf" #'helm-projectile-ag)            ; (g)rep in (f)iles
+    "gf" #'counsel-projectile-ag)         ; (g)rep in (f)iles
 
   ;;; neotree
   (evil-leader/set-key "nt" #'neotree-toggle)
@@ -1166,7 +1150,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
 *** yank / kill history
 
 #+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key "kr" #'helm-show-kill-ring)
+  (evil-leader/set-key "kr" #'counsel-yank-pop)
 #+END_SRC
 
 *** doc search
@@ -1284,7 +1268,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
     "ff"  #'cider-format-defun                  ; (f)ormat (f)orm
     "fr"  #'cider-format-region                 ; (f)ormat (r)egion
     "fb"  #'cider-format-buffer                 ; (f)ormat (b)uffer
-    "rf"  #'cljr-helm)                          ; clj (r)e(f)actor
+    )
   ;; replace C-j keybind in cider-repl with S-<return>
   ;; set evil style j and k in cider-test-report-mode
   (with-eval-after-load "cider"
