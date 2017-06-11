@@ -92,9 +92,6 @@ Packages to be installed are defined in one big list.  Information about these p
           ample-theme
           emojify
 
-          ;; modeline
-          spaceline
-
           ;; vim mode
           evil
           evil-cleverparens
@@ -398,24 +395,6 @@ Explain.
   (setq column-enforce-column 81
         column-enforce-comments nil)
   (add-hook 'prog-mode-hook #'column-enforce-mode)
-#+END_SRC
-
-*** spaceline
-
-Explain.
-
-#+BEGIN_SRC emacs-lisp
-  (require 'spaceline-config)
-  (setq spaceline-highlight-face-func #'spaceline-highlight-face-evil-state
-        powerline-default-separator nil
-        spaceline-buffer-size-p nil)
-  (spaceline-spacemacs-theme)
-  (set-face-attribute 'spaceline-evil-emacs   nil :background "#6c71c4" :foreground "#eee8d5")
-  (set-face-attribute 'spaceline-evil-normal  nil :background "#859900" :foreground "#eee8d5")
-  (set-face-attribute 'spaceline-evil-insert  nil :background "#268bd2" :foreground "#eee8d5")
-  (set-face-attribute 'spaceline-evil-visual  nil :background "#cb4b16" :foreground "#eee8d5")
-  (set-face-attribute 'spaceline-evil-replace nil :background "#dc322f" :foreground "#eee8d5")
-  (set-face-attribute 'spaceline-evil-motion  nil :background "#d33682" :foreground "#eee8d5")
 #+END_SRC
 
 *** emoji / unicode support 😎👍🏼🚀
@@ -889,7 +868,8 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 
 #+BEGIN_SRC emacs-lisp
   (require 'delight)
-  (delight '((auto-complete-mode     "⇥"  auto-complete)
+  (delight '((aggressive-indent-mode "⇉" aggressive-indent)
+             (auto-complete-mode     "⇥"  auto-complete)
              (auto-revert-mode       "↺"  t)
              (clj-refactor-mode      "↻"  clj-refactor)
              (editorconfig-mode      "↹"  editorconfig)
@@ -899,6 +879,7 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
              (column-enforce-mode    nil  column-enforce-mode)
              (ivy-mode               nil  ivy)
              (mmm-mode               nil  mmm-mode)
+             (projectile-mode        nil  projectile)
              (subword-mode           nil  t)
              (undo-tree-mode         nil  undo-tree)
              (vi-tilde-fringe-mode   nil  vi-tilde-fringe)
@@ -911,6 +892,40 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 #+BEGIN_SRC emacs-lisp
   (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
   (setq cider-mode-line '(:eval (format " [%s]" (cider--modeline-info))))
+#+END_SRC
+
+*** custom mode-line configuration
+
+Packages like spaceline are great, but can add a lot of overhead, and also limit you.
+I've set up my own custom modeline that provides a format that looks like this:
+
+N [*]filename [project] ᚠbranch (modes) Err U: line:col [main] 29%
+
+#+BEGIN_SRC emacs-lisp
+  (setq-default
+   mode-line-format
+   (list
+    '(:eval
+      (propertize
+       evil-mode-line-tag
+       ;; let's give our evil/vim state a nice visual cue by adding some color
+       'face (cond
+              ((string= evil-mode-line-tag " <E> ") '(:background "#6c71c4" :foreground "#eee8d5"))
+              ((string= evil-mode-line-tag " <N> ") '(:background "#859900" :foreground "#eee8d5"))
+              ((string= evil-mode-line-tag " <I> ") '(:background "#268bd2" :foreground "#eee8d5"))
+              ((string= evil-mode-line-tag " <V> ") '(:background "#cb4b16" :foreground "#eee8d5"))
+              ((string= evil-mode-line-tag " <R> ") '(:background "#dc322f" :foreground "#eee8d5"))
+              ;; ((string= evil-mode-line-tag " <O> ") '(:background "#d33682" :foreground "#eee8d5"))
+              )))
+    "[%*]" mode-line-buffer-identification
+    '(projectile-mode-line projectile-mode-line)
+    '(vc-mode (:eval (concat "ᚠ" (second (split-string vc-mode ":"))))) " "
+    mode-line-modes
+    '(flycheck-mode-line flycheck-mode-line) " "
+    "%Z "
+    "%l:%c "
+    '(persp-modestring persp-modestring) " "
+    "%p"))
 #+END_SRC
 
 *** open urls in default browser
