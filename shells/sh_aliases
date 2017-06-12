@@ -13,62 +13,66 @@ alias checkweather='curl wttr.in'
 
 ## mac only aliases
 if [ $(uname) = "Darwin" ]; then
-        alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs "$@"'
-        alias vim='mvim -v'
-	alias flushdns='dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
-	alias restart_en0='sudo ifconfig en0 down && sudo ifconfig en0 up'
-	alias shadowno='defaults write com.apple.screencapture disable-shadow -bool true && killall SystemUIServer'
-	alias shadowyes='defaults delete com.apple.screencapture disable-shadow && killall SystemUIServer'
-	alias sortlaunchpad='defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock'
-	alias brewdoc='brew update && brew doctor'
-	alias brewup='brew update && brew doctor && brew upgrade; brew cleanup; brew prune'
-	alias brewforce='brew update && brew doctor; brew upgrade; brew cleanup; brew prune'
-	alias caskup='brew cask list | xargs brew cask install; brew cask cleanup'
-	alias masup='mas upgrade'
-	alias speedtest='speedtest-cli'
-	#alias scheme="rlwrap scheme"
-	### stop correction intrusion
-	alias sass='nocorrect sass'
-	alias vagrant='nocorrect vagrant'
-	alias chef='nocorrect chef'
-	alias knife='nocorrect knife'
+    alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs "$@"'
+    alias vim='mvim -v'
+    alias flushdns='dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
+    alias restart_en0='sudo ifconfig en0 down && sudo ifconfig en0 up'
+    alias shadowno='defaults write com.apple.screencapture disable-shadow -bool true && killall SystemUIServer'
+    alias shadowyes='defaults delete com.apple.screencapture disable-shadow && killall SystemUIServer'
+    alias sortlaunchpad='defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock'
+    alias brewdoc='brew update && brew doctor'
+    alias brewup='brew update && brew doctor && brew upgrade; brew cleanup; brew prune'
+    alias brewforce='brew update && brew doctor; brew upgrade; brew cleanup; brew prune'
+    alias caskup='brew cask list | xargs brew cask install; brew cask cleanup'
+    alias masup='mas upgrade'
+    alias speedtest='speedtest-cli'
+    #alias scheme="rlwrap scheme"
+    ### stop correction intrusion
+    alias sass='nocorrect sass'
+    alias vagrant='nocorrect vagrant'
+    alias chef='nocorrect chef'
+    alias knife='nocorrect knife'
 
-### mac development
-	### homebrew
-	export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-	### python
-	export WORKON_HOME=~/.virtualenvs
-	export PROJECT_HOME=~/src
-	### vagrant
-	alias vssh='vagrant up && vagrant ssh'
-	### ruby
-	source /usr/local/opt/chruby/share/chruby/chruby.sh
-	source /usr/local/opt/chruby/share/chruby/auto.sh
-	### minikube
-	alias mkset='eval $(minikube docker-env)'
-	alias mkunset='eval $(minikube docker-env -u)'
+    ### mac development
+    ### homebrew
+    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+    ### python
+    export WORKON_HOME=~/.virtualenvs
+    export PROJECT_HOME=~/src
+    ### vagrant
+    alias vssh='vagrant up && vagrant ssh'
+    ### ruby
+    source /usr/local/opt/chruby/share/chruby/chruby.sh
+    source /usr/local/opt/chruby/share/chruby/auto.sh
+    ### minikube
+    alias mkset='eval $(minikube docker-env)'
+    alias mkunset='eval $(minikube docker-env -u)'
+    ### cortex
+    export CUDA_HOME=/usr/local/cuda
+    export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:$CUDA_HOME/lib"
+    export PATH="$CUDA_HOME/bin:$PATH"
 
-### mac blogging
-	cryogen-publish(){
-		curdir=$(pwd)
-		cd ../public/ || echo "### You must run this from the resources/templates directory of your Cryogen site! ###"
-		git add --all
-		git commit -a -m "site content update" && git push
-		cd $curdir
-	}
+    ### mac blogging
+    cryogen-publish(){
+	curdir=$(pwd)
+	cd ../public/ || echo "### You must run this from the resources/templates directory of your Cryogen site! ###"
+	git add --all
+	git commit -a -m "site content update" && git push
+	cd $curdir
+    }
 
 fi
 
 ## update dot files
 update-dotfiles(){
-	curdir=$(pwd)
-	cd ~/dotfiles && git pull && sh deploy.sh
-	cd $curdir
+    curdir=$(pwd)
+    cd ~/dotfiles && git pull && sh deploy.sh
+    cd $curdir
 }
 
 ## fix emacs packages
 fix-emacs-pkgs(){
-	rm -rf ~/.emacs.d/elpa/*
+    rm -rf ~/.emacs.d/elpa/*
 }
 
 ## when in a shell in emacs, remind yourself not to launch vim there
@@ -77,13 +81,13 @@ fix-emacs-pkgs(){
 ## man page color and search hilighting
 export PAGER="less"
 man() {
-	env \
-		LESS_TERMCAP_mb=$(printf "\e[1;31m") \
-		LESS_TERMCAP_md=$(printf "\e[1;31m") \
-		LESS_TERMCAP_me=$(printf "\e[0m") \
-		LESS_TERMCAP_se=$(printf "\e[0m") \
-		LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
-		LESS_TERMCAP_ue=$(printf "\e[0m") \
-		LESS_TERMCAP_us=$(printf "\e[1;32m") \
-		man "$@"
+    env \
+	LESS_TERMCAP_mb=$(printf "\e[1;31m") \
+	LESS_TERMCAP_md=$(printf "\e[1;31m") \
+	LESS_TERMCAP_me=$(printf "\e[0m") \
+	LESS_TERMCAP_se=$(printf "\e[0m") \
+	LESS_TERMCAP_so=$(printf "\e[1;44;33m") \
+	LESS_TERMCAP_ue=$(printf "\e[0m") \
+	LESS_TERMCAP_us=$(printf "\e[1;32m") \
+	man "$@"
 }
