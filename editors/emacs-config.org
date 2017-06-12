@@ -892,6 +892,7 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 #+BEGIN_SRC emacs-lisp
   (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
   (setq cider-mode-line '(:eval (format " [%s]" (cider--modeline-info))))
+  (setq x-underline-at-descent-line t) ; better modeline underline alignment
 #+END_SRC
 
 *** custom mode-line configuration
