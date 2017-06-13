@@ -837,7 +837,7 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
                     ("\\.js?\\'"     . web-mode)
                     ("\\.php?\\'"    . web-mode)
                     ("\\.jinja?\\'"  . web-mode)
-                    ("\\.j2?\\'"  . web-mode)
+                    ("\\.j2?\\'"     . web-mode)
                     ("\\.yml"        . yaml-mode)
                     ("Dockerfile\\'" . dockerfile-mode))))
 #+END_SRC
