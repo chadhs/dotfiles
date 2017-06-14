@@ -66,6 +66,7 @@ Packages to be installed are defined in one big list.  Information about these p
           delight ; customize modeline appearance
           multi-term
           restart-emacs ; restart emacs from within emacs
+          smex ; M-x enhancement, recent commands etc, used by counsel
           use-package ; lazy-loading of packages
           which-key
 
