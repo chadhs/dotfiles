@@ -6,6 +6,7 @@ If you're new to Emacs check out spacemacs: http://spacemacs.org.
 If you need some help, send me some electronic mail. \\
 Chad Stovern: [[mailto:hello@chadstovern.com][hello@chadstovern.com]]
 
+
 ** Table of contents
 :TOC:
    - [[#package-management][Package management]]
