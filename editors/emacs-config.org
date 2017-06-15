@@ -379,8 +379,8 @@ Explain.
 
 barf == push out of current sexp \\
 slurp == pull into current sexp \\
-use `Y` not `yy` for yanking a line maintaining balanced parens \\
-use `y%` for yanking a s-expression \\
+use ~Y~ not ~yy~ for yanking a line maintaining balanced parens \\
+use ~y%~ for yanking a s-expression \\
 
 #+BEGIN_SRC emacs-lisp
   (use-package paredit
