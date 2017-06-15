@@ -377,6 +377,11 @@ Explain.
 
 Explain.
 
+barf == push out of current sexp
+slurp == pull into current sexp
+use `Y` not `yy` for yanking a line maintaining balanced parens
+use `y%` for yanking a s-expression
+
 #+BEGIN_SRC emacs-lisp
   (use-package paredit
     :defer t
@@ -386,10 +391,6 @@ Explain.
     (add-hook 'yaml-mode-hook (lambda ()
                                 (enable-paredit-mode)
                                 (electric-pair-mode)))
-    ;; barf == push out of current sexp
-    ;; slurp == pull into current sexp
-    ;; use `Y` not `yy` for yanking a line maintaining balanced parens
-    ;; use `y%` for yanking a s-expression
     (evil-leader/set-key
       "W"   #'paredit-wrap-sexp
       "w("  #'paredit-wrap-sexp
@@ -422,7 +423,6 @@ Explain.
     (evil-define-key 'normal evil-cleverparens-mode-map
       (kbd "x") #'paredit-forward-delete
       (kbd "X") #'paredit-backward-delete))
-
 #+END_SRC
 
 *** aggressive indentation
