@@ -381,16 +381,48 @@ Explain.
   (use-package paredit
     :defer t
     :init
-    (add-hook 'prog-mode-hook (lambda ()
-                                (enable-paredit-mode)
-                                (evil-cleverparens-mode)))
-    (add-hook 'org-mode-hook (lambda ()
-                               (enable-paredit-mode)
-                               (evil-cleverparens-mode)))
+    (add-hook 'prog-mode-hook 'enable-paredit-mode)
+    (add-hook 'org-mode-hook 'enable-paredit-mode)
     (add-hook 'yaml-mode-hook (lambda ()
                                 (enable-paredit-mode)
-                                (electric-pair-mode)
-                                (evil-cleverparens-mode))))
+                                (electric-pair-mode)))
+    ;; barf == push out of current sexp
+    ;; slurp == pull into current sexp
+    ;; use `Y` not `yy` for yanking a line maintaining balanced parens
+    ;; use `y%` for yanking a s-expression
+    (evil-leader/set-key
+      "W"   #'paredit-wrap-sexp
+      "w("  #'paredit-wrap-sexp
+      "w["  #'paredit-wrap-square
+      "w{"  #'paredit-wrap-curly
+      "w<"  #'paredit-wrap-angled
+      "w\"" #'paredit-meta-doublequote
+      ">>"  #'paredit-forward-barf-sexp
+      "><"  #'paredit-forward-slurp-sexp
+      "<<"  #'paredit-backward-barf-sexp
+      "<>"  #'paredit-backward-slurp-sexp
+      "D"   #'paredit-splice-sexp         ; del surrounding ()[]{}
+      "rs"  #'raise-sexp                  ; (r)aise (s)exp
+      "ss"  #'paredit-split-sexp          ; (s)plit (s)exp
+      "js"  #'paredit-join-sexps          ; (j)oin (s)exps
+      "xs"  #'kill-sexp                   ; (x)delete (s)exp
+      "xS"  #'backward-kill-sexp          ; (x)delete (S)exp backward
+      "pt"  #'evil-cleverparens-mode))    ; clever(p)arens (t)oggle
+
+  (use-package evil-cleverparens
+    :defer t
+    :init
+    (add-hook 'prog-mode-hook 'evil-cleverparens-mode)
+    (add-hook 'org-mode-hook 'evil-cleverparens-mode)
+    (add-hook 'yaml-mode-hook 'evil-cleverparens-mode)
+    (evil-leader/set-key "pt" #'evil-cleverparens-mode) ; clever(p)arens (t)oggle
+    :config
+    ;; prevent evil-cleverparens from setting x and X to delete and splice,
+    ;; preventing it from "breaking" paredit's default strict behavior.
+    (evil-define-key 'normal evil-cleverparens-mode-map
+      (kbd "x") #'paredit-forward-delete
+      (kbd "X") #'paredit-backward-delete))
+
 #+END_SRC
 
 *** aggressive indentation
@@ -1223,35 +1255,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
 *** paredit
 
 #+BEGIN_SRC emacs-lisp
-  ;; barf == push out of current sexp
-  ;; slurp == pull into current sexp
-  ;; use `Y` not `yy` for yanking a line maintaining balanced parens
-  ;; use `y%` for yanking a s-expression
-  (evil-leader/set-key
-    "W"   #'paredit-wrap-sexp
-    "w("  #'paredit-wrap-sexp
-    "w["  #'paredit-wrap-square
-    "w{"  #'paredit-wrap-curly
-    "w<"  #'paredit-wrap-angled
-    "w\"" #'paredit-meta-doublequote
-    ">>"  #'paredit-forward-barf-sexp
-    "><"  #'paredit-forward-slurp-sexp
-    "<<"  #'paredit-backward-barf-sexp
-    "<>"  #'paredit-backward-slurp-sexp
-    "D"   #'paredit-splice-sexp         ; del surrounding ()[]{}
-    "rs"  #'raise-sexp                  ; (r)aise (s)exp
-    "ss"  #'paredit-split-sexp          ; (s)plit (s)exp
-    "js"  #'paredit-join-sexps          ; (j)oin (s)exps
-    "xs"  #'kill-sexp                   ; (x)delete (s)exp
-    "xS"  #'backward-kill-sexp          ; (x)delete (S)exp backward
-    "pt"  #'evil-cleverparens-mode)     ; clever(p)arens (t)oggle
-
-  ;; prevent evil-cleverparens from setting x and X to delete and splice,
-  ;; preventing it from "breaking" paredit's default strict behavior.
-  (with-eval-after-load 'evil-cleverparens
-    (evil-define-key 'normal evil-cleverparens-mode-map
-      (kbd "x") #'paredit-forward-delete
-      (kbd "X") #'paredit-backward-delete))
+  ;; see use-package section for paredit above
 #+END_SRC
 
 *** git
