@@ -378,9 +378,9 @@ Explain.
 Explain.
 
 #+BEGIN_QUOTE
-barf == push out of current sexp
-slurp == pull into current sexp
-use ~Y~ not ~yy~ for yanking a line maintaining balanced parens
+barf == push out of current sexp\\
+slurp == pull into current sexp\\
+use ~Y~ not ~yy~ for yanking a line maintaining balanced parens\\
 use ~y%~ for yanking a s-expression
 #+END_QUOTE
 
