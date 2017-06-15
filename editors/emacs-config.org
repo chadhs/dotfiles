@@ -172,16 +172,25 @@ use-package is great for lazy-loading packages efficiently.
 i'm currently experimenting with using this with some packages before i commit to using it for all packages.
 
 #+BEGIN_SRC emacs-lisp
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
 
-(eval-when-compile
-  (require 'use-package))
-(require 'diminish)
-(require 'bind-key)
+  (eval-when-compile
+    (require 'use-package))
 
-(setq use-package-always-ensure t)
+  ;;; example use-package usage
+  ;; (use-package foo
+  ;;   :ensure t
+  ;;   :defer t
+  ;;   :commands (foo-all foo-super)
+  ;;   :init
+  ;;   (setq foo-variable t)
+  ;;   (evil-leader/set-key "fs" #'foo-super)
+  ;;   :config
+  ;;   (foo-mode 1))
+
+  (setq use-package-always-ensure t)
 #+END_SRC
 
 *** Show package load time
@@ -205,26 +214,38 @@ This section describes all the packages in use as well as their options.
 Emacs is great and has many amazing features, modal editing is not one of them.  I like to edit text at the speed of thought, so evil-mode gives me a complete Vim implementation within Emacs.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'evil-leader) ; load evil-leader first so it's initialized for evil
-  (setq evil-leader/in-all-states 1)
-  (global-evil-leader-mode)
-  (evil-leader/set-leader ",")
+  (use-package evil-leader
+    :init
+    (setq evil-leader/in-all-states 1)
+    :config
+    ;; load evil-leader first so it's initialized for evil-mode
+    (global-evil-leader-mode)
+    (evil-leader/set-leader ","))
 
-  (require 'evil)
-  (evil-mode 1)
+  (use-package evil
+    :config
+    ;; enable evil-mode globally
+    (evil-mode 1))
 
-  (require 'evil-matchit)
-  (global-evil-matchit-mode 1)
+  (use-package evil-matchit
+    :config
+    (global-evil-matchit-mode 1))
 
-  (evilnc-default-hotkeys)
+  (use-package evil-nerd-commenter
+    :config
+    (evilnc-default-hotkeys))
 
-  (require 'evil-surround)
-  (global-evil-surround-mode 1)
+  (use-package evil-surround
+    :config
+    (global-evil-surround-mode 1))
 
-  (global-evil-visualstar-mode)
+  (use-package evil-visualstar
+    :config
+    (global-evil-visualstar-mode))
 
-  (require 'evil-search-highlight-persist)
-  (global-evil-search-highlight-persist t)
+  (use-package evil-search-highlight-persist
+    :config
+    (global-evil-search-highlight-persist t))
 #+END_SRC
 
 *** terminal settings
