@@ -18,7 +18,7 @@ Chad Stovern: [[mailto:hello@chadstovern.com][hello@chadstovern.com]]
 
 ** Package management
 
-Many people like to use =use-package= or =Cask= and =pallet=, but I prefer limiting dependencies and managing packages myself.
+I use =use-package= for installing and managing package loading.  This section contains configuration to bootstrap =use-package=.
 
 *** Track emacs load time
 
@@ -28,10 +28,19 @@ I like to keep track of how long it takes emacs to load, so this will establish 
   (defconst emacs-start-time (current-time))
 #+END_SRC
 
+*** Emacs garbage collection threshold settings
+
+Let's Speed up operations by giving emacs garbage collection a more modern threshold.
+
+#+BEGIN_SRC emacs-lisp
+  (setq gc-cons-threshold 20000000) ; ~20MB
+#+END_SRC
+
 *** Load package support
 
 #+BEGIN_SRC emacs-lisp
   (require 'package)
+  (setq package-enable-at-startup nil)
 #+END_SRC
 
 *** Define package repositories
@@ -56,120 +65,15 @@ The lastest packages are nice, but sometimes you want to stick with stable relea
           ))
 #+END_SRC
 
-*** Package list
-
-Packages to be installed are defined in one big list.  Information about these packages and how they're used will be in the sections to follow this one.
-
-#+BEGIN_SRC emacs-lisp
-  (setq package-selected-packages
-        '(;; emacs enhancements
-          bind-key ; allow overriding of any keybinds
-          delight ; customize modeline appearance
-          multi-term
-          restart-emacs ; restart emacs from within emacs
-          smex ; M-x enhancement, recent commands etc, used by counsel
-          use-package ; lazy-loading of packages
-          which-key
-
-          ;; editing enhancements
-          ace-jump-mode
-          aggressive-indent
-          column-enforce-mode
-          editorconfig
-          paredit
-          rainbow-delimiters
-
-          ;; auto-completion
-          auto-complete
-          ac-cider
-
-          ;; syntax checking
-          flycheck
-          flycheck-pos-tip
-          flycheck-clojure
-
-          ;; themes
-          cycle-themes
-          solarized-theme
-          ample-theme
-          emojify
-
-          ;; vim mode
-          evil
-          evil-cleverparens
-          evil-leader
-          evil-matchit
-          evil-nerd-commenter
-          evil-search-highlight-persist
-          evil-surround
-          evil-visualstar
-          vi-tilde-fringe
-
-          ;; docs
-          dash-at-point ; launch Dash on macOS
-
-          ;; workspace / project / file / buffer mgmt
-          buffer-move
-          counsel
-          counsel-projectile
-          magit
-          neotree
-          perspective ; workspace manager
-          projectile
-          zoom-window
-
-          ;; org-mode
-          org-bullets
-
-          ;; clojure
-          cider
-          clojure-mode
-          clojure-mode-extra-font-locking
-          clj-refactor
-
-          ;; ruby
-          inf-ruby
-          robe
-
-          ;; python
-          elpy
-
-          ;; other syntaxes
-          dockerfile-mode
-          lua-mode
-          markdown-mode
-          json-mode
-          salt-mode
-          terraform-mode
-          web-mode
-          yaml-mode))
-#+END_SRC
-
-*** Load packages and activate them
+*** Initialize package
 
 #+BEGIN_SRC emacs-lisp
   (package-initialize)
 #+END_SRC
 
-*** Refresh package list
-
-#+BEGIN_SRC emacs-lisp
-  (unless package-archive-contents
-    (package-refresh-contents))
-#+END_SRC
-
-*** Ensure packages are installed
-
-#+BEGIN_SRC emacs-lisp
-  (dolist (package package-selected-packages)
-    (unless (package-installed-p package)
-      (package-install package)))
-#+END_SRC
-
 *** Bootstrap use-package
 
 use-package is great for lazy-loading packages efficiently.
-i'm currently experimenting with using this with some packages before i commit to using it for all packages.
 
 #+BEGIN_SRC emacs-lisp
   (unless (package-installed-p 'use-package)
@@ -178,19 +82,22 @@ i'm currently experimenting with using this with some packages before i commit t
 
   (eval-when-compile
     (require 'use-package))
+  (require 'diminish)
+  (require 'bind-key)
+
+  (setq use-package-always-ensure t)
 
   ;;; example use-package usage
   ;; (use-package foo
   ;;   :ensure t
   ;;   :defer t
+  ;;   :if (display-graphic-p)
   ;;   :commands (foo-all foo-super)
   ;;   :init
   ;;   (setq foo-variable t)
   ;;   (evil-leader/set-key "fs" #'foo-super)
   ;;   :config
   ;;   (foo-mode 1))
-
-  (setq use-package-always-ensure t)
 #+END_SRC
 
 *** Show package load time
@@ -209,6 +116,13 @@ Here's where we report how long it took to load all installed packages to the Me
 
 This section describes all the packages in use as well as their options.
 
+*** emacs enhancements
+
+#+BEGIN_SRC emacs-lisp
+  (use-package restart-emacs
+    :defer t)
+#+END_SRC
+
 *** evil-mode settings
 
 Emacs is great and has many amazing features, modal editing is not one of them.  I like to edit text at the speed of thought, so evil-mode gives me a complete Vim implementation within Emacs.
@@ -224,7 +138,6 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
 
   (use-package evil
     :config
-    ;; enable evil-mode globally
     (evil-mode 1))
 
   (use-package evil-matchit
@@ -232,6 +145,7 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
     (global-evil-matchit-mode 1))
 
   (use-package evil-nerd-commenter
+    :defer t
     :config
     (evilnc-default-hotkeys))
 
@@ -253,17 +167,20 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (setq multi-term-dedicated-window-height 30
-        multi-term-program "/usr/local/bin/zsh")
-  (add-hook 'term-mode-hook
-            (lambda ()
-              (setq term-buffer-maximum-size 10000)
-              (setq yas-dont-activate t)
-              (setq-local scroll-margin 0)
-              (setq-local scroll-conservatively 0)
-              (setq-local scroll-step 1)
-              (setq-local evil-emacs-state-cursor 'bar)
-              (setq-local global-hl-line-mode nil)))
+  (use-package multi-term
+    :defer t
+    :init
+    (setq multi-term-dedicated-window-height 30
+          multi-term-program "/usr/local/bin/zsh")
+    (add-hook 'term-mode-hook
+              (lambda ()
+                (setq term-buffer-maximum-size 10000)
+                (setq yas-dont-activate t)
+                (setq-local scroll-margin 0)
+                (setq-local scroll-conservatively 0)
+                (setq-local scroll-step 1)
+                (setq-local evil-emacs-state-cursor 'bar)
+                (setq-local global-hl-line-mode nil))))
 #+END_SRC
 
 *** window management
@@ -271,15 +188,20 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'zoom-window)
-  (setq zoom-window-mode-line-color nil)
+  (use-package zoom-window
+    :defer t
+    :init
+    (setq zoom-window-mode-line-color nil))
 
   ;; prevent reloading persp-mode when reloading emacs config
-  (if (bound-and-true-p persp-mode)
-      (message "persp-mode already enabled")
-    (persp-mode))
+  (use-package perspective
+    :config
+    (if (bound-and-true-p persp-mode)
+        (message "persp-mode already enabled")
+      (persp-mode)))
 
-  (require 'buffer-move)
+  (use-package buffer-move
+    :defer t)
 #+END_SRC
 
 *** navigation
@@ -287,16 +209,23 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t
-        ivy-height 15
-        ivy-count-format "(%d/%d) "
-        ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+  (use-package counsel
+    :init
+    (setq ivy-use-virtual-buffers t
+          ivy-height 15
+          ivy-count-format "(%d/%d) "
+          ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+    :config
+    (ivy-mode 1))
 
-  ;; speed up matching by giving emacs garbage collection a more modern threshold
-  (setq gc-cons-threshold 20000000) ; ~20MB
+  (use-package counsel-projectile
+    :defer t)
+
+  (use-package smex
+    :defer t)
 
   (use-package neotree
+    :defer t
     :init
     (setq neo-smart-open t
           neo-autorefresh t))
@@ -308,34 +237,69 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   ;;; project management
-  (require 'projectile)
-  (setq projectile-require-project-root nil)
-  (setq projectile-globally-ignored-directories
-        (cl-union projectile-globally-ignored-directories
-                  '(".git"
-                    ".cljs_rhino_repl"
-                    ".svn"
-                    "out"
-                    "repl"
-                    "target"
-                    "venv")))
-  (setq projectile-globally-ignored-files
-        (cl-union projectile-globally-ignored-files
-                  '(".DS_Store"
-                    ".lein-repl-history"
-                    "*.gz"
-                    "*.pyc"
-                    "*.png"
-                    "*.jpg"
-                    "*.jar"
-                    "*.svg"
-                    "*.tar.gz"
-                    "*.tgz"
-                    "*.zip")))
-  (setq projectile-globally-unignored-files
-        (cl-union projectile-globally-unignored-files
-                  '("profiles.clj")))
-  (projectile-mode)
+  (use-package projectile
+    :defer t
+    :init
+    (setq projectile-require-project-root nil)
+    :config
+    (setq projectile-globally-ignored-directories
+          (cl-union projectile-globally-ignored-directories
+                    '(".git"
+                      ".cljs_rhino_repl"
+                      ".svn"
+                      "out"
+                      "repl"
+                      "target"
+                      "venv")))
+    (setq projectile-globally-ignored-files
+          (cl-union projectile-globally-ignored-files
+                    '(".DS_Store"
+                      ".lein-repl-history"
+                      "*.gz"
+                      "*.pyc"
+                      "*.png"
+                      "*.jpg"
+                      "*.jar"
+                      "*.svg"
+                      "*.tar.gz"
+                      "*.tgz"
+                      "*.zip")))
+    (setq projectile-globally-unignored-files
+          (cl-union projectile-globally-unignored-files
+                    '("profiles.clj")))
+    (projectile-mode))
+#+END_SRC
+
+*** magit
+
+#+BEGIN_SRC emacs-lisp
+  (use-package magit
+    :defer t
+    :init
+    ;; ? will pop up the built-in hotkeys from status mode
+    (evil-leader/set-key
+      "gg"  #'magit-dispatch-popup
+      "gst" #'magit-status
+      "gd"  #'magit-diff-working-tree
+      "gco" #'magit-checkout
+      "gcm" #'magit-checkout
+      "gcb" #'magit-branch-and-checkout
+      "gl"  #'magit-pull-from-upstream
+      "gaa" #'magit-stage-modified
+      "grh" #'magit-reset-head
+      "gca" #'magit-commit
+      "gpu" #'magit-push-current-to-upstream
+      "gt"  #'magit-tag
+      "gpt" #'magit-push-tags)
+    ;; specific within magit-mode
+    (evil-leader/set-key-for-mode 'text-mode
+      "cc" 'with-editor-finish
+      "cC" 'with-editor-cancel)
+    :config
+    ;; let's improve evil-mode compatability
+    (define-key magit-status-mode-map (kbd "k") #'previous-line)
+    (define-key magit-status-mode-map (kbd "K") 'magit-discard)
+    (define-key magit-status-mode-map (kbd "j") #'next-line))
 #+END_SRC
 
 *** code auto-completion settings
@@ -343,21 +307,23 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (ac-config-default)
-  (setq ac-disable-faces nil)
-  (define-key ac-completing-map "\t" 'ac-complete) ; set tab key for completion
-  (define-key ac-completing-map "\r" nil)          ; disable return
-  (setq ac-modes
-        (cl-union ac-modes
-                  '(cider-mode
-                    cider-repl-mode
-                    conf-space-mode
-                    html-mode
-                    markdown-mode
-                    org-mode
-                    salt-mode
-                    sql-mode
-                    yaml-mode)))
+  (use-package auto-complete
+    :config
+    (ac-config-default)
+    (setq ac-disable-faces nil)
+    (define-key ac-completing-map "\t" 'ac-complete) ; set tab key for completion
+    (define-key ac-completing-map "\r" nil)          ; disable return
+    (setq ac-modes
+          (cl-union ac-modes
+                    '(cider-mode
+                      cider-repl-mode
+                      conf-space-mode
+                      html-mode
+                      markdown-mode
+                      org-mode
+                      salt-mode
+                      sql-mode
+                      yaml-mode))))
 #+END_SRC
 
 *** syntax checking
@@ -365,15 +331,20 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'after-init-hook #'global-flycheck-mode)
-  ;; disable documentation related emacs lisp checker
-  (with-eval-after-load 'flycheck
-    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
-  ;; floating tooltips only works in graphical mode
-  (when (display-graphic-p (selected-frame))
-    (with-eval-after-load 'flycheck
+  (use-package flycheck
+    :defer t
+    :init
+    (add-hook 'after-init-hook #'global-flycheck-mode)
+    :config
+    ;; disable documentation related emacs lisp checker
+    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+    ;; floating tooltips only works in graphical mode
+    (when (display-graphic-p (selected-frame))
       (setq flycheck-display-errors-function 'flycheck-pos-tip-error-messages)
       (flycheck-pos-tip-mode)))
+
+  (use-package flycheck-pos-tip
+    :defer t)
 #+END_SRC
 
 *** paredit
@@ -431,8 +402,10 @@ use ~y%~ for yanking a s-expression
 *** aggressive indentation
 
 #+BEGIN_SRC emacs-lisp
-  (global-aggressive-indent-mode 1)
-  (add-to-list 'aggressive-indent-excluded-modes 'html-mode)
+  (use-package aggressive-indent
+    :config
+    (global-aggressive-indent-mode 1)
+    (add-to-list 'aggressive-indent-excluded-modes 'html-mode))
 #+END_SRC
 
 *** rainbow delimiters
@@ -440,9 +413,11 @@ use ~y%~ for yanking a s-expression
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'rainbow-delimiters)
-  (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
-  (add-hook 'yaml-mode-hook #'rainbow-delimiters-mode)
+  (use-package rainbow-delimiters
+    :defer t
+    :init
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+    (add-hook 'yaml-mode-hook #'rainbow-delimiters-mode))
 #+END_SRC
 
 *** 80 column enforcement
@@ -450,9 +425,12 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (setq column-enforce-column 81
-        column-enforce-comments nil)
-  (add-hook 'prog-mode-hook #'column-enforce-mode)
+  (use-package column-enforce-mode
+    :defer t
+    :init
+    (setq column-enforce-column 81
+          column-enforce-comments nil)
+    (add-hook 'prog-mode-hook #'column-enforce-mode))
 #+END_SRC
 
 *** emoji / unicode support 😎👍🏼🚀
@@ -460,15 +438,18 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'emojify)
-  (setq emojify-inhibit-major-modes
-        (cl-union emojify-inhibit-major-modes
-                  '(cider-mode
-                    cider-repl-mode
-                    cider-test-report-mode
-                    term-mode))
-        emojify-prog-contexts "comments")
-  (add-hook 'after-init-hook #'global-emojify-mode)
+  (use-package emojify
+    :defer t
+    :init
+    (add-hook 'after-init-hook #'global-emojify-mode)
+    :config
+    (setq emojify-inhibit-major-modes
+          (cl-union emojify-inhibit-major-modes
+                    '(cider-mode
+                      cider-repl-mode
+                      cider-test-report-mode
+                      term-mode))
+          emojify-prog-contexts "comments"))
 #+END_SRC
 
 *** keybind discovery
@@ -476,8 +457,9 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'which-key)
-  (which-key-mode)
+  (use-package which-key
+    :config
+    (which-key-mode))
 #+END_SRC
 
 *** ace-jump
@@ -485,7 +467,11 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (setq ace-jump-word-mode-use-query-char nil) ; no leading word character needed
+  (use-package ace-jump-mode
+    :defer t
+    :init
+    ;; no leading word character needed
+    (setq ace-jump-word-mode-use-query-char nil))
 #+END_SRC
 
 *** editorconfig: indentation and whitespace settings
@@ -493,8 +479,16 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'editorconfig)
-  (editorconfig-mode 1)
+  (use-package editorconfig
+    :config
+    (editorconfig-mode 1))
+#+END_SRC
+
+*** documentation search
+
+#+BEGIN_SRC emacs-lisp
+  (use-package dash-at-point
+    :defer t)
 #+END_SRC
 
 *** clojure support
@@ -535,6 +529,8 @@ Explain.
     :defer t)
   (use-package clj-refactor
     :defer t)
+  (use-package flycheck-clojure
+    :defer t)
 #+END_SRC
 
 *** web templates
@@ -542,21 +538,19 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (require 'web-mode)
-  (setq web-mode-markup-indent-offset 2
-        web-mode-css-indent-offset 2
-        web-mode-code-indent-offset 2)
-#+END_SRC
-
-remove ~{}~ auto pairing in electric-pair-pairs for web-mode
-
-#+BEGIN_SRC emacs-lisp
-  (add-hook
-   'web-mode-hook
-   (lambda ()
-     (setq-local electric-pair-inhibit-predicate
-                 (lambda (c)
-                   (if (char-equal c ?{) t (electric-pair-default-inhibit c))))))
+  (use-package web-mode
+    :defer t
+    :init
+    (setq web-mode-markup-indent-offset 2
+          web-mode-css-indent-offset 2
+          web-mode-code-indent-offset 2)
+    ;; remove {} auto pairing in electric-pair-pairs for web-mode
+    (add-hook
+     'web-mode-hook
+     (lambda ()
+       (setq-local electric-pair-inhibit-predicate
+                   (lambda (c)
+                     (if (char-equal c ?{) t (electric-pair-default-inhibit c)))))))
 #+END_SRC
 
 *** yaml support
@@ -564,8 +558,8 @@ remove ~{}~ auto pairing in electric-pair-pairs for web-mode
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  ;;; yaml support
-  (require 'yaml-mode)
+  (use-package yaml-mode
+    :defer t)
 #+END_SRC
 
 *** ruby support
@@ -573,11 +567,15 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  ;;; ruby support
-  (add-hook 'ruby-mode-hook (lambda ()
-                              (inf-ruby-minor-mode)
-                              (robe-mode)))
-  (add-hook 'robe-mode-hook #'ac-robe-setup)
+  (use-package inf-ruby
+    :defer t
+    :init
+    (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode))
+  (use-package robe
+    :defer t
+    :init
+    (add-hook 'ruby-mode-hook 'robe-mode)
+    (add-hook 'robe-mode-hook 'ac-robe-setup))
 #+END_SRC
 
 *** python support
@@ -585,7 +583,27 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'python-mode-hook #'elpy-enable)
+  (use-package elpy
+    :defer t
+    :init
+    (add-hook 'python-mode-hook 'elpy-enable))
+#+END_SRC
+
+*** other syntaxes
+
+#+BEGIN_SRC emacs-lisp
+  (use-package dockerfile-mode
+    :defer t)
+  (use-package lua-mode
+    :defer t)
+  (use-package markdown-mode
+    :defer t)
+  (use-package json-mode
+    :defer t)
+  (use-package salt-mode
+    :defer t)
+  (use-package terraform-mode
+    :defer t)
 #+END_SRC
 
 *** org-mode
@@ -593,7 +611,7 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  ;;; org-mode
+  ;;; org-mode - (part of core; no use-package stanza)
   (setq org-insert-mode-line-in-empty-file t) ; for .txt file compatability
 
   ;; gtd settings
@@ -608,9 +626,13 @@ Explain.
   (setq org-log-reschedule (quote time))
 
   ;; display
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (org-bullets-mode t)))
+  (use-package org-bullets
+    :defer t
+    :init
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (org-bullets-mode t))))
+
   (setq org-ellipsis "⤵")
   (setq org-src-fontify-natively t)
   (setq org-src-tab-acts-natively t)
@@ -770,31 +792,42 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 *** show end of buffer in editing modes (easily see empty lines)
 
 #+BEGIN_SRC emacs-lisp
-  (add-hook 'prog-mode-hook #'vi-tilde-fringe-mode)
-  (add-hook 'conf-space-mode-hook #'vi-tilde-fringe-mode)
-  (add-hook 'markdown-mode-hook #'vi-tilde-fringe-mode)
-  (add-hook 'org-mode-hook #'vi-tilde-fringe-mode)
-  (add-hook 'yaml-mode-hook #'vi-tilde-fringe-mode)
+  (use-package vi-tilde-fringe
+    :defer t
+    :init
+    (add-hook 'prog-mode-hook #'vi-tilde-fringe-mode)
+    (add-hook 'conf-space-mode-hook #'vi-tilde-fringe-mode)
+    (add-hook 'markdown-mode-hook #'vi-tilde-fringe-mode)
+    (add-hook 'org-mode-hook #'vi-tilde-fringe-mode)
+    (add-hook 'yaml-mode-hook #'vi-tilde-fringe-mode))
 #+END_SRC
 
 *** themes
 
 #+BEGIN_SRC emacs-lisp
-  (if (not (display-graphic-p))
-      ;; load terminal theme
-      (load-theme 'ample t)
-    ;; load graphical themes
+  (use-package solarized-theme
+    :if (display-graphic-p)
+    :config
     (load-theme 'solarized-dark t)
     (load-theme 'solarized-light t))
+
+  (use-package ample-theme
+    :if (not (display-graphic-p))
+    :config
+    (load-theme 'ample t))
 #+END_SRC
 
 *** cycle themes
 
 #+BEGIN_SRC emacs-lisp
-  (setq cycle-themes-theme-list
-        '(solarized-dark
-          solarized-light))
-  (require 'cycle-themes)
+  (use-package cycle-themes
+    :if (display-graphic-p)
+    :init
+    (setq cycle-themes-theme-list
+          '(solarized-dark
+            solarized-light))
+    :config
+    (evil-leader/set-key "ct" #'cycle-themes))
 #+END_SRC
 
 *** font settings
@@ -925,24 +958,25 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 *** declutter the modeline
 
 #+BEGIN_SRC emacs-lisp
-  (require 'delight)
-  (delight '((aggressive-indent-mode "⇉" aggressive-indent)
-             (auto-complete-mode     "⇥"  auto-complete)
-             (auto-revert-mode       "↺"  t)
-             (clj-refactor-mode      "↻"  clj-refactor)
-             (editorconfig-mode      "↹"  editorconfig)
-             (evil-cleverparens-mode "⒞"  evil-cleverparens)
-             (flycheck-mode          "✓"  flycheck)
-             (paredit-mode           "⒫" paredit)
-             (column-enforce-mode    nil  column-enforce-mode)
-             (ivy-mode               nil  ivy)
-             (mmm-mode               nil  mmm-mode)
-             (projectile-mode        nil  projectile)
-             (subword-mode           nil  t)
-             (undo-tree-mode         nil  undo-tree)
-             (vi-tilde-fringe-mode   nil  vi-tilde-fringe)
-             (which-key-mode         nil  which-key)
-             (yas-minor-mode         nil  yasnippet)))
+  (use-package delight
+    :config
+    (delight '((aggressive-indent-mode "⇉" aggressive-indent)
+               (auto-complete-mode     "⇥"  auto-complete)
+               (auto-revert-mode       "↺"  t)
+               (clj-refactor-mode      "↻"  clj-refactor)
+               (editorconfig-mode      "↹"  editorconfig)
+               (evil-cleverparens-mode "⒞"  evil-cleverparens)
+               (flycheck-mode          "✓"  flycheck)
+               (paredit-mode           "⒫" paredit)
+               (column-enforce-mode    nil  column-enforce-mode)
+               (ivy-mode               nil  ivy)
+               (mmm-mode               nil  mmm-mode)
+               (projectile-mode        nil  projectile)
+               (subword-mode           nil  t)
+               (undo-tree-mode         nil  undo-tree)
+               (vi-tilde-fringe-mode   nil  vi-tilde-fringe)
+               (which-key-mode         nil  which-key)
+               (yas-minor-mode         nil  yasnippet))))
 #+END_SRC
 
 *** modeline tweaks
@@ -1062,7 +1096,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
 
 #+BEGIN_SRC emacs-lisp
   ;;; cycle themes
-  (evil-leader/set-key "ct" #'cycle-themes)
+  ;;(evil-leader/set-key "ct" #'cycle-themes)
 
   ;;; full screen toggle
   (global-set-key (kbd "s-<return>") #'toggle-frame-fullscreen) ; s = super (⌘ on mac)
@@ -1265,30 +1299,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
 
 #+BEGIN_SRC emacs-lisp
   ;;; magit
-  ;; ? will pop up the built-in hotkeys from status mode
-  (evil-leader/set-key
-    "gg"  #'magit-dispatch-popup
-    "gst" #'magit-status
-    "gd"  #'magit-diff-working-tree
-    "gco" #'magit-checkout
-    "gcm" #'magit-checkout
-    "gcb" #'magit-branch-and-checkout
-    "gl"  #'magit-pull-from-upstream
-    "gaa" #'magit-stage-modified
-    "grh" #'magit-reset-head
-    "gca" #'magit-commit
-    "gpu" #'magit-push-current-to-upstream
-    "gt"  #'magit-tag
-    "gpt" #'magit-push-tags)
-  ;; specific within magit-mode
-  (evil-leader/set-key-for-mode 'text-mode
-    "cc" 'with-editor-finish
-    "cC" 'with-editor-cancel)
-  ;; let's improve evil-mode compatability
-  (with-eval-after-load "magit"
-    (define-key magit-status-mode-map (kbd "k") #'previous-line)
-    (define-key magit-status-mode-map (kbd "K") 'magit-discard)
-    (define-key magit-status-mode-map (kbd "j") #'next-line))
+  ;; see use-package section for magit above
 #+END_SRC
 
 *** clojure / cider
