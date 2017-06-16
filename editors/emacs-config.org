@@ -296,7 +296,10 @@ Explain.
   ;; speed up matching by giving emacs garbage collection a more modern threshold
   (setq gc-cons-threshold 20000000) ; ~20MB
 
-  (require 'neotree)
+  (use-package neotree
+    :init
+    (setq neo-smart-open t
+          neo-autorefresh t))
 #+END_SRC
 
 *** project management
