@@ -228,7 +228,8 @@ Explain.
     :defer t
     :init
     (setq neo-smart-open t
-          neo-autorefresh t))
+          neo-autorefresh t
+          neo-force-change-root t))
 #+END_SRC
 
 *** project management
