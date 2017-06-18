@@ -195,10 +195,9 @@ Explain.
 
   ;; prevent reloading persp-mode when reloading emacs config
   (use-package perspective
+    :if (not (bound-and-true-p persp-mode))
     :config
-    (if (bound-and-true-p persp-mode)
-        (message "persp-mode already enabled")
-      (persp-mode)))
+    (persp-mode))
 
   (use-package buffer-move
     :defer t)
@@ -338,14 +337,7 @@ Explain.
     (add-hook 'after-init-hook #'global-flycheck-mode)
     :config
     ;; disable documentation related emacs lisp checker
-    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
-    ;; floating tooltips only works in graphical mode
-    (when (display-graphic-p (selected-frame))
-      (setq flycheck-display-errors-function 'flycheck-pos-tip-error-messages)
-      (flycheck-pos-tip-mode)))
-
-  (use-package flycheck-pos-tip
-    :defer t)
+    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
 #+END_SRC
 
 *** paredit
