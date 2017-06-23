@@ -490,6 +490,8 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package editorconfig
+    :init
+    (add-to-list 'auto-mode-alist '("\\.editorconfig\\'" . editorconfig-conf-mode))
     :config
     (editorconfig-mode 1))
 #+END_SRC
@@ -549,7 +551,15 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package web-mode
-    :defer t
+    :mode ("\\.html\\'"
+           "\\.html\\.erb\\'"
+           "\\.css\\'"
+           "\\.scss\\'"
+           "\\.less\\'"
+           "\\.js\\'"
+           "\\.php\\'"
+           "\\.jinja\\'"
+           "\\.j2\\'")
     :init
     (setq web-mode-markup-indent-offset 2
           web-mode-css-indent-offset 2
@@ -569,7 +579,7 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package yaml-mode
-    :defer t)
+    :mode "\\.yml\\'")
 #+END_SRC
 
 *** ruby support
@@ -603,11 +613,12 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package dockerfile-mode
-    :defer t)
+    :mode "Dockerfile\\'")
   (use-package lua-mode
     :defer t)
   (use-package markdown-mode
-    :defer t)
+    :mode ("\\.md\\'"
+           "\\.txt\\'"))
   (use-package json-mode
     :defer t)
   (use-package salt-mode
@@ -931,27 +942,6 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
         auto-save-default t)
 #+END_SRC
 
-*** file type to mode mappings
-
-#+BEGIN_SRC emacs-lisp
-  (setq auto-mode-alist
-        (cl-union auto-mode-alist
-                  '((".editorconfig" . editorconfig-conf-mode)
-                    ("\\.emacs"      . emacs-lisp-mode)
-                    ("\\.md"         . markdown-mode)
-                    ("\\.txt"        . markdown-mode)
-                    ("\\.html?\\'"   . web-mode)
-                    ("\\.css?\\'"    . web-mode)
-                    ("\\.scss?\\'"   . web-mode)
-                    ("\\.less?\\'"   . web-mode)
-                    ("\\.js?\\'"     . web-mode)
-                    ("\\.php?\\'"    . web-mode)
-                    ("\\.jinja?\\'"  . web-mode)
-                    ("\\.j2?\\'"     . web-mode)
-                    ("\\.yml"        . yaml-mode)
-                    ("Dockerfile\\'" . dockerfile-mode))))
-#+END_SRC
-
 *** version control
 
 #+BEGIN_SRC emacs-lisp
@@ -1215,7 +1205,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
   ;; g to update dired buffer info
   ;; s to toggle between sort by name and by date/time
   ;; for creating, deleting, renaming, just toggle shell visor, then update dired
-  (evil-leader/set-key "D" 'open-dired-at-current-dir)
+  ;; (evil-leader/set-key "D" 'open-dired-at-current-dir)
 #+END_SRC
 
 *** terminal
