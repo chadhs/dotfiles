@@ -47,9 +47,9 @@ Let's Speed up operations by giving emacs garbage collection a more modern thres
 
 #+BEGIN_SRC emacs-lisp
   (setq package-archives
-        '(("gnu"           . "https://elpa.gnu.org/packages/")
-          ("melpa"         . "https://melpa.org/packages/")
-          ("melpa-stable"  . "https://stable.melpa.org/packages/")))
+        '(("gnu"          . "https://elpa.gnu.org/packages/")
+          ("melpa"        . "https://melpa.org/packages/")
+          ("melpa-stable" . "https://stable.melpa.org/packages/")))
 #+END_SRC
 
 *** Pin packages
@@ -608,15 +608,15 @@ Explain.
   (setq org-insert-mode-line-in-empty-file t) ; for .txt file compatability
 
   ;; gtd settings
-  (setq org-todo-keywords
-        '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELLED")))
-  (setq org-agenda-files '("~/Dropbox/org/"))
-  (setq org-agenda-text-search-extra-files '(agenda-archives))
+  ;; (setq org-todo-keywords
+  ;;       '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELLED")))
+  ;; (setq org-agenda-files '("~/Dropbox/org/"))
+  ;; (setq org-agenda-text-search-extra-files '(agenda-archives))
   ;; (setq org-blank-before-new-entry (quote ((heading) (plain-list-item))))
-  (setq org-enforce-todo-dependencies t)
-  (setq org-log-done (quote time))
-  (setq org-log-redeadline (quote time))
-  (setq org-log-reschedule (quote time))
+  ;; (setq org-enforce-todo-dependencies t)
+  ;; (setq org-log-done (quote time))
+  ;; (setq org-log-redeadline (quote time))
+  ;; (setq org-log-reschedule (quote time))
 
   ;; display
   (use-package org-bullets
@@ -627,9 +627,9 @@ Explain.
                 (org-bullets-mode t))))
 
   (setq org-ellipsis "⤵")
+  (setq org-startup-truncated nil) ; wrap lines, don't truncate.
   (setq org-src-fontify-natively t)
   (setq org-src-tab-acts-natively t)
-  (setq org-startup-truncated nil)
   (setq org-src-window-setup 'current-window)
 
   ;; exporting
