@@ -707,6 +707,15 @@ Explain: Make escape act like C-g in evil-mode
       (abort-recursive-edit)))
 #+END_SRC
 
+*** open dired at current location
+
+#+BEGIN_SRC emacs-lisp
+  (defun open-dired-at-current-dir ()
+    (interactive)
+    (let (current-dir (file-name-directory (buffer-file-name (current-buffer))))
+      (dired current-dir)))
+#+END_SRC
+
 *** preview file with marked
 
 #+BEGIN_SRC emacs-lisp
@@ -1206,6 +1215,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
   ;; g to update dired buffer info
   ;; s to toggle between sort by name and by date/time
   ;; for creating, deleting, renaming, just toggle shell visor, then update dired
+  (evil-leader/set-key "D" 'open-dired-at-current-dir)
 #+END_SRC
 
 *** terminal
