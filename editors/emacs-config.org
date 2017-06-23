@@ -308,14 +308,15 @@ diff-hl pretty cool.
 
 #+BEGIN_SRC emacs-lisp
   (use-package diff-hl
-    ;; :defer t
-    :if (display-graphic-p)
+    :defer t
     :init
-    (global-diff-hl-mode t)
-    :config
-    (diff-hl-flydiff-mode)
+    (add-hook 'after-init-hook 'global-diff-hl-mode)
+    (add-hook 'dired-mode-hook 'diff-hl-dired-mode)
     (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
-    (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
+    :config
+    (diff-hl-flydiff-mode t)
+    (unless (display-graphic-p)
+      (diff-hl-margin-mode t)))
 #+END_SRC
 
 *** code auto-completion settings
