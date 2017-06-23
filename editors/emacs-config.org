@@ -270,7 +270,9 @@ Explain.
     (projectile-mode))
 #+END_SRC
 
-*** magit
+*** version control
+
+magit so awesome.
 
 #+BEGIN_SRC emacs-lisp
   (use-package magit
@@ -300,6 +302,20 @@ Explain.
     (define-key magit-status-mode-map (kbd "k") #'previous-line)
     (define-key magit-status-mode-map (kbd "K") 'magit-discard)
     (define-key magit-status-mode-map (kbd "j") #'next-line))
+#+END_SRC
+
+diff-hl pretty cool.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package diff-hl
+    ;; :defer t
+    :if (display-graphic-p)
+    :init
+    (global-diff-hl-mode t)
+    :config
+    (diff-hl-flydiff-mode)
+    (add-hook 'magit-post-refresh-hook 'diff-hl-magit-post-refresh)
+    (add-hook 'dired-mode-hook 'diff-hl-dired-mode))
 #+END_SRC
 
 *** code auto-completion settings
