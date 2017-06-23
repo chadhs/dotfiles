@@ -93,6 +93,8 @@ use-package is great for lazy-loading packages efficiently.
   ;;   :defer t
   ;;   :if (display-graphic-p)
   ;;   :commands (foo-all foo-super)
+  ;;   :mode "\\.mode\\'"
+  ;;   :diminish "f"
   ;;   :init
   ;;   (setq foo-variable t)
   ;;   (evil-leader/set-key "fs" #'foo-super)
@@ -209,6 +211,7 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package counsel
+    :diminish ivy-mode
     :init
     (setq ivy-use-virtual-buffers t
           ivy-height 15
@@ -239,6 +242,7 @@ Explain.
   ;;; project management
   (use-package projectile
     :defer t
+    :diminish projectile-mode
     :init
     (setq projectile-require-project-root nil)
     :config
@@ -325,6 +329,7 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package auto-complete
+    :diminish "⇥"
     :config
     (ac-config-default)
     (setq ac-disable-faces nil)
@@ -350,6 +355,7 @@ Explain.
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
     :defer t
+    :diminish "✓"
     :init
     (add-hook 'after-init-hook #'global-flycheck-mode)
     :config
@@ -369,6 +375,7 @@ use ~y%~ for yanking a s-expression
 #+BEGIN_SRC emacs-lisp
   (use-package paredit
     :defer t
+    :diminish "⒫"
     :init
     (add-hook 'prog-mode-hook 'enable-paredit-mode)
     (add-hook 'org-mode-hook 'enable-paredit-mode)
@@ -396,6 +403,7 @@ use ~y%~ for yanking a s-expression
 
   (use-package evil-cleverparens
     :defer t
+    :diminish "⒞"
     :init
     (add-hook 'prog-mode-hook 'evil-cleverparens-mode)
     (add-hook 'org-mode-hook 'evil-cleverparens-mode)
@@ -413,6 +421,7 @@ use ~y%~ for yanking a s-expression
 
 #+BEGIN_SRC emacs-lisp
   (use-package aggressive-indent
+    :diminish "⇉"
     :config
     (global-aggressive-indent-mode 1)
     (add-to-list 'aggressive-indent-excluded-modes 'html-mode))
@@ -437,6 +446,7 @@ Explain.
 #+BEGIN_SRC emacs-lisp
   (use-package column-enforce-mode
     :defer t
+    :diminish column-enforce-mode
     :init
     (setq column-enforce-column 81
           column-enforce-comments nil)
@@ -468,6 +478,7 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
+    :diminish which-key-mode
     :config
     (which-key-mode))
 #+END_SRC
@@ -490,6 +501,7 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package editorconfig
+    :diminish "↹"
     :init
     (add-to-list 'auto-mode-alist '("\\.editorconfig\\'" . editorconfig-conf-mode))
     :config
@@ -501,6 +513,14 @@ Explain.
 #+BEGIN_SRC emacs-lisp
   (use-package dash-at-point
     :defer t)
+#+END_SRC
+
+*** code snippets
+
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :defer t
+    :diminish yas-minor-mode)
 #+END_SRC
 
 *** clojure support
@@ -540,7 +560,8 @@ Explain.
   (use-package ac-cider
     :defer t)
   (use-package clj-refactor
-    :defer t)
+    :defer t
+    :diminish "↻")
   (use-package flycheck-clojure
     :defer t)
 #+END_SRC
@@ -622,7 +643,8 @@ Explain.
   (use-package json-mode
     :defer t)
   (use-package salt-mode
-    :defer t)
+    :defer t
+    :diminish mmm-mode)
   (use-package terraform-mode
     :defer t)
 #+END_SRC
@@ -824,6 +846,7 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 #+BEGIN_SRC emacs-lisp
   (use-package vi-tilde-fringe
     :defer t
+    :diminish vi-tilde-fringe-mode
     :init
     (add-hook 'prog-mode-hook #'vi-tilde-fringe-mode)
     (add-hook 'conf-space-mode-hook #'vi-tilde-fringe-mode)
@@ -967,25 +990,9 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 *** declutter the modeline
 
 #+BEGIN_SRC emacs-lisp
-  (use-package delight
-    :config
-    (delight '((aggressive-indent-mode "⇉" aggressive-indent)
-               (auto-complete-mode     "⇥"  auto-complete)
-               (auto-revert-mode       "↺"  t)
-               (clj-refactor-mode      "↻"  clj-refactor)
-               (editorconfig-mode      "↹"  editorconfig)
-               (evil-cleverparens-mode "⒞"  evil-cleverparens)
-               (flycheck-mode          "✓"  flycheck)
-               (paredit-mode           "⒫" paredit)
-               (column-enforce-mode    nil  column-enforce-mode)
-               (ivy-mode               nil  ivy)
-               (mmm-mode               nil  mmm-mode)
-               (projectile-mode        nil  projectile)
-               (subword-mode           nil  t)
-               (undo-tree-mode         nil  undo-tree)
-               (vi-tilde-fringe-mode   nil  vi-tilde-fringe)
-               (which-key-mode         nil  which-key)
-               (yas-minor-mode         nil  yasnippet))))
+  (diminish 'auto-revert-mode "↺")
+  (diminish 'subword-mode)
+  (diminish 'undo-tree-mode)
 #+END_SRC
 
 *** modeline tweaks
