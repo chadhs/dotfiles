@@ -1176,11 +1176,11 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
 
   ;;; projects / files / buffers
   (evil-leader/set-key
-    "F"  #'find-file                      ; (F)ind file
-    "t"  #'counsel-projectile-find-file   ; emulate command-(t)
-    "b"  #'ivy-switch-buffer              ; switch to (b)uffer
-    "kb" #'kill-buffer                    ; (k)ill (b)uffer
-    "gf" #'counsel-projectile-ag)         ; (g)rep in (f)iles
+    "Ff" #'find-file                     ; (F)ind (f)ile
+    "t"  #'counsel-projectile-find-file  ; emulate command-(t)
+    "b"  #'ivy-switch-buffer             ; switch to (b)uffer
+    "kb" #'kill-buffer                   ; (k)ill (b)uffer
+    "gf" #'counsel-projectile-ag)        ; (g)rep in (f)iles
 
   ;;; neotree
   (evil-leader/set-key "nt" #'neotree-toggle)
@@ -1205,7 +1205,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
   ;; g to update dired buffer info
   ;; s to toggle between sort by name and by date/time
   ;; for creating, deleting, renaming, just toggle shell visor, then update dired
-  ;; (evil-leader/set-key "D" 'open-dired-at-current-dir)
+  (evil-leader/set-key "Fd" #'open-dired-at-current-dir) ; (F)ind via (d)ired
 #+END_SRC
 
 *** terminal
