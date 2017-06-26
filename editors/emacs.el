@@ -11,4 +11,3 @@
 
 ;; load the fully documented emacs-config.org configuration
 (org-babel-load-file "~/.emacs.d/emacs-config.org")
-;(org-babel-load-file "~/.emacs.d/emacs-config-up.org")
