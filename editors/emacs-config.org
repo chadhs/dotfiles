@@ -140,7 +140,19 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
 
   (use-package evil
     :config
-    (evil-mode 1))
+    (evil-mode 1)
+    ;; set initial evil state for particular modes
+    (cl-loop for (mode . state) in '((cider-test-report-mode . emacs)
+                                     (dired-mode             . normal)
+                                     (magit-mode             . normal)
+                                     (magit-status-mode      . emacs)
+                                     (magit-diff-mode        . normal)
+                                     (magit-log-mode         . normal)
+                                     (magit-process-mode     . normal)
+                                     (magit-popup-mode       . emacs)
+                                     ;; this allows vi-mode in zsh shells
+                                     (term-mode              . emacs))
+             do (evil-set-initial-state mode state)))
 
   (use-package evil-matchit
     :config
@@ -271,6 +283,7 @@ Explain.
     (setq projectile-globally-unignored-files
           (cl-union projectile-globally-unignored-files
                     '("profiles.clj")))
+    (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
     (projectile-mode))
 #+END_SRC
 
@@ -453,6 +466,20 @@ Explain.
     (add-hook 'prog-mode-hook #'column-enforce-mode))
 #+END_SRC
 
+*** show end of buffer in editing modes (easily see empty lines)
+
+#+BEGIN_SRC emacs-lisp
+  (use-package vi-tilde-fringe
+    :defer t
+    :diminish vi-tilde-fringe-mode
+    :init
+    (add-hook 'prog-mode-hook #'vi-tilde-fringe-mode)
+    (add-hook 'conf-space-mode-hook #'vi-tilde-fringe-mode)
+    (add-hook 'markdown-mode-hook #'vi-tilde-fringe-mode)
+    (add-hook 'org-mode-hook #'vi-tilde-fringe-mode)
+    (add-hook 'yaml-mode-hook #'vi-tilde-fringe-mode))
+#+END_SRC
+
 *** emoji / unicode support 😎👍🏼🚀
 
 Explain.
@@ -556,6 +583,7 @@ Explain.
                                       (paredit-mode)
                                       (ac-cider-setup)))
     :config
+    (setq cider-mode-line '(:eval (format " [%s]" (cider--modeline-info))))
     (eval-after-load 'flycheck '(flycheck-clojure-setup)))
   (use-package ac-cider
     :defer t)
@@ -841,20 +869,6 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
   (show-paren-mode 1)
 #+END_SRC
 
-*** show end of buffer in editing modes (easily see empty lines)
-
-#+BEGIN_SRC emacs-lisp
-  (use-package vi-tilde-fringe
-    :defer t
-    :diminish vi-tilde-fringe-mode
-    :init
-    (add-hook 'prog-mode-hook #'vi-tilde-fringe-mode)
-    (add-hook 'conf-space-mode-hook #'vi-tilde-fringe-mode)
-    (add-hook 'markdown-mode-hook #'vi-tilde-fringe-mode)
-    (add-hook 'org-mode-hook #'vi-tilde-fringe-mode)
-    (add-hook 'yaml-mode-hook #'vi-tilde-fringe-mode))
-#+END_SRC
-
 *** themes
 
 #+BEGIN_SRC emacs-lisp
@@ -971,36 +985,14 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
   (setq vc-follow-symlinks t)
 #+END_SRC
 
-*** set initial evil state for particular modes
-
-#+BEGIN_SRC emacs-lisp
-  (cl-loop for (mode . state) in '((cider-test-report-mode . emacs)
-                                   (dired-mode             . normal)
-                                   (magit-mode             . normal)
-                                   (magit-status-mode      . emacs)
-                                   (magit-diff-mode        . normal)
-                                   (magit-log-mode         . normal)
-                                   (magit-process-mode     . normal)
-                                   (magit-popup-mode       . emacs)
-                                   ;; this allows vi-mode in zsh shells
-                                   (term-mode              . emacs))
-           do (evil-set-initial-state mode state))
-#+END_SRC
-
 *** declutter the modeline
+
+For built in packages, installed packages use the :diminish keyword via use-package.
 
 #+BEGIN_SRC emacs-lisp
   (diminish 'auto-revert-mode "↺")
   (diminish 'subword-mode)
   (diminish 'undo-tree-mode)
-#+END_SRC
-
-*** modeline tweaks
-
-#+BEGIN_SRC emacs-lisp
-  (setq projectile-mode-line '(:eval (format " [%s] " (projectile-project-name))))
-  (setq cider-mode-line '(:eval (format " [%s]" (cider--modeline-info))))
-  (setq x-underline-at-descent-line t) ; better modeline underline alignment
 #+END_SRC
 
 *** custom mode-line configuration
@@ -1011,6 +1003,7 @@ I've set up my own custom modeline that provides a format that looks like this:
 N [*]filename [project] ᚠbranch (modes) Err U: line:col [main] 29%
 
 #+BEGIN_SRC emacs-lisp
+  (setq x-underline-at-descent-line t) ; better modeline underline alignment
   (setq-default
    mode-line-format
    (list
