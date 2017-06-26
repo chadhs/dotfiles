@@ -116,7 +116,7 @@ Here's where we report how long it took to load all installed packages to the Me
 
 ** Package specific configuration
 
-This section describes all the packages in use as well as their options.
+This section documents all loaded packages and their configuration.
 
 *** emacs enhancements
 
@@ -694,7 +694,7 @@ Explain.
 
 ** User functions
 
-This section contains any functions and their purpose.
+This section documents any custom functions and their purpose.
 
 *** command aliases
 
