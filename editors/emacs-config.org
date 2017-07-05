@@ -222,7 +222,7 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package counsel
+  (use-package ivy
     :diminish ivy-mode
     :init
     (setq ivy-use-virtual-buffers t
@@ -231,6 +231,9 @@ Explain.
           ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
     :config
     (ivy-mode 1))
+
+  (use-package counsel
+    :defer t)
 
   (use-package counsel-projectile
     :defer t)
@@ -265,6 +268,7 @@ Explain.
                       ".svn"
                       "out"
                       "repl"
+                      "resources/public/js/compiled"
                       "target"
                       "venv")))
     (setq projectile-globally-ignored-files
@@ -560,7 +564,11 @@ Explain.
     :init
     (add-hook 'clojure-mode-hook (lambda ()
                                    (clj-refactor-mode 1)
-                                   (yas-minor-mode))))
+                                   (yas-minor-mode)))
+    :config
+    ;; this customer repl setup is for re-frame/reagent clojurescript development
+    (setq cider-cljs-lein-repl
+          "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))"))
   ;; add keybindings here to replace cljr-helm (,rf)
   (use-package clojure-mode-extra-font-locking
     :defer t)
