@@ -565,10 +565,11 @@ Explain.
     (add-hook 'clojure-mode-hook (lambda ()
                                    (clj-refactor-mode 1)
                                    (yas-minor-mode)))
-    :config
-    ;; this customer repl setup is for re-frame/reagent clojurescript development
-    (setq cider-cljs-lein-repl
-          "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))"))
+    ;; :config
+    ;; this custom repl setup is for re-frame/reagent clojurescript development
+    ;; (setq cider-cljs-lein-repl
+    ;;       "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))")
+    )
   ;; add keybindings here to replace cljr-helm (,rf)
   (use-package clojure-mode-extra-font-locking
     :defer t)
