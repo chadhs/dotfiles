@@ -670,7 +670,10 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package js2-mode
-    :mode "\\.js\\'")
+    :mode "\\.js\\'"
+    :config
+    (setq js2-mode-show-parse-errors nil
+          js2-mode-show-strict-warnings nil))
 #+END_SRC
 
 *** java support
