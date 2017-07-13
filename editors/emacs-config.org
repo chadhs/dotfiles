@@ -614,7 +614,6 @@ Explain.
            "\\.css\\'"
            "\\.scss\\'"
            "\\.less\\'"
-           "\\.js\\'"
            "\\.php\\'"
            "\\.jinja\\'"
            "\\.j2\\'")
@@ -665,6 +664,26 @@ Explain.
     :defer t
     :init
     (add-hook 'python-mode-hook 'elpy-enable))
+#+END_SRC
+
+*** javascript support
+
+#+BEGIN_SRC emacs-lisp
+  (use-package js2-mode
+    :mode "\\.js\\'")
+#+END_SRC
+
+*** java support
+
+#+BEGIN_SRC emacs-lisp
+  (use-package meghanada
+    :defer t
+    :init
+    (add-hook 'java-mode-hook
+              (lambda ()
+                (meghanada-mode t)
+                (setq c-basic-offset 2)
+                (add-hook 'before-save-hook 'meghanada-code-beautify-before-save))))
 #+END_SRC
 
 *** other syntaxes
