@@ -265,8 +265,10 @@ Explain.
           (cl-union projectile-globally-ignored-directories
                     '(".git"
                       ".cljs_rhino_repl"
+                      ".meghanada"
                       ".svn"
                       "out"
+                      "node_modules"
                       "repl"
                       "resources/public/js/compiled"
                       "target"
@@ -280,6 +282,7 @@ Explain.
                       "*.png"
                       "*.jpg"
                       "*.jar"
+                      "*.retry"
                       "*.svg"
                       "*.tar.gz"
                       "*.tgz"
