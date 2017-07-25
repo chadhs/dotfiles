@@ -380,7 +380,7 @@ Explain.
     (add-hook 'after-init-hook #'global-flycheck-mode)
     :config
     ;; disable documentation related emacs lisp checker
-    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc)))
+    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc clojure-cider-typed)))
 #+END_SRC
 
 *** paredit
