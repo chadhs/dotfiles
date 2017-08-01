@@ -419,7 +419,16 @@ use ~y%~ for yanking a s-expression
       "js"  #'paredit-join-sexps          ; (j)oin (s)exps
       "xs"  #'kill-sexp                   ; (x)delete (s)exp
       "xS"  #'backward-kill-sexp          ; (x)delete (S)exp backward
-      "pt"  #'evil-cleverparens-mode))    ; clever(p)arens (t)oggle
+      "pt"  #'evil-cleverparens-mode)     ; clever(p)arens (t)oggle
+    :config
+    ;; prevent paredit from adding a space before opening paren in certain modes
+    (defun cs-mode-space-delimiter-p (endp delimiter)
+      "Don't insert a space before delimiters in certain modes"
+      (or
+       (bound-and-true-p js2-mode)
+       (bound-and-true-p js-mode)
+       (bound-and-true-p javascript-mode)))
+    (add-to-list 'paredit-space-for-delimiter-predicates #'cs-mode-space-delimiter-p))
 
   (use-package evil-cleverparens
     :defer t
@@ -620,11 +629,13 @@ Explain.
            "\\.php\\'"
            "\\.jinja\\'"
            "\\.j2\\'")
-    :init
+    :config
     (setq web-mode-markup-indent-offset 2
           web-mode-css-indent-offset 2
           web-mode-code-indent-offset 2)
-    ;; remove {} auto pairing in electric-pair-pairs for web-mode
+    (setq web-mode-ac-sources-alist
+          '(("css" . (ac-source-css-property))))
+    ;; fix paren matching web-mode conflict for jinja-like templates
     (add-hook
      'web-mode-hook
      (lambda ()
@@ -701,7 +712,8 @@ Explain.
     :defer t)
   (use-package markdown-mode
     :mode ("\\.md\\'"
-           "\\.txt\\'"))
+           "\\.txt\\'"
+           "\\.taskpaper\\'"))
   (use-package json-mode
     :defer t)
   (use-package salt-mode
@@ -766,32 +778,12 @@ Explain: yes and no prompts
   (defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
-*** electric return
-
-Explain: Electric return functionality
-
-#+BEGIN_SRC emacs-lisp
-  (defvar electrify-return-match
-    "[\]}\)]"
-    "If this regexp matches the text after the cursor, do an \"electric\" return.")
-
-  (defun electrify-return-if-match (arg)
-    "When text after cursor and ARG match, open and indent an empty line.
-  Do this between the cursor and the text.  Then move the cursor to the new line."
-    (interactive "P")
-    (let ((case-fold-search nil))
-      (if (looking-at electrify-return-match)
-          (save-excursion (newline-and-indent)))
-      (newline arg)
-      (indent-according-to-mode)))
-#+END_SRC
-
 *** evil escape
 
 Explain: Make escape act like C-g in evil-mode
 
 #+BEGIN_SRC emacs-lisp
-  (defun minibuffer-keyboard-quit ()
+  (defun cs-minibuffer-keyboard-quit ()
     "Abort recursive edit.
   In Delete Selection mode, if the mark is active, just deactivate it;
   then it takes a second \\[keyboard-quit] to abort the minibuffer."
@@ -802,10 +794,30 @@ Explain: Make escape act like C-g in evil-mode
       (abort-recursive-edit)))
 #+END_SRC
 
+*** electric return
+
+Explain: Electric return functionality
+
+#+BEGIN_SRC emacs-lisp
+  (defvar cs-electrify-return-match
+    "[\]}\)]"
+    "If this regexp matches the text after the cursor, do an \"electric\" return.")
+
+  (defun cs-electrify-return-if-match (arg)
+    "When text after cursor and ARG match, open and indent an empty line.
+  Do this between the cursor and the text.  Then move the cursor to the new line."
+    (interactive "P")
+    (let ((case-fold-search nil))
+      (if (looking-at cs-electrify-return-match)
+          (save-excursion (newline-and-indent)))
+      (newline arg)
+      (indent-according-to-mode)))
+#+END_SRC
+
 *** open dired at current location
 
 #+BEGIN_SRC emacs-lisp
-  (defun open-dired-at-current-dir ()
+  (defun cs-open-dired-at-current-dir ()
     (interactive)
     (let (current-dir (file-name-directory (buffer-file-name (current-buffer))))
       (dired current-dir)))
@@ -814,7 +826,7 @@ Explain: Make escape act like C-g in evil-mode
 *** preview file with marked
 
 #+BEGIN_SRC emacs-lisp
-  (defun marked-preview-file ()
+  (defun cs-marked-preview-file ()
     "use Marked 2 to preview the current file"
     (interactive)
     (shell-command
@@ -1120,12 +1132,12 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
   ;;; evil escape (use escape for C-g in evil-mode)
   (define-key evil-normal-state-map           [escape] #'keyboard-quit)
   (define-key evil-visual-state-map           [escape] #'keyboard-quit)
-  (define-key minibuffer-local-map            [escape] #'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-ns-map         [escape] #'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-completion-map [escape] #'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-must-match-map [escape] #'minibuffer-keyboard-quit)
-  (define-key minibuffer-local-isearch-map    [escape] #'minibuffer-keyboard-quit)
-  (define-key ivy-minibuffer-map              [escape] #'minibuffer-keyboard-quit)
+  (define-key minibuffer-local-map            [escape] #'cs-minibuffer-keyboard-quit)
+  (define-key minibuffer-local-ns-map         [escape] #'cs-minibuffer-keyboard-quit)
+  (define-key minibuffer-local-completion-map [escape] #'cs-minibuffer-keyboard-quit)
+  (define-key minibuffer-local-must-match-map [escape] #'cs-minibuffer-keyboard-quit)
+  (define-key minibuffer-local-isearch-map    [escape] #'cs-minibuffer-keyboard-quit)
+  (define-key ivy-minibuffer-map              [escape] #'cs-minibuffer-keyboard-quit)
   (global-set-key                             [escape] #'evil-exit-emacs-state)
 
   ;;; evil line movement tweaks
@@ -1239,7 +1251,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
   ;; g to update dired buffer info
   ;; s to toggle between sort by name and by date/time
   ;; for creating, deleting, renaming, just toggle shell visor, then update dired
-  (evil-leader/set-key "Fd" #'open-dired-at-current-dir) ; (F)ind via (d)ired
+  (evil-leader/set-key "Fd" #'cs-open-dired-at-current-dir) ; (F)ind via (d)ired
 #+END_SRC
 
 *** terminal
@@ -1273,7 +1285,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
 *** electric return
 
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "RET") #'electrify-return-if-match)
+  (global-set-key (kbd "RET") #'cs-electrify-return-if-match)
 #+END_SRC
 
 *** jump to line / word
@@ -1390,7 +1402,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
     "Mi" 'markdown-insert-image
     "Mh" 'markdown-insert-hr
     "Mf" 'markdown-insert-footnote
-    "Mp" 'marked-preview-file)
+    "Mp" 'cs-marked-preview-file)
 #+END_SRC
 
 *** org-mode
