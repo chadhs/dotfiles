@@ -2,6 +2,7 @@
                   [lein-ancient "0.6.10"]
                   [lein-create-template "0.2.0"]
                   [lein-pprint "1.1.2"]
+                  [nightlight/lein-nightlight "1.7.2"]
                   ;[walmartlabs/vizdeps "0.1.2"]
                   ]
         :repl-options {:init (set! *print-length* 100)}}}
