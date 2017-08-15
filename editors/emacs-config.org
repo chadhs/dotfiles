@@ -1295,8 +1295,24 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
 
 *** electric return
 
+be explicit about where to enable "electric return", as some modes have their own.
+
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "RET") #'cs-electrify-return-if-match)
+  (dolist (hook
+           '(cider-mode-hook
+             clojure-mode-hook
+             emacs-lisp-mode-hook
+             lisp-interaction-mode-hook
+             lisp-mode-hook
+             org-mode-hook
+             python-mode-hook
+             ruby-mode-hook
+             yaml-mode-hook
+             js2-mode-hook))
+    (add-hook hook
+              (lambda ()
+                (local-set-key (kbd "RET") #'cs-electrify-return-if-match))))
+
 #+END_SRC
 
 *** jump to line / word
