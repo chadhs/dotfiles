@@ -176,6 +176,34 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
     (global-evil-search-highlight-persist t))
 #+END_SRC
 
+*** themes
+
+#+BEGIN_SRC emacs-lisp
+  (use-package solarized-theme
+    :if (display-graphic-p)
+    :config
+    (load-theme 'solarized-dark t)
+    (load-theme 'solarized-light t))
+
+  (use-package ample-theme
+    :if (not (display-graphic-p))
+    :config
+    (load-theme 'ample t))
+#+END_SRC
+
+*** cycle themes
+
+#+BEGIN_SRC emacs-lisp
+  (use-package cycle-themes
+    :if (display-graphic-p)
+    :init
+    (setq cycle-themes-theme-list
+          '(solarized-dark
+            solarized-light))
+    :config
+    (evil-leader/set-key "ct" #'cycle-themes))
+#+END_SRC
+
 *** terminal settings
 
 Explain.
@@ -924,34 +952,6 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
   (setq show-paren-style 'parenthesis
         show-paren-delay 0)
   (show-paren-mode 1)
-#+END_SRC
-
-*** themes
-
-#+BEGIN_SRC emacs-lisp
-  (use-package solarized-theme
-    :if (display-graphic-p)
-    :config
-    (load-theme 'solarized-dark t)
-    (load-theme 'solarized-light t))
-
-  (use-package ample-theme
-    :if (not (display-graphic-p))
-    :config
-    (load-theme 'ample t))
-#+END_SRC
-
-*** cycle themes
-
-#+BEGIN_SRC emacs-lisp
-  (use-package cycle-themes
-    :if (display-graphic-p)
-    :init
-    (setq cycle-themes-theme-list
-          '(solarized-dark
-            solarized-light))
-    :config
-    (evil-leader/set-key "ct" #'cycle-themes))
 #+END_SRC
 
 *** font settings
