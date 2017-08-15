@@ -649,6 +649,10 @@ Explain.
     :init
     (add-hook 'css-mode-hook 'rainbow-mode)
     (add-hook 'scss-mode-hook 'rainbow-mode))
+
+  ;; css and scss modes are built-in, thus no use-package stanza
+  (add-hook 'css-mode-hook 'electric-pair-mode)
+  (add-hook 'scss-mode-hook 'electric-pair-mode)
 #+END_SRC
 
 *** yaml support
