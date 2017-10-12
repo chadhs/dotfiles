@@ -345,6 +345,7 @@ magit so awesome.
       "grh" #'magit-reset-head
       "gca" #'magit-commit
       "gpu" #'magit-push-current-to-upstream
+      "gpp" #'magit-push-current-to-pushremote
       "gt"  #'magit-tag
       "gpt" #'magit-push-tags)
     ;; specific within magit-mode
