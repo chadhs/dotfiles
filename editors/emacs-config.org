@@ -327,13 +327,13 @@ Explain.
 *** documentation
 
 #+BEGIN_SRC emacs-lisp
-  (use-package deft
-    :defer t
-    :init
-    (defvar --user-home-dir (concat (getenv "HOME") "/"))
-    (defvar --user-notes-dir (concat --user-home-dir ".deft/"))
-    (unless (file-exists-p --user-notes-dir)
-      (make-directory --user-notes-dir t)))
+  ;; (use-package deft
+  ;;   :defer t
+  ;;   :init
+  ;;   (defvar --user-home-dir (concat (getenv "HOME") "/"))
+  ;;   (defvar --user-notes-dir (concat --user-home-dir ".deft/"))
+  ;;   (unless (file-exists-p --user-notes-dir)
+  ;;     (make-directory --user-notes-dir t)))
 #+END_SRC
 
 *** version control
