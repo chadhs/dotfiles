@@ -213,7 +213,9 @@ Explain.
     :defer t
     :init
     (setq multi-term-dedicated-window-height 30
-          multi-term-program "/usr/local/bin/zsh")
+          ;; multi-term-program "/usr/local/bin/zsh"
+          multi-term-program "/usr/local/bin/bash"
+          )
     (add-hook 'term-mode-hook
               (lambda ()
                 (setq term-buffer-maximum-size 10000)
@@ -539,7 +541,9 @@ Explain.
                     '(cider-mode
                       cider-repl-mode
                       cider-test-report-mode
-                      term-mode))
+                      sql-mode
+                      term-mode
+                      web-mode))
           emojify-prog-contexts "comments"))
 #+END_SRC
 
@@ -726,7 +730,8 @@ Explain.
     :mode "\\.js\\'"
     :config
     (setq js2-mode-show-parse-errors nil
-          js2-mode-show-strict-warnings nil))
+          js2-mode-show-strict-warnings nil
+          js2-basic-offset 2))
 #+END_SRC
 
 *** java support
@@ -1261,6 +1266,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
   ;;; dired navigation
   ;; g to update dired buffer info
   ;; s to toggle between sort by name and by date/time
+  ;; + create dir
   ;; for creating, deleting, renaming, just toggle shell visor, then update dired
   (evil-leader/set-key "Fd" #'cs-open-dired-at-current-dir) ; (F)ind via (d)ired
 #+END_SRC
