@@ -150,7 +150,7 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
                                      (magit-log-mode         . normal)
                                      (magit-process-mode     . normal)
                                      (magit-popup-mode       . emacs)
-                                     ;; this allows vi-mode in zsh shells
+                                     ;; this allows vi-mode in shells
                                      (term-mode              . emacs))
              do (evil-set-initial-state mode state)))
 
@@ -213,9 +213,7 @@ Explain.
     :defer t
     :init
     (setq multi-term-dedicated-window-height 30
-          ;; multi-term-program "/usr/local/bin/zsh"
-          multi-term-program "/usr/local/bin/bash"
-          )
+          multi-term-program "/usr/local/bin/zsh")
     (add-hook 'term-mode-hook
               (lambda ()
                 (setq term-buffer-maximum-size 10000)
