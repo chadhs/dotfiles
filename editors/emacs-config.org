@@ -509,7 +509,7 @@ Explain.
     (add-hook 'yaml-mode-hook #'rainbow-delimiters-mode))
 #+END_SRC
 
-*** 80 column enforcement
+*** column width enforcement
 
 Explain.
 
@@ -518,7 +518,7 @@ Explain.
     :defer t
     :diminish column-enforce-mode
     :init
-    (setq column-enforce-column 81
+    (setq column-enforce-column 100
           column-enforce-comments nil)
     (add-hook 'prog-mode-hook #'column-enforce-mode))
 #+END_SRC
