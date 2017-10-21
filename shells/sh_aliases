@@ -36,6 +36,9 @@ if [[ $(uname) = "Darwin" ]]; then
     ### mac development
     ### homebrew
     export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+    ### browser reloading
+    alias livereload-safari="filewatcher '**/*' 'osascript ~/bin/reload-safari.scpt'"
+    alias livereload-chrome="filewatcher '**/*' 'osascript ~/bin/reload-chrome.scpt'"
     ### python
     export WORKON_HOME=~/.virtualenvs
     export PROJECT_HOME=~/src
