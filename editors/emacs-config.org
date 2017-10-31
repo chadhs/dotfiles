@@ -554,7 +554,8 @@ Explain.
                       cider-test-report-mode
                       sql-mode
                       term-mode
-                      web-mode))
+                      web-mode
+                      yaml-mode))
           emojify-prog-contexts "comments"))
 #+END_SRC
 
