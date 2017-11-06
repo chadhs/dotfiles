@@ -691,7 +691,16 @@ Explain.
     :ensure nil
     :mode "\\.css\\'"
     :config
-    (setq css-indent-offset 2))
+    (setq css-indent-offset 2)
+    (electric-pair-mode 1))
+
+  (use-package scss-mode
+    :ensure nil
+    :mode ("\\.scss\\'"
+           "\\.sass\\'")
+    :config
+    (setq css-indent-offset 2)
+    (electric-pair-mode 1))
 
   (use-package rainbow-mode
     :defer t
@@ -699,10 +708,6 @@ Explain.
     :init
     (add-hook 'css-mode-hook 'rainbow-mode)
     (add-hook 'scss-mode-hook 'rainbow-mode))
-
-  ;; css and scss modes are built-in, thus no use-package stanza
-  (add-hook 'css-mode-hook 'electric-pair-mode)
-  (add-hook 'scss-mode-hook 'electric-pair-mode)
 #+END_SRC
 
 *** yaml support
@@ -749,7 +754,8 @@ Explain.
     :config
     (setq js2-mode-show-parse-errors nil
           js2-mode-show-strict-warnings nil
-          js2-basic-offset 2))
+          js2-basic-offset 2)
+    (electric-pair-mode 1))
 #+END_SRC
 
 *** java support
@@ -1331,8 +1337,7 @@ be explicit about where to enable "electric return", as some modes have their ow
              org-mode-hook
              python-mode-hook
              ruby-mode-hook
-             yaml-mode-hook
-             js2-mode-hook))
+             yaml-mode-hook))
     (add-hook hook
               (lambda ()
                 (local-set-key (kbd "RET") #'cs-electrify-return-if-match))))
