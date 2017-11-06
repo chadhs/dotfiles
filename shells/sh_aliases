@@ -42,6 +42,10 @@ if [[ $(uname) = "Darwin" ]]; then
     ### python
     export WORKON_HOME=~/.virtualenvs
     export PROJECT_HOME=~/src
+    [[ -n $(command -v pyenv) ]] && eval "$(pyenv init -)" # load pyenv if installed
+    alias pyenv='CFLAGS="-I$(brew --prefix openssl)/include" \
+                 LDFLAGS="-L$(brew --prefix openssl)/lib" \
+                 pyenv'
     ### vagrant
     alias vssh='vagrant up && vagrant ssh'
     ### ruby

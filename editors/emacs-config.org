@@ -687,6 +687,12 @@ Explain.
 *** stylesheets
 
 #+BEGIN_SRC emacs-lisp
+  (use-package css-mode
+    :ensure nil
+    :mode "\\.css\\'"
+    :config
+    (setq css-indent-offset 2))
+
   (use-package rainbow-mode
     :defer t
     :diminish rainbow-mode
