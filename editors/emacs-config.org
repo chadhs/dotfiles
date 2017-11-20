@@ -363,6 +363,7 @@ magit so awesome.
       "cc" 'with-editor-finish
       "cC" 'with-editor-cancel)
     :config
+    (setq truncate-lines nil) ; wrap lines, don't truncate.
     ;; let's improve evil-mode compatability
     (define-key magit-status-mode-map (kbd "k") #'previous-line)
     (define-key magit-status-mode-map (kbd "K") 'magit-discard)
