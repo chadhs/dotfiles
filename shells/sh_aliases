@@ -11,6 +11,9 @@ stty erase '^?'
 ## check weather
 alias checkweather='curl wttr.in'
 
+## oh-my-zsh aliases to remove
+disable r
+
 ## mac only aliases
 if [[ $(uname) = "Darwin" ]]; then
     alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs "$@"'
