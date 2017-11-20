@@ -1033,6 +1033,12 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
   (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
 #+END_SRC
 
+*** prevent verticle split automatically on larger displays
+
+#+BEGIN_SRC emacs-lisp
+  (setq split-height-threshold 160)
+#+END_SRC
+
 *** tab settings
 
 #+BEGIN_SRC emacs-lisp
