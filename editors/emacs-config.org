@@ -82,10 +82,10 @@ use-package is great for lazy-loading packages efficiently.
 
   (eval-when-compile
     (require 'use-package))
-  (require 'diminish)
-  (require 'bind-key)
 
   (setq use-package-always-ensure t)
+
+  (use-package diminish) ; no longer included with use-package by default
 
   ;;; example use-package usage
   ;; (use-package foo
