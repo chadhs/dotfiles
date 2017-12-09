@@ -23,6 +23,7 @@ xcode-select --install
 [ -z "$(command -v brew)" ] && /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 brew install mas
 brew tap caskroom/cask
+brew tap buo/cask-upgrade
 
 echo "installing mac app store apps..."
 read -rp "enter your appleid email address: " appleid
