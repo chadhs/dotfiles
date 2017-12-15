@@ -41,12 +41,16 @@ if [[ $(uname) = "Darwin" ]]; then
     ### mac development
     ### homebrew
     export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+    ### static local hosting
+    alias get-pow='curl get.pow.cx | sh'
+    alias remove-pow='curl get.pow.cx/uninstall.sh | sh'
     ### browser reloading
     alias livereload-safari="filewatcher '**/*' 'osascript ~/bin/reload-safari.scpt' &"
     alias livereload-chrome="filewatcher '**/*' 'osascript ~/bin/reload-chrome.scpt' &"
     ### python
     export WORKON_HOME=~/.virtualenvs
     export PROJECT_HOME=~/src
+    #### python version management
     [[ -n $(command -v pyenv) ]] && eval "$(pyenv init -)" # load pyenv if installed
     alias pyenv='CFLAGS="-I$(brew --prefix openssl)/include" \
                  LDFLAGS="-L$(brew --prefix openssl)/lib" \
