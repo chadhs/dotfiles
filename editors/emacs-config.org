@@ -721,6 +721,21 @@ Explain.
     :mode "\\.yml\\'")
 #+END_SRC
 
+*** shell script support
+
+shell-script-mode is a built-in mode, but i'm using the use-package stanza for consistency.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package shell-script-mode
+    :ensure nil
+    :defer t
+    :mode "\\.sh\\'"
+    :init
+    (setq sh-basic-offset 2
+          sh-indentation  2)
+    (electric-pair-mode 1))
+#+END_SRC
+
 *** ruby support
 
 Explain.
