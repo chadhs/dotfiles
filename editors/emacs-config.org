@@ -622,7 +622,8 @@ Explain.
     :init
     (add-hook 'clojure-mode-hook (lambda ()
                                    (clj-refactor-mode 1)
-                                   (yas-minor-mode)))
+                                   (yas-minor-mode)
+                                   (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
     ;; :config
     ;; this custom repl setup is for re-frame/reagent clojurescript development
     ;; (setq cider-cljs-lein-repl
@@ -639,13 +640,16 @@ Explain.
           cider-show-error-buffer nil             ; don't show error buffer automatically
           cider-auto-select-error-buffer nil      ; don't switch to error buffer on error
           cider-font-lock-dynamically t           ; font-lock as much as possible
+          cider-save-file-on-load t               ; save file on prompt when evaling
           cider-repl-use-clojure-font-lock t      ; nicer repl output
           cider-repl-history-file (concat user-emacs-directory "cider-history")
           cider-repl-wrap-history t
-          cider-repl-history-size 3000)
+          cider-repl-history-size 3000
+          nrepl-hide-special-buffers t)
     (add-hook 'cider-mode-hook (lambda ()
                                  (ac-flyspell-workaround)
-                                 (ac-cider-setup)))
+                                 (ac-cider-setup)
+                                 (eldoc-mode)))
     (add-hook 'cider-repl-mode-hook (lambda ()
                                       (paredit-mode)
                                       (ac-cider-setup)))
@@ -1457,6 +1461,7 @@ be explicit about where to enable "electric return", as some modes have their ow
     "rl"  #'cider-switch-to-last-clojure-buffer ; (r)epl (l)ast buffer
     "rn"  #'cider-repl-set-ns                   ; (r)epl set (n)amespace
     "rp"  #'cider-repl-toggle-pretty-printing   ; (r)epl (p)retty print
+    "rh"  #'cider-repl-history                  ; (r)epl (h)istory
     "ff"  #'cider-format-defun                  ; (f)ormat (f)orm
     "fr"  #'cider-format-region                 ; (f)ormat (r)egion
     "fb"  #'cider-format-buffer                 ; (f)ormat (b)uffer

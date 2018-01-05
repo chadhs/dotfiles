@@ -1,9 +1,9 @@
 {:user {:plugins [
-                  [lein-ancient "0.6.14"]
+                  [lein-ancient "0.6.15"]
                   [lein-create-template "0.2.0"]
-                  [lein-pprint "1.1.2"]
-                  ;; [nightlight/lein-nightlight "1.7.2"]
-                  ;; [walmartlabs/vizdeps "0.1.2"]
+                  [lein-pprint "1.2.0"]
+                  ;; [nightlight/lein-nightlight "2.1.0"]
+                  ;; [walmartlabs/vizdeps "0.1.6"]
                   ]
         :repl-options {:init (set! *print-length* 100)}}}
 
