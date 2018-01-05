@@ -1327,10 +1327,13 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
 #+BEGIN_SRC emacs-lisp
   ;;; toggle/open shell
   (evil-leader/set-key
-    "sv" (lambda () (interactive)              ; toggle (s)hell (v)isor
+    "sv" (lambda () (interactive)         ; toggle (s)hell (v)isor
            (multi-term-dedicated-toggle)
            (multi-term-dedicated-select))
-    "sn" 'multi-term)                     ; toggle (s)hell (n)ew
+    "sn" (lambda () (interactive)         ; toggle (s)hell (n)ew
+           ;; update buffer name setting dynamically for each perspective
+           (setq-default multi-term-buffer-name (elt persp-curr 1))
+           (multi-term)))
 
   ;;; multi term keybind setup - full vi-mode in zsh within emacs
   ;; don't leave emacs mode when pressing esc, pass through for vim compatability
