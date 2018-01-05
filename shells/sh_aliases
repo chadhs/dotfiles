@@ -56,9 +56,9 @@ if [[ $(uname) = "Darwin" ]]; then
     export PROJECT_HOME=~/src
     #### python version management
     [[ -n $(command -v pyenv) ]] && eval "$(pyenv init -)" # load pyenv if installed
-    alias pyenv='CFLAGS="-I$(brew --prefix openssl)/include" \
-                 LDFLAGS="-L$(brew --prefix openssl)/lib" \
-                 pyenv'
+    [[ -n $(command -v pyenv) ]] && alias pyenv='CFLAGS="-I$(brew --prefix openssl)/include" \
+                                          LDFLAGS="-L$(brew --prefix openssl)/lib" \
+                                          pyenv'
     ### vagrant
     alias vssh='vagrant up && vagrant ssh'
     ### ruby
