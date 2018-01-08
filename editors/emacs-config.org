@@ -1332,7 +1332,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
            (multi-term-dedicated-select))
     "sn" (lambda () (interactive)         ; toggle (s)hell (n)ew
            ;; update buffer name setting dynamically for each perspective
-           (setq-default multi-term-buffer-name (elt persp-curr 1))
+           (setq-default multi-term-buffer-name (concat "term-" (elt persp-curr 1)))
            (multi-term)))
 
   ;;; multi term keybind setup - full vi-mode in zsh within emacs
