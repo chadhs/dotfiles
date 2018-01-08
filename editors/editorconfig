@@ -37,6 +37,12 @@ indent_style = space
 indent_size = 2
 trim_trailing_whitespace = true
 
+## terraform settings
+[*.tf]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+
 ## markdown settings
 [*.md]
 indent_style = space
@@ -70,4 +76,3 @@ trim_trailing_whitespace = true
 ## makefile settings
 indent_style = tab
 trim_trailing_whitespace = true
-
