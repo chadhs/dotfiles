@@ -722,7 +722,9 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package yaml-mode
-    :mode "\\.yml\\'")
+    :mode "\\.yml\\'"
+    :config
+    (add-to-list 'write-file-functions 'delete-trailing-whitespace))
 #+END_SRC
 
 *** shell script support
