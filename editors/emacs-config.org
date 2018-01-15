@@ -856,6 +856,10 @@ Explain.
   (setq org-html-postamble nil)
 #+END_SRC
 
+*** spell checking
+#+BEGIN_SRC emacs-lisp
+  (setq ispell-program-name "aspell")
+#+END_SRC
 
 ** User functions
 
