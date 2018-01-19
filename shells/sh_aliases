@@ -11,8 +11,15 @@ stty erase '^?'
 ## check weather
 alias checkweather='curl wttr.in'
 
+## preflight shell check
+function zshonly(){
+  ## only run command if shell is zsh
+  currshell=$(ps -p $$ | grep $$ | awk '{ print $4 }')
+  [[ "${currshell}" = "-zsh" ]] && "${@}"
+}
+
 ## oh-my-zsh aliases to remove
-disable r
+zshonly disable r
 
 ## mac only aliases
 if [[ $(uname) = "Darwin" ]]; then
@@ -33,11 +40,11 @@ if [[ $(uname) = "Darwin" ]]; then
     alias speedtest='speedtest-cli'
     #alias scheme="rlwrap scheme"
     ### stop correction intrusion
-    alias chef='nocorrect chef'
-    alias knife='nocorrect knife'
-    alias npm='nocorrect npm'
-    alias sass='nocorrect sass'
-    alias vagrant='nocorrect vagrant'
+    zshonly alias chef='nocorrect chef'
+    zshonly alias knife='nocorrect knife'
+    zshonly alias npm='nocorrect npm'
+    zshonly alias sass='nocorrect sass'
+    zshonly alias vagrant='nocorrect vagrant'
 
     ### mac development
     ### homebrew
