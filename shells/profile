@@ -6,3 +6,32 @@ export PATH="$HOME/bin\
 :/usr/local/sbin\
 :${PATH}"
 umask 0002 # grant write permsion to group
+
+## mac only path updates
+if [[ $(uname) = "Darwin" ]]; then
+  ### homebrew
+  export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+  ### python
+  export WORKON_HOME=~/.virtualenvs
+  export PROJECT_HOME=~/src
+  #### python version management
+  # [[ -n $(command -v pyenv) ]] && eval "$(pyenv init -)" # load pyenv if installed
+  # [[ -n $(command -v pyenv) ]] && alias pyenv='CFLAGS="-I$(brew --prefix openssl)/include" \
+    # 					LDFLAGS="-L$(brew --prefix openssl)/lib" \
+    # 					pyenv'
+  ### ruby
+  source /usr/local/opt/chruby/share/chruby/chruby.sh
+  source /usr/local/opt/chruby/share/chruby/auto.sh
+  #### set the default system-wide
+  [[ -n $(chruby | grep "2.4") ]] && chruby 2.4
+  ### node
+  export NVM_DIR="$HOME/.nvm"
+  source /usr/local/opt/nvm/nvm.sh
+  #source /usr/local/opt/nvm/nvm.sh --no-use
+  ### cortex
+  # export CUDA_HOME=/usr/local/cuda
+  # export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:$CUDA_HOME/lib"
+  # export PATH="$CUDA_HOME/bin:$PATH"
+  ### expo / genymotion
+  # export PATH="/Applications/Genymotion.app/Contents/MacOS/tools:$PATH"
+fi
