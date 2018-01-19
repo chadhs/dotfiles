@@ -1,11 +1,13 @@
 {:user {:plugins [
                   [lein-ancient "0.6.15"]
-                  [lein-create-template "0.2.0"]
-                  [lein-pprint "1.2.0"]
-                  ;; [nightlight/lein-nightlight "2.1.0"]
-                  ;; [walmartlabs/vizdeps "0.1.6"]
                   ]
         :repl-options {:init (set! *print-length* 100)}}}
+
+;;; useful plugins not currently in use
+;; lein-pprint
+;; lein-create-template
+;; nightlight/lein-nightlight
+;; walmartlabs/vizdeps
 
 ;;; uncomment and update versions to run a stand alone repl and using cider-connect
 ;; {:repl {:plugins [[cider/cider-nrepl "0.14.0"]
