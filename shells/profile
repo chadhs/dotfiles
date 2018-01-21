@@ -2,6 +2,7 @@ export PATH="$HOME/bin\
 :/usr/local/opt/python/libexec/bin\
 :/usr/local/opt/openssl/bin\
 :/usr/local/opt/curl/bin\
+:/usr/local/opt/node@8/bin\
 :/usr/local/bin\
 :/usr/local/sbin\
 :${PATH}"

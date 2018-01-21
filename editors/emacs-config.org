@@ -780,6 +780,23 @@ Explain.
           js2-basic-offset 2
           js-indent-level 2)
     (electric-pair-mode 1))
+
+  ;; javascript completion
+  (use-package tern
+    :defer t
+    :init
+    (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+    :config
+    (setq tern-command (append tern-command '("--no-port-file"))))
+
+  ;; hook tern into auto-complete rather than using company-mode
+  (use-package tern-auto-complete
+    :defer t
+    :init
+    (eval-after-load 'tern
+      '(progn
+         (require 'tern-auto-complete)
+         (tern-ac-setup))))
 #+END_SRC
 
 *** java support
