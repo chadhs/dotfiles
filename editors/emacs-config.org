@@ -772,6 +772,7 @@ Explain.
 *** javascript support
 
 #+BEGIN_SRC emacs-lisp
+  ;; a better javascript mode
   (use-package js2-mode
     :mode "\\.js\\'"
     :config
@@ -797,6 +798,12 @@ Explain.
       '(progn
          (require 'tern-auto-complete)
          (tern-ac-setup))))
+
+  ;; javascript eval and repl
+  (use-package skewer-mode
+    :defer t
+    :init
+    (add-hook 'js2-mode-hook 'skewer-mode))
 #+END_SRC
 
 *** java support
