@@ -800,10 +800,18 @@ Explain.
          (tern-ac-setup))))
 
   ;; javascript eval and repl
-  (use-package skewer-mode
+
+  ;; (use-package skewer-mode
+  ;;   :defer t
+  ;;   :init
+  ;;   (add-hook 'js2-mode-hook 'skewer-mode))
+
+  (use-package indium
     :defer t
     :init
-    (add-hook 'js2-mode-hook 'skewer-mode))
+    (add-hook 'js2-mode-hook (lambda ()
+                               (require 'indium)
+                               (indium-interaction-mode))))
 #+END_SRC
 
 *** java support
