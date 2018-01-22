@@ -62,6 +62,8 @@ if [[ $(uname) = "Darwin" ]]; then
     alias vssh='vagrant up && vagrant ssh'
     ### node
     alias npmlist='npm list -g --depth=0 2>/dev/null'
+    ### js
+    alias chromedev='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 &'
     ### minikube
     alias mkset='eval $(minikube docker-env)'
     alias mkunset='eval $(minikube docker-env -u)'
