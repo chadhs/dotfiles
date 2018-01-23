@@ -887,47 +887,55 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  ;;; org-mode - (part of core; no use-package stanza)
-  (setq org-insert-mode-line-in-empty-file t) ; for .txt file compatability
+  (use-package org-mode
+    :ensure nil
+    :defer t
+    :init
+    (setq org-insert-mode-line-in-empty-file t) ; for .txt file compatability
+    (setq org-ellipsis "⤵")
+    (setq org-startup-truncated nil) ; wrap lines, don't truncate.
+    (setq org-src-fontify-natively t)
+    (setq org-src-tab-acts-natively t)
+    (setq org-src-window-setup 'current-window)
+    ;;; exporting
+    (setq org-export-with-smart-quotes t)
+    (setq org-html-postamble nil)
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (require 'ox-md)
+                (require 'ox-beamer)))
 
-  ;; gtd settings
-  ;; (setq org-todo-keywords
-  ;;       '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELLED")))
-  ;; (setq org-agenda-files '("~/Dropbox/org/"))
-  ;; (setq org-agenda-text-search-extra-files '(agenda-archives))
-  ;; (setq org-blank-before-new-entry (quote ((heading) (plain-list-item))))
-  ;; (setq org-enforce-todo-dependencies t)
-  ;; (setq org-log-done (quote time))
-  ;; (setq org-log-redeadline (quote time))
-  ;; (setq org-log-reschedule (quote time))
+    ;;; gtd settings
+    ;; (setq org-todo-keywords
+    ;;       '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELLED")))
+    ;; (setq org-agenda-files '("~/Dropbox/org/"))
+    ;; (setq org-agenda-text-search-extra-files '(agenda-archives))
+    ;; (setq org-blank-before-new-entry (quote ((heading) (plain-list-item))))
+    ;; (setq org-enforce-todo-dependencies t)
+    ;; (setq org-log-done (quote time))
+    ;; (setq org-log-redeadline (quote time))
+    ;; (setq org-log-reschedule (quote time))
 
-  ;; display
+    ;;; keybinds pre load
+    (evil-leader/set-key-for-mode 'org-mode
+      "es" 'org-edit-special)
+    (evil-leader/set-key-for-mode 'emacs-lisp-mode
+      "cc" 'org-edit-src-exit
+      "cC" 'org-edit-src-abort))
+
   (use-package org-bullets
     :defer t
     :init
     (add-hook 'org-mode-hook
               (lambda ()
                 (org-bullets-mode t))))
-
-  (setq org-ellipsis "⤵")
-  (setq org-startup-truncated nil) ; wrap lines, don't truncate.
-  (setq org-src-fontify-natively t)
-  (setq org-src-tab-acts-natively t)
-  (setq org-src-window-setup 'current-window)
-
-  ;; exporting
-  (add-hook 'org-mode-hook
-            (lambda ()
-              (require 'ox-md)
-              (require 'ox-beamer)))
-  (setq org-export-with-smart-quotes t)
-  (setq org-html-postamble nil)
 #+END_SRC
 
 *** spell checking
 #+BEGIN_SRC emacs-lisp
   (setq ispell-program-name "aspell")
 #+END_SRC
+
 
 ** User functions
 
@@ -1541,10 +1549,7 @@ be explicit about where to enable "electric return", as some modes have their ow
 *** org-mode
 
 #+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key-for-mode 'org-mode "es" 'org-edit-special)
-  (evil-leader/set-key
-    "cc" 'org-edit-src-exit
-    "cC" 'org-edit-src-abort)
+  ;; see use-package section for org-mode above
 #+END_SRC
 
 *** ruby-mode
