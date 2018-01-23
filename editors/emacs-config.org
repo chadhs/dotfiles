@@ -844,6 +844,7 @@ Explain.
                                (indium-interaction-mode)))
     :config
     ;;; keybinds on load
+    (bind-key "S-<return>" #'newline indium-repl-mode-map)
     (evil-leader/set-key-for-mode 'indium-repl-mode
       "cr"  #'indium-repl-clear-output    ; (c)lear (r)epl
       ))
