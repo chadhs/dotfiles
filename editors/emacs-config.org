@@ -624,12 +624,27 @@ Explain.
                                    (clj-refactor-mode 1)
                                    (yas-minor-mode)
                                    (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
-    ;; :config
-    ;; this custom repl setup is for re-frame/reagent clojurescript development
-    ;; (setq cider-cljs-lein-repl
-    ;;       "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))")
-    )
-  ;; add keybindings here to replace cljr-helm (,rf)
+    :config
+    ;;; keybinds on load
+    (evil-leader/set-key-for-mode 'clojure-mode
+      "ri"  #'cider-jack-in                       ; (r)epl (i)nitialize
+      "rr"  #'cider-restart                       ; (r)epl (r)estart
+      "rq"  #'cider-quit                          ; (r)epl (q)uit
+      "rc"  #'cider-connect                       ; (r)epl (c)onnect
+      "eb"  #'cider-eval-buffer                   ; (e)val (b)uffer
+      "ef"  #'cider-eval-defun-at-point           ; (e)val de(f)un
+      "es"  #'cider-eval-last-sexp                ; (e)val (s)-expression
+      "rtn" #'cider-test-run-ns-tests             ; (r)un (t)ests (n)amespace
+      "rtp" #'cider-test-run-project-tests        ; (r)un (t)ests (p)roject
+      "rtl" #'cider-test-run-loaded-tests         ; (r)un (t)ests (l)oaded namespaces
+      "rtf" #'cider-test-rerun-failed-tests       ; (r)erun (t)ests (f)ailed tests
+      "rta" #'cider-auto-test-mode                ; (r)un (t)ests (a)utomatically
+      "rb"  #'cider-switch-to-repl-buffer         ; (r)epl (b)uffer
+      "ff"  #'cider-format-defun                  ; (f)ormat (f)orm
+      "fr"  #'cider-format-region                 ; (f)ormat (r)egion
+      "fb"  #'cider-format-buffer                 ; (f)ormat (b)uffer
+      ;; add keybindings here to replace cljr-helm (,rf)
+      ))
   (use-package clojure-mode-extra-font-locking
     :defer t)
   (use-package cider
@@ -655,7 +670,20 @@ Explain.
                                       (ac-cider-setup)))
     :config
     (setq cider-mode-line '(:eval (format " [%s]" (cider--modeline-info))))
-    (eval-after-load 'flycheck '(flycheck-clojure-setup)))
+    (eval-after-load 'flycheck '(flycheck-clojure-setup))
+    ;;; keybinds on load
+    (evil-leader/set-key-for-mode 'cider-repl-mode
+      "rr"  #'cider-restart                       ; (r)epl (r)estart
+      "rq"  #'cider-quit                          ; (r)epl (q)uit
+      "rl"  #'cider-switch-to-last-clojure-buffer ; (r)epl (l)ast buffer
+      "rn"  #'cider-repl-set-ns                   ; (r)epl set (n)amespace
+      "rp"  #'cider-repl-toggle-pretty-printing   ; (r)epl (p)retty print
+      "rh"  #'cider-repl-history                  ; (r)epl (h)istory
+      "cr" #'cider-repl-clear-buffer              ; (c)lear (r)epl
+      )
+    (bind-key "S-<return>" #'cider-repl-newline-and-indent cider-repl-mode-map)
+    (define-key cider-test-report-mode-map (kbd "k") #'previous-line)
+    (define-key cider-test-report-mode-map (kbd "j") #'next-line))
   (use-package ac-cider
     :defer t)
   (use-package clj-refactor
@@ -780,7 +808,15 @@ Explain.
           js2-mode-show-strict-warnings nil
           js2-basic-offset 2
           js-indent-level 2)
-    (electric-pair-mode 1))
+    (electric-pair-mode 1)
+    ;;; keybinds on load
+    (evil-leader/set-key-for-mode 'js2-mode
+      "ri"  #'indium-connect-to-chrome     ; (r)epl (i)nitialize
+      "rb"  #'indium-switch-to-repl-buffer ; (r)epl (b)uffer
+      "eb"  #'indium-eval-buffer           ; (e)val (b)uffer
+      "ef"  #'indium-eval-defun            ; (e)val de(f)un
+      "es"  #'indium-eval-last-node        ; (e)val (s)-expression
+      ))
 
   ;; javascript completion
   (use-package tern
@@ -805,7 +841,12 @@ Explain.
     :init
     (add-hook 'js2-mode-hook (lambda ()
                                (require 'indium)
-                               (indium-interaction-mode))))
+                               (indium-interaction-mode)))
+    :config
+    ;;; keybinds on load
+    (evil-leader/set-key-for-mode 'indium-repl-mode
+      "cr"  #'indium-repl-clear-output    ; (c)lear (r)epl
+      ))
 #+END_SRC
 
 *** java support
@@ -1186,7 +1227,7 @@ N [*]filename [project] ᚠbranch (modes) Err U: line:col [main] 29%
 
 ** Key bindings
 
-This section contains all my emacs key bindings.  I like keeping all my key bindings in one place rather than with each package.
+This section contains global emacs key bindings.  Mode specific key bindings are within each use-package stanza.
 
 *** emacs settings
 
@@ -1294,8 +1335,7 @@ This section contains all my emacs key bindings.  I like keeping all my key bind
 
   ;;; clear / recenter screen
   (evil-leader/set-key
-    "cs" #'recenter-top-bottom      ; (c)lear (s)creen
-    "cr" #'cider-repl-clear-buffer) ; (c)lear (r)epl
+    "cs" #'recenter-top-bottom) ; (c)lear (s)creen
 
   ;;; text scale
   (global-set-key (kbd "s-+") #'text-scale-increase)
@@ -1480,34 +1520,7 @@ be explicit about where to enable "electric return", as some modes have their ow
 *** clojure / cider
 
 #+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key
-    "ri"  #'cider-jack-in                       ; (r)epl (i)nitialize
-    "rr"  #'cider-restart                       ; (r)epl (r)estart
-    "rq"  #'cider-quit                          ; (r)epl (q)uit
-    "rc"  #'cider-connect                       ; (r)epl (c)onnect
-    "eb"  #'cider-eval-buffer                   ; (e)val (b)uffer
-    "ef"  #'cider-eval-defun-at-point           ; (e)val de(f)un
-    "es"  #'cider-eval-last-sexp                ; (e)val (s)-expression
-    "rtn" #'cider-test-run-ns-tests             ; (r)un (t)ests (n)amespace
-    "rtp" #'cider-test-run-project-tests        ; (r)un (t)ests (p)roject
-    "rtl" #'cider-test-run-loaded-tests         ; (r)un (t)ests (l)oaded namespaces
-    "rtf" #'cider-test-rerun-failed-tests       ; (r)erun (t)ests (f)ailed tests
-    "rta" #'cider-auto-test-mode                ; (r)un (t)ests (a)utomatically
-    "rb"  #'cider-switch-to-repl-buffer         ; (r)epl (b)uffer
-    "rl"  #'cider-switch-to-last-clojure-buffer ; (r)epl (l)ast buffer
-    "rn"  #'cider-repl-set-ns                   ; (r)epl set (n)amespace
-    "rp"  #'cider-repl-toggle-pretty-printing   ; (r)epl (p)retty print
-    "rh"  #'cider-repl-history                  ; (r)epl (h)istory
-    "ff"  #'cider-format-defun                  ; (f)ormat (f)orm
-    "fr"  #'cider-format-region                 ; (f)ormat (r)egion
-    "fb"  #'cider-format-buffer                 ; (f)ormat (b)uffer
-    )
-  ;; replace C-j keybind in cider-repl with S-<return>
-  ;; set evil style j and k in cider-test-report-mode
-  (with-eval-after-load "cider"
-    (bind-key "S-<return>" #'cider-repl-newline-and-indent cider-repl-mode-map)
-    (define-key cider-test-report-mode-map (kbd "k") #'previous-line)
-    (define-key cider-test-report-mode-map (kbd "j") #'next-line))
+  ;; see use-package section for clojure-mode and cider above
 #+END_SRC
 
 *** markdown
