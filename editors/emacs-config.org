@@ -12,8 +12,8 @@ Chad Stovern: [[mailto:hello@chadstovern.com][hello@chadstovern.com]]
    - [[#package-management][Package management]]
    - [[#package-specific-configuration][Package specific configuration]]
    - [[#user-functions][User functions]]
-   - [[#user-configuration][User configuration]]
-   - [[#key-bindings][Key bindings]]
+   - [[#general-configuration][General configuration]]
+   - [[#general-global-key-bindings][General global key bindings]]
 
 
 ** Package management
@@ -872,7 +872,19 @@ Explain.
   (use-package markdown-mode
     :mode ("\\.md\\'"
            "\\.txt\\'"
-           "\\.taskpaper\\'"))
+           "\\.taskpaper\\'")
+    :config
+    ;;; keybinds on load
+    (evil-leader/set-key-for-mode 'markdown-mode
+      "Mb" 'markdown-insert-bold
+      "Me" 'markdown-insert-italic
+      "Ms" 'markdown-insert-strike-through
+      "Ml" 'markdown-insert-link
+      "Mu" 'markdown-insert-uri
+      "Mi" 'markdown-insert-image
+      "Mh" 'markdown-insert-hr
+      "Mf" 'markdown-insert-footnote
+      "Mp" 'cs-marked-preview-file))
   (use-package json-mode
     :defer t)
   (use-package salt-mode
@@ -880,6 +892,20 @@ Explain.
     :diminish mmm-mode)
   (use-package terraform-mode
     :defer t)
+#+END_SRC
+
+*** emacs-lisp
+
+#+BEGIN_SRC emacs-lisp
+  (use-package emacs-lisp
+    :ensure nil
+    :defer t
+    :init
+    ;;; keybinds pre load
+    (evil-leader/set-key-for-mode 'emacs-lisp-mode
+      "ri" 'ielm)
+    (evil-leader/set-key-for-mode 'lisp-interaction-mode
+      "ri" 'ielm))
 #+END_SRC
 
 *** org-mode
@@ -918,7 +944,8 @@ Explain.
 
     ;;; keybinds pre load
     (evil-leader/set-key-for-mode 'org-mode
-      "es" 'org-edit-special)
+      "es" 'org-edit-special
+      "ri" 'ielm)
     (evil-leader/set-key-for-mode 'emacs-lisp-mode
       "cc" 'org-edit-src-exit
       "cC" 'org-edit-src-abort))
@@ -1006,7 +1033,7 @@ Explain: Electric return functionality
 #+END_SRC
 
 
-** User configuration
+** General configuration
 
 This section is where all general emacs configuration lives.
 
@@ -1233,9 +1260,9 @@ N [*]filename [project] ᚠbranch (modes) Err U: line:col [main] 29%
 #+END_SRC
 
 
-** Key bindings
+** General global key bindings
 
-This section contains global emacs key bindings.  Mode specific key bindings are within each use-package stanza.
+This section contains general global emacs key bindings.  Mode specific key bindings (global and mode local) are within each use-package stanza.
 
 *** emacs settings
 
@@ -1510,58 +1537,6 @@ be explicit about where to enable "electric return", as some modes have their ow
     "fcn" 'flycheck-next-error     ; (f)ly(c)heck (n)ext
     "fcp" 'flycheck-previous-error ; (f)ly(c)heck (p)revious
     "fcl" 'flycheck-list-errors)   ; (f)ly(c)heck (l)ist
-#+END_SRC
-
-*** paredit
-
-#+BEGIN_SRC emacs-lisp
-  ;; see use-package section for paredit above
-#+END_SRC
-
-*** git
-
-#+BEGIN_SRC emacs-lisp
-  ;;; magit
-  ;; see use-package section for magit above
-#+END_SRC
-
-*** clojure / cider
-
-#+BEGIN_SRC emacs-lisp
-  ;; see use-package section for clojure-mode and cider above
-#+END_SRC
-
-*** markdown
-
-#+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key
-    "Mb" 'markdown-insert-bold
-    "Me" 'markdown-insert-italic
-    "Ms" 'markdown-insert-strike-through
-    "Ml" 'markdown-insert-link
-    "Mu" 'markdown-insert-uri
-    "Mi" 'markdown-insert-image
-    "Mh" 'markdown-insert-hr
-    "Mf" 'markdown-insert-footnote
-    "Mp" 'cs-marked-preview-file)
-#+END_SRC
-
-*** org-mode
-
-#+BEGIN_SRC emacs-lisp
-  ;; see use-package section for org-mode above
-#+END_SRC
-
-*** ruby-mode
-
-#+BEGIN_SRC emacs-lisp
-  ;; TODO keybinds for buffer eval
-#+END_SRC
-
-*** python-mode
-
-#+BEGIN_SRC emacs-lisp
-  ;; TODO keybinds for buffer eval
 #+END_SRC
 
 *** report emacs total load time
