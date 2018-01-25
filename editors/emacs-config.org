@@ -166,7 +166,16 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
 
   (use-package evil-surround
     :config
-    (global-evil-surround-mode 1))
+    (global-evil-surround-mode 1)
+    ;; use non-spaced pairs when surrounding with an opening brace
+    (evil-add-to-alist
+     'evil-surround-pairs-alist
+     ?\( '("(" . ")")
+     ?\[ '("[" . "]")
+     ?\{ '("{" . "}")
+     ?\) '("( " . " )")
+     ?\] '("[ " . " ]")
+     ?\} '("{ " . " }")))
 
   (use-package evil-visualstar
     :config
