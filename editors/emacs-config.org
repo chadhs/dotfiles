@@ -601,7 +601,10 @@ Explain.
   (use-package editorconfig
     :diminish "↹"
     :init
-    (add-to-list 'auto-mode-alist '("\\.editorconfig\\'" . editorconfig-conf-mode))
+    (setq auto-mode-alist
+          (cl-union auto-mode-alist
+                    '(("\\.editorconfig\\'" . editorconfig-conf-mode)
+                      ("\\editorconfig\\'"  . editorconfig-conf-mode))))
     :config
     (editorconfig-mode 1))
 #+END_SRC
@@ -776,6 +779,22 @@ shell-script-mode is a built-in mode, but i'm using the use-package stanza for c
     :init
     (setq sh-basic-offset 2
           sh-indentation  2)
+    (setq auto-mode-alist
+          (cl-union auto-mode-alist
+                    '(("\\bash_profile\\'"  . shell-script-mode)
+                      ("\\.bash_profile\\'" . shell-script-mode)
+                      ("\\bashrc\\'"        . shell-script-mode)
+                      ("\\.bashrc\\'"       . shell-script-mode)
+                      ("\\inputrc\\'"       . shell-script-mode)
+                      ("\\.inputrc\\'"      . shell-script-mode)
+                      ("\\profile\\'"       . shell-script-mode)
+                      ("\\.profile\\'"      . shell-script-mode)
+                      ("\\sh_aliases\\'"    . shell-script-mode)
+                      ("\\.sh_aliases\\'"   . shell-script-mode)
+                      ("\\zprofile\\'"      . shell-script-mode)
+                      ("\\.zprofile\\'"     . shell-script-mode)
+                      ("\\zshrc\\'"         . shell-script-mode)
+                      ("\\.zshrc\\'"        . shell-script-mode))))
     (electric-pair-mode 1))
 #+END_SRC
 
@@ -1524,7 +1543,9 @@ be explicit about where to enable "electric return", as some modes have their ow
 *** doc search
 
 #+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key "d" #'dash-at-point)
+  (evil-leader/set-key
+    "ds" #'dash-at-point      ; (d)oc (s)search
+    "dv" #'describe-variable) ; (d)escribe (v)ariable
 #+END_SRC
 
 *** line number toggle
