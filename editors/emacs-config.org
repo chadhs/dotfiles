@@ -7,6 +7,12 @@ If you need some help, send me some electronic mail. \\
 Chad Stovern: [[mailto:hello@chadstovern.com][hello@chadstovern.com]]
 
 
+#+BEGIN_SRC emacs-lisp
+  (setq user-full-name "Chad Stovern"
+        user-mail-address "hello@chadstovern.com")
+#+END_SRC
+
+
 ** Table of contents
 :TOC:
    - [[#package-management][Package management]]
