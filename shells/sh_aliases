@@ -60,6 +60,11 @@ if [[ $(uname) = "Darwin" ]]; then
     alias livereload-chrome="filewatcher '**/*' 'osascript ~/bin/reload-chrome.scpt' &"
     ### vagrant
     alias vssh='vagrant up && vagrant ssh'
+    ### ruby
+    source /usr/local/opt/chruby/share/chruby/chruby.sh
+    source /usr/local/opt/chruby/share/chruby/auto.sh
+    #### set the default system-wide
+    [[ -n $(chruby | grep "2.4") ]] && chruby 2.4
     ### node
     alias npmlist='npm list -g --depth=0 2>/dev/null'
     ### js
