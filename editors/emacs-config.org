@@ -731,7 +731,9 @@ Explain.
     :config
     (setq web-mode-code-indent-offset 2
           web-mode-css-indent-offset 2
-          web-mode-markup-indent-offset 2))
+          web-mode-markup-indent-offset 2)
+    (evil-leader/set-key-for-mode 'web-mode
+      "fh" #'web-beautify-html))
 #+END_SRC
 
 *** stylesheets
@@ -925,6 +927,18 @@ Explain.
     :diminish mmm-mode)
   (use-package terraform-mode
     :defer t)
+  (use-package web-beautify
+    :defer t)
+  (use-package atomic-chrome
+    :defer t
+    :init
+    (evil-leader/set-key
+      "as"  #'atomic-chrome-start-server ; (a)tomic (s)tart
+      "aq"  #'atomic-chrome-stop-server) ; (a)tomic (q)uit
+    :config
+    (setq atomic-chrome-buffer-open-style 'full
+          atomic-chrome-default-major-mode 'markdown-mode
+          atomic-chrome-url-major-mode-alist '(("atlassian\\.net" . web-mode))))
 #+END_SRC
 
 *** emacs-lisp
