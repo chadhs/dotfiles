@@ -244,11 +244,6 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package zoom-window
-    :defer t
-    :init
-    (setq zoom-window-mode-line-color nil))
-
   ;; prevent reloading persp-mode when reloading emacs config
   (use-package perspective
     :if (not (bound-and-true-p persp-mode))
@@ -257,6 +252,11 @@ Explain.
 
   (use-package buffer-move
     :defer t)
+
+  (use-package zoom-window
+    :defer t
+    :init
+    (setq zoom-window-mode-line-color nil))
 #+END_SRC
 
 *** navigation
@@ -421,6 +421,7 @@ Explain.
                       org-mode
                       salt-mode
                       sql-mode
+                      terraform-mode
                       yaml-mode))))
 #+END_SRC
 
@@ -1222,6 +1223,15 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
   (setq indent-tabs-mode nil)
 #+END_SRC
 
+*** show trailing whitespace in buffers
+
+#+BEGIN_SRC emacs-lisp
+  (add-hook 'prog-mode-hook (lambda () (setq show-trailing-whitespace t)))
+  (add-hook 'yaml-mode-hook (lambda () (setq show-trailing-whitespace t)))
+  (add-hook 'org-mode-hook (lambda () (setq show-trailing-whitespace t)))
+  (add-hook 'markdown-mode-hook (lambda () (setq show-trailing-whitespace nil)))
+#+END_SRC
+
 *** remember cursor position in buffers
 
 #+BEGIN_SRC emacs-lisp
@@ -1542,6 +1552,11 @@ be explicit about where to enable "electric return", as some modes have their ow
 
 #+BEGIN_SRC emacs-lisp
   (evil-leader/set-key "/" #'evil-search-highlight-persist-remove-all)
+#+END_SRC
+
+*** delete trailing whitespace
+#+BEGIN_SRC emacs-lisp
+  (evil-leader/set-key "dw" #'delete-trailing-whitespace)
 #+END_SRC
 
 *** commenting
