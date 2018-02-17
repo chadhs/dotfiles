@@ -401,7 +401,12 @@ diff-hl pretty cool.
 
 *** code auto-completion settings
 
-Explain.
+For code completeion I'm using auto-complete despite active development being stopped.  company-mode (complete anything mode) is actively maintained and really nice, but it lacks two things for me.
+
++1. Tab only cycling through completions targets+
+2. doc pop-up that does not rely on pos-tip (which is atrocious on the Mac).
+
+I'm looking forward to #2 being solved so I can merge in my ~emacs-company~ branch and make the switch to company-mode.
 
 #+BEGIN_SRC emacs-lisp
   (use-package auto-complete
