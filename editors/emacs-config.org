@@ -404,25 +404,41 @@ diff-hl pretty cool.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package auto-complete
-    :diminish "⇥"
+  ;;; for company to work for me...
+  ;; give me a list but do no completion yet
+  ;; tab cycles while completing without changing the list
+  ;; doc / help is displayed next to the completion target after a time
+  ;; return does not complete and acts as normal return
+  (use-package company
+    :diminish "→→"
     :config
-    (ac-config-default)
-    (setq ac-disable-faces nil)
-    (define-key ac-completing-map "\t" 'ac-complete) ; set tab key for completion
-    (define-key ac-completing-map "\r" nil)          ; disable return
-    (setq ac-modes
-          (cl-union ac-modes
-                    '(cider-mode
-                      cider-repl-mode
-                      conf-space-mode
-                      html-mode
-                      markdown-mode
-                      org-mode
-                      salt-mode
-                      sql-mode
-                      terraform-mode
-                      yaml-mode))))
+    (global-company-mode)
+    (company-tng-configure-default)
+    ;;(company-quickhelp-mode)
+    )
+
+  ;; (use-package company-quickhelp
+  ;;   :defer t)
+
+  ;; (use-package auto-complete
+  ;;   :diminish "⇥"
+  ;;   :config
+  ;;   (ac-config-default)
+  ;;   (setq ac-disable-faces nil)
+  ;;   (define-key ac-completing-map "\t" 'ac-complete) ; set tab key for completion
+  ;;   (define-key ac-completing-map "\r" nil)          ; disable return
+  ;;   (setq ac-modes
+  ;;         (cl-union ac-modes
+  ;;                   '(cider-mode
+  ;;                     cider-repl-mode
+  ;;                     conf-space-mode
+  ;;                     html-mode
+  ;;                     markdown-mode
+  ;;                     org-mode
+  ;;                     salt-mode
+  ;;                     sql-mode
+  ;;                     terraform-mode
+  ;;                     yaml-mode))))
 #+END_SRC
 
 *** syntax checking
@@ -679,12 +695,13 @@ Explain.
           cider-repl-history-size 3000
           nrepl-hide-special-buffers t)
     (add-hook 'cider-mode-hook (lambda ()
-                                 (ac-flyspell-workaround)
-                                 (ac-cider-setup)
+                                 ;; (ac-flyspell-workaround)
+                                 ;; (ac-cider-setup)
                                  (eldoc-mode)))
     (add-hook 'cider-repl-mode-hook (lambda ()
                                       (paredit-mode)
-                                      (ac-cider-setup)))
+                                      ;; (ac-cider-setup)
+                                      ))
     :config
     (setq cider-mode-line '(:eval (format " [%s]" (cider--modeline-info))))
     (eval-after-load 'flycheck '(flycheck-clojure-setup))
@@ -701,8 +718,8 @@ Explain.
     (bind-key "S-<return>" #'cider-repl-newline-and-indent cider-repl-mode-map)
     (define-key cider-test-report-mode-map (kbd "k") #'previous-line)
     (define-key cider-test-report-mode-map (kbd "j") #'next-line))
-  (use-package ac-cider
-    :defer t)
+  ;; (use-package ac-cider
+  ;;   :defer t)
   (use-package clj-refactor
     :defer t
     :diminish "↻")
@@ -818,7 +835,8 @@ Explain.
     :defer t
     :init
     (add-hook 'ruby-mode-hook 'robe-mode)
-    (add-hook 'robe-mode-hook 'ac-robe-setup))
+    ;; (add-hook 'robe-mode-hook 'ac-robe-setup)
+    )
 #+END_SRC
 
 *** python support
@@ -868,7 +886,8 @@ Explain.
     (eval-after-load 'tern
       '(progn
          (require 'tern-auto-complete)
-         (tern-ac-setup))))
+         ;; (tern-ac-setup)
+         )))
 
   ;; javascript eval and repl
   (use-package indium
