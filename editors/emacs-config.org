@@ -414,11 +414,10 @@ Explain.
     :config
     (global-company-mode)
     (company-tng-configure-default)
-    ;;(company-quickhelp-mode)
-    )
+    (company-quickhelp-mode))
 
-  ;; (use-package company-quickhelp
-  ;;   :defer t)
+  (use-package company-quickhelp
+    :defer t)
 
   ;; (use-package auto-complete
   ;;   :diminish "⇥"
