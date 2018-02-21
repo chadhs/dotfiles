@@ -407,7 +407,7 @@ I am giving up doc popups in some modes by making this move, but am admitting th
 
 #+BEGIN_SRC emacs-lisp
   (use-package company
-    :diminish "→→"
+    :diminish "⇥"
     :config
     (global-company-mode)
     (company-tng-configure-default))
