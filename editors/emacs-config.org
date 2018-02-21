@@ -403,7 +403,7 @@ diff-hl pretty cool.
 
 For code completeion I've moved from auto-complete to company-mode since it is under active development and has great support in many modes.
 
-I am giving up doc popups in some modes by making this move, but am admitting that more often than not I'm not using auto-complete to read docs, and instead will ensure I have a universal keybind that calls a modes doc lookup.
+I am giving up doc popups in some modes by making this move, but am admitting that more often than not I'm not using auto-complete to read docs, and instead will ensure I have a universal keybind that calls a mode's doc lookup.
 
 #+BEGIN_SRC emacs-lisp
   (use-package company
