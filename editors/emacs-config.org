@@ -401,43 +401,16 @@ diff-hl pretty cool.
 
 *** code auto-completion settings
 
-Explain.
+For code completeion I've moved from auto-complete to company-mode since it is under active development and has great support in many modes.
+
+I am giving up doc popups in some modes by making this move, but am admitting that more often than not I'm not using auto-complete to read docs, and instead will ensure I have a universal keybind that calls a modes doc lookup.
 
 #+BEGIN_SRC emacs-lisp
-  ;;; for company to work for me...
-  ;; give me a list but do no completion yet
-  ;; tab cycles while completing without changing the list
-  ;; doc / help is displayed next to the completion target after a time
-  ;; return does not complete and acts as normal return
   (use-package company
     :diminish "→→"
     :config
     (global-company-mode)
-    (company-tng-configure-default)
-    (company-quickhelp-mode))
-
-  (use-package company-quickhelp
-    :defer t)
-
-  ;; (use-package auto-complete
-  ;;   :diminish "⇥"
-  ;;   :config
-  ;;   (ac-config-default)
-  ;;   (setq ac-disable-faces nil)
-  ;;   (define-key ac-completing-map "\t" 'ac-complete) ; set tab key for completion
-  ;;   (define-key ac-completing-map "\r" nil)          ; disable return
-  ;;   (setq ac-modes
-  ;;         (cl-union ac-modes
-  ;;                   '(cider-mode
-  ;;                     cider-repl-mode
-  ;;                     conf-space-mode
-  ;;                     html-mode
-  ;;                     markdown-mode
-  ;;                     org-mode
-  ;;                     salt-mode
-  ;;                     sql-mode
-  ;;                     terraform-mode
-  ;;                     yaml-mode))))
+    (company-tng-configure-default))
 #+END_SRC
 
 *** syntax checking
@@ -675,6 +648,7 @@ Explain.
       "ff"  #'cider-format-defun                  ; (f)ormat (f)orm
       "fr"  #'cider-format-region                 ; (f)ormat (r)egion
       "fb"  #'cider-format-buffer                 ; (f)ormat (b)uffer
+      "ds"  #'cider-doc                           ; (d)oc (s)earch
       ;; add keybindings here to replace cljr-helm (,rf)
       ))
   (use-package clojure-mode-extra-font-locking
@@ -694,13 +668,9 @@ Explain.
           cider-repl-history-size 3000
           nrepl-hide-special-buffers t)
     (add-hook 'cider-mode-hook (lambda ()
-                                 ;; (ac-flyspell-workaround)
-                                 ;; (ac-cider-setup)
                                  (eldoc-mode)))
     (add-hook 'cider-repl-mode-hook (lambda ()
-                                      (paredit-mode)
-                                      ;; (ac-cider-setup)
-                                      ))
+                                      (paredit-mode)))
     :config
     (setq cider-mode-line '(:eval (format " [%s]" (cider--modeline-info))))
     (eval-after-load 'flycheck '(flycheck-clojure-setup))
@@ -717,8 +687,6 @@ Explain.
     (bind-key "S-<return>" #'cider-repl-newline-and-indent cider-repl-mode-map)
     (define-key cider-test-report-mode-map (kbd "k") #'previous-line)
     (define-key cider-test-report-mode-map (kbd "j") #'next-line))
-  ;; (use-package ac-cider
-  ;;   :defer t)
   (use-package clj-refactor
     :defer t
     :diminish "↻")
@@ -834,8 +802,8 @@ Explain.
     :defer t
     :init
     (add-hook 'ruby-mode-hook 'robe-mode)
-    ;; (add-hook 'robe-mode-hook 'ac-robe-setup)
-    )
+    :config
+    (push 'company-robe company-backends))
 #+END_SRC
 
 *** python support
@@ -868,6 +836,7 @@ Explain.
       "eb"  #'indium-eval-buffer           ; (e)val (b)uffer
       "ef"  #'indium-eval-defun            ; (e)val de(f)un
       "es"  #'indium-eval-last-node        ; (e)val (s)-expression
+      "ds"  #'tern-get-docs                ; (d)oc (s)search
       ))
 
   ;; javascript completion
@@ -878,15 +847,10 @@ Explain.
     :config
     (setq tern-command (append tern-command '("--no-port-file"))))
 
-  ;; hook tern into auto-complete rather than using company-mode
-  (use-package tern-auto-complete
-    :defer t
-    :init
-    (eval-after-load 'tern
-      '(progn
-         (require 'tern-auto-complete)
-         ;; (tern-ac-setup)
-         )))
+  (use-package company-tern
+    :hook tern-mode
+    :config
+    (add-to-list 'company-backends 'company-tern))
 
   ;; javascript eval and repl
   (use-package indium
@@ -1595,7 +1559,7 @@ be explicit about where to enable "electric return", as some modes have their ow
 
 #+BEGIN_SRC emacs-lisp
   (evil-leader/set-key
-    "ds" #'dash-at-point      ; (d)oc (s)search
+    "dd" #'dash-at-point      ; (d)ash (d)oc
     "dv" #'describe-variable) ; (d)escribe (v)ariable
 #+END_SRC
 
