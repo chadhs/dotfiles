@@ -1547,6 +1547,11 @@ be explicit about where to enable "electric return", as some modes have their ow
   (evil-leader/set-key "dw" #'delete-trailing-whitespace)
 #+END_SRC
 
+*** toggle truncate-lines
+#+BEGIN_SRC emacs-lisp
+  (evil-leader/set-key "lt" #'toggle-truncate-lines) ; (l)ine truncate (t)oggle
+#+END_SRC
+
 *** commenting
 
 #+BEGIN_SRC emacs-lisp
