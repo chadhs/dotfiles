@@ -420,12 +420,13 @@ Explain.
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
     :defer t
-    :diminish "✓"
+    :diminish flycheck-mode
     :init
     (add-hook 'after-init-hook #'global-flycheck-mode)
     :config
     ;; disable documentation related emacs lisp checker
-    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc clojure-cider-typed)))
+    (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc clojure-cider-typed))
+    (setq flycheck-mode-line-prefix "✔"))
 #+END_SRC
 
 *** paredit
@@ -498,7 +499,10 @@ use ~y%~ for yanking a s-expression
     :diminish "⇉"
     :config
     (global-aggressive-indent-mode 1)
-    (add-to-list 'aggressive-indent-excluded-modes 'html-mode))
+    (setq aggressive-indent-excluded-modes
+          (cl-union aggressive-indent-excluded-modes
+                    '(html-mode
+                      terraform-mode))))
 #+END_SRC
 
 *** rainbow delimiters
@@ -519,12 +523,14 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package column-enforce-mode
-    :defer t
+    :hook (clojure-mode
+           js2-mode
+           shell-script-mode
+           json-mode)
     :diminish column-enforce-mode
     :init
     (setq column-enforce-column 100
-          column-enforce-comments nil)
-    (add-hook 'prog-mode-hook #'column-enforce-mode))
+          column-enforce-comments nil))
 #+END_SRC
 
 *** show end of buffer in editing modes (easily see empty lines)
@@ -1261,7 +1267,7 @@ For built in packages, installed packages use the :diminish keyword via use-pack
 Packages like spaceline are great, but can add a lot of overhead, and also limit you.
 I've set up my own custom modeline that provides a format that looks like this:
 
-N [*]filename [project] ᚠbranch (modes) Err U: line:col [main] 29%
+N [*]filename [project] ᚠbranch (modes) Err U: line:col 29% [main]
 
 #+BEGIN_SRC emacs-lisp
   (setq x-underline-at-descent-line t) ; better modeline underline alignment
@@ -1281,14 +1287,14 @@ N [*]filename [project] ᚠbranch (modes) Err U: line:col [main] 29%
               ;; ((string= evil-mode-line-tag " <O> ") '(:background "#d33682" :foreground "#eee8d5"))
               )))
     "[%*]" mode-line-buffer-identification
-    '(projectile-mode-line projectile-mode-line)
-    '(vc-mode (:eval (concat "ᚠ" (second (split-string vc-mode ":"))))) " "
+    '(projectile-mode-line projectile-mode-line) " "
+    '(vc-mode (:eval (concat "ᚠ" (substring vc-mode 5 nil)))) " "
     mode-line-modes
     '(flycheck-mode-line flycheck-mode-line) " "
     "%Z "
     "%l:%c "
-    '(persp-modestring persp-modestring) " "
-    "%p"))
+    "%p "
+    '(persp-modestring persp-modestring)))
 #+END_SRC
 
 *** open urls in default browser
