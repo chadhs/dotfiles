@@ -372,6 +372,7 @@ magit so awesome.
       "gpp" #'magit-push-current-to-pushremote
       "gt"  #'magit-tag
       "gpt" #'magit-push-tags)
+    (add-hook 'magit-status-mode-hook (lambda () (setq truncate-lines nil)))
     ;; specific within magit-mode
     (evil-leader/set-key-for-mode 'text-mode
       "cc" 'with-editor-finish
