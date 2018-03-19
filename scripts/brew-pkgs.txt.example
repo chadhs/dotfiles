@@ -18,7 +18,7 @@
 #nvm
 #pandoc
 #planck
-#postgresql
+#postgresql@9.6
 #pwgen
 #python@2
 #readline
