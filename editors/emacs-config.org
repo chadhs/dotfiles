@@ -581,16 +581,19 @@ Explain.
     (which-key-mode))
 #+END_SRC
 
-*** ace-jump
+*** jump to text
 
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package ace-jump-mode
+  (use-package avy
     :defer t
     :init
-    ;; no leading word character needed
-    (setq ace-jump-word-mode-use-query-char nil))
+    ;;; keybinds pre load
+    (evil-leader/set-key
+      "jl" #'avy-goto-line
+      "jw" #'avy-goto-word-1
+      "jc" #'avy-goto-char))
 #+END_SRC
 
 *** editorconfig: indentation and whitespace settings
@@ -1550,15 +1553,6 @@ be explicit about where to enable "electric return", as some modes have their ow
               (lambda ()
                 (local-set-key (kbd "RET") #'cs-electrify-return-if-match))))
 
-#+END_SRC
-
-*** jump to line / word
-
-#+BEGIN_SRC emacs-lisp
-  (evil-leader/set-key
-    "jl" #'evil-ace-jump-line-mode
-    "jw" #'evil-ace-jump-word-mode
-    "jc" #'evil-ace-jump-char-mode)
 #+END_SRC
 
 *** remove search highlight
