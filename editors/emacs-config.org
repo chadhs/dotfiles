@@ -563,6 +563,7 @@ Explain.
                     '(cider-mode
                       cider-repl-mode
                       cider-test-report-mode
+                      shell-script-mode
                       sql-mode
                       term-mode
                       web-mode
