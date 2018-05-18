@@ -939,7 +939,9 @@ Explain.
       "Mf" 'markdown-insert-footnote
       "Mp" 'cs-marked-preview-file))
   (use-package json-mode
-    :defer t)
+    :defer t
+    :config
+    (setq js-indent-level 2))
   (use-package salt-mode
     :defer t
     :diminish mmm-mode)
