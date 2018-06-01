@@ -1088,8 +1088,7 @@ Explain: Electric return functionality
 #+BEGIN_SRC emacs-lisp
   (defun cs-open-dired-at-current-dir ()
     (interactive)
-    (let (current-dir (file-name-directory (buffer-file-name (current-buffer))))
-      (dired current-dir)))
+    (dired (file-name-directory (buffer-file-name (current-buffer)))))
 #+END_SRC
 
 *** preview file with marked
