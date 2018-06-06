@@ -247,10 +247,6 @@ Explain.
   ;; prevent reloading persp-mode when reloading emacs config
   (use-package perspective
     :if (not (bound-and-true-p persp-mode))
-    :init
-    ;; temporary fix for emacs 26.x - https://github.com/nex3/perspective-el/issues/64#issuecomment-332010391
-    (when (not (fboundp 'make-variable-frame-local))
-      (defun make-variable-frame-local (variable) variable))
     :config
     (persp-mode))
 
@@ -1328,7 +1324,7 @@ N [*]filename [project] ᚠbranch (modes) Err U: line:col 29% [main]
     "%Z "
     "%l:%c "
     "%p "
-    '(persp-modestring persp-modestring)))
+    '(:eval (persp-mode-line))))
 #+END_SRC
 
 *** open urls in default browser
@@ -1519,7 +1515,7 @@ This section contains general global emacs key bindings.  Mode specific key bind
            (multi-term-dedicated-select))
     "sn" (lambda () (interactive)         ; toggle (s)hell (n)ew
            ;; update buffer name setting dynamically for each perspective
-           (setq-default multi-term-buffer-name (concat "term-" (elt persp-curr 1)))
+           (setq-default multi-term-buffer-name (concat "term-" (persp-name (persp-curr))))
            (multi-term)))
 
   ;;; multi term keybind setup - full vi-mode in zsh within emacs
