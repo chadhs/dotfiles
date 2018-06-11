@@ -31,9 +31,11 @@ mas signin "${appleid}"
 mas install $(echo "${mas_pkgs}") # wrapping echo is for array->string conversion
 
 echo "installing open-source tools..."
+sudo xcodebuild -license accept
 brew install $(echo "${brew_pkgs}") # wrapping echo is for array->string conversion
 
 echo "installing non mac app store apps..."
+export HOMEBREW_CASK_OPTS="--appdir=/Applications"
 brew cask install $(echo "${cask_pkgs}") # wrapping echo is for array->string conversion
 
 echo "seting up dotfiles..."
