@@ -1,1 +1,2 @@
+ZSH_DISABLE_COMPFIX="true"
 source ~/.profile
