@@ -1,6 +1,9 @@
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
 
+## disable startup permissions warnings
+ZSH_DISABLE_COMPFIX="true"
+
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
@@ -53,13 +56,13 @@ HIST_STAMPS="yyyy-mm-dd"
 
 ## mac + emacs plugins
 if [ $(uname) = "Darwin" ] && [ $EMACS ]; then
-    plugins=(bundler git jump vagrant vi-mode virtualenvwrapper)
-## mac plugins
+  plugins=(bundler git jump vagrant vi-mode virtualenvwrapper)
+  ## mac plugins
 elif [ $(uname) = "Darwin" ]; then
-    plugins=(bundler git jump tmux tmuxinator vagrant vi-mode virtualenvwrapper)
+  plugins=(bundler git jump tmux tmuxinator vagrant vi-mode virtualenvwrapper)
 else
-## default plugins
-    plugins=(git tmux vi-mode)
+  ## default plugins
+  plugins=(git tmux vi-mode)
 fi
 
 # User configuration
@@ -133,5 +136,5 @@ source ~/.sh_aliases
 
 ## update settings and load tmux automagically on servers intelligently
 if [ ! $(uname) = "Darwin" ] && [ ! $(id -u) = 0 ]; then
-	case "$-" in *i*) [ -z $TMUX ] && if tmux has; then tmux attach; else tmux new; fi && exit 0; esac;
+  case "$-" in *i*) [ -z $TMUX ] && if tmux has; then tmux attach; else tmux new; fi && exit 0; esac;
 fi
