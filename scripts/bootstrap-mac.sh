@@ -48,5 +48,8 @@ echo "fixing homebrew & homebrew cask permissions"
 sudo chgrp -R admin /usr/local; sudo chmod -R g+w /usr/local
 
 echo "don't forget to fetch any ssh keys you need from your secure vault!"
+echo "don't forget to fetch any gnupg keys you need from your secure vault!"
+echo "don't forget to fetch any aws creds you need from your secure vault!"
+echo "don't forget to migrate your shell,db,lang history files from your backups!"
 
 echo "finished, enjoy your mac!"
