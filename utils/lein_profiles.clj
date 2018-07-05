@@ -4,6 +4,7 @@
         :repl-options {:init (set! *print-length* 100)}}}
 
 ;;; useful plugins not currently in use
+;; lein-pdo
 ;; lein-pprint
 ;; lein-create-template
 ;; nightlight/lein-nightlight

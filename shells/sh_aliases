@@ -45,6 +45,7 @@ if [[ $(uname) = "Darwin" ]]; then
     zshonly alias npm='nocorrect npm'
     zshonly alias sass='nocorrect sass'
     zshonly alias vagrant='nocorrect vagrant'
+    zshonly alias kubectl='nocorrect kubectl'
 
     ### mac development
     ### homebrew
@@ -64,7 +65,7 @@ if [[ $(uname) = "Darwin" ]]; then
     source /usr/local/opt/chruby/share/chruby/chruby.sh
     source /usr/local/opt/chruby/share/chruby/auto.sh
     #### set the default system-wide
-    [[ -n $(chruby | grep "2.4") ]] && chruby 2.4
+    [[ -n $(chruby | grep "2.5") ]] && chruby 2.5
     ### node
     alias npmlist='npm list -g --depth=0 2>/dev/null'
     ### js
