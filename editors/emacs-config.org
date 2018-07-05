@@ -148,6 +148,7 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
     (evil-mode 1)
     ;; set initial evil state for particular modes
     (cl-loop for (mode . state) in '((cider-test-report-mode . emacs)
+                                     (deft-mode              . emacs)
                                      (dired-mode             . normal)
                                      (magit-mode             . normal)
                                      (magit-status-mode      . emacs)
@@ -339,13 +340,28 @@ Explain.
 *** documentation
 
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package deft
-  ;;   :defer t
-  ;;   :init
-  ;;   (defvar --user-home-dir (concat (getenv "HOME") "/"))
-  ;;   (defvar --user-notes-dir (concat --user-home-dir ".deft/"))
-  ;;   (unless (file-exists-p --user-notes-dir)
-  ;;     (make-directory --user-notes-dir t)))
+  (use-package deft
+    :commands (deft)
+    :init
+    ;;; keybinds pre load
+    (evil-leader/set-key
+      "nv" (lambda () (interactive) ; (nv)alt
+             ;; ensure we can filter by typing every time we launch deft
+             (deft)
+             (evil-emacs-state))
+      "nf" #'deft-fild-file) ; (n)valt (f)ind file
+    :config
+    ;;; keybinds on load
+    (evil-leader/set-key-for-mode 'deft-mode
+      "nd" #'deft-delete-file     ; (n)valt (d)elete file
+      "nr" #'deft-rename-file     ; (n)valt (r)ename file
+      "nn" #'deft-new-file-named) ; (n)valt (n)ew file
+    (defvar --user-home-dir (getenv "HOME"))
+    (defvar --user-notes-dir (concat --user-home-dir "/Dropbox/notes"))
+    (setq deft-directory --user-notes-dir
+          deft-extensions '("txt")
+          deft-use-filename-as-title t
+          deft-use-filter-string-for-filename t))
 #+END_SRC
 
 *** version control
@@ -1130,9 +1146,9 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 *** set default starting directory (avoid launching projectile at HOME or src root)
 
 #+BEGIN_SRC emacs-lisp
-  (defvar --user-home-dir (concat (getenv "HOME") "/"))
-  (defvar --user-src-dir (concat --user-home-dir "src/"))
-  (defvar --user-scratch-dir (concat --user-src-dir "scratch/"))
+  (defvar --user-home-dir (getenv "HOME"))
+  (defvar --user-src-dir (concat --user-home-dir "/src"))
+  (defvar --user-scratch-dir (concat --user-src-dir "/scratch"))
   (unless (file-exists-p --user-scratch-dir)
     (make-directory --user-scratch-dir t))
   (when (or (string= default-directory "~/")
