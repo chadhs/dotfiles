@@ -99,6 +99,8 @@ function fix-emacs-pkgs(){
 
 ## when in a shell in emacs, remind yourself not to launch vim there
 [[ $(uname) = "Darwin" ]] && [[ $EMACS ]] && alias vim='echo "Do not run Vim in a shell within Emacs; use Emacs to edit"'
+### hack to be able to update vim using vi command avoiding the message above when in emacs
+[[ $(uname) = "Darwin" ]] && [[ $EMACS ]] && alias vimup='vi +PluginInstall! +qall'
 
 ## man page color and search hilighting
 export PAGER="less"

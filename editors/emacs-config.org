@@ -349,7 +349,7 @@ Explain.
              ;; ensure we can filter by typing every time we launch deft
              (deft)
              (evil-emacs-state))
-      "nf" #'deft-fild-file) ; (n)valt (f)ind file
+      "nf" #'deft-find-file) ; (n)valt (f)ind file
     :config
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'deft-mode

@@ -129,6 +129,7 @@ bindkey -a j history-beginning-search-forward
 unset LSCOLORS 
 
 ## aliases
+disable r
 source ~/.sh_aliases
 
 ## additional user ENVs
