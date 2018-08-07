@@ -977,6 +977,18 @@ Explain.
           atomic-chrome-url-major-mode-alist '(("atlassian\\.net" . web-mode))))
 #+END_SRC
 
+*** rest client
+
+#+BEGIN_SRC emacs-lisp
+  (use-package restclient
+    :defer t
+    :config
+    ;;; keybinds on load
+    (evil-leader/set-key-for-mode 'restclient-mode
+      ;; (e)val (f)unction - aka rest call
+      "ef" #'restclient-http-send-current))
+#+END_SRC
+
 *** emacs-lisp
 
 #+BEGIN_SRC emacs-lisp
