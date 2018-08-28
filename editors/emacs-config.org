@@ -954,6 +954,11 @@ Explain.
       "Mh" 'markdown-insert-hr
       "Mf" 'markdown-insert-footnote
       "Mp" 'cs-marked-preview-file))
+  (use-package typo
+    :defer t
+    :diminish typo-mode
+    :init
+    (add-hook 'markdown-mode-hook 'typo-mode))
   (use-package json-mode
     :defer t
     :config
