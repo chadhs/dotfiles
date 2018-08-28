@@ -6,3 +6,5 @@
 	default = simple
 [color]
 	ui = auto
+[credential]
+	helper = osxkeychain
