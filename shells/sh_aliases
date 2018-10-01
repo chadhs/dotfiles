@@ -33,6 +33,7 @@ if [[ $(uname) = "Darwin" ]]; then
     alias brewdoc='brew update && brew doctor'
     alias brewup='brew update && brew doctor && brew upgrade; brew cleanup; brew prune'
     alias brewforce='brew update && brew doctor; brew upgrade; brew cleanup; brew prune'
+    alias brewfix='brew update-reset'
     #alias caskup='brew cask list | xargs brew cask install; brew cask cleanup'
     alias caskup='brew cu -y --cleanup'
     alias caskall='brew cu -a --cleanup'
