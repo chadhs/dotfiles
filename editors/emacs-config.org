@@ -359,7 +359,8 @@ Explain.
     (defvar --user-home-dir (getenv "HOME"))
     (defvar --user-notes-dir (concat --user-home-dir "/Dropbox/notes"))
     (setq deft-directory --user-notes-dir
-          deft-extensions '("txt")
+          deft-extensions '("txt" "md" "org")
+          deft-default-extension "org"
           deft-use-filename-as-title t
           deft-use-filter-string-for-filename t))
 #+END_SRC
@@ -640,8 +641,14 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
-    :defer t
-    :diminish yas-minor-mode)
+    :commands (yas-minor-mode yas-minor-mode-on)
+    :init
+    (add-hook 'prog-mode-hook #'yas-minor-mode)
+    :config
+    (yas-reload-all))
+
+  (use-package yasnippet-snippets
+    :defer t)
 #+END_SRC
 
 *** clojure support
