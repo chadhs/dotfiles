@@ -889,7 +889,7 @@ Explain.
     (electric-pair-mode 1)
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'js2-mode
-      "ri"  #'indium-connect-to-chrome     ; (r)epl (i)nitialize
+      "ri"  #'indium-connect               ; (r)epl (i)nitialize
       "rb"  #'indium-switch-to-repl-buffer ; (r)epl (b)uffer
       "eb"  #'indium-eval-buffer           ; (e)val (b)uffer
       "ef"  #'indium-eval-defun            ; (e)val de(f)un
