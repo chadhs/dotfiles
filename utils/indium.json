@@ -1,0 +1,8 @@
+{
+  "configurations": [
+    {
+      "name": "javascript",
+      "type": "chrome"
+    }
+  ]
+}

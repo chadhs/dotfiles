@@ -498,9 +498,17 @@ use ~y%~ for yanking a s-expression
     :defer t
     :diminish "⒞"
     :init
-    (add-hook 'prog-mode-hook 'evil-cleverparens-mode)
+    ;; enabled in the following modes
+    (add-hook 'clojure-mode-hook 'evil-cleverparens-mode)
+    (add-hook 'emacs-lisp-mode-hook 'evil-cleverparens-mode)
+    (add-hook 'lisp-mode-hook 'evil-cleverparens-mode)
+    (add-hook 'lisp-interaction-mode-hook 'evil-cleverparens-mode)
     (add-hook 'org-mode-hook 'evil-cleverparens-mode)
+    (add-hook 'web-mode-hook 'evil-cleverparens-mode)
     (add-hook 'yaml-mode-hook 'evil-cleverparens-mode)
+    ;; disabled in the following modes
+    (add-hook 'js2-mode-hook (lambda () (evil-cleverparens-mode -1)))
+    ;;; keybinds pre load
     (evil-leader/set-key "pt" #'evil-cleverparens-mode) ; clever(p)arens (t)oggle
     :config
     ;; prevent evil-cleverparens from setting x and X to delete and splice,

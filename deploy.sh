@@ -85,6 +85,7 @@ symlink_configs(){
   [ ! -e ~/.jshintrc ] && ln -s ~/dotfiles/utils/jshintrc .jshintrc
   [ ! -e ~/.jsbeautifyrc ] && ln -s ~/dotfiles/utils/jsbeautifyrc .jsbeautifyrc
   [ ! -e ~/.tern-config ] && ln -s ~/dotfiles/utils/tern-config .tern-config
+  [ ! -e ~/.indium.json ] && ln -s ~/dotfiles/utils/indium.json .indium.json
 }
 
 
