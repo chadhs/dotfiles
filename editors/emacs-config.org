@@ -197,8 +197,8 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
   (use-package solarized-theme
     :if (display-graphic-p)
     :config
-    (load-theme 'solarized-light t)
-    (load-theme 'solarized-dark t))
+    (load-theme 'solarized-dark t)
+    (load-theme 'solarized-light t))
 
   (use-package ample-theme
     :if (not (display-graphic-p))
@@ -213,8 +213,8 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
     :if (display-graphic-p)
     :init
     (setq cycle-themes-theme-list
-          '(solarized-light
-            solarized-dark))
+          '(solarized-dark
+            solarized-light))
     :config
     (evil-leader/set-key "ct" #'cycle-themes))
 #+END_SRC
@@ -898,6 +898,7 @@ Explain.
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'js2-mode
       "ri"  #'indium-connect               ; (r)epl (i)nitialize
+      "rq"  #'indium-quit                  ; (r)epl (q)uit
       "rb"  #'indium-switch-to-repl-buffer ; (r)epl (b)uffer
       "eb"  #'indium-eval-buffer           ; (e)val (b)uffer
       "ef"  #'indium-eval-defun            ; (e)val de(f)un
