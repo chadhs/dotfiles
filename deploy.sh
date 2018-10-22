@@ -47,9 +47,9 @@ symlink_configs(){
   # mac
   if [ "$system_os" = "macos" ]; then
     [ ! -d ~/.ssh ] && mkdir ~/.ssh
-    [ ! -e ~/.ssh/known_hosts ] || [ $(cat .ssh/known_hosts | wc -l) = 1 ] && ln -sF ~/Dropbox/configs/ssh/known_hosts ~/.ssh/known_hosts
-    [ ! -e ~/.ssh/config ] && ln -s ~/Dropbox/configs/ssh/config ~/.ssh/config
-    [ ! -e ~/.ssh/rc ] && ln -s ~/Dropbox/configs/ssh/rc ~/.ssh/rc
+    [ ! -d ~/.ssh/config.d ] && mkdir ~/.ssh/config.d
+    [ ! -e ~/.ssh/config ] && ln -s ~/dotfiles/utils/ssh_config ~/.ssh/config
+    [ ! -e ~/.ssh/config.d/ssh_config ] && touch ~/.ssh/config.d/ssh_config
     [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig .gitconfig
     [ ! -d ~/.lein ] && mkdir .lein
     [ ! -e ~/.lein/profiles.clj ] && ln -s ~/dotfiles/utils/lein_profiles.clj .lein/profiles.clj

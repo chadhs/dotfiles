@@ -996,6 +996,8 @@ Explain.
     (setq atomic-chrome-buffer-open-style 'full
           atomic-chrome-default-major-mode 'markdown-mode
           atomic-chrome-url-major-mode-alist '(("atlassian\\.net" . web-mode))))
+  (use-package ssh-config-mode
+    :defer t)
 #+END_SRC
 
 *** rest client
