@@ -2,10 +2,6 @@
 
 ## preflight checks
 [ $(dirname "${0}") != "." ] && { echo "please run from within scripts dir, exiting..." ; exit 1; }
-[ ! -r mas-pkgs.txt ] && cp -pv mas-pkgs.txt.example mas-pkgs.txt && edit_pkg_lists="true"
-[ ! -r brew-pkgs.txt ] && cp -pv brew-pkgs.txt.example brew-pkgs.txt && edit_pkg_lists="true"
-[ ! -r cask-pkgs.txt ] && cp -pv cask-pkgs.txt.example cask-pkgs.txt && edit_pkg_lists="true"
-[ "${edit_pkg_lists}" = "true" ] && { echo "*-pkgs.txt files created, please edit and re-run this script, exiting..." ; exit 1; }
 [ ! -r mas-pkgs.txt ] || [ ! -r brew-pkgs.txt ] || [ ! -r cask-pkgs.txt ] && { echo "missing package lists, exiting..." ; exit 1; }
 
 ## read in packages to install
