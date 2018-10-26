@@ -15,7 +15,7 @@ daisydisk
 #dash
 docker
 dropbox
-etcher
+#etcher
 fantastical
 flux
 focusatwill

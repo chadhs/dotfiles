@@ -10,8 +10,8 @@ brew_pkgs="$(grep '^[^#[:blank:]]' brew-pkgs.txt | tr '\n' ' ')"
 cask_pkgs="$(grep '^[^#[:blank:]]' cask-pkgs.txt | tr '\n' ' ')"
 
 ## do it!
-echo "you will be prompted for your appleid and password once install tools are bootstrapped."
-echo "be aware there will also be various password prompts during the install process for some packages."
+#echo "you will be prompted for your appleid and password once install tools are bootstrapped."
+echo "be aware there will be various password prompts during the install process for some packages."
 sleep 3
 
 echo "bootstraping install tools..."
@@ -22,8 +22,8 @@ brew tap caskroom/cask
 brew tap buo/cask-upgrade
 
 echo "installing mac app store apps..."
-read -rp "enter your appleid email address: " appleid
-mas signin "${appleid}"
+#read -rp "enter your appleid email address: " appleid
+#mas signin "${appleid}"
 mas install $(echo "${mas_pkgs}") # wrapping echo is for array->string conversion
 
 echo "installing open-source tools..."
