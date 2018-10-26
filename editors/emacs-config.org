@@ -355,9 +355,10 @@ Explain.
     (evil-leader/set-key-for-mode 'deft-mode
       "nd" #'deft-delete-file     ; (n)valt (d)elete file
       "nr" #'deft-rename-file     ; (n)valt (r)ename file
+      "nR" #'deft-refresh         ; (n)valt (R)efresh
       "nn" #'deft-new-file-named) ; (n)valt (n)ew file
     (defvar --user-home-dir (getenv "HOME"))
-    (defvar --user-notes-dir (concat --user-home-dir "/Dropbox/notes"))
+    (defvar --user-notes-dir (concat --user-home-dir "/tech-notes"))
     (setq deft-directory --user-notes-dir
           deft-extensions '("txt" "md" "org")
           deft-default-extension "org"
@@ -1052,7 +1053,7 @@ Explain.
     ;;; gtd settings
     ;; (setq org-todo-keywords
     ;;       '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELLED")))
-    ;; (setq org-agenda-files '("~/Dropbox/org/"))
+    ;; (setq org-agenda-files '("~/org/"))
     ;; (setq org-agenda-text-search-extra-files '(agenda-archives))
     ;; (setq org-blank-before-new-entry (quote ((heading) (plain-list-item))))
     ;; (setq org-enforce-todo-dependencies t)
@@ -1063,7 +1064,10 @@ Explain.
     ;;; keybinds pre load
     (evil-leader/set-key-for-mode 'org-mode
       "es" 'org-edit-special
-      "ri" 'ielm)
+      "ri" 'ielm
+      "il" 'org-insert-link   ; (i)sert (l)ink
+      "ol" 'org-open-at-point ; (o)pen (l)ink
+      )
     (evil-leader/set-key-for-mode 'emacs-lisp-mode
       "cc" 'org-edit-src-exit
       "cC" 'org-edit-src-abort))
