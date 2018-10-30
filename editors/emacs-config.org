@@ -896,6 +896,7 @@ Explain.
           js2-basic-offset 2
           js-indent-level 2)
     (electric-pair-mode 1)
+    (add-hook 'flycheck-mode-hook #'cs/use-eslint-from-node-modules)
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'js2-mode
       "ri"  #'indium-connect               ; (r)epl (i)nitialize
@@ -1152,6 +1153,22 @@ Explain: Electric return functionality
      (format "open -a 'Marked 2.app' %s"
              (shell-quote-argument (buffer-file-name)))))
 #+END_SRC
+
+*** use localized eslint
+    #+BEGIN_SRC emacs-lisp
+      (defun cs/use-eslint-from-node-modules ()
+        (let* ((root (locate-dominating-file
+                      (or (buffer-file-name) default-directory)
+                      "node_modules"))
+               (eslint (and root
+                            (expand-file-name "node_modules/.bin/eslint"
+                                              root))))
+          (when (and eslint (file-executable-p eslint))
+            (progn
+              (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
+                                                               '(javascript-jshint)))
+              (setq-local flycheck-javascript-eslint-executable eslint)))))
+    #+END_SRC
 
 
 ** General configuration
