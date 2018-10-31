@@ -648,6 +648,20 @@ Explain.
     (editorconfig-mode 1))
 #+END_SRC
 
+*** prevent long line slow-downs
+    #+BEGIN_SRC emacs-lisp
+      (use-package so-long
+        :load-path (lambda () (expand-file-name "lisp" user-emacs-directory))
+        :config
+        (setq so-long-minor-modes
+              (cl-union so-long-minor-modes
+                        '(column-enforce-mode
+                          flycheck-mode
+                          rainbow-delimiters-mode
+                          show-smartparens-mode)))
+        (so-long-enable))
+    #+END_SRC
+
 *** documentation search
 
 #+BEGIN_SRC emacs-lisp
