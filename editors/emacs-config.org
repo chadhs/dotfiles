@@ -529,8 +529,17 @@ use ~y%~ for yanking a s-expression
     (setq aggressive-indent-excluded-modes
           (cl-union aggressive-indent-excluded-modes
                     '(html-mode
+                      pug-mode
                       terraform-mode))))
 #+END_SRC
+
+*** indentation highlighting
+    #+BEGIN_SRC emacs-lisp
+      (use-package highlight-indentation
+        :defer t
+        :hook ((pug-mode . highlight-indentation-mode)
+               (web-mode . highlight-indentation-mode)))
+    #+END_SRC
 
 *** rainbow delimiters
 
@@ -767,11 +776,12 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package web-mode
-    :mode ("\\.html\\'"
+    :mode ("\\.ejs\\'"
+           "\\.html\\'"
            "\\.html\\.erb\\'"
-           "\\.php\\'"
+           "\\.j2\\'"
            "\\.jinja\\'"
-           "\\.j2\\'")
+           "\\.php\\'")
     :init
     ;; fix paren matching web-mode conflict for jinja-like templates
     (add-hook
@@ -786,6 +796,11 @@ Explain.
           web-mode-markup-indent-offset 2)
     (evil-leader/set-key-for-mode 'web-mode
       "fh" #'web-beautify-html))
+
+  (use-package pug-mode
+    :mode ("\\.pug\\'")
+    :config
+    (setq pug-tab-width 4))
 #+END_SRC
 
 *** stylesheets
@@ -976,7 +991,8 @@ Explain.
     :defer t
     :diminish typo-mode
     :init
-    (add-hook 'markdown-mode-hook 'typo-mode))
+    (evil-leader/set-key
+      "ft"  #'typo-mode)) ; (f)ormatting topography (t)oggle
   (use-package json-mode
     :defer t
     :config
