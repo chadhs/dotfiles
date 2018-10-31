@@ -674,6 +674,7 @@ Explain.
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
     :commands (yas-minor-mode yas-minor-mode-on)
+    :diminish yas-minor-mode
     :init
     (add-hook 'prog-mode-hook #'yas-minor-mode)
     :config
@@ -940,6 +941,7 @@ Explain.
   ;; javascript completion
   (use-package tern
     :defer t
+    :diminish tern-mode
     :init
     (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
     :config
@@ -953,6 +955,7 @@ Explain.
   ;; javascript eval and repl
   (use-package indium
     :defer t
+    :diminish indium-interaction-mode
     :init
     (add-hook 'js2-mode-hook (lambda ()
                                (require 'indium)
