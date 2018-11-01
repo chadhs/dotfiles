@@ -535,10 +535,12 @@ use ~y%~ for yanking a s-expression
 
 *** indentation highlighting
     #+BEGIN_SRC emacs-lisp
-      (use-package highlight-indentation
+      (use-package highlight-indent-guides
         :defer t
-        :hook ((pug-mode . highlight-indentation-mode)
-               (web-mode . highlight-indentation-mode)))
+        :hook ((prog-mode . highlight-indent-guides-mode))
+        :config
+        (setq highlight-indent-guides-method 'character
+              highlight-indent-guides-responsive 'top))
     #+END_SRC
 
 *** rainbow delimiters
