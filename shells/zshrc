@@ -126,7 +126,7 @@ bindkey -a j history-beginning-search-forward
 #export TERM=xterm-256color
 
 ## set LSCOLORS to system default
-unset LSCOLORS 
+unset LSCOLORS
 
 ## aliases
 disable r

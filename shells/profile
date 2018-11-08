@@ -1,7 +1,7 @@
 export PATH="$HOME/bin\
 :/usr/local/opt/openssl/bin\
 :/usr/local/opt/curl/bin\
-:/usr/local/opt/node@8/bin\
+:/usr/local/opt/node@10/bin\
 :/usr/local/opt/postgresql@9.6/bin\
 :/usr/local/opt/mysql@5.6/bin\
 :/usr/local/bin\
@@ -28,9 +28,8 @@ if [[ $(uname) = "Darwin" ]]; then
   [[ -n $(chruby | grep "2.5") ]] && chruby 2.5
   ### node
   export NVM_DIR="$HOME/.nvm"
-  #source /usr/local/opt/nvm/nvm.sh
   #### load the nvm script but don't run it; we'll use system node for cli tools like linters
-  source /usr/local/opt/nvm/nvm.sh --no-use
+  [[ -s "/usr/local/opt/nvm/nvm.sh" ]] && source /usr/local/opt/nvm/nvm.sh --no-use
   ### cortex
   # export CUDA_HOME=/usr/local/cuda
   # export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:$CUDA_HOME/lib"

@@ -14,7 +14,7 @@ leiningen
 mit-scheme
 mysql@5.6
 nmap
-node@8
+node@10
 nvm
 pandoc
 postgresql@9.6
@@ -32,5 +32,4 @@ tldr
 tmux
 tree
 wget
-yarn
 zsh
