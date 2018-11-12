@@ -1,0 +1,7 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: iife
+# key: iife
+# --
+(function $1() {
+    $2
+})();

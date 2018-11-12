@@ -80,6 +80,7 @@ symlink_configs(){
   vim +PluginInstall! +qall
   [ ! -d ~/.emacs.d ] && mkdir ~/.emacs.d
   [ ! -d ~/.emacs.d/lisp ] && ln -s ~/dotfiles/editors/emacs.d/lisp ~/.emacs.d/lisp
+  [ ! -d ~/.emacs.d/snippets ] && ln -s ~/dotfiles/editors/emacs.d/snippets ~/.emacs.d/snippets
   [ ! -e ~/.emacs ] && ln -s ~/dotfiles/editors/emacs.el .emacs
   [ ! -e ~/.emacs.d/emacs-config.org ] && ln -s ~/dotfiles/editors/emacs-config.org ~/.emacs.d/emacs-config.org
   [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig
