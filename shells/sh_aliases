@@ -93,6 +93,13 @@ function update-dotfiles(){
     cd $curdir
 }
 
+## update dot files
+function update-tech-notes(){
+    curdir=$(pwd)
+    cd ~/tech-notes && git pull
+    cd $curdir
+}
+
 ## fix emacs packages
 function fix-emacs-pkgs(){
     rm -rf ~/.emacs.d/elpa/*
