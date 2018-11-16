@@ -940,6 +940,8 @@ Explain.
           js2-basic-offset 2
           js-indent-level 2)
     (electric-pair-mode 1)
+    ;;; flycheck settings
+    (setq-local flycheck-check-syntax-automatically '(mode-enabled save))
     (add-hook 'flycheck-mode-hook #'cs/use-eslint-from-node-modules)
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'js2-mode
@@ -1116,7 +1118,8 @@ Explain.
       "il" 'org-insert-link   ; (i)sert (l)ink
       "ol" 'org-open-at-point ; (o)pen (l)ink
       )
-    (evil-leader/set-key-for-mode 'emacs-lisp-mode
+    (evil-leader/set-key
+      ;; set universally and override as needed such as with magit + text-mode
       "cc" 'org-edit-src-exit
       "cC" 'org-edit-src-abort))
 
