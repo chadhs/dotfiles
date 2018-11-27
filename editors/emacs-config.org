@@ -942,7 +942,7 @@ Explain.
     (electric-pair-mode 1)
     ;;; flycheck settings
     (setq-local flycheck-check-syntax-automatically '(mode-enabled save))
-    (add-hook 'flycheck-mode-hook #'cs/use-eslint-from-node-modules)
+    (add-hook 'flycheck-mode-hook #'cs/use-linter-from-package-json)
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'js2-mode
       "ri"  #'indium-connect               ; (r)epl (i)nitialize
@@ -1206,18 +1206,34 @@ Explain: Electric return functionality
 
 *** use localized eslint
     #+BEGIN_SRC emacs-lisp
-      (defun cs/use-eslint-from-node-modules ()
-        (let* ((root (locate-dominating-file
-                      (or (buffer-file-name) default-directory)
-                      "node_modules"))
-               (eslint (and root
-                            (expand-file-name "node_modules/.bin/eslint"
-                                              root))))
-          (when (and eslint (file-executable-p eslint))
-            (progn
-              (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
-                                                               '(javascript-jshint)))
-              (setq-local flycheck-javascript-eslint-executable eslint)))))
+      (defun cs/use-linter-from-package-json ()
+        (let* ((package-root (locate-dominating-file
+                              (or (buffer-file-name) default-directory)
+                              "package.json"))
+               (linter-root (locate-dominating-file
+                             (or (buffer-file-name) default-directory)
+                             "node_modules"))
+               (eslint-bin (and linter-root (expand-file-name "node_modules/.bin/eslint" linter-root)))
+               (standard-bin (and linter-root (expand-file-name "node_modules/.bin/standard" linter-root)))
+               (package-file (and package-root (expand-file-name "package.json" package-root)))
+               (grep-eslint (concat "grep \'\"lint\"\\: \"eslint\' " package-file))
+               (grep-standard (concat "grep \'\"lint\"\\: \"standard\' " package-file))
+               (eslint-p (not (string= "" (shell-command-to-string grep-eslint))))
+               (standard-p (not (string= "" (shell-command-to-string grep-standard)))))
+          (when (and package-file (file-exists-p package-file))
+            (cond
+             ((bound-and-true-p eslint-p)
+              (when (and eslint-bin (file-executable-p eslint-bin))
+                (progn
+                  (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
+                                                                   '(javascript-jshint javascript-standard)))
+                  (setq-local flycheck-javascript-eslint-executable eslint-bin))))
+             ((bound-and-true-p standard-p)
+              (when (and standard-bin (file-executable-p standard-bin))
+                (progn
+                  (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
+                                                                   '(javascript-jshint javascript-eslint)))
+                  (setq-local flycheck-javascript-standard-executable standard-bin))))))))
     #+END_SRC
 
 
