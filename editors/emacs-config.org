@@ -1204,7 +1204,7 @@ Explain: Electric return functionality
              (shell-quote-argument (buffer-file-name)))))
 #+END_SRC
 
-*** use localized eslint
+*** use localized javascript linter
     #+BEGIN_SRC emacs-lisp
       (defun cs/use-linter-from-package-json ()
         (let* ((package-root (locate-dominating-file
