@@ -688,6 +688,7 @@ Explain.
     :diminish yas-minor-mode
     :init
     (add-hook 'prog-mode-hook #'yas-minor-mode)
+    (add-hook 'restclient-mode-hook #'yas-minor-mode)
     :config
     (setq yas-snippet-dirs
           (cl-union yas-snippet-dirs
