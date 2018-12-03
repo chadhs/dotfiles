@@ -1,0 +1,18 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: rest
+# key: rest
+# --
+-*- mode: restclient -*-
+
+:baseurl = http://$1
+
+# get
+POST :baseurl/test
+
+# post
+POST :baseurl/test
+Content-Type: application/json
+{
+  "foo": "bar",
+  "apikey": "baz"
+}
