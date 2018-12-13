@@ -10,7 +10,7 @@ alfred
 #anvil
 appcleaner
 bartender
-caffeine
+#caffeine
 daisydisk
 #dash
 docker
