@@ -1062,7 +1062,7 @@ Explain.
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'restclient-mode
       ;; (e)val (f)unction - aka rest call
-      "ef" #'restclient-http-send-current))
+      "ef" #'restclient-http-send-current-stay-in-window))
 #+END_SRC
 
 *** emacs-lisp
