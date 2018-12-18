@@ -956,6 +956,16 @@ Explain.
       "ds"  #'tern-get-docs                ; (d)oc (s)search
       ))
 
+  (use-package rjsx-mode
+    :mode ("\\.jsx\\'"
+           "components\\/.*\\.js\\'"
+           "templates\\/.*\\.js\\'")
+    :config
+    (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
+                                                     '(javascript-jshint))) ;; jshint doesn't work for JSX
+    ;;; keybinds on load
+    )
+
   ;; javascript completion
   (use-package tern
     :defer t
