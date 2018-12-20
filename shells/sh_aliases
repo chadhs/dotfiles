@@ -75,15 +75,6 @@ if [[ $(uname) = "Darwin" ]]; then
     alias mkset='eval $(minikube docker-env)'
     alias mkunset='eval $(minikube docker-env -u)'
 
-    ### mac blogging
-    function cryogen-publish(){
-      curdir=$(pwd)
-      cd ../public/ || echo "### You must run this from the resources/templates directory of your Cryogen site! ###"
-      git add --all
-      git commit -a -m "site content update" && git push
-      cd $curdir
-    }
-
 fi
 
 ## update dot files
