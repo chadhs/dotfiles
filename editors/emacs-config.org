@@ -858,7 +858,8 @@ Explain.
     :diminish rainbow-mode
     :init
     (add-hook 'css-mode-hook 'rainbow-mode)
-    (add-hook 'scss-mode-hook 'rainbow-mode))
+    (add-hook 'scss-mode-hook 'rainbow-mode)
+    (add-hook 'clojure-mode-hook 'rainbow-mode)) ; for use with garden
 #+END_SRC
 
 *** yaml support
