@@ -1,5 +1,6 @@
 {:user {:plugins [
                   [lein-ancient "0.6.15"]
+                  [lein-pdo     "0.1.1"]
                   ]
         :repl-options {:init (set! *print-length* 100)}}}
 
