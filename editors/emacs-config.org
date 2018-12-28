@@ -424,7 +424,7 @@ For code completeion I've moved from auto-complete to company-mode since it is u
 
 I am giving up doc popups in some modes by making this move, but am admitting that more often than not I'm not using auto-complete to read docs, and instead will ensure I have a universal keybind that calls a mode's doc lookup.
 
-# I'm now experimenting with lsp-mode to add a more standarized approach to adding advanced language completion support.
+I'm now experimenting with lsp-mode to add a more standarized approach to adding advanced language completion support.
 
 #+BEGIN_SRC emacs-lisp
   (use-package company
@@ -433,37 +433,37 @@ I am giving up doc popups in some modes by making this move, but am admitting th
     (global-company-mode)
     (company-tng-configure-default))
 
-  ;; (use-package lsp-mode
-  ;;   :defer t
-  ;;   :diminish lsp-mode
-  ;;   :init
-  ;;   (add-hook 'js2-mode-hook #'lsp)
-  ;;   :config
-  ;;   (setq lsp-auto-configure t
-  ;;         lsp-auto-guess-root t
-  ;;         lsp-prefer-flymake t)
-  ;;   ;;; keybinds after load
-  ;;   (evil-leader/set-key
-  ;;     "jd"  #'lsp-goto-type-definition)) ; (j)ump to (d)efinition
+  (use-package lsp-mode
+    :defer t
+    :diminish lsp-mode
+    ;; :init
+    ;; (add-hook 'js2-mode-hook #'lsp)
+    :config
+    (setq lsp-auto-configure t
+          lsp-auto-guess-root t
+          lsp-prefer-flymake t)
+    ;;; keybinds after load
+    (evil-leader/set-key
+      "jd"  #'lsp-goto-type-definition)) ; (j)ump to (d)efinition
 
-  ;; (use-package company-lsp
-  ;;   :defer t
-  ;;   :config
-  ;;   (setq company-lsp-cache-candidates 'auto
-  ;;         company-lsp-async t
-  ;;         company-lsp-enable-snippet nil))
+  (use-package company-lsp
+    :defer t
+    :config
+    (setq company-lsp-cache-candidates 'auto
+          company-lsp-async t
+          company-lsp-enable-snippet nil))
 
-  ;; (use-package lsp-ui
-  ;;   :defer t
-  ;;   :config
-  ;;   (setq lsp-ui-sideline-enable t
-  ;;         lsp-ui-flycheck-enable t
-  ;;         lsp-ui-sideline-show-symbol nil
-  ;;         lsp-ui-sideline-show-hover nil
-  ;;         lsp-ui-sideline-show-code-actions nil
-  ;;         lsp-ui-peek-enable nil
-  ;;         lsp-ui-imenu-enable nil
-  ;;         lsp-ui-doc-enable nil))
+  (use-package lsp-ui
+    :defer t
+    :config
+    (setq lsp-ui-sideline-enable t
+          lsp-ui-flycheck-enable t
+          lsp-ui-sideline-show-symbol nil
+          lsp-ui-sideline-show-hover nil
+          lsp-ui-sideline-show-code-actions nil
+          lsp-ui-peek-enable nil
+          lsp-ui-imenu-enable nil
+          lsp-ui-doc-enable nil))
 #+END_SRC
 
 *** syntax checking
