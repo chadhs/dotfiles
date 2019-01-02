@@ -483,8 +483,14 @@ Explain.
     (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc clojure-cider-typed))
     (setq flycheck-mode-line-prefix "✔"))
 
+  ;; (use-package flycheck-inline
+  ;;   :defer t
+  ;;   :after (flycheck)
+  ;;   :hook ((flycheck-mode . turn-on-flycheck-inline)))
+
   (use-package flymake
     :ensure nil
+    :defer t
     :diminish flymake-mode)
 #+END_SRC
 
@@ -1003,18 +1009,24 @@ Explain.
                                                      '(javascript-jshint)))) ; jshint doesn't work for JSX
 
   ;; javascript completion
-  (use-package tern
-    :defer t
-    :diminish tern-mode
-    :init
-    (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
-    :config
-    (setq tern-command (append tern-command '("--no-port-file"))))
+  ;; (use-package tern
+  ;;   :defer t
+  ;;   :diminish tern-mode
+  ;;   :init
+  ;;   (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+  ;;   :config
+  ;;   (setq tern-command (append tern-command '("--no-port-file"))))
 
-  (use-package company-tern
-    :hook tern-mode
-    :config
-    (add-to-list 'company-backends 'company-tern))
+  ;; (use-package company-tern
+  ;;   :hook tern-mode
+  ;;   :config
+  ;;   (add-to-list 'company-backends 'company-tern))
+
+  (use-package tide
+    :defer t
+    :after (js2-mode company flycheck)
+    :hook ((js2-mode . tide-setup)
+           (js2-mode . tide-hl-identifier-mode)))
 
   ;; javascript eval and repl
   (use-package indium
