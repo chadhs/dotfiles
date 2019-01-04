@@ -867,9 +867,12 @@ Explain.
                    (lambda (c)
                      (if (char-equal c ?{) t (electric-pair-default-inhibit c))))))
     :config
-    (setq web-mode-code-indent-offset 2
+    (setq css-indent-offset 2
+          web-mode-code-indent-offset 2
           web-mode-css-indent-offset 2
-          web-mode-markup-indent-offset 2)
+          web-mode-markup-indent-offset 2
+          web-mode-attr-indent-offset 2)
+    ;;; keybinds on load
     (evil-leader/set-key-for-mode 'web-mode
       "fh" #'web-beautify-html))
 
@@ -987,6 +990,9 @@ Explain.
           js2-mode-show-strict-warnings nil
           js2-basic-offset 2
           js-indent-level 2)
+    ;; prefer eslint airbnb default as of 2019-01-04
+    (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
+                                                     '(javascript-jshint)))
     (electric-pair-mode 1)
     ;;; flycheck settings
     (add-hook 'flycheck-mode-hook #'cs/use-linter-from-package-json)
@@ -1009,25 +1015,25 @@ Explain.
                                                      '(javascript-jshint)))) ; jshint doesn't work for JSX
 
   ;; javascript completion
-  ;; (use-package tern
-  ;;   :defer t
-  ;;   :diminish tern-mode
-  ;;   :init
-  ;;   (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
-  ;;   :config
-  ;;   (setq tern-command (append tern-command '("--no-port-file"))))
-
-  ;; (use-package company-tern
-  ;;   :hook tern-mode
-  ;;   :config
-  ;;   (add-to-list 'company-backends 'company-tern))
-
-  (use-package tide
+  (use-package tern
     :defer t
-    :diminish tide-mode
-    :after (js2-mode company flycheck)
-    :hook ((js2-mode . tide-setup)
-           (js2-mode . tide-hl-identifier-mode)))
+    :diminish tern-mode
+    :init
+    (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+    :config
+    (setq tern-command (append tern-command '("--no-port-file"))))
+
+  (use-package company-tern
+    :hook tern-mode
+    :config
+    (add-to-list 'company-backends 'company-tern))
+
+  ;; (use-package tide
+  ;;   :defer t
+  ;;   :diminish tide-mode
+  ;;   :after (js2-mode company flycheck)
+  ;;   :hook ((js2-mode . tide-setup)
+  ;;          (js2-mode . tide-hl-identifier-mode)))
 
   ;; javascript eval and repl
   (use-package indium
