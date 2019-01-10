@@ -86,6 +86,8 @@ symlink_configs(){
   [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig
   [ ! -e ~/.editorconfig ] && ln -s ~/dotfiles/editors/editorconfig .editorconfig
   [ ! -e ~/.jshintrc ] && ln -s ~/dotfiles/utils/jshintrc .jshintrc
+  [ ! -e ~/.eslintrc.js ] && ln -s ~/dotfiles/utils/eslintrc.js ~/.eslintrc.js
+  [ ! -e ~/jsconfig.json ] && ln -s ~/dotfiles/utils/jsconfig.json ~/jsconfig.json
   [ ! -e ~/.npmrc ] && ln -s ~/dotfiles/utils/npmrc .npmrc
   [ ! -e ~/.jsbeautifyrc ] && ln -s ~/dotfiles/utils/jsbeautifyrc .jsbeautifyrc
   [ ! -e ~/.tern-config ] && ln -s ~/dotfiles/utils/tern-config .tern-config
