@@ -478,8 +478,10 @@ Explain.
     (add-hook 'after-init-hook #'global-flycheck-mode)
     :config
     ;; disable documentation related emacs lisp checker
-    (setq-default flycheck-check-syntax-automatically '(mode-enabled save idle-change))
-    (setq-default flycheck-idle-change-delay 4)
+    ;; (setq-default flycheck-check-syntax-automatically '(mode-enabled save idle-change))
+    (setq-default flycheck-check-syntax-automatically '(mode-enabled save))
+    ;; (setq-default flycheck-check-syntax-automatically nil)
+    ;; (setq-default flycheck-idle-change-delay 4)
     (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc clojure-cider-typed))
     (setq flycheck-mode-line-prefix "✔"))
 
@@ -990,7 +992,7 @@ Explain.
           js2-mode-show-strict-warnings nil
           js2-basic-offset 2
           js-indent-level 2)
-    ;; prefer eslint airbnb default as of 2019-01-04
+    ;; prefer standard-js as of 2019-01-11
     (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
                                                      '(javascript-jshint)))
     (electric-pair-mode 1)
