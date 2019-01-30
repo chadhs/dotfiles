@@ -13,7 +13,6 @@ deckset
 docker
 dropbox
 fantastical
-flux
 focusatwill
 google-chrome
 gpg-suite
