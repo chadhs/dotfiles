@@ -8,7 +8,6 @@ bash
 chruby
 editorconfig
 git
-#heroku
 kubectl
 leiningen
 mit-scheme
