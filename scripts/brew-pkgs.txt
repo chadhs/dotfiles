@@ -16,7 +16,7 @@ nmap
 node@10
 nvm
 pandoc
-postgresql@10
+postgresql@9.6
 pwgen
 python@2
 readline
