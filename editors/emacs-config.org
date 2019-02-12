@@ -358,10 +358,11 @@ Explain.
       "nR" #'deft-refresh         ; (n)valt (R)efresh
       "nn" #'deft-new-file-named) ; (n)valt (n)ew file
     (defvar --user-home-dir (getenv "HOME"))
-    (defvar --user-notes-dir (concat --user-home-dir "/tech-notes"))
+    (defvar --user-notes-dir (concat --user-home-dir "/notes"))
     (setq deft-directory --user-notes-dir
+          deft-recursive t
           deft-extensions '("txt" "md" "org")
-          deft-default-extension "org"
+          deft-default-extension "txt"
           deft-use-filename-as-title t
           deft-use-filter-string-for-filename t))
 #+END_SRC
@@ -647,22 +648,22 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package emojify
-    :defer t
-    :init
-    (add-hook 'after-init-hook #'global-emojify-mode)
-    :config
-    (setq emojify-inhibit-major-modes
-          (cl-union emojify-inhibit-major-modes
-                    '(cider-mode
-                      cider-repl-mode
-                      cider-test-report-mode
-                      shell-script-mode
-                      sql-mode
-                      term-mode
-                      web-mode
-                      yaml-mode))
-          emojify-prog-contexts "comments"))
+  ;; (use-package emojify
+  ;;   :defer t
+  ;;   :init
+  ;;   (add-hook 'after-init-hook #'global-emojify-mode)
+  ;;   :config
+  ;;   (setq emojify-inhibit-major-modes
+  ;;         (cl-union emojify-inhibit-major-modes
+  ;;                   '(cider-mode
+  ;;                     cider-repl-mode
+  ;;                     cider-test-report-mode
+  ;;                     shell-script-mode
+  ;;                     sql-mode
+  ;;                     term-mode
+  ;;                     web-mode
+  ;;                     yaml-mode))
+  ;;         emojify-prog-contexts "comments"))
 #+END_SRC
 
 *** keybind discovery
@@ -1065,18 +1066,15 @@ Explain.
                 (add-hook 'before-save-hook 'meghanada-code-beautify-before-save))))
 #+END_SRC
 
-*** other syntaxes
-
+*** markdown support
 #+BEGIN_SRC emacs-lisp
-  (use-package dockerfile-mode
-    :mode "Dockerfile\\'")
-  (use-package lua-mode
-    :defer t)
   (use-package markdown-mode
     :mode ("\\.md\\'"
            "\\.txt\\'"
            "\\.taskpaper\\'")
     :config
+    (setq
+     markdown-enable-wiki-links t)
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'markdown-mode
       "Mb" 'markdown-insert-bold
@@ -1087,13 +1085,34 @@ Explain.
       "Mi" 'markdown-insert-image
       "Mh" 'markdown-insert-hr
       "Mf" 'markdown-insert-footnote
-      "Mp" 'cs-marked-preview-file))
+      "Mp" 'cs-marked-preview-file
+      "il" 'markdown-insert-wiki-link          ; (i)sert (l)ink
+      "ol" 'markdown-follow-thing-at-point     ; (o)pen (l)ink
+      "es" 'markdown-edit-code-block)          ; (e)dit (s)pecial
+
+    (evil-leader/set-key
+      ;; set universally and override as needed such as with magit + text-mode
+      "ec" 'edit-indirect-commit
+      "eC" 'edit-indirect-abort))
+
+  (use-package edit-indirect
+    :defer t)
+
   (use-package typo
     :defer t
     :diminish typo-mode
     :init
     (evil-leader/set-key
       "ft"  #'typo-mode)) ; (f)ormatting topography (t)oggle
+#+END_SRC
+
+*** other syntaxes
+
+#+BEGIN_SRC emacs-lisp
+  (use-package dockerfile-mode
+    :mode "Dockerfile\\'")
+  (use-package lua-mode
+    :defer t)
   (use-package json-mode
     :defer t
     :config

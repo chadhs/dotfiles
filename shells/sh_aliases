@@ -87,7 +87,7 @@ function update-dotfiles(){
 ## update dot files
 function update-tech-notes(){
     curdir=$(pwd)
-    cd ~/tech-notes && git pull
+    cd ~/notes/tech-notes && git pull
     cd $curdir
 }
 
