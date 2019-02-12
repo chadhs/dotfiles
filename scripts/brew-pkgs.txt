@@ -6,10 +6,11 @@ aspell
 awscli
 bash
 chruby
+clojure
 editorconfig
 git
 kubectl
-leiningen
+#leiningen
 mit-scheme
 mysql@5.6
 nmap
