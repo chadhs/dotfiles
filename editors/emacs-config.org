@@ -67,6 +67,7 @@ The lastest packages are nice, but sometimes you want to stick with stable relea
           ;; (clj-refactor     . "melpa-stable")
           ;; (flycheck-clojure . "melpa-stable")
           ;; (use-package      . "melpa-stable")
+          (evil-nerd-commenter . "melpa-stable")
           ))
 #+END_SRC
 
