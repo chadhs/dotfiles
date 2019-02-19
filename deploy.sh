@@ -57,6 +57,7 @@ symlink_configs(){
     [ ! -e ~/bin/reload-safari.scpt ] && ln -s ~/dotfiles/utils/reload-safari.scpt ~/bin/reload-safari.scpt
     [ ! -e ~/bin/reload-chrome.scpt ] && ln -s ~/dotfiles/utils/reload-chrome.scpt ~/bin/reload-chrome.scpt
     [ ! -e ~/bin/macos-reset-routing-table.sh ] && ln -s ~/dotfiles/utils/macos-reset-routing-table.sh ~/bin/macos-reset-routing-table.sh
+    [ ! -d ~/iCloud\ Drive ] && [ -d ~/Library/Mobile\ Documents/com~apple~CloudDocs ] && ln -s ~/Library/Mobile\ Documents/com~apple~CloudDocs ~/iCloud\ Drive
   fi
 
 
