@@ -559,6 +559,7 @@ use ~y%~ for yanking a s-expression
     (add-hook 'yaml-mode-hook 'evil-cleverparens-mode)
     ;; disabled in the following modes
     (add-hook 'js2-mode-hook (lambda () (evil-cleverparens-mode -1)))
+    (add-hook 'rjsx-mode-hook (lambda () (evil-cleverparens-mode -1)))
     ;;; keybinds pre load
     (evil-leader/set-key "pt" #'evil-cleverparens-mode) ; clever(p)arens (t)oggle
     :config
@@ -1002,7 +1003,8 @@ Explain.
     (add-hook 'flycheck-mode-hook #'cs/use-linter-from-package-json)
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'js2-mode
-      "ri"  #'indium-connect               ; (r)epl (i)nitialize
+      "ri"  #'indium-launch                ; (r)epl (i)nitialize
+      "rc"  #'indium-connect               ; (r)epl (c)onnect
       "rq"  #'indium-quit                  ; (r)epl (q)uit
       "rb"  #'indium-switch-to-repl-buffer ; (r)epl (b)uffer
       "eb"  #'indium-eval-buffer           ; (e)val (b)uffer
@@ -1016,14 +1018,30 @@ Explain.
            "components\\/.*\\.js\\'")
     :config
     (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
-                                                     '(javascript-jshint)))) ; jshint doesn't work for JSX
+                                                     '(javascript-jshint))) ; jshint doesn't work for JSX
+    (electric-pair-mode 1)
+    ;;; flycheck settings
+    (add-hook 'flycheck-mode-hook #'cs/use-linter-from-package-json)
+    (evil-leader/set-key-for-mode 'rjsx-mode
+      "ri"  #'indium-connect               ; (r)epl (i)nitialize
+      "rq"  #'indium-quit                  ; (r)epl (q)uit
+      "rb"  #'indium-switch-to-repl-buffer ; (r)epl (b)uffer
+      "eb"  #'indium-eval-buffer           ; (e)val (b)uffer
+      "ef"  #'indium-eval-defun            ; (e)val de(f)un
+      "es"  #'indium-eval-last-node        ; (e)val (s)-expression
+      "ds"  #'tern-get-docs                ; (d)oc (s)search
+      ))
+
+  ;; javascript formatting
+  ;; (use-package prettier-js
+  ;;   :defer t
+  ;;   :hook (((js2-mode rjsx-mode) . prettier-js-mode)))
 
   ;; javascript completion
   (use-package tern
     :defer t
     :diminish tern-mode
-    :init
-    (add-hook 'js2-mode-hook (lambda () (tern-mode t)))
+    :hook (((js2-mode rjsx-mode) . tern-mode))
     :config
     (setq tern-command (append tern-command '("--no-port-file"))))
 
@@ -1043,10 +1061,7 @@ Explain.
   (use-package indium
     :defer t
     :diminish indium-interaction-mode
-    :init
-    (add-hook 'js2-mode-hook (lambda ()
-                               (require 'indium)
-                               (indium-interaction-mode)))
+    :hook (((js2-mode rjsx-mode) . indium-interaction-mode))
     :config
     ;;; keybinds on load
     (bind-key "S-<return>" #'newline indium-repl-mode-map)

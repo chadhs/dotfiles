@@ -1,0 +1,12 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: indium-chrome
+# key: indium-chrome
+# --
+{
+  "configurations": [
+    {
+      "name": "chrome",
+      "type": "chrome",
+    }
+  ]
+}
