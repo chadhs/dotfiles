@@ -6,7 +6,7 @@
   "configurations": [
     {
       "name": "chrome",
-      "type": "chrome",
+      "type": "chrome"
     }
   ]
 }
