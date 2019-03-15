@@ -1106,6 +1106,8 @@ Explain.
       "ol" 'markdown-follow-thing-at-point     ; (o)pen (l)ink
       "es" 'markdown-edit-code-block)          ; (e)dit (s)pecial
 
+    (evil-define-key 'normal markdown-mode-map (kbd "TAB") 'markdown-cycle)
+
     (evil-leader/set-key
       ;; set universally and override as needed such as with magit + text-mode
       "ec" 'edit-indirect-commit
