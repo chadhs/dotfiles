@@ -1,0 +1,17 @@
+express-generator
+grunt
+indium
+javascript-typescript-langserver
+js-beautify
+js-yaml
+jsonlint
+less
+nodemon
+npm
+prettier
+prettier-standard
+sass-lint
+slush
+standard
+tern
+yo
