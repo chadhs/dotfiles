@@ -1160,7 +1160,7 @@ Explain.
 
 #+BEGIN_SRC emacs-lisp
   (use-package restclient
-    :mode ("\\.http\\'")
+    :mode (("\\.http\\'" . restclient-mode))
     :config
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'restclient-mode
