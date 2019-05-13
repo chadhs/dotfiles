@@ -1190,8 +1190,12 @@ Explain.
   (use-package org-mode
     :ensure nil
     :defer t
+    :hook ((org-mode . (lambda ()
+                         (require 'ox-md)
+                         (require 'ox-beamer))))
     :init
     (setq org-insert-mode-line-in-empty-file t) ; for .txt file compatability
+    ;; (setq org-descriptive-links nil) ; show the raw text for links with titles
     (setq org-ellipsis "⤵")
     (setq org-startup-truncated nil) ; wrap lines, don't truncate.
     (setq org-src-fontify-natively t)
@@ -1200,29 +1204,12 @@ Explain.
     ;;; exporting
     (setq org-export-with-smart-quotes t)
     (setq org-html-postamble nil)
-    (add-hook 'org-mode-hook
-              (lambda ()
-                (require 'ox-md)
-                (require 'ox-beamer)))
-
-    ;;; gtd settings
-    ;; (setq org-todo-keywords
-    ;;       '((sequence "TODO" "IN-PROGRESS" "WAITING" "|" "DONE" "CANCELLED")))
-    ;; (setq org-agenda-files '("~/org/"))
-    ;; (setq org-agenda-text-search-extra-files '(agenda-archives))
-    ;; (setq org-blank-before-new-entry (quote ((heading) (plain-list-item))))
-    ;; (setq org-enforce-todo-dependencies t)
-    ;; (setq org-log-done (quote time))
-    ;; (setq org-log-redeadline (quote time))
-    ;; (setq org-log-reschedule (quote time))
-
     ;;; keybinds pre load
     (evil-leader/set-key-for-mode 'org-mode
       "es" 'org-edit-special
       "ri" 'ielm
-      "il" 'org-insert-link   ; (i)sert (l)ink
-      "ol" 'org-open-at-point ; (o)pen (l)ink
-      )
+      "il" 'org-insert-link    ; (i)sert (l)ink
+      "ol" 'org-open-at-point) ; (o)pen (l)ink
     (evil-leader/set-key
       ;; set universally and override as needed such as with magit + text-mode
       "cc" 'org-edit-src-exit
