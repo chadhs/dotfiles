@@ -34,6 +34,8 @@ Plugin 'altercation/vim-colors-solarized'
 Plugin 'junegunn/rainbow_parentheses.vim'
 "" markdown
 Plugin 'plasticboy/vim-markdown'
+"" org-mode
+Plugin 'jceb/vim-orgmode'
 "" ansible / yaml
 Plugin 'pearofducks/ansible-vim'
 Plugin 'vim-scripts/yaml.vim'

@@ -10,8 +10,11 @@ nodemon
 npm
 prettier
 prettier-standard
+re-natal
+react-native-cli
 sass-lint
 slush
 standard
 tern
+watchman
 yo

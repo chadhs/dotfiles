@@ -30,6 +30,9 @@ if [[ $(uname) = "Darwin" ]]; then
   export NVM_DIR="$HOME/.nvm"
   #### load the nvm script but don't run it; we'll use system node for cli tools like linters
   [[ -s "/usr/local/opt/nvm/nvm.sh" ]] && source /usr/local/opt/nvm/nvm.sh --no-use
+  ### java
+  export PATH="$HOME/.jenv/bin:$PATH"
+  eval "$(jenv init -)"
   ### cortex
   # export CUDA_HOME=/usr/local/cuda
   # export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:$CUDA_HOME/lib"

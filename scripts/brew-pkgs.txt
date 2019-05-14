@@ -9,6 +9,7 @@ chruby
 clojure
 editorconfig
 git
+jenv
 #leiningen
 mit-scheme
 mysql@5.6
