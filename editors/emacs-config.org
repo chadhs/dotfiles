@@ -1086,7 +1086,6 @@ Explain.
 #+BEGIN_SRC emacs-lisp
   (use-package markdown-mode
     :mode ("\\.md\\'"
-           "\\.txt\\'"
            "\\.taskpaper\\'")
     :config
     (setq
@@ -1189,7 +1188,8 @@ Explain.
 #+BEGIN_SRC emacs-lisp
   (use-package org-mode
     :ensure nil
-    :defer t
+    :mode ("\\.org\\'"
+           "\\.txt\\'")
     :hook ((org-mode . (lambda ()
                          (require 'ox-md)
                          (require 'ox-beamer))))
