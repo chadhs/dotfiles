@@ -362,10 +362,11 @@ Explain.
     (defvar --user-notes-dir (concat --user-home-dir "/notes"))
     (setq deft-directory --user-notes-dir
           deft-recursive t
-          deft-extensions '("txt" "md" "org")
+          deft-extensions '("txt" "org" "md")
           deft-default-extension "txt"
           deft-use-filename-as-title t
-          deft-use-filter-string-for-filename t))
+          deft-use-filter-string-for-filename t
+          deft-auto-save-interval 30.0))
 #+END_SRC
 
 *** version control
