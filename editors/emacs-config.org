@@ -1209,8 +1209,9 @@ Explain.
     (evil-leader/set-key-for-mode 'org-mode
       "es" 'org-edit-special
       "ri" 'ielm
-      "il" 'org-insert-link    ; (i)sert (l)ink
-      "ol" 'org-open-at-point) ; (o)pen (l)ink
+      "il" 'org-insert-link          ; (i)sert (l)ink
+      "ol" 'org-open-at-point        ; (o)pen (l)ink
+      "dl" 'org-toggle-link-display) ; (d)isplay (l)ink toggle
     (evil-leader/set-key
       ;; set universally and override as needed such as with magit + text-mode
       "cc" 'org-edit-src-exit
