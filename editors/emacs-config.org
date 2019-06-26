@@ -1124,6 +1124,14 @@ Explain.
       "ft"  #'typo-mode)) ; (f)ormatting topography (t)oggle
 #+END_SRC
 
+*** elixir support
+    #+BEGIN_SRC emacs-lisp
+      (use-package elixir-mode
+        :defer t)
+      (use-package alchemist
+        :defer t)
+    #+END_SRC
+
 *** other syntaxes
 
 #+BEGIN_SRC emacs-lisp
