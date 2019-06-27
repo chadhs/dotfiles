@@ -1132,6 +1132,25 @@ Explain.
         :defer t)
     #+END_SRC
 
+*** golang support
+    #+BEGIN_SRC emacs-lisp
+      (use-package go-mode
+        :defer t
+        :init
+        (setq gofmt-command "goimports")
+        (add-hook 'before-save-hook 'gofmt-before-save)
+        :config
+        ;;; set hotkeys here
+        ;; godef-jump
+        ;; pop-tag-mark ; jump back
+        )
+      (use-package company-go
+        :defer t
+        :init
+        (with-eval-after-load 'company
+          (add-to-list 'company-backends 'company-go)))
+    #+END_SRC
+
 *** other syntaxes
 
 #+BEGIN_SRC emacs-lisp
