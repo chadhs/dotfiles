@@ -1136,13 +1136,19 @@ Explain.
     #+BEGIN_SRC emacs-lisp
       (use-package go-mode
         :defer t
+        :hook ((go-mode . (lambda ()
+                            (if (not (string-match "go" compile-command))
+                                (set (make-local-variable 'compile-command)
+                                     "go build -v && go test -v && go vet")))))
         :init
         (setq gofmt-command "goimports")
         (add-hook 'before-save-hook 'gofmt-before-save)
         :config
-        ;;; set hotkeys here
-        ;; godef-jump
-        ;; pop-tag-mark ; jump back
+        ;;; hotkeys
+        (evil-leader/set-key-for-mode 'go-mode
+          "CC"  #'compile       ; (C)ompile (C)ode
+          "jd"  #'godef-jump    ; (j)ump to (d)ef
+          "jb"  #'pop-tag-mark) ; (j)ump (b)ack
         )
       (use-package company-go
         :defer t
