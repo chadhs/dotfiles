@@ -16,7 +16,7 @@ focusatwill
 google-chrome
 hazel
 iterm2
-java
+java11
 karabiner-elements
 keyboard-maestro
 launchcontrol
