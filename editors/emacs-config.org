@@ -361,7 +361,7 @@ Explain.
     (defvar --user-home-dir (getenv "HOME"))
     (defvar --user-notes-dir (concat --user-home-dir "/notes"))
     (setq deft-directory --user-notes-dir
-          deft-recursive t
+          ;; deft-recursive t
           deft-extensions '("txt" "org" "md")
           deft-default-extension "txt"
           deft-use-filename-as-title t
