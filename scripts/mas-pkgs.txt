@@ -2,7 +2,6 @@
 
 ## id to app name mappings
 
-## 918858936 Airmail
 ## 937984704 Amphetamine
 ## 931657367 Calcbot
 ## 924726344 Deliveries
@@ -16,7 +15,6 @@
 
 ## include an uncommented list of app ids to install below
 
-918858936
 937984704
 931657367
 924726344
