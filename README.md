@@ -11,3 +11,7 @@ obviously you **want to read** the best part... [emacs-config.org](editors/emacs
 ## more info
 
 for now check out the deploy.sh script and the various files; i promise it's not too exciting. ^_^
+
+### fun options
+
+create a `~/.box-name` to override the host name that is used for display purposes in zsh
