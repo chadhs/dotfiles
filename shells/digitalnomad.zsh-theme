@@ -30,12 +30,12 @@ function virtualenv_info {
 }
 
 ## full path prompt
-#PROMPT="╭%{$fg[green]%}%n%{$reset_color%}%{$FG[239]%}@%{$reset_color%}%{$fg[blue]%}$(box_name)%{$reset_color%} %{$FG[239]%}in%{$reset_color%} %{$terminfo[bold]%}${current_dir}%{$reset_color%}${git_info}
-#╰$(virtualenv_info)${prompt_char}%{$reset_color%} "
+PROMPT="╭%{$fg[green]%}%n%{$reset_color%}%{$FG[239]%}@%{$reset_color%}%{$fg[blue]%}$(box_name)%{$reset_color%} %{$FG[239]%}in%{$reset_color%} %{$terminfo[bold]%}${current_dir}%{$reset_color%}${git_info}
+╰${prompt_char}%{$reset_color%} "
 
 ## relative path prompt
-PROMPT="╭%{$fg[green]%}%n%{$reset_color%}%{$FG[239]%}@%{$reset_color%}%{$fg[blue]%}$(box_name)%{$reset_color%} %{$FG[239]%}in%{$reset_color%} %{$terminfo[bold]%}%c%{$reset_color%}${git_info}
-╰$(virtualenv_info)${prompt_char}%{$reset_color%} "
+#PROMPT="╭%{$fg[green]%}%n%{$reset_color%}%{$FG[239]%}@%{$reset_color%}%{$fg[blue]%}$(box_name)%{$reset_color%} %{$FG[239]%}in%{$reset_color%} %{$terminfo[bold]%}%c%{$reset_color%}${git_info}
+#╰${prompt_char}%{$reset_color%} "
 
 ## prompt colors
 ZSH_THEME_GIT_PROMPT_PREFIX=" %{$FG[239]%}on%{$reset_color%} %{$fg[255]%}"
