@@ -308,6 +308,8 @@ Explain.
     (setq projectile-require-project-root nil)
     ;; use native elisp indexing to ensure ignore enforcement
     (setq projectile-indexing-method 'native)
+    ;; speed up projectile after first project search (especially for elisp native mode)
+    (setq projectile-enable-caching t)
     (setq projectile-globally-ignored-directories
           (cl-union projectile-globally-ignored-directories
                     '(".git"
