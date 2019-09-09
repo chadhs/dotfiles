@@ -302,14 +302,18 @@ Explain.
   (use-package projectile
     :defer t
     :diminish projectile-mode
-    :init
-    (setq projectile-require-project-root nil)
+    ;; :init
     :config
+    ;; allow use of projectile "anywhere"
+    (setq projectile-require-project-root nil)
+    ;; use native elisp indexing to ensure ignore enforcement
+    (setq projectile-indexing-method 'native)
     (setq projectile-globally-ignored-directories
           (cl-union projectile-globally-ignored-directories
                     '(".git"
                       ".cljs_rhino_repl"
                       ".meghanada"
+                      ".shadow-cljs"
                       ".svn"
                       "out"
                       "node_modules"
