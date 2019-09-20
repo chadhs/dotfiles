@@ -988,7 +988,9 @@ Explain.
   (use-package elpy
     :defer t
     :init
-    (add-hook 'python-mode-hook 'elpy-enable))
+    (add-hook 'python-mode-hook 'elpy-enable)
+    :config
+    (setq elpy-rpc-python-command "python3"))
 #+END_SRC
 
 *** javascript support
