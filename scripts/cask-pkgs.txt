@@ -10,7 +10,6 @@ appcleaner
 bartender
 daisydisk
 deckset
-dropbox
 fantastical
 focusatwill
 google-chrome
@@ -22,10 +21,8 @@ keyboard-maestro
 launchcontrol
 marked
 moom
-nvalt
 omnifocus
 slack
-spotify
 textexpander
 the-unarchiver
 tripmode

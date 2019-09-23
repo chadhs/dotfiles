@@ -10,8 +10,6 @@ clojure
 editorconfig
 git
 jenv
-#leiningen
-mit-scheme
 mysql@5.6
 nmap
 node@10
@@ -19,7 +17,6 @@ nvm
 pandoc
 postgresql@9.6
 pwgen
-python@2
 readline
 rlwrap
 ruby-install
