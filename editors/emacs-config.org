@@ -748,6 +748,7 @@ Explain.
     :init
     (add-hook 'prog-mode-hook #'yas-minor-mode)
     (add-hook 'restclient-mode-hook #'yas-minor-mode)
+    (add-hook 'org-mode-hook #'yas-minor-mode)
     :config
     (setq yas-snippet-dirs
           (cl-union yas-snippet-dirs
@@ -1253,7 +1254,8 @@ Explain.
       "ri" 'ielm
       "il" 'org-insert-link          ; (i)sert (l)ink
       "ol" 'org-open-at-point        ; (o)pen (l)ink
-      "dl" 'org-toggle-link-display) ; (d)isplay (l)ink toggle
+      "dl" 'org-toggle-link-display  ; (d)isplay (l)ink toggle
+      "cb" 'org-toggle-checkbox)     ; toggle (c)heck(b)ox
     (evil-leader/set-key
       ;; set universally and override as needed such as with magit + text-mode
       "cc" 'org-edit-src-exit
