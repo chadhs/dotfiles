@@ -1,4 +1,4 @@
-* Emacs Configuration
+#+TITLE: Emacs Configuration
 
 This file bootstraps a complete Emacs environment to my liking. \\
 If you're new to Emacs check out spacemacs: http://spacemacs.org.
