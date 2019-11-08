@@ -774,43 +774,43 @@ Explain.
     :config
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'clojure-mode
-      "ri"  #'cider-jack-in                       ; (r)epl (i)nitialize
-      "rr"  #'cider-restart                       ; (r)epl (r)estart
-      "rq"  #'cider-quit                          ; (r)epl (q)uit
-      "rc"  #'cider-connect                       ; (r)epl (c)onnect
-      "eb"  #'cider-eval-buffer                   ; (e)val (b)uffer
-      "ef"  #'cider-eval-defun-at-point           ; (e)val de(f)un
-      "es"  #'cider-eval-last-sexp                ; (e)val (s)-expression
-      "rtn" #'cider-test-run-ns-tests             ; (r)un (t)ests (n)amespace
-      "rtp" #'cider-test-run-project-tests        ; (r)un (t)ests (p)roject
-      "rtl" #'cider-test-run-loaded-tests         ; (r)un (t)ests (l)oaded namespaces
-      "rtf" #'cider-test-rerun-failed-tests       ; (r)erun (t)ests (f)ailed tests
-      "rta" #'cider-auto-test-mode                ; (r)un (t)ests (a)utomatically
-      "rb"  #'cider-switch-to-repl-buffer         ; (r)epl (b)uffer
-      "ff"  #'cider-format-defun                  ; (f)ormat (f)orm
-      "fr"  #'cider-format-region                 ; (f)ormat (r)egion
-      "fb"  #'cider-format-buffer                 ; (f)ormat (b)uffer
-      "ds"  #'cider-doc                           ; (d)oc (s)earch
+      "ri"  #'cider-jack-in                 ; (r)epl (i)nitialize
+      "rr"  #'cider-restart                 ; (r)epl (r)estart
+      "rq"  #'cider-quit                    ; (r)epl (q)uit
+      "rc"  #'cider-connect                 ; (r)epl (c)onnect
+      "eb"  #'cider-eval-buffer             ; (e)val (b)uffer
+      "ef"  #'cider-eval-defun-at-point     ; (e)val de(f)un
+      "es"  #'cider-eval-last-sexp          ; (e)val (s)-expression
+      "rtn" #'cider-test-run-ns-tests       ; (r)un (t)ests (n)amespace
+      "rtp" #'cider-test-run-project-tests  ; (r)un (t)ests (p)roject
+      "rtl" #'cider-test-run-loaded-tests   ; (r)un (t)ests (l)oaded namespaces
+      "rtf" #'cider-test-rerun-failed-tests ; (r)erun (t)ests (f)ailed tests
+      "rta" #'cider-auto-test-mode          ; (r)un (t)ests (a)utomatically
+      "rb"  #'cider-switch-to-repl-buffer   ; (r)epl (b)uffer
+      "ff"  #'cider-format-defun            ; (f)ormat (f)orm
+      "fr"  #'cider-format-region           ; (f)ormat (r)egion
+      "fb"  #'cider-format-buffer           ; (f)ormat (b)uffer
+      "ds"  #'cider-doc                     ; (d)oc (s)earch
       ;; add keybindings here to replace cljr-helm (,rf)
       )
     (evil-leader/set-key-for-mode 'clojurescript-mode
-      "ri"  #'cider-jack-in-clojurescript         ; (r)epl (i)nitialize
-      "rr"  #'cider-restart                       ; (r)epl (r)estart
-      "rq"  #'cider-quit                          ; (r)epl (q)uit
-      "rc"  #'cider-connect-clojurescript         ; (r)epl (c)onnect
-      "eb"  #'cider-eval-buffer                   ; (e)val (b)uffer
-      "ef"  #'cider-eval-defun-at-point           ; (e)val de(f)un
-      "es"  #'cider-eval-last-sexp                ; (e)val (s)-expression
-      "rtn" #'cider-test-run-ns-tests             ; (r)un (t)ests (n)amespace
-      "rtp" #'cider-test-run-project-tests        ; (r)un (t)ests (p)roject
-      "rtl" #'cider-test-run-loaded-tests         ; (r)un (t)ests (l)oaded namespaces
-      "rtf" #'cider-test-rerun-failed-tests       ; (r)erun (t)ests (f)ailed tests
-      "rta" #'cider-auto-test-mode                ; (r)un (t)ests (a)utomatically
-      "rb"  #'cider-switch-to-repl-buffer         ; (r)epl (b)uffer
-      "ff"  #'cider-format-defun                  ; (f)ormat (f)orm
-      "fr"  #'cider-format-region                 ; (f)ormat (r)egion
-      "fb"  #'cider-format-buffer                 ; (f)ormat (b)uffer
-      "ds"  #'cider-doc                           ; (d)oc (s)earch
+      "ri"  #'cider-jack-in-cljs            ; (r)epl (i)nitialize
+      "rr"  #'cider-restart                 ; (r)epl (r)estart
+      "rq"  #'cider-quit                    ; (r)epl (q)uit
+      "rc"  #'cider-connect-clojurescript   ; (r)epl (c)onnect
+      "eb"  #'cider-eval-buffer             ; (e)val (b)uffer
+      "ef"  #'cider-eval-defun-at-point     ; (e)val de(f)un
+      "es"  #'cider-eval-last-sexp          ; (e)val (s)-expression
+      "rtn" #'cider-test-run-ns-tests       ; (r)un (t)ests (n)amespace
+      "rtp" #'cider-test-run-project-tests  ; (r)un (t)ests (p)roject
+      "rtl" #'cider-test-run-loaded-tests   ; (r)un (t)ests (l)oaded namespaces
+      "rtf" #'cider-test-rerun-failed-tests ; (r)erun (t)ests (f)ailed tests
+      "rta" #'cider-auto-test-mode          ; (r)un (t)ests (a)utomatically
+      "rb"  #'cider-switch-to-repl-buffer   ; (r)epl (b)uffer
+      "ff"  #'cider-format-defun            ; (f)ormat (f)orm
+      "fr"  #'cider-format-region           ; (f)ormat (r)egion
+      "fb"  #'cider-format-buffer           ; (f)ormat (b)uffer
+      "ds"  #'cider-doc                     ; (d)oc (s)earch
       ))
   (use-package clojure-mode-extra-font-locking
     :defer t)
@@ -833,22 +833,22 @@ Explain.
     (add-hook 'cider-repl-mode-hook (lambda ()
                                       (paredit-mode)))
     ;;cljs
-    (setq cider-cljs-lein-repl
-          "(do (require 'figwheel-sidecar.repl-api)
-               (figwheel-sidecar.repl-api/start-figwheel!)
-               (figwheel-sidecar.repl-api/cljs-repl))")
+    ;; (setq cider-cljs-lein-repl
+    ;;       "(do (require 'figwheel-sidecar.repl-api)
+    ;;            (figwheel-sidecar.repl-api/start-figwheel!)
+    ;;            (figwheel-sidecar.repl-api/cljs-repl))")
     :config
     (setq cider-mode-line '(:eval (format " [%s]" (cider--modeline-info))))
     (eval-after-load 'flycheck '(flycheck-clojure-setup))
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'cider-repl-mode
-      "rr"  #'cider-restart                       ; (r)epl (r)estart
-      "rq"  #'cider-quit                          ; (r)epl (q)uit
-      "rl"  #'cider-switch-to-last-clojure-buffer ; (r)epl (l)ast buffer
-      "rn"  #'cider-repl-set-ns                   ; (r)epl set (n)amespace
-      "rp"  #'cider-repl-toggle-pretty-printing   ; (r)epl (p)retty print
-      "rh"  #'cider-repl-history                  ; (r)epl (h)istory
-      "cr" #'cider-repl-clear-buffer              ; (c)lear (r)epl
+      "rr" #'cider-restart                       ; (r)epl (r)estart
+      "rq" #'cider-quit                          ; (r)epl (q)uit
+      "rl" #'cider-switch-to-last-clojure-buffer ; (r)epl (l)ast buffer
+      "rn" #'cider-repl-set-ns                   ; (r)epl set (n)amespace
+      "rp" #'cider-repl-toggle-pretty-printing   ; (r)epl (p)retty print
+      "rh" #'cider-repl-history                  ; (r)epl (h)istory
+      "cr" #'cider-repl-clear-buffer             ; (c)lear (r)epl
       )
     (bind-key "S-<return>" #'cider-repl-newline-and-indent cider-repl-mode-map)
     (define-key cider-test-report-mode-map (kbd "k") #'previous-line)
