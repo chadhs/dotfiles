@@ -1083,14 +1083,14 @@ Explain.
 *** java support
 
 #+BEGIN_SRC emacs-lisp
-  (use-package meghanada
-    :defer t
-    :init
-    (add-hook 'java-mode-hook
-              (lambda ()
-                (meghanada-mode t)
-                (setq c-basic-offset 2)
-                (add-hook 'before-save-hook 'meghanada-code-beautify-before-save))))
+  ;; (use-package meghanada
+  ;;   :defer t
+  ;;   :init
+  ;;   (add-hook 'java-mode-hook
+  ;;             (lambda ()
+  ;;               (meghanada-mode t)
+  ;;               (setq c-basic-offset 2)
+  ;;               (add-hook 'before-save-hook 'meghanada-code-beautify-before-save))))
 #+END_SRC
 
 *** markdown support
