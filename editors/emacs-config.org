@@ -318,6 +318,7 @@ Explain.
                       ".meghanada"
                       ".shadow-cljs"
                       ".svn"
+                      "cljs-runtime"
                       "out"
                       "node_modules"
                       "repl"
