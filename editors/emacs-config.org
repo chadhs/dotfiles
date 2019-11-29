@@ -924,6 +924,13 @@ If you need some help, send me some electronic mail.
            (add-to-list 'company-backends 'company-go)))
      #+END_SRC
 
+*** graphql
+
+    #+BEGIN_SRC emacs-lisp
+      (use-package graphql-mode
+        :defer t)
+    #+END_SRC
+
 *** java
 
      Disabled temporarily to prevent loading accidentally when editing javascript docs.
