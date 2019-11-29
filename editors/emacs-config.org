@@ -15,7 +15,8 @@ If you need some help, send me some electronic mail.
 
    :TOC:
    - [[#package-management][Package management]]
-   - [[#package-specific-configuration][Package specific configuration]]
+   - [[#general-package-configuration][General package configuration]]
+   - [[#language-and-syntax-package-configuration][Language and syntax package configuration]]
    - [[#user-functions][User functions]]
    - [[#general-configuration][General configuration]]
    - [[#general-global-key-bindings][General global key bindings]]
@@ -122,9 +123,9 @@ If you need some help, send me some electronic mail.
     #+END_SRC
 
 
-** Package specific configuration
+** General package configuration
 
-   This section documents all loaded packages and their configuration.
+   This section documents installed packages and their configuration.  Language and syntax specific packages are in the following section.
 
 *** emacs enhancements
 
@@ -762,9 +763,18 @@ If you need some help, send me some electronic mail.
         :defer t)
     #+END_SRC
 
-*** language and syntax specific support
+*** spell checking
 
-**** clojure
+    #+BEGIN_SRC emacs-lisp
+      (setq ispell-program-name "aspell")
+    #+END_SRC
+
+
+** Language and syntax package configuration
+
+   This section documents installed language and syntax specific packages and their configuration.
+
+*** clojure
 
      Explain.
 
@@ -865,142 +875,71 @@ If you need some help, send me some electronic mail.
          :defer t)
      #+END_SRC
 
-**** web templates
-
-     Explain.
+*** elixir
 
      #+BEGIN_SRC emacs-lisp
-       (use-package web-mode
-         :mode ("\\.ejs\\'"
-                "\\.html\\'"
-                "\\.html\\.erb\\'"
-                "\\.j2\\'"
-                "\\.jinja\\'"
-                "\\.php\\'")
-         :init
-         ;; fix paren matching web-mode conflict for jinja-like templates
-         (add-hook
-          'web-mode-hook
-          (lambda ()
-            (setq-local electric-pair-inhibit-predicate
-                        (lambda (c)
-                          (if (char-equal c ?{) t (electric-pair-default-inhibit c))))))
-         :config
-         (setq css-indent-offset 2
-               web-mode-code-indent-offset 2
-               web-mode-css-indent-offset 2
-               web-mode-markup-indent-offset 2
-               web-mode-attr-indent-offset 2)
-         ;;; keybinds on load
-         (evil-leader/set-key-for-mode 'web-mode
-           "fh" #'web-beautify-html))
-
-       (use-package pug-mode
-         :mode ("\\.pug\\'")
-         :config
-         (setq pug-tab-width 4))
+       (use-package elixir-mode
+         :defer t)
+       (use-package alchemist
+         :defer t)
      #+END_SRC
 
-**** stylesheets
+*** emacs-lisp
 
      #+BEGIN_SRC emacs-lisp
-       (use-package css-mode
-         :ensure nil
-         :mode "\\.css\\'"
-         :config
-         (setq css-indent-offset 2)
-         (electric-pair-mode 1))
-
-       (use-package scss-mode
-         :ensure nil
-         :mode ("\\.scss\\'"
-                "\\.sass\\'")
-         :config
-         (setq css-indent-offset 2)
-         (electric-pair-mode 1))
-
-       (use-package rainbow-mode
-         :defer t
-         :diminish rainbow-mode
-         :init
-         (add-hook 'css-mode-hook 'rainbow-mode)
-         (add-hook 'scss-mode-hook 'rainbow-mode)
-         (add-hook 'clojure-mode-hook 'rainbow-mode)) ; for use with garden
-     #+END_SRC
-
-**** yaml
-
-     Explain.
-
-     #+BEGIN_SRC emacs-lisp
-       (use-package yaml-mode
-         :mode "\\.yml\\'"
-         :config
-         (add-to-list 'write-file-functions 'delete-trailing-whitespace))
-     #+END_SRC
-
-**** shell scripting
-
-     shell-script-mode is a built-in mode, but i'm using the use-package stanza for consistency.
-
-     #+BEGIN_SRC emacs-lisp
-       (use-package shell-script-mode
+       (use-package emacs-lisp
          :ensure nil
          :defer t
-         :mode "\\.sh\\'"
          :init
-         (setq sh-basic-offset 2
-               sh-indentation  2)
-         (setq auto-mode-alist
-               (cl-union auto-mode-alist
-                         '(("\\bash_profile\\'"  . shell-script-mode)
-                           ("\\.bash_profile\\'" . shell-script-mode)
-                           ("\\bashrc\\'"        . shell-script-mode)
-                           ("\\.bashrc\\'"       . shell-script-mode)
-                           ("\\inputrc\\'"       . shell-script-mode)
-                           ("\\.inputrc\\'"      . shell-script-mode)
-                           ("\\profile\\'"       . shell-script-mode)
-                           ("\\.profile\\'"      . shell-script-mode)
-                           ("\\sh_aliases\\'"    . shell-script-mode)
-                           ("\\.sh_aliases\\'"   . shell-script-mode)
-                           ("\\zprofile\\'"      . shell-script-mode)
-                           ("\\.zprofile\\'"     . shell-script-mode)
-                           ("\\zshrc\\'"         . shell-script-mode)
-                           ("\\.zshrc\\'"        . shell-script-mode))))
-         (electric-pair-mode 1))
+         ;;; keybinds pre load
+         (evil-leader/set-key-for-mode 'emacs-lisp-mode
+           "ri" 'ielm)
+         (evil-leader/set-key-for-mode 'lisp-interaction-mode
+           "ri" 'ielm))
      #+END_SRC
 
-**** ruby
-
-     Explain.
+*** golang
 
      #+BEGIN_SRC emacs-lisp
-       (use-package inf-ruby
+       (use-package go-mode
          :defer t
+         :hook ((go-mode . (lambda ()
+                             (if (not (string-match "go" compile-command))
+                                 (set (make-local-variable 'compile-command)
+                                      "go build -v && go test -v && go vet")))))
          :init
-         (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode))
-       (use-package robe
-         :defer t
-         :init
-         (add-hook 'ruby-mode-hook 'robe-mode)
+         (setq gofmt-command "goimports")
+         (add-hook 'before-save-hook 'gofmt-before-save)
          :config
-         (push 'company-robe company-backends))
+         ;;; hotkeys
+         (evil-leader/set-key-for-mode 'go-mode
+           "CC"  #'compile       ; (C)ompile (C)ode
+           "jd"  #'godef-jump    ; (j)ump to (d)ef
+           "jb"  #'pop-tag-mark) ; (j)ump (b)ack
+         )
+       (use-package company-go
+         :defer t
+         :init
+         (with-eval-after-load 'company
+           (add-to-list 'company-backends 'company-go)))
      #+END_SRC
 
-**** python
+*** java
 
-     Explain.
+     Disabled temporarily to prevent loading accidentally when editing javascript docs.
 
      #+BEGIN_SRC emacs-lisp
-       (use-package elpy
-         :defer t
-         :init
-         (add-hook 'python-mode-hook 'elpy-enable)
-         :config
-         (setq elpy-rpc-python-command "python3"))
+       ;; (use-package meghanada
+       ;;   :defer t
+       ;;   :init
+       ;;   (add-hook 'java-mode-hook
+       ;;             (lambda ()
+       ;;               (meghanada-mode t)
+       ;;               (setq c-basic-offset 2)
+       ;;               (add-hook 'before-save-hook 'meghanada-code-beautify-before-save))))
      #+END_SRC
 
-**** javascript
+*** javascript
 
      #+BEGIN_SRC emacs-lisp
        ;; a better javascript mode
@@ -1085,22 +1024,7 @@ If you need some help, send me some electronic mail.
            "cr"  #'indium-repl-clear-output)) ; (c)lear (r)epl
      #+END_SRC
 
-**** java
-
-     Disabled temporarily to prevent loading accidentally when editing javascript docs.
-
-     #+BEGIN_SRC emacs-lisp
-       ;; (use-package meghanada
-       ;;   :defer t
-       ;;   :init
-       ;;   (add-hook 'java-mode-hook
-       ;;             (lambda ()
-       ;;               (meghanada-mode t)
-       ;;               (setq c-basic-offset 2)
-       ;;               (add-hook 'before-save-hook 'meghanada-code-beautify-before-save))))
-     #+END_SRC
-
-**** markdown
+*** markdown
 
      #+BEGIN_SRC emacs-lisp
        (use-package markdown-mode
@@ -1142,100 +1066,7 @@ If you need some help, send me some electronic mail.
            "ft"  #'typo-mode)) ; (f)ormatting topography (t)oggle
      #+END_SRC
 
-**** elixir
-
-     #+BEGIN_SRC emacs-lisp
-       (use-package elixir-mode
-         :defer t)
-       (use-package alchemist
-         :defer t)
-     #+END_SRC
-
-**** golang
-
-     #+BEGIN_SRC emacs-lisp
-       (use-package go-mode
-         :defer t
-         :hook ((go-mode . (lambda ()
-                             (if (not (string-match "go" compile-command))
-                                 (set (make-local-variable 'compile-command)
-                                      "go build -v && go test -v && go vet")))))
-         :init
-         (setq gofmt-command "goimports")
-         (add-hook 'before-save-hook 'gofmt-before-save)
-         :config
-         ;;; hotkeys
-         (evil-leader/set-key-for-mode 'go-mode
-           "CC"  #'compile       ; (C)ompile (C)ode
-           "jd"  #'godef-jump    ; (j)ump to (d)ef
-           "jb"  #'pop-tag-mark) ; (j)ump (b)ack
-         )
-       (use-package company-go
-         :defer t
-         :init
-         (with-eval-after-load 'company
-           (add-to-list 'company-backends 'company-go)))
-     #+END_SRC
-
-**** other syntaxes
-
-     #+BEGIN_SRC emacs-lisp
-       (use-package dockerfile-mode
-         :mode "Dockerfile\\'")
-       (use-package lua-mode
-         :defer t)
-       (use-package json-mode
-         :defer t
-         :config
-         (setq js-indent-level 2))
-       (use-package salt-mode
-         :defer t
-         :diminish mmm-mode)
-       (use-package terraform-mode
-         :defer t)
-       (use-package web-beautify
-         :defer t)
-       (use-package atomic-chrome
-         :defer t
-         :init
-         (evil-leader/set-key
-           "as"  #'atomic-chrome-start-server ; (a)tomic (s)tart
-           "aq"  #'atomic-chrome-stop-server) ; (a)tomic (q)uit
-         :config
-         (setq atomic-chrome-buffer-open-style 'full
-               atomic-chrome-default-major-mode 'markdown-mode
-               atomic-chrome-url-major-mode-alist '(("atlassian\\.net" . web-mode))))
-       (use-package ssh-config-mode
-         :defer t)
-     #+END_SRC
-
-**** rest client
-
-     #+BEGIN_SRC emacs-lisp
-       (use-package restclient
-         :mode (("\\.http\\'" . restclient-mode))
-         :config
-         ;;; keybinds on load
-         (evil-leader/set-key-for-mode 'restclient-mode
-           ;; (e)val (f)unction - aka rest call
-           "ef" #'restclient-http-send-current-stay-in-window))
-     #+END_SRC
-
-**** emacs-lisp
-
-     #+BEGIN_SRC emacs-lisp
-       (use-package emacs-lisp
-         :ensure nil
-         :defer t
-         :init
-         ;;; keybinds pre load
-         (evil-leader/set-key-for-mode 'emacs-lisp-mode
-           "ri" 'ielm)
-         (evil-leader/set-key-for-mode 'lisp-interaction-mode
-           "ri" 'ielm))
-     #+END_SRC
-
-**** org-mode
+*** org-mode
 
      Explain.
 
@@ -1281,11 +1112,184 @@ If you need some help, send me some electronic mail.
          (setq org-bullets-bullet-list '("◉" "○" "✸" "◇" "▻")))
      #+END_SRC
 
-*** spell checking
+*** python
 
-    #+BEGIN_SRC emacs-lisp
-      (setq ispell-program-name "aspell")
-    #+END_SRC
+     Explain.
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package elpy
+         :defer t
+         :init
+         (add-hook 'python-mode-hook 'elpy-enable)
+         :config
+         (setq elpy-rpc-python-command "python3"))
+     #+END_SRC
+
+*** rest client
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package restclient
+         :mode (("\\.http\\'" . restclient-mode))
+         :config
+         ;;; keybinds on load
+         (evil-leader/set-key-for-mode 'restclient-mode
+           ;; (e)val (f)unction - aka rest call
+           "ef" #'restclient-http-send-current-stay-in-window))
+     #+END_SRC
+
+*** ruby
+
+     Explain.
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package inf-ruby
+         :defer t
+         :init
+         (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode))
+       (use-package robe
+         :defer t
+         :init
+         (add-hook 'ruby-mode-hook 'robe-mode)
+         :config
+         (push 'company-robe company-backends))
+     #+END_SRC
+
+*** shell scripting
+
+     shell-script-mode is a built-in mode, but i'm using the use-package stanza for consistency.
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package shell-script-mode
+         :ensure nil
+         :defer t
+         :mode "\\.sh\\'"
+         :init
+         (setq sh-basic-offset 2
+               sh-indentation  2)
+         (setq auto-mode-alist
+               (cl-union auto-mode-alist
+                         '(("\\bash_profile\\'"  . shell-script-mode)
+                           ("\\.bash_profile\\'" . shell-script-mode)
+                           ("\\bashrc\\'"        . shell-script-mode)
+                           ("\\.bashrc\\'"       . shell-script-mode)
+                           ("\\inputrc\\'"       . shell-script-mode)
+                           ("\\.inputrc\\'"      . shell-script-mode)
+                           ("\\profile\\'"       . shell-script-mode)
+                           ("\\.profile\\'"      . shell-script-mode)
+                           ("\\sh_aliases\\'"    . shell-script-mode)
+                           ("\\.sh_aliases\\'"   . shell-script-mode)
+                           ("\\zprofile\\'"      . shell-script-mode)
+                           ("\\.zprofile\\'"     . shell-script-mode)
+                           ("\\zshrc\\'"         . shell-script-mode)
+                           ("\\.zshrc\\'"        . shell-script-mode))))
+         (electric-pair-mode 1))
+     #+END_SRC
+
+*** stylesheets
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package css-mode
+         :ensure nil
+         :mode "\\.css\\'"
+         :config
+         (setq css-indent-offset 2)
+         (electric-pair-mode 1))
+
+       (use-package scss-mode
+         :ensure nil
+         :mode ("\\.scss\\'"
+                "\\.sass\\'")
+         :config
+         (setq css-indent-offset 2)
+         (electric-pair-mode 1))
+
+       (use-package rainbow-mode
+         :defer t
+         :diminish rainbow-mode
+         :init
+         (add-hook 'css-mode-hook 'rainbow-mode)
+         (add-hook 'scss-mode-hook 'rainbow-mode)
+         (add-hook 'clojure-mode-hook 'rainbow-mode)) ; for use with garden
+     #+END_SRC
+
+*** web templates
+
+     Explain.
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package web-mode
+         :mode ("\\.ejs\\'"
+                "\\.html\\'"
+                "\\.html\\.erb\\'"
+                "\\.j2\\'"
+                "\\.jinja\\'"
+                "\\.php\\'")
+         :init
+         ;; fix paren matching web-mode conflict for jinja-like templates
+         (add-hook
+          'web-mode-hook
+          (lambda ()
+            (setq-local electric-pair-inhibit-predicate
+                        (lambda (c)
+                          (if (char-equal c ?{) t (electric-pair-default-inhibit c))))))
+         :config
+         (setq css-indent-offset 2
+               web-mode-code-indent-offset 2
+               web-mode-css-indent-offset 2
+               web-mode-markup-indent-offset 2
+               web-mode-attr-indent-offset 2)
+         ;;; keybinds on load
+         (evil-leader/set-key-for-mode 'web-mode
+           "fh" #'web-beautify-html))
+
+       (use-package pug-mode
+         :mode ("\\.pug\\'")
+         :config
+         (setq pug-tab-width 4))
+     #+END_SRC
+
+*** yaml
+
+     Explain.
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package yaml-mode
+         :mode "\\.yml\\'"
+         :config
+         (add-to-list 'write-file-functions 'delete-trailing-whitespace))
+     #+END_SRC
+
+*** other syntaxes
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package dockerfile-mode
+         :mode "Dockerfile\\'")
+       (use-package lua-mode
+         :defer t)
+       (use-package json-mode
+         :defer t
+         :config
+         (setq js-indent-level 2))
+       (use-package salt-mode
+         :defer t
+         :diminish mmm-mode)
+       (use-package terraform-mode
+         :defer t)
+       (use-package web-beautify
+         :defer t)
+       (use-package atomic-chrome
+         :defer t
+         :init
+         (evil-leader/set-key
+           "as"  #'atomic-chrome-start-server ; (a)tomic (s)tart
+           "aq"  #'atomic-chrome-stop-server) ; (a)tomic (q)uit
+         :config
+         (setq atomic-chrome-buffer-open-style 'full
+               atomic-chrome-default-major-mode 'markdown-mode
+               atomic-chrome-url-major-mode-alist '(("atlassian\\.net" . web-mode))))
+       (use-package ssh-config-mode
+         :defer t)
+     #+END_SRC
 
 
 ** User functions
