@@ -42,9 +42,6 @@ sh dotfiles/deploy.sh
 [ -d ~/.virtualenvs ] && rm ~/.virtualenvs/postactivate && ln -s ~/dotfiles/utils/virtualenvwrapper-zsh-hooks/postactivate ~/.virtualenvs/postactivate
 [ -d ~/.virtualenvs ] && rm ~/.virtualenvs/postdeactivate && ln -s ~/dotfiles/utils/virtualenvwrapper-zsh-hooks/postdeactivate ~/.virtualenvs/postdeactivate
 
-echo "fixing homebrew & homebrew cask permissions"
-sudo chgrp -R admin /usr/local; sudo chmod -R g+w /usr/local
-
 echo "don't forget to fetch any ssh keys you need from your secure vault!"
 echo "don't forget to fetch any gnupg keys you need from your secure vault!"
 echo "don't forget to fetch any aws creds you need from your secure vault!"
