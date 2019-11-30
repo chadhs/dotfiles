@@ -2,6 +2,5 @@ ansible
 ansible-lint
 boto
 jmespath
-mysql-python
 netaddr
 virtualenvwrapper
