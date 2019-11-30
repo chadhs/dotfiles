@@ -27,54 +27,28 @@ if [[ $(uname) = "Darwin" ]]; then
     alias vim='mvim -v'
     alias flushdns='dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
     alias restart_en0='sudo ifconfig en0 down && sudo ifconfig en0 up'
-    alias shadowno='defaults write com.apple.screencapture disable-shadow -bool true && killall SystemUIServer'
-    alias shadowyes='defaults delete com.apple.screencapture disable-shadow && killall SystemUIServer'
     alias sortlaunchpad='defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock'
     alias brewdoc='brew update && brew doctor'
     alias brewup='brew update && brew doctor && brew upgrade; brew cleanup'
     alias brewforce='brew update && brew doctor; brew upgrade; brew cleanup'
     alias brewfix='brew update-reset'
-    #alias caskup='brew cask list | xargs brew cask install; brew cask cleanup'
     alias caskup='brew cu -y --cleanup'
     alias caskall='brew cu -a --cleanup'
     alias masup='mas upgrade'
     alias speedtest='speedtest-cli'
-    #alias scheme="rlwrap scheme"
     ### stop correction intrusion
-    zshonly alias chef='nocorrect chef'
-    zshonly alias knife='nocorrect knife'
     zshonly alias npm='nocorrect npm'
     zshonly alias sass='nocorrect sass'
-    zshonly alias vagrant='nocorrect vagrant'
     zshonly alias kubectl='nocorrect kubectl'
 
     ### mac development
-    ### homebrew
-    # export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-    ### static local hosting
-    alias pow-install='curl get.pow.cx | sh'
-    alias pow-remove='curl get.pow.cx/uninstall.sh | sh'
-    alias pow-start='launchctl load -w ~/Library/LaunchAgents/cx.pow.powd.plist'
-    alias pow-stop='launchctl unload ~/Library/LaunchAgents/cx.pow.powd.plist'
-    alias pow-status='launchctl list | grep cx.pow'
     ### browser reloading
     alias livereload-safari="filewatcher '**/*' 'osascript ~/bin/reload-safari.scpt' &"
     alias livereload-chrome="filewatcher '**/*' 'osascript ~/bin/reload-chrome.scpt' &"
-    ### vagrant
-    alias vssh='vagrant up && vagrant ssh'
-    ### ruby
-    source /usr/local/opt/chruby/share/chruby/chruby.sh
-    source /usr/local/opt/chruby/share/chruby/auto.sh
-    #### set the default system-wide
-    [[ -n $(chruby | grep "2.6") ]] && chruby 2.6
     ### node
     alias npmlist='npm list -g --depth=0 2>/dev/null'
     ### js
     alias chromedev='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 &'
-    ### minikube
-    alias mkset='eval $(minikube docker-env)'
-    alias mkunset='eval $(minikube docker-env -u)'
-
 fi
 
 ## update dot files
