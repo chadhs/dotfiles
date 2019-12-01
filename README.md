@@ -12,6 +12,15 @@ obviously you **want to read** the best part... [emacs-config.org](editors/emacs
 
 for now check out the deploy.sh script and the various files; i promise it's not too exciting. ^_^
 
+### lang version philosophy
+
+run the lastest stable version via homebrew as a base version.  if you need a specific version for development use a version manager or docker.
+
+#### current exception
+
+- postgres
+- java
+
 ### fun options
 
 create a `~/.box-name` to override the host name that is used for display purposes in zsh

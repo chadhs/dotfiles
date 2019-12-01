@@ -1,10 +1,10 @@
 export PATH="$HOME/bin\
 :/usr/local/opt/openssl/bin\
 :/usr/local/opt/curl/bin\
-:/usr/local/opt/node@10/bin\
+:/usr/local/opt/python/libexec/bin\
+:/usr/local/opt/ruby/bin\
 :$HOME/go/bin\
-:/usr/local/opt/postgresql@9.6/bin\
-:/usr/local/opt/mysql@5.6/bin\
+:/usr/local/opt/postgresql@11/bin\
 :/Library/TeX/texbin\
 :/usr/local/bin\
 :/usr/local/sbin\
@@ -18,27 +18,8 @@ if [[ $(uname) = "Darwin" ]]; then
   ### python
   export WORKON_HOME=~/.virtualenvs
   export PROJECT_HOME=~/src
-  #### python version management
-  # [[ -n $(command -v pyenv) ]] && eval "$(pyenv init -)" # load pyenv if installed
-  # [[ -n $(command -v pyenv) ]] && alias pyenv='CFLAGS="-I$(brew --prefix openssl)/include" \
-    # 					LDFLAGS="-L$(brew --prefix openssl)/lib" \
-    # 					pyenv'
-  ### ruby
-  source /usr/local/opt/chruby/share/chruby/chruby.sh
-  source /usr/local/opt/chruby/share/chruby/auto.sh
-  #### set the default system-wide
-  [[ -n $(chruby | grep "2.6") ]] && chruby 2.6
   ### node
   export NVM_DIR="$HOME/.nvm"
   #### load the nvm script but don't run it; we'll use system node for cli tools like linters
   [[ -s "/usr/local/opt/nvm/nvm.sh" ]] && source /usr/local/opt/nvm/nvm.sh --no-use
-  ### java
-  export PATH="$HOME/.jenv/bin:$PATH"
-  eval "$(jenv init -)"
-  ### cortex
-  # export CUDA_HOME=/usr/local/cuda
-  # export DYLD_LIBRARY_PATH="$DYLD_LIBRARY_PATH:$CUDA_HOME/lib"
-  # export PATH="$CUDA_HOME/bin:$PATH"
-  ### expo / genymotion
-  # export PATH="/Applications/Genymotion.app/Contents/MacOS/tools:$PATH"
 fi
