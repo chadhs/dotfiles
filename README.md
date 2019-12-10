@@ -14,12 +14,13 @@ for now check out the deploy.sh script and the various files; i promise it's not
 
 ### lang version philosophy
 
-run the lastest stable version via homebrew as a base version.  if you need a specific version for development use a version manager or docker.
+where possible run the lastest stable version via homebrew as a base version.  if you need a specific version for development use a version manager or docker.
 
-#### current exception
+#### current exceptions
 
-- postgres
-- java
+- postgres@11
+- java11
+- node@12
 
 ### fun options
 

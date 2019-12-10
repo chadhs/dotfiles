@@ -9,7 +9,7 @@ clojure
 editorconfig
 git
 nmap
-node
+node@12
 nvm
 pandoc
 postgresql@11
