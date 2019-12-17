@@ -139,3 +139,8 @@ source ~/.sh_aliases
 if [ ! $(uname) = "Darwin" ] && [ ! $(id -u) = 0 ]; then
   case "$-" in *i*) [ -z $TMUX ] && if tmux has; then tmux attach; else tmux new; fi && exit 0; esac;
 fi
+
+## prevent tabtab from mucking with my zshrc
+# tabtab source for serverless package
+# tabtab source for sls package
+# tabtab source for slss package

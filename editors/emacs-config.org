@@ -310,9 +310,9 @@ If you need some help, send me some electronic mail.
         ;; allow use of projectile "anywhere"
         (setq projectile-require-project-root nil)
         ;; use native elisp indexing to ensure ignore enforcement
-        (setq projectile-indexing-method 'native)
+        ;; (setq projectile-indexing-method 'native)
         ;; speed up projectile after first project search (especially for elisp native mode)
-        (setq projectile-enable-caching t)
+        ;; (setq projectile-enable-caching t)
         (setq projectile-globally-ignored-directories
               (cl-union projectile-globally-ignored-directories
                         '(".git"
