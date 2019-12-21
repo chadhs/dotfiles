@@ -354,13 +354,23 @@ If you need some help, send me some electronic mail.
       (use-package deft
         :commands (deft)
         :init
+        ;;; custom setup to support multiple note roots
+        (defvar --user-home-dir (getenv "HOME"))
+        (defvar --user-notes-common-dir (concat --user-home-dir "/notes/common"))
+        (defvar --user-notes-personal-dir (concat --user-home-dir "/notes/personal"))
+        (defvar --user-notes-work-dir (concat --user-home-dir "/notes/work"))
+        (defun cs-setup-deft (notes-dir)
+          ;; ensure we can filter by typing every time we launch deft
+          (setq deft-directory notes-dir)
+          (when (get-buffer "*Deft*") (kill-buffer "*Deft*"))
+          (deft)
+          (evil-emacs-state))
         ;;; keybinds pre load
         (evil-leader/set-key
-          "nv" (lambda () (interactive) ; (nv)alt
-                 ;; ensure we can filter by typing every time we launch deft
-                 (deft)
-                 (evil-emacs-state))
-          "nf" #'deft-find-file) ; (n)valt (f)ind file
+          "nc" (lambda () (interactive) (cs-setup-deft --user-notes-common-dir))
+          "np" (lambda () (interactive) (cs-setup-deft --user-notes-personal-dir))
+          "nw" (lambda () (interactive) (cs-setup-deft --user-notes-work-dir))
+          "nf" #'deft-find-file) ; (n)otes (f)ind file
         :config
         ;;; keybinds on load
         (evil-leader/set-key-for-mode 'deft-mode
@@ -368,15 +378,13 @@ If you need some help, send me some electronic mail.
           "nr" #'deft-rename-file     ; (n)valt (r)ename file
           "nR" #'deft-refresh         ; (n)valt (R)efresh
           "nn" #'deft-new-file-named) ; (n)valt (n)ew file
-        (defvar --user-home-dir (getenv "HOME"))
-        (defvar --user-notes-dir (concat --user-home-dir "/notes"))
-        (setq deft-directory --user-notes-dir
-              ;; deft-recursive t
-              deft-extensions '("txt" "org" "md")
-              deft-default-extension "txt"
-              deft-use-filename-as-title t
-              deft-use-filter-string-for-filename t
-              deft-auto-save-interval 30.0))
+        (setq
+         ;; deft-recursive t
+         deft-extensions '("txt" "org" "md")
+         deft-default-extension "txt"
+         deft-use-filename-as-title t
+         deft-use-filter-string-for-filename t
+         deft-auto-save-interval 30.0))
     #+END_SRC
 
 *** version control
