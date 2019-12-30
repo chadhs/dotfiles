@@ -1724,6 +1724,7 @@ If you need some help, send me some electronic mail.
       ;;; window splitting
       (global-set-key (kbd "C--")  #'evil-window-split)
       (global-set-key (kbd "C-\\") #'evil-window-vsplit)
+      (global-set-key (kbd "C-|")  #'evil-window-vsplit)
       (global-set-key (kbd "C-=")  #'balance-windows)
 
       ;;; resize windows
