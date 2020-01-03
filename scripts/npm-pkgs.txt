@@ -1,6 +1,3 @@
-eslint
-eslint-plugin-import
-eslint-config-airbnb-base
 indium
 javascript-typescript-langserver
 js-beautify
