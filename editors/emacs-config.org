@@ -457,15 +457,17 @@ If you need some help, send me some electronic mail.
       (use-package lsp-mode
         :defer t
         :diminish lsp-mode
-        ;; :init
-        ;; (add-hook 'js2-mode-hook #'lsp)
+        :hook (rjsx-mode . lsp)
+        :commands lsp
         :config
         (setq lsp-auto-configure t
               lsp-auto-guess-root t
-              lsp-prefer-flymake t)
+              ;; don't set flymake or lsp-ui so the default linter doesn't get trampled
+              lsp-prefer-flymake :none)
         ;;; keybinds after load
         (evil-leader/set-key
-          "jd"  #'lsp-goto-type-definition)) ; (j)ump to (d)efinition
+          "jd"  #'lsp-goto-type-definition ; (j)ump to (d)efinition
+          "jb"  #'xref-pop-marker-stack))  ; (j)ump (b)ack to marker
 
       (use-package company-lsp
         :defer t
@@ -478,7 +480,8 @@ If you need some help, send me some electronic mail.
         :defer t
         :config
         (setq lsp-ui-sideline-enable t
-              lsp-ui-flycheck-enable t
+              ;; disable flycheck setup so default linter isn't trampled
+              lsp-ui-flycheck-enable nil
               lsp-ui-sideline-show-symbol nil
               lsp-ui-sideline-show-hover nil
               lsp-ui-sideline-show-code-actions nil
@@ -957,36 +960,16 @@ If you need some help, send me some electronic mail.
 *** javascript
 
      #+BEGIN_SRC emacs-lisp
-       ;; a better javascript mode
-       (use-package js2-mode
-         :mode "\\.js\\'"
+       ;; js2-mode is a better javascript mode
+       ;; rjsx-mode is a layer on top of js2-mode which adds jsx support
+       (use-package rjsx-mode
+         :mode ("\\.js\\'"
+                "\\.jsx\\'")
          :config
          (setq js2-mode-show-parse-errors nil
                js2-mode-show-strict-warnings nil
                js2-basic-offset 2
                js-indent-level 2)
-         ;; prefer standard-js as of 2019-01-11
-         (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
-                                                          '(javascript-jshint)))
-         (electric-pair-mode 1)
-         ;;; flycheck settings
-         (add-hook 'flycheck-mode-hook #'cs/use-linter-from-package-json)
-         ;;; keybinds on load
-         (evil-leader/set-key-for-mode 'js2-mode
-           "ri"  #'indium-launch                ; (r)epl (i)nitialize
-           "rc"  #'indium-connect               ; (r)epl (c)onnect
-           "rq"  #'indium-quit                  ; (r)epl (q)uit
-           "rb"  #'indium-switch-to-repl-buffer ; (r)epl (b)uffer
-           "eb"  #'indium-eval-buffer           ; (e)val (b)uffer
-           "ef"  #'indium-eval-defun            ; (e)val de(f)un
-           "es"  #'indium-eval-last-node        ; (e)val (s)-expression
-           "ds"  #'tern-get-docs                ; (d)oc (s)search
-           ))
-
-       (use-package rjsx-mode
-         :mode ("\\.jsx\\'"
-                "components\\/.*\\.js\\'")
-         :config
          (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
                                                           '(javascript-jshint))) ; jshint doesn't work for JSX
          (electric-pair-mode 1)
@@ -998,34 +981,7 @@ If you need some help, send me some electronic mail.
            "rb"  #'indium-switch-to-repl-buffer ; (r)epl (b)uffer
            "eb"  #'indium-eval-buffer           ; (e)val (b)uffer
            "ef"  #'indium-eval-defun            ; (e)val de(f)un
-           "es"  #'indium-eval-last-node        ; (e)val (s)-expression
-           "ds"  #'tern-get-docs                ; (d)oc (s)search
-           ))
-
-       ;; javascript formatting
-       ;; (use-package prettier-js
-       ;;   :defer t
-       ;;   :hook (((js2-mode rjsx-mode) . prettier-js-mode)))
-
-       ;; javascript completion
-       (use-package tern
-         :defer t
-         :diminish tern-mode
-         :hook (((js2-mode rjsx-mode) . tern-mode))
-         :config
-         (setq tern-command (append tern-command '("--no-port-file"))))
-
-       (use-package company-tern
-         :hook tern-mode
-         :config
-         (add-to-list 'company-backends 'company-tern))
-
-       ;; (use-package tide
-       ;;   :defer t
-       ;;   :diminish tide-mode
-       ;;   :after (js2-mode company flycheck)
-       ;;   :hook ((js2-mode . tide-setup)
-       ;;          (js2-mode . tide-hl-identifier-mode)))
+           "es"  #'indium-eval-last-node))      ; (e)val (s)-expression
 
        ;; javascript eval and repl
        (use-package indium
