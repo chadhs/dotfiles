@@ -5,7 +5,7 @@ js-yaml
 jsonlint
 less
 nodemon
-npm
+#npm
 prettier
 prettier-standard
 re-natal
