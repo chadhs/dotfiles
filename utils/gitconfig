@@ -1,10 +1,41 @@
+## default to asking the user if not configured below
 [user]
-	useconfigonly = true
+    useconfigonly = true
 [core]
-	ignorecase = false
+    ignorecase = false
 [push]
-	default = simple
+    default = simple
 [color]
-	ui = auto
+    ui = auto
 [credential]
-	helper = osxkeychain
+    helper = osxkeychain
+
+# setup user config per account
+## personal
+[includeIf "gitdir:~/src/chadhs"]
+    [user]
+        name = "Chad Stovern"
+        email = "chad@stovern.me"
+    [core]
+        sshCommand = "ssh -i ~/.ssh/chad-mac_rsa"
+## dotfiles
+[includeIf "gitdir:~/dotfiles"]
+    [user]
+        name = "Chad Stovern"
+        email = "chad@stovern.me"
+    [core]
+        sshCommand = "ssh -i ~/.ssh/chad-mac_rsa"
+## techcraft labs
+[includeIf "gitdir:~/src/techcraft-labs"]
+    [user]
+        name = "Chad Stovern"
+        email = "chad@stovern.me"
+    [core]
+        sshCommand = "ssh -i ~/.ssh/chad-mac_rsa"
+## equips
+[includeIf "gitdir:~/src/equips"]
+    [user]
+        name = "Chad Stovern"
+        email = "chad.stovern@equips.com"
+    [core]
+        sshCommand = "ssh -i ~/.ssh/chad-equips-mac_rsa"
