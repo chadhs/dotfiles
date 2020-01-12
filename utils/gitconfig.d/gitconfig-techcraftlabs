@@ -1,0 +1,5 @@
+[user]
+name = "Chad Stovern"
+email = "chad@techcraftlabs.com"
+[core]
+sshCommand = "ssh -i ~/.ssh/chad-mac_rsa"
