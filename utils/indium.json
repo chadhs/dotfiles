@@ -1,7 +1,12 @@
 {
   "configurations": [
     {
-      "name": "javascript",
+      "name": "node",
+      "type": "node",
+      "command": "node"
+    },
+    {
+      "name": "chrome",
       "type": "chrome",
       "url": ""
     }
