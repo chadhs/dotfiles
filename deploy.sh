@@ -88,6 +88,7 @@ symlink_configs(){
   [ ! -e ~/.editorconfig ] && ln -s ~/dotfiles/editors/editorconfig .editorconfig
   [ ! -e ~/.jshintrc ] && ln -s ~/dotfiles/utils/jshintrc .jshintrc
   [ ! -e ~/.eslintrc.js ] && ln -s ~/dotfiles/utils/eslintrc.js ~/.eslintrc.js
+  [ ! -e ~/.prettier.config.js ] && ln -s ~/dotfiles/utils/prettier.config.js ~/.prettier.config.js
   [ ! -e ~/jsconfig.json ] && ln -s ~/dotfiles/utils/jsconfig.json ~/jsconfig.json
   [ ! -e ~/.npmrc ] && ln -s ~/dotfiles/utils/npmrc .npmrc
   [ ! -e ~/.jsbeautifyrc ] && ln -s ~/dotfiles/utils/jsbeautifyrc .jsbeautifyrc
