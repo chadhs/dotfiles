@@ -976,7 +976,8 @@ If you need some help, send me some electronic mail.
          ;;; flycheck settings
          (add-hook 'flycheck-mode-hook #'cs/use-linter-from-package-json)
          (evil-leader/set-key-for-mode 'rjsx-mode
-           "ri"  #'indium-connect               ; (r)epl (i)nitialize
+           "ri"  #'indium-launch                ; (r)epl (i)nitialize
+           "rc"  #'indium-connect               ; (r)epl (c)onnect
            "rq"  #'indium-quit                  ; (r)epl (q)uit
            "rb"  #'indium-switch-to-repl-buffer ; (r)epl (b)uffer
            "eb"  #'indium-eval-buffer           ; (e)val (b)uffer
