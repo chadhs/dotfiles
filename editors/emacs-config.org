@@ -996,10 +996,19 @@ If you need some help, send me some electronic mail.
            "cr"  #'indium-repl-clear-output)) ; (c)lear (r)epl
 
        ;; prettier formatting
-       ;; (use-package prettier-js
-       ;;   :defer t
-       ;;   :diminish prettier-js-mode
-       ;;   :hook ((js2-mode rjsx-mode) . prettier-js-mode))
+       (use-package prettier-js
+         :defer t
+         :diminish prettier-js-mode
+         :init
+         (evil-leader/set-key-for-mode 'rjsx-mode
+           "fp" 'prettier-js-mode) ; (f)ormat (p)rettier
+         :config
+         ;;; taken from global .prettierrc.json
+         (setq prettier-js-args
+               '("--single-quote" "true"
+                 "--print-width" "100"
+                 "--trailing-comma" "all"
+                 "--arrow-parens" "always")))
      #+END_SRC
 
 *** markdown

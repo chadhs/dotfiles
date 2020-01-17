@@ -87,11 +87,10 @@ symlink_configs(){
   [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig
   [ ! -e ~/.editorconfig ] && ln -s ~/dotfiles/editors/editorconfig .editorconfig
   [ ! -e ~/.jshintrc ] && ln -s ~/dotfiles/utils/jshintrc .jshintrc
-  [ ! -e ~/.eslintrc.js ] && ln -s ~/dotfiles/utils/eslintrc.js ~/.eslintrc.js
-  [ ! -e ~/.prettier.config.js ] && ln -s ~/dotfiles/utils/prettier.config.js ~/.prettier.config.js
+  [ ! -e ~/.eslintrc.json ] && ln -s ~/dotfiles/utils/eslintrc.json ~/.eslintrc.json
+  [ ! -e ~/.prettierrc.json ] && ln -s ~/dotfiles/utils/prettierrc.json ~/.prettierrc.json
   [ ! -e ~/jsconfig.json ] && ln -s ~/dotfiles/utils/jsconfig.json ~/jsconfig.json
   [ ! -e ~/.npmrc ] && ln -s ~/dotfiles/utils/npmrc .npmrc
-  [ ! -e ~/.jsbeautifyrc ] && ln -s ~/dotfiles/utils/jsbeautifyrc .jsbeautifyrc
   [ ! -e ~/.tern-config ] && ln -s ~/dotfiles/utils/tern-config .tern-config
   [ ! -e ~/.indium.json ] && ln -s ~/dotfiles/utils/indium.json .indium.json
 }
