@@ -1,6 +1,5 @@
 eslint
 indium
-javascript-typescript-langserver
 js-yaml
 jsonlint
 less
@@ -11,5 +10,6 @@ react-native-cli
 sass-lint
 tern
 typescript
+typescript-language-server
 watchman
 yo

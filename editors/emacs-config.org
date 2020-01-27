@@ -474,7 +474,8 @@ If you need some help, send me some electronic mail.
         :config
         (setq company-lsp-cache-candidates 'auto
               company-lsp-async t
-              company-lsp-enable-snippet nil))
+              company-lsp-enable-snippet nil
+              company-lsp-enable-recompletion t))
 
       (use-package lsp-ui
         :defer t
