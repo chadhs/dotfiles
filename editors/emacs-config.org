@@ -457,7 +457,7 @@ If you need some help, send me some electronic mail.
       (use-package lsp-mode
         :defer t
         :diminish lsp-mode
-        :hook (rjsx-mode . lsp)
+        :hook (((js2-mode rjsx-mode) . lsp))
         :commands lsp
         :config
         (setq lsp-auto-configure t
@@ -958,7 +958,7 @@ If you need some help, send me some electronic mail.
        ;;               (add-hook 'before-save-hook 'meghanada-code-beautify-before-save))))
      #+END_SRC
 
-*** javascript
+*** javascript / typescript
 
      #+BEGIN_SRC emacs-lisp
        ;; js2-mode is a better javascript mode
@@ -983,7 +983,8 @@ If you need some help, send me some electronic mail.
            "rb"  #'indium-switch-to-repl-buffer ; (r)epl (b)uffer
            "eb"  #'indium-eval-buffer           ; (e)val (b)uffer
            "ef"  #'indium-eval-defun            ; (e)val de(f)un
-           "es"  #'indium-eval-last-node))      ; (e)val (s)-expression
+           "es"  #'indium-eval-last-node        ; (e)val (s)-expression
+           "fp" 'prettier-js-mode))             ; (f)ormat (p)rettier
 
        ;; javascript eval and repl
        (use-package indium
@@ -1010,6 +1011,23 @@ If you need some help, send me some electronic mail.
                  "--print-width" "100"
                  "--trailing-comma" "all"
                  "--arrow-parens" "always")))
+
+       ;; typescript
+       (use-package typescript-mode
+         :mode ("\\.ts\\'"
+                "\\.tsx\\'")
+         :config
+         (setq typescript-indent-level 2)
+         (evil-leader/set-key-for-mode 'rjsx-mode
+           "fp" 'prettier-js-mode)) ; (f)ormat (p)rettier
+
+       ;;; tide
+       (use-package tide
+         :defer t
+         :diminish tide-mode
+         :hook (((typescript-mode) . tide-setup))
+         :config
+         (setq tide-format-options '(:indentSize 2 :tabSize 2)))
      #+END_SRC
 
 *** markdown
