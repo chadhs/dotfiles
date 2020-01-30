@@ -502,11 +502,9 @@ If you need some help, send me some electronic mail.
         :init
         (add-hook 'after-init-hook #'global-flycheck-mode)
         :config
-        ;; disable documentation related emacs lisp checker
-        ;; (setq-default flycheck-check-syntax-automatically '(mode-enabled save idle-change))
-        (setq-default flycheck-check-syntax-automatically '(mode-enabled save))
-        ;; (setq-default flycheck-check-syntax-automatically nil)
+        ;; (setq-default flycheck-check-syntax-automatically '(mode-enabled save))
         ;; (setq-default flycheck-idle-change-delay 4)
+        ;; disable documentation related emacs lisp checker
         (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc clojure-cider-typed))
         (setq flycheck-mode-line-prefix "✔"))
 
@@ -1378,7 +1376,6 @@ If you need some help, send me some electronic mail.
                (eslint-bin (and linter-root (expand-file-name "node_modules/.bin/eslint" linter-root)))
                (standard-bin (and linter-root (expand-file-name "node_modules/.bin/standard" linter-root)))
                (package-file (and package-root (expand-file-name "package.json" package-root)))
-               ;; (grep-eslint (concat "grep \'\"lint\"\\: \"eslint\' " package-file))
                (grep-eslint (concat "grep eslint " package-file))
                (grep-standard (concat "grep \'\"lint\"\\: \"standard\' " package-file))
                (eslint-p (not (string= "" (shell-command-to-string grep-eslint))))
