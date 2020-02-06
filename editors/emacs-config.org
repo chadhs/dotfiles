@@ -502,8 +502,7 @@ If you need some help, send me some electronic mail.
         :init
         (add-hook 'after-init-hook #'global-flycheck-mode)
         :config
-        (setq-default flycheck-check-syntax-automatically '(save idle-change mode-enabled))
-        (setq-default flycheck-idle-change-delay 4)
+        (setq-default flycheck-check-syntax-automatically '(save))
         ;; disable documentation related emacs lisp checker
         (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc clojure-cider-typed))
         (setq flycheck-mode-line-prefix "✔"))
