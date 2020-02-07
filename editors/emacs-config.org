@@ -1024,6 +1024,10 @@ If you need some help, send me some electronic mail.
          :diminish tide-mode
          :hook (((typescript-mode) . tide-setup))
          :config
+         (evil-leader/set-key-for-mode 'tide-mode
+           "jd"  #'tide-jump-to-definition ; (j)ump to (d)ef
+           "jb"  #'tide-jump-back          ; (j)ump (b)ack
+           "fp" 'prettier-js-mode)         ; (f)ormat (p)rettier
          (setq tide-format-options '(:indentSize 2 :tabSize 2)))
      #+END_SRC
 
