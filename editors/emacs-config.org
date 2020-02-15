@@ -673,22 +673,22 @@ If you need some help, send me some electronic mail.
     I've disabled this due to the massive performance degradation I experienced.
 
     #+BEGIN_SRC emacs-lisp
-      ;; (use-package emojify
-      ;;   :defer t
-      ;;   :init
-      ;;   (add-hook 'after-init-hook #'global-emojify-mode)
-      ;;   :config
-      ;;   (setq emojify-inhibit-major-modes
-      ;;         (cl-union emojify-inhibit-major-modes
-      ;;                   '(cider-mode
-      ;;                     cider-repl-mode
-      ;;                     cider-test-report-mode
-      ;;                     shell-script-mode
-      ;;                     sql-mode
-      ;;                     term-mode
-      ;;                     web-mode
-      ;;                     yaml-mode))
-      ;;         emojify-prog-contexts "comments"))
+      (use-package emojify
+        :defer t
+        :init
+        (add-hook 'after-init-hook #'global-emojify-mode)
+        :config
+        (setq emojify-inhibit-major-modes
+              (cl-union emojify-inhibit-major-modes
+                        '(cider-mode
+                          cider-repl-mode
+                          cider-test-report-mode
+                          shell-script-mode
+                          sql-mode
+                          term-mode
+                          web-mode
+                          yaml-mode))
+              emojify-prog-contexts "none"))
     #+END_SRC
 
 *** keybind discovery
