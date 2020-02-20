@@ -1001,6 +1001,7 @@ If you need some help, send me some electronic mail.
        (use-package prettier-js
          :defer t
          :diminish prettier-js-mode
+         :hook (((js2-mode rjsx-mode typescript-mode) . prettier-js-mode))
          :init
          (evil-leader/set-key-for-mode 'rjsx-mode
            "fp" 'prettier-js-mode) ; (f)ormat (p)rettier
