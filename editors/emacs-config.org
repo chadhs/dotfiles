@@ -463,7 +463,7 @@ If you need some help, send me some electronic mail.
         (setq lsp-auto-configure t
               lsp-auto-guess-root t
               ;; don't set flymake or lsp-ui so the default linter doesn't get trampled
-              lsp-prefer-flymake :none)
+              lsp-diagnostic-package :none)
         ;;; keybinds after load
         (evil-leader/set-key
           "jd"  #'lsp-goto-type-definition ; (j)ump to (d)efinition
