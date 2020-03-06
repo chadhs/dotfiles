@@ -975,7 +975,8 @@ If you need some help, send me some electronic mail.
                                                           '(javascript-jshint))) ; jshint doesn't work for JSX
          (electric-pair-mode 1)
          ;;; flycheck settings
-         (add-hook 'flycheck-mode-hook #'cs/use-linter-from-package-json)
+         ;; (add-hook 'flycheck-mode-hook #'cs/use-linter-from-package-json)
+         ;; ↑ not using due to add-node-modules-path ↑
          (evil-leader/set-key-for-mode 'rjsx-mode
            "ri"  #'indium-launch                ; (r)epl (i)nitialize
            "rc"  #'indium-connect               ; (r)epl (c)onnect
@@ -997,6 +998,11 @@ If you need some help, send me some electronic mail.
          (evil-leader/set-key-for-mode 'indium-repl-mode
            "cr"  #'indium-repl-clear-output)) ; (c)lear (r)epl
 
+       ;; use project local executables
+       (use-package add-node-modules-path
+         :defer t
+         :hook (((js2-mode rjsx-mode typescript-mode) . add-node-modules-path)))
+
        ;; prettier formatting
        (use-package prettier-js
          :defer t
@@ -1005,13 +1011,7 @@ If you need some help, send me some electronic mail.
          :init
          (evil-leader/set-key-for-mode 'rjsx-mode
            "fp" 'prettier-js-mode) ; (f)ormat (p)rettier
-         :config
-         ;;; taken from global .prettierrc.json
-         (setq prettier-js-args
-               '("--single-quote" "true"
-                 "--print-width" "100"
-                 "--trailing-comma" "all"
-                 "--arrow-parens" "always")))
+         )
 
        ;; typescript
        (use-package typescript-mode
