@@ -577,9 +577,10 @@ If you need some help, send me some electronic mail.
         (add-hook 'org-mode-hook 'evil-cleverparens-mode)
         (add-hook 'web-mode-hook 'evil-cleverparens-mode)
         (add-hook 'yaml-mode-hook 'evil-cleverparens-mode)
+        (add-hook 'rjsx-mode-hook 'evil-cleverparens-mode)
+        (add-hook 'typescript-mode-hook 'evil-cleverparens-mode)
         ;; disabled in the following modes
-        (add-hook 'js2-mode-hook (lambda () (evil-cleverparens-mode -1)))
-        (add-hook 'rjsx-mode-hook (lambda () (evil-cleverparens-mode -1)))
+        ;; (add-hook 'rjsx-mode-hook (lambda () (evil-cleverparens-mode -1)))
         ;;; keybinds pre load
         (evil-leader/set-key "pt" #'evil-cleverparens-mode) ; clever(p)arens (t)oggle
         :config
