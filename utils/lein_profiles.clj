@@ -2,6 +2,7 @@
                   [lein-ancient   "0.6.15"]
                   [lein-pdo       "0.1.1"]
                   [lein-cloverage "1.1.2"]
+                  [lein-shell     "0.5.0"]
                   ]
         :repl-options {:init (set! *print-length* 100)}}}
 
