@@ -502,7 +502,7 @@ If you need some help, send me some electronic mail.
         :init
         (add-hook 'after-init-hook #'global-flycheck-mode)
         :config
-        (setq-default flycheck-check-syntax-automatically '(save))
+        (setq-default flycheck-check-syntax-automatically '(mode-enabled save))
         ;; disable documentation related emacs lisp checker
         (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc clojure-cider-typed))
         (setq flycheck-mode-line-prefix "✔"))
@@ -800,6 +800,7 @@ If you need some help, send me some electronic mail.
                                         (yas-minor-mode)
                                         (add-to-list 'write-file-functions 'delete-trailing-whitespace)))
          :config
+         (require 'flycheck-clj-kondo)
          ;;; keybinds on load
          (evil-leader/set-key-for-mode 'clojure-mode
            "ri"  #'cider-jack-in                 ; (r)epl (i)nitialize
@@ -884,6 +885,8 @@ If you need some help, send me some electronic mail.
        (use-package clj-refactor
          :defer t
          :diminish "↻")
+       (use-package flycheck-clj-kondo
+         :defer t)
        (use-package flycheck-clojure
          :defer t)
      #+END_SRC

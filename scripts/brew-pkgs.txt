@@ -5,6 +5,7 @@
 aspell
 awscli
 bash
+borkdude/brew/clj-kondo
 clojure
 editorconfig
 git
