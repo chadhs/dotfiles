@@ -820,6 +820,7 @@ If you need some help, send me some electronic mail.
            "fr"  #'cider-format-region           ; (f)ormat (r)egion
            "fb"  #'cider-format-buffer           ; (f)ormat (b)uffer
            "ds"  #'cider-doc                     ; (d)oc (s)earch
+           "fu"  #'cljr-find-usages              ; (f)ind (u)sages
            ;; add keybindings here to replace cljr-helm (,rf)
            )
          (evil-leader/set-key-for-mode 'clojurescript-mode
@@ -840,6 +841,7 @@ If you need some help, send me some electronic mail.
            "fr"  #'cider-format-region           ; (f)ormat (r)egion
            "fb"  #'cider-format-buffer           ; (f)ormat (b)uffer
            "ds"  #'cider-doc                     ; (d)oc (s)earch
+           "fu"  #'cljr-find-usages              ; (f)ind (u)sages
            ))
        (use-package clojure-mode-extra-font-locking
          :defer t)
@@ -868,7 +870,7 @@ If you need some help, send me some electronic mail.
          ;;            (figwheel-sidecar.repl-api/cljs-repl))")
          :config
          (setq cider-mode-line '(:eval (format " [%s]" (cider--modeline-info))))
-         (eval-after-load 'flycheck '(flycheck-clojure-setup))
+         ;; (eval-after-load 'flycheck '(flycheck-clojure-setup))
          ;;; keybinds on load
          (evil-leader/set-key-for-mode 'cider-repl-mode
            "rr" #'cider-restart                       ; (r)epl (r)estart
@@ -884,11 +886,14 @@ If you need some help, send me some electronic mail.
          (define-key cider-test-report-mode-map (kbd "j") #'next-line))
        (use-package clj-refactor
          :defer t
-         :diminish "↻")
+         :diminish "↻"
+         :init
+         (setq cljr-warn-on-eval nil)
+         )
        (use-package flycheck-clj-kondo
          :defer t)
-       (use-package flycheck-clojure
-         :defer t)
+       ;; (use-package flycheck-clojure
+       ;;   :defer t)
      #+END_SRC
 
 *** elixir
