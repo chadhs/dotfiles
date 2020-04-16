@@ -894,6 +894,10 @@ If you need some help, send me some electronic mail.
          :defer t)
        ;; (use-package flycheck-clojure
        ;;   :defer t)
+       (use-package zprint-mode
+         :defer t
+         :diminish zprint-mode
+         :hook (((clojure-mode clojurescript-mode) . zprint-mode)))
      #+END_SRC
 
 *** elixir
