@@ -161,7 +161,9 @@ If you need some help, send me some electronic mail.
                                          (magit-process-mode     . normal)
                                          (magit-popup-mode       . emacs)
                                          ;; this allows vi-mode in shells
-                                         (term-mode              . emacs))
+                                         (term-mode              . emacs)
+                                         (tide-references-mode   . emacs)
+                                         (xref--xref-buffer-mode . emacs))
                  do (evil-set-initial-state mode state)))
 
       (use-package evil-matchit
@@ -467,7 +469,11 @@ If you need some help, send me some electronic mail.
         ;;; keybinds after load
         (evil-leader/set-key
           "jd"  #'lsp-goto-type-definition ; (j)ump to (d)efinition
-          "jb"  #'xref-pop-marker-stack))  ; (j)ump (b)ack to marker
+          "jb"  #'xref-pop-marker-stack)   ; (j)ump (b)ack to marker
+        (define-key xref--xref-buffer-mode-map (kbd "k") #'previous-line)
+        (define-key xref--xref-buffer-mode-map (kbd "j") #'next-line)
+        (define-key xref--xref-buffer-mode-map (kbd "h") #'move-beginning-of-line)
+        (define-key xref--xref-buffer-mode-map (kbd "l") #'move-end-of-line))
 
       (use-package company-lsp
         :defer t
@@ -998,6 +1004,7 @@ If you need some help, send me some electronic mail.
            "eb"  #'indium-eval-buffer           ; (e)val (b)uffer
            "ef"  #'indium-eval-defun            ; (e)val de(f)un
            "es"  #'indium-eval-last-node        ; (e)val (s)-expression
+           "fu"  #'lsp-find-references          ; (f)ind (u)sages
            "fp" 'prettier-js-mode))             ; (f)ormat (p)rettier
 
        ;; javascript eval and repl
@@ -1035,6 +1042,7 @@ If you need some help, send me some electronic mail.
          (evil-leader/set-key-for-mode 'typescript-mode
            "jd"  #'tide-jump-to-definition ; (j)ump to (d)ef
            "jb"  #'tide-jump-back          ; (j)ump (b)ack
+           "fu"  #'tide-references         ; (f)ind (u)sages
            "fp" 'prettier-js-mode)) ; (f)ormat (p)rettier
 
        ;;; tide
@@ -1043,7 +1051,11 @@ If you need some help, send me some electronic mail.
          :diminish tide-mode
          :hook (((typescript-mode) . tide-setup))
          :config
-         (setq tide-format-options '(:indentSize 2 :tabSize 2)))
+         (setq tide-format-options '(:indentSize 2 :tabSize 2))
+         (define-key tide-references-mode-map (kbd "k") #'previous-line)
+         (define-key tide-references-mode-map (kbd "j") #'next-line)
+         (define-key tide-references-mode-map (kbd "h") #'move-beginning-of-line)
+         (define-key tide-references-mode-map (kbd "l") #'move-end-of-line))
      #+END_SRC
 
 *** markdown
