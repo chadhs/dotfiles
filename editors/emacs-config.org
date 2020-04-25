@@ -1257,7 +1257,8 @@ If you need some help, send me some electronic mail.
                 "\\.html\\.erb\\'"
                 "\\.j2\\'"
                 "\\.jinja\\'"
-                "\\.php\\'")
+                "\\.php\\'"
+                "\\.tsx\\'")
          :init
          ;; fix paren matching web-mode conflict for jinja-like templates
          (add-hook
@@ -1266,6 +1267,12 @@ If you need some help, send me some electronic mail.
             (setq-local electric-pair-inhibit-predicate
                         (lambda (c)
                           (if (char-equal c ?{) t (electric-pair-default-inhibit c))))))
+         (add-hook
+          'web-mode-hook
+          (lambda ()
+            (when (string-equal "tsx" (file-name-extension buffer-file-name))
+              (tide-setup)
+              (flycheck-add-mode 'typescript-tslint 'web-mode))))
          :config
          (setq css-indent-offset 2
                web-mode-code-indent-offset 2
