@@ -1260,19 +1260,26 @@ If you need some help, send me some electronic mail.
                 "\\.php\\'"
                 "\\.tsx\\'")
          :init
-         ;; fix paren matching web-mode conflict for jinja-like templates
          (add-hook
           'web-mode-hook
           (lambda ()
-            (setq-local electric-pair-inhibit-predicate
-                        (lambda (c)
-                          (if (char-equal c ?{) t (electric-pair-default-inhibit c))))))
+            ;; fix paren matching web-mode conflict for jinja-like templates
+            (when (or (string-equal "j2" (file-name-extension buffer-file-name))
+                      (string-equal "jinja" (file-name-extension buffer-file-name)))
+              (setq-local electric-pair-inhibit-predicate
+                          (lambda (c)
+                            (if (char-equal c ?{) t (electric-pair-default-inhibit c)))))))
          (add-hook
           'web-mode-hook
           (lambda ()
+            ;; specific settings for tsx files
             (when (string-equal "tsx" (file-name-extension buffer-file-name))
               (tide-setup)
-              (flycheck-add-mode 'typescript-tslint 'web-mode))))
+              (flycheck-add-mode 'typescript-tslint 'web-mode)
+              (prettier-js-mode)
+              (setq-local electric-pair-pairs (append electric-pair-pairs '((?\' . ?\')))) ; single quotes
+              (setq-local electric-pair-text-pairs electric-pair-pairs)
+              (electric-pair-mode 1))))
          :config
          (setq css-indent-offset 2
                web-mode-code-indent-offset 2
