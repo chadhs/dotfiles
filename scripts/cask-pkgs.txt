@@ -25,3 +25,4 @@ slack
 textexpander
 the-unarchiver
 tripmode
+visual-studio-code
