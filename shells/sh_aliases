@@ -38,7 +38,6 @@ if [[ $(uname) = "Darwin" ]]; then
     alias speedtest='speedtest-cli'
     ### stop correction intrusion
     zshonly alias npm='nocorrect npm'
-    zshonly alias sass='nocorrect sass'
     zshonly alias kubectl='nocorrect kubectl'
 
     ### mac development
@@ -55,13 +54,6 @@ fi
 function update-dotfiles(){
     curdir=$(pwd)
     cd ~/dotfiles && git pull && sh deploy.sh
-    cd $curdir
-}
-
-## update note files
-function update-notes(){
-    curdir=$(pwd)
-    cd ~/notes && git pull
     cd $curdir
 }
 

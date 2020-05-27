@@ -90,7 +90,6 @@ symlink_configs(){
   [ ! -e ~/.emacs.d/emacs-config.org ] && ln -s ~/dotfiles/editors/emacs-config.org ~/.emacs.d/emacs-config.org
   [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig
   [ ! -e ~/.editorconfig ] && ln -s ~/dotfiles/editors/editorconfig .editorconfig
-  [ ! -e ~/.jshintrc ] && ln -s ~/dotfiles/utils/jshintrc .jshintrc
   [ ! -e ~/.eslintrc.json ] && ln -s ~/dotfiles/utils/eslintrc.json ~/.eslintrc.json
   [ ! -e ~/.prettierrc.json ] && ln -s ~/dotfiles/utils/prettierrc.json ~/.prettierrc.json
   [ ! -e ~/jsconfig.json ] && ln -s ~/dotfiles/utils/jsconfig.json ~/jsconfig.json

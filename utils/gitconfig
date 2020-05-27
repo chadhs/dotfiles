@@ -23,6 +23,6 @@ helper = osxkeychain
 ## techcraft workshop (deprecated)
 [includeIf "gitdir:~/src/techcraft-workshop/**"]
   path = ~/dotfiles/utils/gitconfig.d/gitconfig-techcraftlabs
-# ## equips
-[includeIf "gitdir:~/src/equips/**"]
-  path = ~/dotfiles/utils/gitconfig.d/gitconfig-equips
+## nm
+[includeIf "gitdir:~/src/nm/**"]
+  path = ~/dotfiles/utils/gitconfig.d/gitconfig-nm

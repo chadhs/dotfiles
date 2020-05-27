@@ -5,9 +5,7 @@ jsonlint
 less
 nodemon
 prettier
-re-natal
-react-native-cli
-sass-lint
+sass
 tern
 typescript
 typescript-language-server
