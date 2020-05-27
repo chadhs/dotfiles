@@ -5,6 +5,7 @@ jsonlint
 less
 nodemon
 prettier
+sass
 tern
 typescript
 typescript-language-server
