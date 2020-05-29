@@ -1,5 +1,6 @@
 {
   "workbench.colorTheme": "Solarized Light",
   "git.autofetch": true,
-  "editor.fontSize": 14
+  "editor.fontSize": 14,
+  "editor.minimap.enabled": false
 }

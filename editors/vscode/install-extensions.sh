@@ -7,6 +7,8 @@
 extensions=(
   ## core
   "vscodevim.vim"
+  "editorconfig.editorconfig"
+  "coenraads.bracket-pair-colorizer-2"
   "ms-azuretools.vscode-docker"
   ## langs
   ### javascript/typescript
