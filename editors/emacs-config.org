@@ -611,7 +611,9 @@ If you need some help, send me some electronic mail.
                           pug-mode
                           rjsx-mode
                           terraform-mode
-                          typscript-mode))))
+                          tide-mode
+                          typscript-mode
+                          web-mode))))
     #+END_SRC
 
 *** indentation highlighting
@@ -1027,7 +1029,7 @@ If you need some help, send me some electronic mail.
        (use-package prettier-js
          :defer t
          :diminish prettier-js-mode
-         :hook (((js2-mode rjsx-mode typescript-mode) . prettier-js-mode))
+         :hook (((js2-mode rjsx-mode typescript-mode) . cs/use-prettier-if-config-exists-in-project-root))
          :init
          (evil-leader/set-key-for-mode 'rjsx-mode
            "fp" 'prettier-js-mode) ; (f)ormat (p)rettier
@@ -1275,7 +1277,7 @@ If you need some help, send me some electronic mail.
             (when (string-equal "tsx" (file-name-extension buffer-file-name))
               (tide-setup)
               (flycheck-add-mode 'typescript-tslint 'web-mode)
-              ;; (prettier-js-mode)
+              (cs/use-prettier-if-config-exists-in-project-root)
               (setq-local electric-pair-pairs (append electric-pair-pairs '((?\' . ?\')))) ; single quotes
               (setq-local electric-pair-text-pairs electric-pair-pairs)
               (electric-pair-mode 1)
@@ -1444,6 +1446,25 @@ If you need some help, send me some electronic mail.
                   (setq-local flycheck-javascript-standard-executable standard-bin))))))))
     #+END_SRC
 
+*** use prettier when prettierrc detected
+
+    #+BEGIN_SRC emacs-lisp
+      (defun cs/use-prettier-if-config-exists-in-project-root ()
+        (let* ((package-root (locate-dominating-file
+                              (or (buffer-file-name) default-directory)
+                              "package.json"))
+               (package-file (and package-root (expand-file-name "package.json" package-root)))
+               (grep-prettierrc (concat "grep prettier" package-file))
+               ;; ↓ this needs to be fixed
+               (prettierrc-embedded (not (string= "" (shell-command-to-string grep-prettierrc))))
+               ;; ↑ this needs to be fixed
+               (prettierrc (and package-root (file-exists-p (expand-file-name ".prettierrc" package-root))))
+               (prettierrc-json (and package-root (file-exists-p (expand-file-name ".prettierrc.json" package-root))))
+               (prettierrc-js (and package-root (file-exists-p (expand-file-name ".prettierrc.js" package-root))))
+               (prettierrc-config-js (and package-root (file-exists-p (expand-file-name ".prettierrc.config.js" package-root))))
+               (prettier-config-p (not (eq nil (or prettierrc-embedded prettierrc prettierrc-json prettierrc-js prettierrc-config-js)))))
+          (when prettier-config-p (prettier-js-mode))))
+    #+END_SRC
 
 ** General configuration
 
