@@ -8,7 +8,7 @@ default = simple
 [color]
 ui = auto
 [credential]
-helper = osxkeychain
+	helper = osxkeychain
 
 # setup user config per account
 ## personal
