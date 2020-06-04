@@ -1064,6 +1064,13 @@ If you need some help, send me some electronic mail.
          (define-key tide-references-mode-map (kbd "j") #'next-line)
          (define-key tide-references-mode-map (kbd "h") #'move-beginning-of-line)
          (define-key tide-references-mode-map (kbd "l") #'move-end-of-line))
+
+       (use-package eslint-fix
+         :defer t
+         :diminish eslint-fix
+         :config
+         (evil-leader/set-key-for-mode 'typescript-mode
+           "lf" #'eslint-fix)) ; (l)int (f)ix
      #+END_SRC
 
 *** markdown
@@ -1283,8 +1290,6 @@ If you need some help, send me some electronic mail.
             ;; specific settings for tsx files
             (when (string-equal "tsx" (file-name-extension buffer-file-name))
               (setup-tide-mode)
-              ;; (tide-setup)
-              ;; (flycheck-add-mode 'typescript-tslint 'web-mode)
               (cs/use-prettier-if-config-exists-in-project-root)
               (setq-local electric-pair-pairs (append electric-pair-pairs '((?\' . ?\')))) ; single quotes
               (setq-local electric-pair-text-pairs electric-pair-pairs)
@@ -1293,7 +1298,8 @@ If you need some help, send me some electronic mail.
                 "jd"  #'tide-jump-to-definition ; (j)ump to (d)ef
                 "jb"  #'tide-jump-back          ; (j)ump (b)ack
                 "fu"  #'tide-references         ; (f)ind (u)sages
-                "fp" 'prettier-js-mode))))      ; (f)ormat (p)rettier
+                "fp" 'prettier-js-mode          ; (f)ormat (p)rettier
+                "lf" #'eslint-fix))))           ; (l)int (f)ix
          :config
          (setq css-indent-offset 2
                web-mode-code-indent-offset 2
