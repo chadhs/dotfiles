@@ -1023,7 +1023,7 @@ If you need some help, send me some electronic mail.
        ;; use project local executables
        (use-package add-node-modules-path
          :defer t
-         :hook (((js2-mode rjsx-mode typescript-mode) . add-node-modules-path)))
+         :hook (((js2-mode rjsx-mode typescript-mode web-mode) . add-node-modules-path)))
 
        ;; prettier formatting
        (use-package prettier-js
@@ -1047,10 +1047,17 @@ If you need some help, send me some electronic mail.
            "fp" 'prettier-js-mode)) ; (f)ormat (p)rettier
 
        ;;; tide
+       (defun setup-tide-mode ()
+         (interactive)
+         (tide-setup)
+         (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+         (flycheck-add-mode 'javascript-eslint 'web-mode)
+         (flycheck-select-checker 'javascript-eslint))
+
        (use-package tide
          :defer t
          :diminish tide-mode
-         :hook (((typescript-mode) . tide-setup))
+         :hook (((typescript-mode) . setup-tide-mode))
          :config
          (setq tide-format-options '(:indentSize 2 :tabSize 2))
          (define-key tide-references-mode-map (kbd "k") #'previous-line)
@@ -1275,8 +1282,9 @@ If you need some help, send me some electronic mail.
           (lambda ()
             ;; specific settings for tsx files
             (when (string-equal "tsx" (file-name-extension buffer-file-name))
-              (tide-setup)
-              (flycheck-add-mode 'typescript-tslint 'web-mode)
+              (setup-tide-mode)
+              ;; (tide-setup)
+              ;; (flycheck-add-mode 'typescript-tslint 'web-mode)
               (cs/use-prettier-if-config-exists-in-project-root)
               (setq-local electric-pair-pairs (append electric-pair-pairs '((?\' . ?\')))) ; single quotes
               (setq-local electric-pair-text-pairs electric-pair-pairs)
