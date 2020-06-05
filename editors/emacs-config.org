@@ -612,8 +612,7 @@ If you need some help, send me some electronic mail.
                           rjsx-mode
                           terraform-mode
                           tide-mode
-                          typscript-mode
-                          web-mode))))
+                          typscript-mode))))
     #+END_SRC
 
 *** indentation highlighting
@@ -1305,7 +1304,9 @@ If you need some help, send me some electronic mail.
                web-mode-code-indent-offset 2
                web-mode-css-indent-offset 2
                web-mode-markup-indent-offset 2
-               web-mode-attr-indent-offset 2)
+               web-mode-attr-indent-offset 2
+               web-mode-attr-value-indent-offset 2
+               web-mode-enable-auto-quoting nil)
          ;;; keybinds on load
          (evil-leader/set-key-for-mode 'web-mode
            "fh" #'web-beautify-html))
