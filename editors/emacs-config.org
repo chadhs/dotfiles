@@ -611,6 +611,7 @@ If you need some help, send me some electronic mail.
                           pug-mode
                           rjsx-mode
                           terraform-mode
+                          tide-mode
                           typscript-mode))))
     #+END_SRC
 
@@ -1021,13 +1022,13 @@ If you need some help, send me some electronic mail.
        ;; use project local executables
        (use-package add-node-modules-path
          :defer t
-         :hook (((js2-mode rjsx-mode typescript-mode) . add-node-modules-path)))
+         :hook (((js2-mode rjsx-mode typescript-mode web-mode) . add-node-modules-path)))
 
        ;; prettier formatting
        (use-package prettier-js
          :defer t
          :diminish prettier-js-mode
-         :hook (((js2-mode rjsx-mode typescript-mode) . prettier-js-mode))
+         :hook (((js2-mode rjsx-mode typescript-mode) . cs/use-prettier-if-config-exists-in-project-root))
          :init
          (evil-leader/set-key-for-mode 'rjsx-mode
            "fp" 'prettier-js-mode) ; (f)ormat (p)rettier
@@ -1035,8 +1036,7 @@ If you need some help, send me some electronic mail.
 
        ;; typescript
        (use-package typescript-mode
-         :mode ("\\.ts\\'"
-                "\\.tsx\\'")
+         :mode ("\\.ts\\'")
          :config
          (setq typescript-indent-level 2)
          (evil-leader/set-key-for-mode 'typescript-mode
@@ -1046,16 +1046,30 @@ If you need some help, send me some electronic mail.
            "fp" 'prettier-js-mode)) ; (f)ormat (p)rettier
 
        ;;; tide
+       (defun setup-tide-mode ()
+         (interactive)
+         (tide-setup)
+         (flycheck-add-mode 'javascript-eslint 'typescript-mode)
+         (flycheck-add-mode 'javascript-eslint 'web-mode)
+         (flycheck-select-checker 'javascript-eslint))
+
        (use-package tide
          :defer t
          :diminish tide-mode
-         :hook (((typescript-mode) . tide-setup))
+         :hook (((typescript-mode) . setup-tide-mode))
          :config
          (setq tide-format-options '(:indentSize 2 :tabSize 2))
          (define-key tide-references-mode-map (kbd "k") #'previous-line)
          (define-key tide-references-mode-map (kbd "j") #'next-line)
          (define-key tide-references-mode-map (kbd "h") #'move-beginning-of-line)
          (define-key tide-references-mode-map (kbd "l") #'move-end-of-line))
+
+       (use-package eslint-fix
+         :defer t
+         :diminish eslint-fix
+         :config
+         (evil-leader/set-key-for-mode 'typescript-mode
+           "lf" #'eslint-fix)) ; (l)int (f)ix
      #+END_SRC
 
 *** markdown
@@ -1274,18 +1288,25 @@ If you need some help, send me some electronic mail.
           (lambda ()
             ;; specific settings for tsx files
             (when (string-equal "tsx" (file-name-extension buffer-file-name))
-              (tide-setup)
-              (flycheck-add-mode 'typescript-tslint 'web-mode)
-              (prettier-js-mode)
+              (setup-tide-mode)
+              (cs/use-prettier-if-config-exists-in-project-root)
               (setq-local electric-pair-pairs (append electric-pair-pairs '((?\' . ?\')))) ; single quotes
               (setq-local electric-pair-text-pairs electric-pair-pairs)
-              (electric-pair-mode 1))))
+              (electric-pair-mode 1)
+              (evil-leader/set-key-for-mode 'web-mode
+                "jd"  #'tide-jump-to-definition ; (j)ump to (d)ef
+                "jb"  #'tide-jump-back          ; (j)ump (b)ack
+                "fu"  #'tide-references         ; (f)ind (u)sages
+                "fp" 'prettier-js-mode          ; (f)ormat (p)rettier
+                "lf" #'eslint-fix))))           ; (l)int (f)ix
          :config
          (setq css-indent-offset 2
                web-mode-code-indent-offset 2
                web-mode-css-indent-offset 2
                web-mode-markup-indent-offset 2
-               web-mode-attr-indent-offset 2)
+               web-mode-attr-indent-offset 2
+               web-mode-attr-value-indent-offset 2
+               web-mode-enable-auto-quoting nil)
          ;;; keybinds on load
          (evil-leader/set-key-for-mode 'web-mode
            "fh" #'web-beautify-html))
@@ -1440,6 +1461,25 @@ If you need some help, send me some electronic mail.
                   (setq-local flycheck-javascript-standard-executable standard-bin))))))))
     #+END_SRC
 
+*** use prettier when prettierrc detected
+
+    #+BEGIN_SRC emacs-lisp
+      (defun cs/use-prettier-if-config-exists-in-project-root ()
+        (let* ((package-root (locate-dominating-file
+                              (or (buffer-file-name) default-directory)
+                              "package.json"))
+               (package-file (and package-root (expand-file-name "package.json" package-root)))
+               (grep-prettierrc (concat "grep prettier" package-file))
+               ;; ↓ this needs to be fixed
+               (prettierrc-embedded (not (string= "" (shell-command-to-string grep-prettierrc))))
+               ;; ↑ this needs to be fixed
+               (prettierrc (and package-root (file-exists-p (expand-file-name ".prettierrc" package-root))))
+               (prettierrc-json (and package-root (file-exists-p (expand-file-name ".prettierrc.json" package-root))))
+               (prettierrc-js (and package-root (file-exists-p (expand-file-name ".prettierrc.js" package-root))))
+               (prettierrc-config-js (and package-root (file-exists-p (expand-file-name ".prettierrc.config.js" package-root))))
+               (prettier-config-p (not (eq nil (or prettierrc-embedded prettierrc prettierrc-json prettierrc-js prettierrc-config-js)))))
+          (when prettier-config-p (prettier-js-mode))))
+    #+END_SRC
 
 ** General configuration
 
