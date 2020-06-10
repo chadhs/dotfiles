@@ -2,9 +2,6 @@
   "workbench.colorTheme": "Solarized Light",
   "git.autofetch": true,
   "editor.fontSize": 14,
-<<<<<<< HEAD
-  "editor.minimap.enabled": false
-=======
+  "editor.minimap.enabled": false,
   "http.proxyStrictSSL": false
->>>>>>> eea0071f590c66bede7f6efc59720b4942ade88f
 }
