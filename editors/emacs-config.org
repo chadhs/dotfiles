@@ -1481,6 +1481,7 @@ If you need some help, send me some electronic mail.
           (when prettier-config-p (prettier-js-mode))))
     #+END_SRC
 
+
 ** General configuration
 
    This section is where all general emacs configuration lives.
