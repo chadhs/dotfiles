@@ -5,6 +5,8 @@ useconfigonly = true
 ignorecase = false
 [push]
 default = simple
+[pull]
+rebase = false
 [color]
 ui = auto
 [credential]
