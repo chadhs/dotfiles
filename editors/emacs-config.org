@@ -816,7 +816,7 @@ If you need some help, send me some electronic mail.
            "rc"  #'cider-connect                 ; (r)epl (c)onnect
            "eb"  #'cider-eval-buffer             ; (e)val (b)uffer
            "ef"  #'cider-eval-defun-at-point     ; (e)val de(f)un
-           "es"  #'cider-eval-last-sexp          ; (e)val (s)-expression
+           "es"  #'cider-eval-sexp-at-point      ; (e)val (s)-expression
            "rtn" #'cider-test-run-ns-tests       ; (r)un (t)ests (n)amespace
            "rtp" #'cider-test-run-project-tests  ; (r)un (t)ests (p)roject
            "rtl" #'cider-test-run-loaded-tests   ; (r)un (t)ests (l)oaded namespaces
@@ -837,7 +837,7 @@ If you need some help, send me some electronic mail.
            "rc"  #'cider-connect-clojurescript   ; (r)epl (c)onnect
            "eb"  #'cider-eval-buffer             ; (e)val (b)uffer
            "ef"  #'cider-eval-defun-at-point     ; (e)val de(f)un
-           "es"  #'cider-eval-last-sexp          ; (e)val (s)-expression
+           "es"  #'cider-eval-sexp-at-point      ; (e)val (s)-expression
            "rtn" #'cider-test-run-ns-tests       ; (r)un (t)ests (n)amespace
            "rtp" #'cider-test-run-project-tests  ; (r)un (t)ests (p)roject
            "rtl" #'cider-test-run-loaded-tests   ; (r)un (t)ests (l)oaded namespaces
