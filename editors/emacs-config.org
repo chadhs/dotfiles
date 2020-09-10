@@ -459,7 +459,7 @@ If you need some help, send me some electronic mail.
       (use-package lsp-mode
         :defer t
         :diminish lsp-mode
-        :hook (((js2-mode rjsx-mode) . lsp))
+        :hook (((js-mode js2-mode rjsx-mode) . lsp))
         :commands lsp
         :config
         (setq lsp-auto-configure t
@@ -607,6 +607,7 @@ If you need some help, send me some electronic mail.
         (setq aggressive-indent-excluded-modes
               (cl-union aggressive-indent-excluded-modes
                         '(html-mode
+                          js-mode
                           js2-mode
                           pug-mode
                           rjsx-mode
@@ -631,7 +632,9 @@ If you need some help, send me some electronic mail.
       (use-package hideshow
         :ensure nil
         :hook (prog-mode . hs-minor-mode)
-        :diminish hs-minor-mode)
+        :diminish hs-minor-mode
+        :config
+        (evil-define-key 'normal prog-mode-map (kbd "SPC") 'hs-toggle-hiding))
     #+END_SRC
 
 *** rainbow delimiters
@@ -981,23 +984,16 @@ If you need some help, send me some electronic mail.
 *** javascript / typescript
 
      #+BEGIN_SRC emacs-lisp
-       ;; js2-mode is a better javascript mode
-       ;; rjsx-mode is a layer on top of js2-mode which adds jsx support
-       (use-package rjsx-mode
+       (use-package js-mode
+         :ensure nil
          :mode ("\\.js\\'"
                 "\\.jsx\\'")
          :config
-         (setq js2-mode-show-parse-errors nil
-               js2-mode-show-strict-warnings nil
-               js2-basic-offset 2
-               js-indent-level 2)
+         (setq js-indent-level 2)
          (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
                                                           '(javascript-jshint))) ; jshint doesn't work for JSX
          (electric-pair-mode 1)
-         ;;; flycheck settings
-         ;; (add-hook 'flycheck-mode-hook #'cs/use-linter-from-package-json)
-         ;; ↑ not using due to add-node-modules-path ↑
-         (evil-leader/set-key-for-mode 'rjsx-mode
+         (evil-leader/set-key-for-mode 'js-mode
            "ri"  #'indium-launch                ; (r)epl (i)nitialize
            "rc"  #'indium-connect               ; (r)epl (c)onnect
            "rq"  #'indium-quit                  ; (r)epl (q)uit
@@ -1006,13 +1002,15 @@ If you need some help, send me some electronic mail.
            "ef"  #'indium-eval-defun            ; (e)val de(f)un
            "es"  #'indium-eval-last-node        ; (e)val (s)-expression
            "fu"  #'lsp-find-references          ; (f)ind (u)sages
-           "fp" 'prettier-js-mode))             ; (f)ormat (p)rettier
+           "fp" 'prettier-js-mode               ; (f)ormat (p)rettier
+           "lf" #'eslint-fix                    ; (l)int (f)ix
+           ))
 
        ;; javascript eval and repl
        (use-package indium
          :defer t
          :diminish indium-interaction-mode
-         :hook (((js2-mode rjsx-mode) . indium-interaction-mode))
+         :hook (((js-mode) . indium-interaction-mode))
          :config
          ;;; keybinds on load
          (bind-key "S-<return>" #'newline indium-repl-mode-map)
@@ -1022,20 +1020,17 @@ If you need some help, send me some electronic mail.
        ;; use project local executables
        (use-package add-node-modules-path
          :defer t
-         :hook (((js2-mode rjsx-mode typescript-mode web-mode) . add-node-modules-path)))
+         :hook (((js-mode typescript-mode web-mode) . add-node-modules-path)))
 
        ;; prettier formatting
        (use-package prettier-js
          :defer t
          :diminish prettier-js-mode
-         :hook (((js2-mode rjsx-mode typescript-mode) . cs/use-prettier-if-config-exists-in-project-root))
-         :init
-         (evil-leader/set-key-for-mode 'rjsx-mode
-           "fp" 'prettier-js-mode) ; (f)ormat (p)rettier
-         )
+         :hook (((js-mode typescript-mode web-mode) . cs/use-prettier-if-config-exists-in-project-root)))
 
        ;; typescript
        (use-package typescript-mode
+         :defer t
          :mode ("\\.ts\\'")
          :config
          (setq typescript-indent-level 2)
@@ -1043,7 +1038,9 @@ If you need some help, send me some electronic mail.
            "jd"  #'tide-jump-to-definition ; (j)ump to (d)ef
            "jb"  #'tide-jump-back          ; (j)ump (b)ack
            "fu"  #'tide-references         ; (f)ind (u)sages
-           "fp" 'prettier-js-mode)) ; (f)ormat (p)rettier
+           "fp" 'prettier-js-mode          ; (f)ormat (p)rettier
+           "lf" #'eslint-fix               ; (l)int (f)ix
+           ))
 
        ;;; tide
        (defun setup-tide-mode ()
@@ -1066,10 +1063,7 @@ If you need some help, send me some electronic mail.
 
        (use-package eslint-fix
          :defer t
-         :diminish eslint-fix
-         :config
-         (evil-leader/set-key-for-mode 'typescript-mode
-           "lf" #'eslint-fix)) ; (l)int (f)ix
+         :diminish eslint-fix)
      #+END_SRC
 
 *** markdown

@@ -3,5 +3,7 @@
   "git.autofetch": true,
   "editor.fontSize": 14,
   "editor.minimap.enabled": false,
-  "http.proxyStrictSSL": false
+  "http.proxyStrictSSL": false,
+  "vim.easymotion": true,
+  "vim.leader": ","
 }
