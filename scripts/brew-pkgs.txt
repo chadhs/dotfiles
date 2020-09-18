@@ -9,6 +9,7 @@ borkdude/brew/clj-kondo
 clojure
 editorconfig
 git
+java11
 nmap
 node@12
 nvm

@@ -10,11 +10,11 @@ appcleaner
 bartender
 daisydisk
 deckset
+docker
 fantastical
 focusatwill
 google-chrome
 iterm2
-java11
 karabiner-elements
 keyboard-maestro
 mactex-no-gui
