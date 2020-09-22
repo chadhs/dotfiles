@@ -1,0 +1,91 @@
+;; The deps.edn file describes the information needed to build a classpath.
+;;
+;; When using the `clojure` or `clj` script, there are several deps.edn files
+;; that are combined:
+;; - install-level
+;; - user level (this file)
+;; - project level (current directory when invoked)
+;;
+;; For all attributes other than :paths, these config files are merged left to right.
+;; Only the last :paths is kept and others are dropped.
+
+{
+ ;; Paths
+ ;;   Directories in the current project to include in the classpath
+
+ ;; :paths ["src"]
+
+ ;; External dependencies
+
+ ;; :deps {
+ ;;   org.clojure/clojure {:mvn/version "1.10.0"}
+ ;; }
+
+ ;; Aliases
+ ;;   resolve-deps aliases (-R) affect dependency resolution, options:
+ ;;     :extra-deps - specifies extra deps to add to :deps
+ ;;     :override-deps - specifies a coordinate to use instead of that in :deps
+ ;;     :default-deps - specifies a coordinate to use for a lib if one isn't found
+ ;;   make-classpath aliases (-C) affect the classpath generation, options:
+ ;;     :extra-paths - vector of additional paths to add to the classpath
+ ;;     :classpath-overrides - map of lib to path that overrides the result of resolving deps
+ :aliases
+ {;; project creation from templates:
+  ;; - see https://github.com/seancorfield/clj-new
+  ;; - create an application project:
+  ;;   - clj -A:new app myname/myapp
+  ;;   - cd myapp
+  ;;   - clj -m myname.myapp # run it!
+  ;;   - clj -A:test:runner # run the tests!
+  ;; - create a library project:
+  ;;   - clj -A:new lib myname/my-cool-lib
+  ;;   - cd my-cool-lib
+  ;;   - clj -A:test:runner # run the tests!
+  :new {:extra-deps {seancorfield/clj-new {:mvn/version "RELEASE"}}
+        :exec-fn clj-new/create
+        :exec-args {:template lib} ; default
+        :main-opts ["-m" "clj-new.create"]}
+
+  ;; ;; uberjar building:
+  ;; ;; - see https://github.com/seancorfield/depstar for a minimalist approach:
+  ;; ;;   - clj -A:uberjar result.jar
+  ;; ;; - to run it:
+  ;; ;;   - java -cp result.jar clojure.main -m mymain.namespace
+  ;; ;; - build a library JAR:
+  ;; ;;   - clj -A:jar result-lib.jar
+  ;; :uberjar {:extra-deps {seancorfield/depstar {:mvn/version "RELEASE"}}
+  ;;           :main-opts ["-m" "hf.depstar.uberjar"]}
+  ;; :jar {:extra-deps {seancorfield/depstar {:mvn/version "RELEASE"}}
+  ;;       :main-opts ["-m" "hf.depstar.jar"]}
+
+  ;; ;; testing and debugging tools:
+  ;; :test {:extra-paths ["test" "src/test/clojure"]
+  ;;        :extra-deps {org.clojure/test.check {:mvn/version "RELEASE"}}}
+  ;; ;; - see https://github.com/cognitect-labs/test-runner
+  ;; ;; - run your tests: clj -A:test:runner
+  ;; :runner {:extra-deps {com.cognitect/test-runner
+  ;;                       {:git/url "https://github.com/cognitect-labs/test-runner"
+  ;;                        :sha "3cb0a9daf1cb746259dc8309b218f9211ad3b33b"}}
+  ;;          :main-opts ["-m" "cognitect.test-runner"
+  ;;                      "-d" "test"
+  ;;                      "-d" "src/test/clojure"]}
+
+  ;; - see https://github.com/Olical/depot
+  :outdated {:extra-deps {olical/depot {:mvn/version "RELEASE"}}
+             :main-opts ["-m" "depot.outdated.main"]}
+
+  ;; REPL-related tools:
+  ;; - start a modern nREPL server on a random available port:
+  :nrepl {:extra-deps {nrepl/nrepl {:mvn/version "RELEASE"}}
+          :main-opts ["-m" "nrepl.cmdline"]}
+
+  ;; END ALIASES
+  }
+
+ ;; Provider attributes
+
+ ;; :mvn/repos {
+ ;;   "central" {:url "https://repo1.maven.org/maven2/"}
+ ;;   "clojars" {:url "https://repo.clojars.org/"}
+ ;; }
+ }

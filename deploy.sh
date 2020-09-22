@@ -51,6 +51,8 @@ symlink_configs(){
     [ ! -e ~/.ssh/config ] && ln -s ~/dotfiles/utils/ssh_config ~/.ssh/config
     [ ! -e ~/.ssh/config.d/ssh_config ] && touch ~/.ssh/config.d/ssh_config
     [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig .gitconfig
+    [ ! -d ~/.clojure ] && mkdir .clojure
+    [ ! -e ~/.clojure/deps.edn ] && ln -s ~/dotfiles/utils/deps.edn .clojure/deps.edn
     [ ! -d ~/.lein ] && mkdir .lein
     [ ! -e ~/.lein/profiles.clj ] && ln -s ~/dotfiles/utils/lein_profiles.clj .lein/profiles.clj
     [ ! -d ~/bin ] && mkdir ~/bin
