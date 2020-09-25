@@ -247,7 +247,8 @@ set completeopt-=preview
 " solarized theme
 "" keep color settings
 syntax enable
-set background=dark
+"set background=dark
+set background=light
 silent!: colorscheme solarized
 
 " vim-airline
