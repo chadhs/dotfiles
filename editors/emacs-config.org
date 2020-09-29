@@ -279,7 +279,6 @@ If you need some help, send me some electronic mail.
               ;; tab-line-close-button-show nil
               tab-line-exclude-modes '(cider-test-report-mode
                                        deft-mode
-                                       dired-mode
                                        magit-mode
                                        magit-status-mode
                                        magit-diff-mode
@@ -287,6 +286,7 @@ If you need some help, send me some electronic mail.
                                        magit-process-mode
                                        magit-popup-mode
                                        term-mode
+                                       text-mode
                                        tide-references-mode
                                        xref--xref-buffer-mode))
         (set-face-attribute 'tab-line nil ;; background behind tabs
