@@ -288,10 +288,9 @@ If you need some help, send me some electronic mail.
                                        magit-popup-mode
                                        term-mode
                                        tide-references-mode
-                                       xref--xref-buffer-mode)
-              )
+                                       xref--xref-buffer-mode))
         (set-face-attribute 'tab-line nil ;; background behind tabs
-                            :background "#fdf6e3" ; base3
+                            :background "#eee8d5" ; base2
                             :foreground "#657b83" ; base00
                             :distant-foreground "#586e75" ; base01
                             :family "Menlo"
@@ -299,15 +298,15 @@ If you need some help, send me some electronic mail.
                             :box nil)
         (set-face-attribute 'tab-line-tab nil ;; active tab in another window
                             :inherit 'tab-line
-                            :background "#eee8d5" ; base2
+                            :background "#fdf6e3" ; base3
                             :foreground "#586e75" ; base01
                             :box nil)
         (set-face-attribute 'tab-line-tab-current nil ;; active tab in current window
-                            :background "#eee8d5" ; base2
+                            :background "#fdf6e3" ; base3
                             :foreground "#586e75" ; base01
                             :box nil)
         (set-face-attribute 'tab-line-tab-inactive nil ;; inactive tab
-                            :background "#fdf6e3" ; base3
+                            :background "#eee8d5" ; base2
                             :foreground "#93a1a1" ; base1
                             :box nil)
         (set-face-attribute 'tab-line-highlight nil ;; mouseover
