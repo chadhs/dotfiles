@@ -347,6 +347,12 @@ If you need some help, send me some electronic mail.
         (setq neo-smart-open t
               neo-autorefresh t
               neo-force-change-root t))
+
+      (use-package linum
+        :ensure nil
+        :hook (prog-mode . linum-mode)
+        :config
+        (evil-leader/set-key "nn" #'linum-mode))
     #+END_SRC
 
 *** project management
@@ -2023,12 +2029,6 @@ If you need some help, send me some electronic mail.
       (evil-leader/set-key
         "dd" #'dash-at-point      ; (d)ash (d)oc
         "dv" #'describe-variable) ; (d)escribe (v)ariable
-    #+END_SRC
-
-*** line number toggle
-
-    #+BEGIN_SRC emacs-lisp
-      (evil-leader/set-key "nn" #'linum-mode)
     #+END_SRC
 
 *** column enforcement toggle
