@@ -171,6 +171,14 @@ If you need some help, send me some electronic mail.
                                          (xref--xref-buffer-mode . emacs))
                  do (evil-set-initial-state mode state)))
 
+      ;; using to address evil-mode ^r undo bug
+      (use-package undo-tree
+        :diminish undo-tree-mode
+        :init
+        (global-undo-tree-mode)
+        :config
+        (evil-set-undo-system 'undo-tree))
+
       (use-package evil-matchit
         :config
         (global-evil-matchit-mode 1))
