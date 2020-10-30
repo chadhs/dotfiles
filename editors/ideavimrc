@@ -1,0 +1,13 @@
+"""" enable emulated plugins
+set commentary
+set surround
+set easymotion
+set ideajoin
+set ideamarks
+
+"""" shortcuts
+let mapleader = ","
+map <Leader>t :action GotoFile<CR>
+map <Leader>fcn :action GotoNextError<CR>
+map <Leader>cl :action CommentByLineComment<CR>
+map <leader>jl <Plug>(easymotion-bd-jk)
