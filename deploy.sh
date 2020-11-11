@@ -64,6 +64,7 @@ symlink_configs(){
     [ ! -d ~/Library/Application\ Support/Code/User/snippets ] && ln -s ~/dotfiles/editors/vscode/snippets ~/Library/Application\ Support/Code/User/snippets
     [ ! -e ~/Library/Application\ Support/Code/User/settings.json ] && ln -s ~/dotfiles/editors/vscode/settings.json ~/Library/Application\ Support/Code/User/settings.json
     [ ! -e ~/Library/Application\ Support/Code/User/keybindings.json ] && ln -s ~/dotfiles/editors/vscode/keybindings.json ~/Library/Application\ Support/Code/User/keybindings.json
+    [ ! -e ~/.vscodevimrc ] && ln -s ~/dotfiles/editors/vscode/vscodevimrc ~/.vscodevimrc
     [ ! -e ~/.ideavimrc ] && ln -s ~/dotfiles/editors/ideavimrc .ideavimrc
   fi
 

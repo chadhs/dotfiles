@@ -5,5 +5,7 @@
   "editor.minimap.enabled": false,
   "http.proxyStrictSSL": false,
   "vim.easymotion": true,
-  "vim.leader": ","
+  "vim.leader": ",",
+  "vim.vimrc.enable": true,
+  "vim.vimrc.path": "/Users/sto8736/.vscodevimrc"
 }
