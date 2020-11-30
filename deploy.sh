@@ -18,7 +18,7 @@ os_setup(){
   elif [ "$system_type" = "FreeBSD" ]; then
     system_os="freebsd"
     pkg_install="sudo pkg install -y"
-    package_list="editorconfig-core-c emacs-nox11 git tmux vim-lite zsh"
+    package_list="editorconfig-core-c emacs-nox11 git tmux vim-console zsh"
   elif [ "$system_type" = "Linux" ]; then
     if [ -n "$(grep -i "ubuntu" /proc/version)" ] || [ -n "$(grep -i "debian" /proc/version)" ]; then
       system_os="debian"
