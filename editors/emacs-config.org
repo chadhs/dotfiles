@@ -1211,7 +1211,12 @@ If you need some help, send me some electronic mail.
          (evil-leader/set-key
            ;; set universally and override as needed such as with magit + text-mode
            "cc" 'org-edit-src-exit
-           "cC" 'org-edit-src-abort))
+           "cC" 'org-edit-src-abort)
+         (evil-define-key 'normal org-mode-map
+           (kbd "M-s-j") #'org-table-move-cell-down
+           (kbd "M-s-k") #'org-table-move-cell-up
+           (kbd "M-s-h") #'org-table-move-cell-left
+           (kbd "M-s-l") #'org-table-move-cell-right))
 
        (use-package org-bullets
          :defer t
