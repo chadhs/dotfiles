@@ -671,7 +671,8 @@ If you need some help, send me some electronic mail.
         (global-aggressive-indent-mode 1)
         (setq aggressive-indent-excluded-modes
               (cl-union aggressive-indent-excluded-modes
-                        '(html-mode
+                        '(dockerfile-mode
+                          html-mode
                           js-mode
                           js2-mode
                           pug-mode
