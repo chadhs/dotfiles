@@ -7,5 +7,21 @@
   {
     "key": "ctrl+-",
     "command": "workbench.action.splitEditorDown"
+  },
+  {
+    "key": "alt+x",
+    "command": "workbench.action.showCommands"
+  },
+  {
+    "key": "shift+cmd+p",
+    "command": "-workbench.action.showCommands"
+  },
+  {
+    "key": ", t",
+    "command": "workbench.action.quickOpen"
+  },
+  {
+    "key": "cmd+p",
+    "command": "-workbench.action.quickOpen"
   }
 ]
