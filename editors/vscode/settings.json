@@ -7,5 +7,6 @@
   "vim.easymotion": true,
   "vim.leader": ",",
   "vim.vimrc.enable": true,
-  "vim.vimrc.path": "/Users/sto8736/.vscodevimrc"
+  "vim.vimrc.path": "/Users/sto8736/.vscodevimrc",
+  "files.trimTrailingWhitespace": true
 }
