@@ -1,12 +1,57 @@
 {
-  "workbench.colorTheme": "Solarized Light",
+  "vim.leader": ",",
+  "vim.vimrc.enable": true,
+  "vim.vimrc.path": "$HOME/.vscodevimrc",
+  "vim.camelCaseMotion.enable": true,
+  "vim.visualstar": true,
+  "vim.hlsearch": true,
+  "vim.highlightedyank.enable": true,
+  "vim.otherModeKeyBindings": [
+    {
+      "before": ["<leader>", "t"],
+      "after": ["cmd+p"]
+    }
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<leader>", "t"],
+      "commands": ["workbench.action.quickOpen"]
+    },
+    {
+      "before": ["<leader>", "g", "f"],
+      "commands": ["workbench.action.findInFiles"]
+    },
+    {
+      "before": ["<leader>", "c", "l"],
+      "commands": ["editor.action.commentLine"]
+    },
+    {
+      "before": ["<leader>", "j", "d"],
+      "commands": ["editor.action.revealDefinition"]
+    },
+    {
+      "before": ["<leader>", "j", "b"],
+      "commands": ["workbench.action.navigateBack"]
+    },
+    {
+      "before": ["<leader>", "f", "u"],
+      "commands": ["references-view.findReferences"]
+    }
+  ],
+  "vim.visualModeKeyBindings": [
+        {
+          "before": ["<leader>", "c", "l"],
+            "commands": [
+                "editor.action.commentLine",
+                "extension.vim_escape"
+            ]
+        }
+    ],
   "git.autofetch": true,
   "editor.fontSize": 14,
   "editor.minimap.enabled": false,
   "http.proxyStrictSSL": false,
-  "vim.easymotion": true,
-  "vim.leader": ",",
-  "vim.vimrc.enable": true,
-  "vim.vimrc.path": "/Users/sto8736/.vscodevimrc",
-  "files.trimTrailingWhitespace": true
+  "files.trimTrailingWhitespace": true,
+  "workbench.colorTheme": "Solarized Light",
+  "vim.easymotion": true
 }

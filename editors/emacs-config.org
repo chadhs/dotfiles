@@ -814,7 +814,6 @@ If you need some help, send me some electronic mail.
 
     #+BEGIN_SRC emacs-lisp
       (use-package so-long
-        :load-path (lambda () (expand-file-name "lisp" user-emacs-directory))
         :config
         (setq so-long-minor-modes
               (cl-union so-long-minor-modes
@@ -822,7 +821,7 @@ If you need some help, send me some electronic mail.
                           flycheck-mode
                           rainbow-delimiters-mode
                           show-smartparens-mode)))
-        (so-long-enable))
+        (global-so-long-mode 1))
     #+END_SRC
 
 *** documentation search
