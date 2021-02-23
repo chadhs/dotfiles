@@ -36,17 +36,22 @@
     {
       "before": ["<leader>", "f", "u"],
       "commands": ["references-view.findReferences"]
+    },
+    {
+      "before": ["<leader>", "j", "l"],
+      "after": ["leader", "leader", "leader", "j"]
     }
+
   ],
   "vim.visualModeKeyBindings": [
-        {
-          "before": ["<leader>", "c", "l"],
-            "commands": [
-                "editor.action.commentLine",
-                "extension.vim_escape"
-            ]
-        }
-    ],
+    {
+      "before": ["<leader>", "c", "l"],
+      "commands": [
+        "editor.action.commentLine",
+        "extension.vim_escape"
+      ]
+    }
+  ],
   "git.autofetch": true,
   "editor.fontSize": 14,
   "editor.minimap.enabled": false,
