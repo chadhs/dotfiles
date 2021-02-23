@@ -32,7 +32,7 @@ brew install $(echo "${brew_pkgs}") # wrapping echo is for array->string convers
 
 echo "installing non mac app store apps..."
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-brew cask install $(echo "${cask_pkgs}") # wrapping echo is for array->string conversion
+brew install --cask $(echo "${cask_pkgs}") # wrapping echo is for array->string conversion
 
 echo "seting up dotfiles..."
 cd ~ || exit 1
