@@ -17,12 +17,9 @@ google-chrome
 iterm2
 karabiner-elements
 keyboard-maestro
-mactex-no-gui
-marked
 moom
 omnifocus
 slack
 textexpander
 the-unarchiver
-tripmode
 visual-studio-code
