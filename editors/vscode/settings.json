@@ -33,7 +33,11 @@
     },
     {
       "before": ["<leader>", "j", "l"],
-      "after": ["leader", "leader", "leader", "j"]
+      "commands": ["extension.aceJump.line"]
+    },
+    {
+      "before": ["<leader>", "j", "w"],
+      "commands": ["extension.aceJump.multiChar"]
     }
 
   ],
