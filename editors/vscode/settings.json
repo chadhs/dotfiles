@@ -6,12 +6,6 @@
   "vim.visualstar": true,
   "vim.hlsearch": true,
   "vim.highlightedyank.enable": true,
-  "vim.otherModeKeyBindings": [
-    {
-      "before": ["<leader>", "t"],
-      "after": ["cmd+p"]
-    }
-  ],
   "vim.normalModeKeyBindingsNonRecursive": [
     {
       "before": ["<leader>", "t"],
