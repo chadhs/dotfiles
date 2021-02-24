@@ -8,6 +8,11 @@ set ideamarks
 """" shortcuts
 let mapleader = ","
 map <Leader>t :action GotoFile<CR>
-map <Leader>fcn :action GotoNextError<CR>
+map <Leader>gf :action FindInPath<CR>
 map <Leader>cl :action CommentByLineComment<CR>
+map <leader>jd :action GotoDeclaration<CR>
+map <leader>jb :action Back<CR>
+map <leader>fu :action FindUsages<CR>
 map <leader>jl <Plug>(easymotion-bd-jk)
+map <leader>jw <Plug>(easymotion-w)
+map <Leader>fcn :action GotoNextError<CR>
