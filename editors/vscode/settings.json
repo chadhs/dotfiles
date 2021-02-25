@@ -3,6 +3,7 @@
   "vim.vimrc.enable": true,
   "vim.vimrc.path": "$HOME/.vscodevimrc",
   "vim.camelCaseMotion.enable": true,
+  "vim.easymotion": true,
   "vim.visualstar": true,
   "vim.hlsearch": true,
   "vim.highlightedyank.enable": true,
@@ -55,6 +56,5 @@
   "editor.minimap.enabled": false,
   "http.proxyStrictSSL": false,
   "files.trimTrailingWhitespace": true,
-  "workbench.colorTheme": "Solarized Light",
-  "vim.easymotion": true
+  "workbench.colorTheme": "Solarized Light"
 }

@@ -216,8 +216,9 @@ If you need some help, send me some electronic mail.
       (use-package solarized-theme
         :if (display-graphic-p)
         :config
-        (load-theme 'solarized-dark t)
-        (load-theme 'solarized-light t))
+        (load-theme 'solarized-dark t t)
+        (load-theme 'solarized-light t t)
+        )
 
       (use-package ample-theme
         :if (not (display-graphic-p))
@@ -228,14 +229,14 @@ If you need some help, send me some electronic mail.
 *** cycle themes
 
     #+BEGIN_SRC emacs-lisp
-      (use-package cycle-themes
-        :if (display-graphic-p)
-        :init
-        (setq cycle-themes-theme-list
-              '(solarized-dark
-                solarized-light))
-        :config
-        (evil-leader/set-key "ct" #'cycle-themes))
+      ;; (use-package cycle-themes
+      ;;   :if (display-graphic-p)
+      ;;   :init
+      ;;   (setq cycle-themes-theme-list
+      ;;         '(solarized-light
+      ;;           solarized-dark))
+      ;;   :config
+      ;;   (evil-leader/set-key "ct" #'cycle-themes))
     #+END_SRC
 
 *** terminal settings
@@ -278,51 +279,51 @@ If you need some help, send me some electronic mail.
         :init
         (setq zoom-window-mode-line-color nil))
 
-      (use-package tab-line
-        :ensure nil
-        :init
-        (global-tab-line-mode)
-        :config
-        (setq tab-line-new-button-show nil
-              ;; tab-line-close-button-show nil
-              tab-line-exclude-modes '(cider-test-report-mode
-                                       deft-mode
-                                       magit-mode
-                                       magit-status-mode
-                                       magit-diff-mode
-                                       magit-log-mode
-                                       magit-process-mode
-                                       magit-popup-mode
-                                       term-mode
-                                       text-mode
-                                       tide-references-mode
-                                       xref--xref-buffer-mode))
-        (set-face-attribute 'tab-line nil ;; background behind tabs
-                            :background "#eee8d5" ; base2
-                            :foreground "#657b83" ; base00
-                            :distant-foreground "#586e75" ; base01
-                            :family "Menlo"
-                            :height 0.95
-                            :box nil)
-        (set-face-attribute 'tab-line-tab nil ;; active tab in another window
-                            :inherit 'tab-line
-                            :background "#fdf6e3" ; base3
-                            :foreground "#586e75" ; base01
-                            :box nil)
-        (set-face-attribute 'tab-line-tab-current nil ;; active tab in current window
-                            :background "#fdf6e3" ; base3
-                            :foreground "#586e75" ; base01
-                            :box nil)
-        (set-face-attribute 'tab-line-tab-inactive nil ;; inactive tab
-                            :background "#eee8d5" ; base2
-                            :foreground "#93a1a1" ; base1
-                            :box nil)
-        (set-face-attribute 'tab-line-highlight nil ;; mouseover
-                            :background "#eee8d5" ; base2
-                            :foreground 'unspecified)
-        ;; keyboard shortcuts
-        (global-set-key (kbd "s-{") #'tab-line-switch-to-prev-tab)
-        (global-set-key (kbd "s-}") #'tab-line-switch-to-next-tab))
+      ;; (use-package tab-line
+      ;;   :ensure nil
+      ;;   :init
+      ;;   (global-tab-line-mode)
+      ;;   :config
+      ;;   (setq tab-line-new-button-show nil
+      ;;         ;; tab-line-close-button-show nil
+      ;;         tab-line-exclude-modes '(cider-test-report-mode
+      ;;                                  deft-mode
+      ;;                                  magit-mode
+      ;;                                  magit-status-mode
+      ;;                                  magit-diff-mode
+      ;;                                  magit-log-mode
+      ;;                                  magit-process-mode
+      ;;                                  magit-popup-mode
+      ;;                                  term-mode
+      ;;                                  text-mode
+      ;;                                  tide-references-mode
+      ;;                                  xref--xref-buffer-mode))
+      ;;   (set-face-attribute 'tab-line nil ;; background behind tabs
+      ;;                       :background "#eee8d5" ; base2
+      ;;                       :foreground "#657b83" ; base00
+      ;;                       :distant-foreground "#586e75" ; base01
+      ;;                       :family "Menlo"
+      ;;                       :height 0.95
+      ;;                       :box nil)
+      ;;   (set-face-attribute 'tab-line-tab nil ;; active tab in another window
+      ;;                       :inherit 'tab-line
+      ;;                       :background "#fdf6e3" ; base3
+      ;;                       :foreground "#586e75" ; base01
+      ;;                       :box nil)
+      ;;   (set-face-attribute 'tab-line-tab-current nil ;; active tab in current window
+      ;;                       :background "#fdf6e3" ; base3
+      ;;                       :foreground "#586e75" ; base01
+      ;;                       :box nil)
+      ;;   (set-face-attribute 'tab-line-tab-inactive nil ;; inactive tab
+      ;;                       :background "#eee8d5" ; base2
+      ;;                       :foreground "#93a1a1" ; base1
+      ;;                       :box nil)
+      ;;   (set-face-attribute 'tab-line-highlight nil ;; mouseover
+      ;;                       :background "#eee8d5" ; base2
+      ;;                       :foreground 'unspecified)
+      ;;   ;; keyboard shortcuts
+      ;;   (global-set-key (kbd "s-{") #'tab-line-switch-to-prev-tab)
+      ;;   (global-set-key (kbd "s-}") #'tab-line-switch-to-next-tab))
     #+END_SRC
 
 *** navigation
@@ -1852,9 +1853,6 @@ If you need some help, send me some electronic mail.
 *** window control
 
     #+BEGIN_SRC emacs-lisp
-      ;;; cycle themes
-      ;;(evil-leader/set-key "ct" #'cycle-themes)
-
       ;;; full screen toggle
       (global-set-key (kbd "s-<return>") #'toggle-frame-fullscreen) ; s = super (⌘ on mac)
 
