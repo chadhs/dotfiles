@@ -1043,8 +1043,9 @@ If you need some help, send me some electronic mail.
        ;;   (add-hook 'java-mode-hook
        ;;             (lambda ()
        ;;               (meghanada-mode t)
-       ;;               (setq c-basic-offset 2)
-       ;;               (add-hook 'before-save-hook 'meghanada-code-beautify-before-save))))
+       ;;               ;; (setq c-basic-offset 2)
+       ;;               ;; (add-hook 'before-save-hook 'meghanada-code-beautify-before-save)
+       ;;               )))
      #+END_SRC
 
 *** javascript / typescript

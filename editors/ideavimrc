@@ -17,3 +17,5 @@ map <leader>fu :action FindUsages<CR>
 map <leader>jl <Plug>(easymotion-bd-jk)
 map <leader>jw <Plug>(easymotion-w)
 map <Leader>fcn :action GotoNextError<CR>
+map <leader>rtn :action RunContextGroup<CR>
+map <leader>rtf :action RerunFailedTests<CR>
