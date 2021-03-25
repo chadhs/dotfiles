@@ -56,5 +56,8 @@
   "editor.minimap.enabled": false,
   "http.proxyStrictSSL": false,
   "files.trimTrailingWhitespace": true,
-  "workbench.colorTheme": "Solarized Light"
+  "workbench.colorTheme": "Solarized Light",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }
