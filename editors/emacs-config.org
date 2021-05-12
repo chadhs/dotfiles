@@ -53,9 +53,9 @@ If you need some help, send me some electronic mail.
 
     #+BEGIN_SRC emacs-lisp
       (setq package-archives
-            '(("gnu"          . "https://elpa.gnu.org/packages/")
-              ("melpa"        . "https://melpa.org/packages/")
-              ("melpa-stable" . "https://stable.melpa.org/packages/")))
+            '(("gnu"          . "http://elpa.gnu.org/packages/")
+              ("melpa"        . "http://melpa.org/packages/")
+              ("melpa-stable" . "http://stable.melpa.org/packages/")))
     #+END_SRC
 
 *** Pin packages
