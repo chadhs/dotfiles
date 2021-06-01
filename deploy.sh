@@ -66,6 +66,7 @@ symlink_configs(){
     [ ! -e ~/Library/Application\ Support/Code/User/keybindings.json ] && ln -s ~/dotfiles/editors/vscode/keybindings.json ~/Library/Application\ Support/Code/User/keybindings.json
     [ ! -e ~/.vscodevimrc ] && ln -s ~/dotfiles/editors/vscode/vscodevimrc ~/.vscodevimrc
     [ ! -e ~/.ideavimrc ] && ln -s ~/dotfiles/editors/ideavimrc .ideavimrc
+    [ ! -e ~/Library/Preferences/espanso/user/common.yml ] && ln -s ~/dotfiles/utils/espanso/common.yml ~/Library/Preferences/espanso/user/common.yml
   fi
 
 

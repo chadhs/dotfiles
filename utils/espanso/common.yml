@@ -1,0 +1,19 @@
+name: common
+parent: default
+
+matches:
+  ## utils
+  - trigger: ":xpt"
+    replace: "{{clipboard}}"
+    vars:
+      - name: "clipboard"
+        type: "clipboard"
+  ## abbrvs
+  - trigger: ":lmk"
+    replace: "let me know"
+  - trigger: ":Lmk"
+    replace: "Let me know"
+  - trigger: ":NM"
+    replace: "Northwestern Mutual"
+  - trigger: ":nm"
+    replace: "northwesternmutual"
