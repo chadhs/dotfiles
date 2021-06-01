@@ -8,6 +8,7 @@ matches:
     vars:
       - name: "clipboard"
         type: "clipboard"
+
   ## abbrvs
   - trigger: ":lmk"
     replace: "let me know"
@@ -17,3 +18,49 @@ matches:
     replace: "Northwestern Mutual"
   - trigger: ":nm"
     replace: "northwesternmutual"
+  - trigger: "tho"
+    replace: "though"
+  - trigger: "tho."
+    replace: "though."
+  - trigger: "visav"
+    replace: "vis-à-vis"
+  - trigger: "xpack"
+    replace: "expansion"
+  - trigger: "yw"
+    replace: "you're welcome"
+
+  ## misspellings
+  - trigger: "antyhing"
+    replace: "anything"
+  - trigger: "cyrogen"
+    replace: "cryogen"
+  - trigger: "eamcs"
+    replace: "emacs"
+  - trigger: "isntall"
+    replace: "install"
+  - trigger: "reponse"
+    replace: "response"
+
+  ## characters
+  - trigger: ":up"
+    replace: "↑"
+  - trigger: ":down"
+    replace: "↓"
+  - trigger: ":left"
+    replace: "←"
+  - trigger: ":right"
+    replace: "→"
+  - trigger: ":opt"
+    replace: "⌥"
+  - trigger: ":comm"
+    replace: "⌘"
+  - trigger: ":ctrl"
+    replace: "^"
+  - trigger: ":shift"
+    replace: "⇧"
+
+  ## lol
+  - trigger: ":kc"
+    replace: "↑↑↓↓←→←→BA"
+  - trigger: ":shrug"
+    replace: "¯\_(ツ)_/¯"
