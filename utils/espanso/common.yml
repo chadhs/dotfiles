@@ -63,4 +63,4 @@ matches:
   - trigger: ":kc"
     replace: "↑↑↓↓←→←→BA"
   - trigger: ":shrug"
-    replace: "¯\_(ツ)_/¯"
+    replace: "¯\\_(ツ)_/¯"
