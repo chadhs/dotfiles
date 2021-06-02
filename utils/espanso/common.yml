@@ -18,8 +18,6 @@ matches:
     replace: "Northwestern Mutual"
   - trigger: ":nm"
     replace: "northwesternmutual"
-  - trigger: "tho"
-    replace: "though"
   - trigger: "tho."
     replace: "though."
   - trigger: "visav"
