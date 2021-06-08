@@ -11,7 +11,7 @@ editorconfig
 git
 java11
 nmap
-node@12
+node
 nvm
 pandoc
 postgresql@11

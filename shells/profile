@@ -1,7 +1,7 @@
 export PATH="$HOME/bin\
 :/usr/local/opt/openssl/bin\
 :/usr/local/opt/curl/bin\
-:/usr/local/opt/node@12/bin\
+:/usr/local/opt/node/bin\
 :/usr/local/opt/python/libexec/bin\
 :/usr/local/opt/ruby/bin\
 :$HOME/go/bin\
