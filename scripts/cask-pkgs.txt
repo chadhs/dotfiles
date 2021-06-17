@@ -20,6 +20,5 @@ keyboard-maestro
 moom
 omnifocus
 slack
-textexpander
 the-unarchiver
 visual-studio-code
