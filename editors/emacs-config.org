@@ -1034,18 +1034,10 @@ If you need some help, send me some electronic mail.
 
 *** java
 
-     Disabled temporarily to prevent loading accidentally when editing javascript docs.
-
      #+BEGIN_SRC emacs-lisp
-       ;; (use-package meghanada
-       ;;   :defer t
-       ;;   :init
-       ;;   (add-hook 'java-mode-hook
-       ;;             (lambda ()
-       ;;               (meghanada-mode t)
-       ;;               ;; (setq c-basic-offset 2)
-       ;;               ;; (add-hook 'before-save-hook 'meghanada-code-beautify-before-save)
-       ;;               )))
+       (use-package lsp-java
+         :defer t
+         :hook (((java-mode) . lsp)))
      #+END_SRC
 
 *** javascript / typescript
