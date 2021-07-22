@@ -541,13 +541,14 @@ If you need some help, send me some electronic mail.
         (define-key xref--xref-buffer-mode-map (kbd "h") #'move-beginning-of-line)
         (define-key xref--xref-buffer-mode-map (kbd "l") #'move-end-of-line))
 
-      (use-package company-lsp
-        :defer t
-        :config
-        (setq company-lsp-cache-candidates 'auto
-              company-lsp-async t
-              company-lsp-enable-snippet nil
-              company-lsp-enable-recompletion t))
+      ;;; NO LONGER SUPPORTED
+      ;; (use-package company-lsp
+      ;;   :defer t
+      ;;   :config
+      ;;   (setq company-lsp-cache-candidates 'auto
+      ;;         company-lsp-async t
+      ;;         company-lsp-enable-snippet nil
+      ;;         company-lsp-enable-recompletion t))
 
       (use-package lsp-ui
         :defer t
