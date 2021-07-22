@@ -542,15 +542,6 @@ If you need some help, send me some electronic mail.
         (define-key xref--xref-buffer-mode-map (kbd "h") #'move-beginning-of-line)
         (define-key xref--xref-buffer-mode-map (kbd "l") #'move-end-of-line))
 
-      ;;; NO LONGER SUPPORTED
-      ;; (use-package company-lsp
-      ;;   :defer t
-      ;;   :config
-      ;;   (setq company-lsp-cache-candidates 'auto
-      ;;         company-lsp-async t
-      ;;         company-lsp-enable-snippet nil
-      ;;         company-lsp-enable-recompletion t))
-
       (use-package lsp-ui
         :defer t
         :config
@@ -1081,9 +1072,11 @@ If you need some help, send me some electronic mail.
          (add-hook
           'web-mode-hook
           (lambda ()
-            ;; specific settings for tsx files
-            ;; TODO: change this to match on JS/TS/JSX/TSX
-            (when (string-equal "tsx" (file-name-extension buffer-file-name))
+            ;; specific settings for js/ts & jsx/tsx
+            (when (or (string-equal "js" (file-name-extension buffer-file-name))
+                      (string-equal "jsx" (file-name-extension buffer-file-name))
+                      (string-equal "ts" (file-name-extension buffer-file-name))
+                      (string-equal "tsx" (file-name-extension buffer-file-name)))
               ;; (setup-tide-mode)
               (cs/enable-eslint-webmode)
               (cs/use-prettier-if-config-exists-in-project-root)
@@ -1091,8 +1084,8 @@ If you need some help, send me some electronic mail.
               (setq-local electric-pair-text-pairs electric-pair-pairs)
               (electric-pair-mode 1)
               (evil-leader/set-key-for-mode 'web-mode
-                "fp" 'prettier-js-mode          ; (f)ormat (p)rettier
-                "lf" #'eslint-fix))))           ; (l)int (f)ix
+                "fp" 'prettier-js-mode ; (f)ormat (p)rettier
+                "lf" #'eslint-fix))))  ; (l)int (f)ix
          :config
          (setq css-indent-offset 2
                web-mode-code-indent-offset 2
