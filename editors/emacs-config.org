@@ -525,7 +525,7 @@ If you need some help, send me some electronic mail.
       (use-package lsp-mode
         :defer t
         :diminish lsp-mode
-        :hook (((js-mode js2-mode rjsx-mode) . lsp))
+        :hook (((js-mode typescript-mode web-mode) . lsp))
         :commands lsp
         :config
         (setq lsp-auto-configure t
@@ -534,8 +534,9 @@ If you need some help, send me some electronic mail.
               lsp-diagnostic-package :none)
         ;;; keybinds after load
         (evil-leader/set-key
-          "jd"  #'lsp-goto-type-definition ; (j)ump to (d)efinition
-          "jb"  #'xref-pop-marker-stack)   ; (j)ump (b)ack to marker
+          "jd"  #'lsp-find-definition   ; (j)ump to (d)efinition
+          "jb"  #'xref-pop-marker-stack ; (j)ump (b)ack to marker
+          "fu"  #'lsp-find-references)  ; (f)ind (u)sages
         (define-key xref--xref-buffer-mode-map (kbd "k") #'previous-line)
         (define-key xref--xref-buffer-mode-map (kbd "j") #'next-line)
         (define-key xref--xref-buffer-mode-map (kbd "h") #'move-beginning-of-line)
@@ -633,7 +634,6 @@ If you need some help, send me some electronic mail.
         (defun cs-mode-space-delimiter-p (endp delimiter)
           "Don't insert a space before delimiters in certain modes"
           (or
-           (bound-and-true-p js2-mode)
            (bound-and-true-p js-mode)
            (bound-and-true-p javascript-mode)))
         (add-to-list 'paredit-space-for-delimiter-predicates #'cs-mode-space-delimiter-p))
@@ -650,7 +650,6 @@ If you need some help, send me some electronic mail.
         (add-hook 'org-mode-hook 'evil-cleverparens-mode)
         (add-hook 'web-mode-hook 'evil-cleverparens-mode)
         (add-hook 'yaml-mode-hook 'evil-cleverparens-mode)
-        (add-hook 'rjsx-mode-hook 'evil-cleverparens-mode)
         (add-hook 'typescript-mode-hook 'evil-cleverparens-mode)
         ;; disabled in the following modes
         ;; (add-hook 'rjsx-mode-hook (lambda () (evil-cleverparens-mode -1)))
@@ -676,12 +675,12 @@ If you need some help, send me some electronic mail.
                         '(dockerfile-mode
                           html-mode
                           js-mode
-                          js2-mode
+                          javascript-mode
                           pug-mode
-                          rjsx-mode
                           terraform-mode
                           tide-mode
-                          typscript-mode))))
+                          typscript-mode
+                          web-mode))))
     #+END_SRC
 
 *** indentation highlighting
@@ -724,7 +723,6 @@ If you need some help, send me some electronic mail.
     #+BEGIN_SRC emacs-lisp
       (use-package column-enforce-mode
         :hook (clojure-mode
-               js2-mode
                shell-script-mode
                json-mode)
         :diminish column-enforce-mode
@@ -1033,50 +1031,11 @@ If you need some help, send me some electronic mail.
         :defer t)
     #+END_SRC
 
-*** java
+*** html / css / javascript / typescript / web templates
+
+     Explain.
 
      #+BEGIN_SRC emacs-lisp
-       (use-package lsp-java
-         :defer t
-         :hook (((java-mode) . lsp)))
-     #+END_SRC
-
-*** javascript / typescript
-
-     #+BEGIN_SRC emacs-lisp
-       (use-package js-mode
-         :ensure nil
-         :mode ("\\.js\\'"
-                "\\.jsx\\'")
-         :config
-         (setq js-indent-level 2)
-         (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
-                                                          '(javascript-jshint))) ; jshint doesn't work for JSX
-         (electric-pair-mode 1)
-         (evil-leader/set-key-for-mode 'js-mode
-           "ri"  #'indium-launch                ; (r)epl (i)nitialize
-           "rc"  #'indium-connect               ; (r)epl (c)onnect
-           "rq"  #'indium-quit                  ; (r)epl (q)uit
-           "rb"  #'indium-switch-to-repl-buffer ; (r)epl (b)uffer
-           "eb"  #'indium-eval-buffer           ; (e)val (b)uffer
-           "ef"  #'indium-eval-defun            ; (e)val de(f)un
-           "es"  #'indium-eval-last-node        ; (e)val (s)-expression
-           "fu"  #'lsp-find-references          ; (f)ind (u)sages
-           "fp" 'prettier-js-mode               ; (f)ormat (p)rettier
-           "lf" #'eslint-fix                    ; (l)int (f)ix
-           ))
-
-       ;; javascript eval and repl
-       (use-package indium
-         :defer t
-         :diminish indium-interaction-mode
-         :hook (((js-mode) . indium-interaction-mode))
-         :config
-         ;;; keybinds on load
-         (bind-key "S-<return>" #'newline indium-repl-mode-map)
-         (evil-leader/set-key-for-mode 'indium-repl-mode
-           "cr"  #'indium-repl-clear-output)) ; (c)lear (r)epl
-
        ;; use project local executables
        (use-package add-node-modules-path
          :defer t
@@ -1088,42 +1047,76 @@ If you need some help, send me some electronic mail.
          :diminish prettier-js-mode
          :hook (((js-mode typescript-mode web-mode) . cs/use-prettier-if-config-exists-in-project-root)))
 
-       ;; typescript
-       (use-package typescript-mode
-         :defer t
-         :mode ("\\.ts\\'")
-         :config
-         (setq typescript-indent-level 2)
-         (evil-leader/set-key-for-mode 'typescript-mode
-           "jd"  #'tide-jump-to-definition ; (j)ump to (d)ef
-           "jb"  #'tide-jump-back          ; (j)ump (b)ack
-           "fu"  #'tide-references         ; (f)ind (u)sages
-           "fp" 'prettier-js-mode          ; (f)ormat (p)rettier
-           "lf" #'eslint-fix               ; (l)int (f)ix
-           ))
-
-       ;;; tide
-       (defun setup-tide-mode ()
-         (interactive)
-         (tide-setup)
-         (flycheck-add-mode 'javascript-eslint 'typescript-mode)
-         (flycheck-add-mode 'javascript-eslint 'web-mode)
-         (flycheck-select-checker 'javascript-eslint))
-
-       (use-package tide
-         :defer t
-         :diminish tide-mode
-         :hook (((typescript-mode) . setup-tide-mode))
-         :config
-         (setq tide-format-options '(:indentSize 2 :tabSize 2))
-         (define-key tide-references-mode-map (kbd "k") #'previous-line)
-         (define-key tide-references-mode-map (kbd "j") #'next-line)
-         (define-key tide-references-mode-map (kbd "h") #'move-beginning-of-line)
-         (define-key tide-references-mode-map (kbd "l") #'move-end-of-line))
-
        (use-package eslint-fix
          :defer t
          :diminish eslint-fix)
+
+       (defun cs/enable-eslint-webmode ()
+         (interactive)
+         (flycheck-add-mode 'javascript-eslint 'web-mode)
+         (flycheck-select-checker 'javascript-eslint))
+
+       (use-package web-mode
+         :mode ("\\.ejs\\'"
+                "\\.html\\'"
+                "\\.html\\.erb\\'"
+                "\\.j2\\'"
+                "\\.jinja\\'"
+                "\\.php\\'"
+                "\\.js\\'"
+                "\\.jsx\\'"
+                "\\.ts\\'"
+                "\\.tsx\\'"
+                )
+         :init
+         (add-hook
+          'web-mode-hook
+          (lambda ()
+            ;; fix paren matching web-mode conflict for jinja-like templates
+            (when (or (string-equal "j2" (file-name-extension buffer-file-name))
+                      (string-equal "jinja" (file-name-extension buffer-file-name)))
+              (setq-local electric-pair-inhibit-predicate
+                          (lambda (c)
+                            (if (char-equal c ?{) t (electric-pair-default-inhibit c)))))))
+         (add-hook
+          'web-mode-hook
+          (lambda ()
+            ;; specific settings for tsx files
+            ;; TODO: change this to match on JS/TS/JSX/TSX
+            (when (string-equal "tsx" (file-name-extension buffer-file-name))
+              ;; (setup-tide-mode)
+              (cs/enable-eslint-webmode)
+              (cs/use-prettier-if-config-exists-in-project-root)
+              (setq-local electric-pair-pairs (append electric-pair-pairs '((?\' . ?\')))) ; single quotes
+              (setq-local electric-pair-text-pairs electric-pair-pairs)
+              (electric-pair-mode 1)
+              (evil-leader/set-key-for-mode 'web-mode
+                "fp" 'prettier-js-mode          ; (f)ormat (p)rettier
+                "lf" #'eslint-fix))))           ; (l)int (f)ix
+         :config
+         (setq css-indent-offset 2
+               web-mode-code-indent-offset 2
+               web-mode-css-indent-offset 2
+               web-mode-markup-indent-offset 2
+               web-mode-attr-indent-offset 2
+               web-mode-attr-value-indent-offset 2
+               web-mode-enable-auto-quoting nil)
+         ;;; keybinds on load
+         (evil-leader/set-key-for-mode 'web-mode
+           "fh" #'web-beautify-html))
+
+       (use-package pug-mode
+         :mode ("\\.pug\\'")
+         :config
+         (setq pug-tab-width 4))
+     #+END_SRC
+
+*** java
+
+     #+BEGIN_SRC emacs-lisp
+       (use-package lsp-java
+         :defer t
+         :hook (((java-mode) . lsp)))
      #+END_SRC
 
 *** markdown
@@ -1321,63 +1314,6 @@ If you need some help, send me some electronic mail.
          (add-hook 'css-mode-hook 'rainbow-mode)
          (add-hook 'scss-mode-hook 'rainbow-mode)
          (add-hook 'clojure-mode-hook 'rainbow-mode)) ; for use with garden
-     #+END_SRC
-
-*** web templates
-
-     Explain.
-
-     #+BEGIN_SRC emacs-lisp
-       (use-package web-mode
-         :mode ("\\.ejs\\'"
-                "\\.html\\'"
-                "\\.html\\.erb\\'"
-                "\\.j2\\'"
-                "\\.jinja\\'"
-                "\\.php\\'"
-                "\\.tsx\\'")
-         :init
-         (add-hook
-          'web-mode-hook
-          (lambda ()
-            ;; fix paren matching web-mode conflict for jinja-like templates
-            (when (or (string-equal "j2" (file-name-extension buffer-file-name))
-                      (string-equal "jinja" (file-name-extension buffer-file-name)))
-              (setq-local electric-pair-inhibit-predicate
-                          (lambda (c)
-                            (if (char-equal c ?{) t (electric-pair-default-inhibit c)))))))
-         (add-hook
-          'web-mode-hook
-          (lambda ()
-            ;; specific settings for tsx files
-            (when (string-equal "tsx" (file-name-extension buffer-file-name))
-              (setup-tide-mode)
-              (cs/use-prettier-if-config-exists-in-project-root)
-              (setq-local electric-pair-pairs (append electric-pair-pairs '((?\' . ?\')))) ; single quotes
-              (setq-local electric-pair-text-pairs electric-pair-pairs)
-              (electric-pair-mode 1)
-              (evil-leader/set-key-for-mode 'web-mode
-                "jd"  #'tide-jump-to-definition ; (j)ump to (d)ef
-                "jb"  #'tide-jump-back          ; (j)ump (b)ack
-                "fu"  #'tide-references         ; (f)ind (u)sages
-                "fp" 'prettier-js-mode          ; (f)ormat (p)rettier
-                "lf" #'eslint-fix))))           ; (l)int (f)ix
-         :config
-         (setq css-indent-offset 2
-               web-mode-code-indent-offset 2
-               web-mode-css-indent-offset 2
-               web-mode-markup-indent-offset 2
-               web-mode-attr-indent-offset 2
-               web-mode-attr-value-indent-offset 2
-               web-mode-enable-auto-quoting nil)
-         ;;; keybinds on load
-         (evil-leader/set-key-for-mode 'web-mode
-           "fh" #'web-beautify-html))
-
-       (use-package pug-mode
-         :mode ("\\.pug\\'")
-         :config
-         (setq pug-tab-width 4))
      #+END_SRC
 
 *** yaml
