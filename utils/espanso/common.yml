@@ -56,6 +56,16 @@ matches:
     replace: "^"
   - trigger: ":shift"
     replace: "⇧"
+  - trigger: ":escape"
+    replace: "⎋"
+  - trigger: ":delete"
+    replace: "⌫"
+  - trigger: ":space"
+    replace: "␣"
+  - trigger: ":tab"
+    replace: "⇥"
+  - trigger: ":return"
+    replace: "↩"
 
   ## lol
   - trigger: ":kc"
