@@ -98,7 +98,6 @@ symlink_configs(){
   [ ! -e ~/.eslintrc.json ] && ln -s ~/dotfiles/utils/eslintrc.json ~/.eslintrc.json
   [ ! -e ~/.prettierrc.json ] && ln -s ~/dotfiles/utils/prettierrc.json ~/.prettierrc.json
   [ ! -e ~/jsconfig.json ] && ln -s ~/dotfiles/utils/jsconfig.json ~/jsconfig.json
-  [ ! -e ~/.npmrc ] && ln -s ~/dotfiles/utils/npmrc .npmrc
   [ ! -e ~/.tern-config ] && ln -s ~/dotfiles/utils/tern-config .tern-config
   [ ! -e ~/.indium.json ] && ln -s ~/dotfiles/utils/indium.json .indium.json
   [ ! -e ~/.zprint.edn ] && ln -s ~/dotfiles/utils/zprint.edn .zprint.edn
