@@ -14,6 +14,7 @@ pip_pkgs="$(grep '^[^#[:blank:]]' pip-pkgs.txt | tr '\n' ' ')"
 . ~/.sh_aliases \
   && update-dotfiles \
   && brew update && brew doctor && brew upgrade; brew cleanup \
+  && mas outdated \
   && mas upgrade \
   && brew cu -a --cleanup \
   && npm install -g $(echo "${npm_pkgs}") \
