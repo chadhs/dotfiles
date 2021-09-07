@@ -38,7 +38,7 @@ os_setup(){
 
 verify_packages(){
   $pkg_install $package_list
-  [ "$system_os" = "macos" ] && brew cask install $cask_package_list
+  [ "$system_os" = "macos" ] && brew install --cask $cask_package_list
 }
 
 symlink_configs(){
