@@ -67,6 +67,7 @@ symlink_configs(){
     [ ! -e ~/.vscodevimrc ] && ln -s ~/dotfiles/editors/vscode/vscodevimrc ~/.vscodevimrc
     [ ! -e ~/.ideavimrc ] && ln -s ~/dotfiles/editors/ideavimrc .ideavimrc
     [ ! -e ~/Library/Preferences/espanso/user/common.yml ] && ln -s ~/dotfiles/utils/espanso/common.yml ~/Library/Preferences/espanso/user/common.yml
+    [ ! -e ~/.config/karabiner/assets/complex_modifications/custom.json ] && ln -s ~/dotfiles/utils/karabiner/custom.json ~/.config/karabiner/assets/complex_modifications/custom.json
   fi
 
 
