@@ -5,6 +5,15 @@
       "description": "Change left_command+hjkl to arrow keys",
       "manipulators": [
         {
+          "conditions": [
+            {
+              "bundle_identifiers": [
+                "^com.omnigroup.OmniFocus3$",
+                "^com.apple.MobileSMS$"
+              ],
+              "type": "frontmost_application_unless"
+            }
+          ],
           "from": {
             "key_code": "h",
             "modifiers": {
@@ -12,7 +21,6 @@
                 "left_command"
               ],
               "optional": [
-                "any"
               ]
             }
           },
@@ -24,6 +32,15 @@
           "type": "basic"
         },
         {
+          "conditions": [
+            {
+              "bundle_identifiers": [
+                "^com.omnigroup.OmniFocus3$",
+                "^com.apple.MobileSMS$"
+              ],
+              "type": "frontmost_application_unless"
+            }
+          ],
           "from": {
             "key_code": "j",
             "modifiers": {
@@ -31,7 +48,6 @@
                 "left_command"
               ],
               "optional": [
-                "any"
               ]
             }
           },
@@ -43,6 +59,15 @@
           "type": "basic"
         },
         {
+          "conditions": [
+            {
+              "bundle_identifiers": [
+                "^com.omnigroup.OmniFocus3$",
+                "^com.apple.MobileSMS$"
+              ],
+              "type": "frontmost_application_unless"
+            }
+          ],
           "from": {
             "key_code": "k",
             "modifiers": {
@@ -50,7 +75,6 @@
                 "left_command"
               ],
               "optional": [
-                "any"
               ]
             }
           },
@@ -62,6 +86,15 @@
           "type": "basic"
         },
         {
+          "conditions": [
+            {
+              "bundle_identifiers": [
+                "^com.omnigroup.OmniFocus3$",
+                "^com.apple.MobileSMS$"
+              ],
+              "type": "frontmost_application_unless"
+            }
+          ],
           "from": {
             "key_code": "l",
             "modifiers": {
@@ -69,7 +102,6 @@
                 "left_command"
               ],
               "optional": [
-                "any"
               ]
             }
           },
