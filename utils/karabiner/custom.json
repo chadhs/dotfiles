@@ -9,7 +9,8 @@
             {
               "bundle_identifiers": [
                 "^com.omnigroup.OmniFocus3$",
-                "^com.apple.MobileSMS$"
+                "^com.apple.MobileSMS$",
+                "^com.apple.Safari$"
               ],
               "type": "frontmost_application_unless"
             }
@@ -90,7 +91,8 @@
             {
               "bundle_identifiers": [
                 "^com.omnigroup.OmniFocus3$",
-                "^com.apple.MobileSMS$"
+                "^com.apple.MobileSMS$",
+                "^com.apple.Safari$"
               ],
               "type": "frontmost_application_unless"
             }
