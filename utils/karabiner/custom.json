@@ -21,8 +21,7 @@
               "mandatory": [
                 "left_command"
               ],
-              "optional": [
-              ]
+              "optional": []
             }
           },
           "to": [
@@ -48,8 +47,7 @@
               "mandatory": [
                 "left_command"
               ],
-              "optional": [
-              ]
+              "optional": []
             }
           },
           "to": [
@@ -75,8 +73,7 @@
               "mandatory": [
                 "left_command"
               ],
-              "optional": [
-              ]
+              "optional": []
             }
           },
           "to": [
@@ -103,13 +100,36 @@
               "mandatory": [
                 "left_command"
               ],
-              "optional": [
-              ]
+              "optional": []
             }
           },
           "to": [
             {
               "key_code": "right_arrow"
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    },
+    {
+      "description": "Modify keys in GeForce NOW",
+      "manipulators": [
+        {
+          "conditions": [
+            {
+              "bundle_identifiers": [
+                "^com.nvidia.gfnpc.mall$"
+              ],
+              "type": "frontmost_application_if"
+            }
+          ],
+          "from": {
+            "key_code": "left_command"
+          },
+          "to": [
+            {
+              "key_code": "left_control"
             }
           ],
           "type": "basic"
