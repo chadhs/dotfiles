@@ -68,6 +68,8 @@ matches:
     replace: "⇥"
   - trigger: ",,return"
     replace: "↩"
+  - trigger: ",,check"
+    replace: "✓"
 
   ## lol
   - trigger: ",,kc"
