@@ -25,6 +25,3 @@ export EDITOR
 
 ## aliases
 source ~/.sh_aliases
-
-## additional user ENVs
-[ -e ~/.user-env ] && source ~/.user-env

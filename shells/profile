@@ -24,3 +24,6 @@ if [[ $(uname) = "Darwin" ]]; then
   #### load the nvm script but don't run it; we'll use system node for cli tools like linters
   [[ -s "/usr/local/opt/nvm/nvm.sh" ]] && source /usr/local/opt/nvm/nvm.sh --no-use
 fi
+
+### additional user ENVs
+[ -e ~/.user-env ] && source ~/.user-env
