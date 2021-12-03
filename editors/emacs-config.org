@@ -216,9 +216,8 @@ If you need some help, send me some electronic mail.
       (use-package solarized-theme
         :if (display-graphic-p)
         :config
-        (load-theme 'solarized-dark t t)
-        ;; (load-theme 'solarized-light t t)
-        )
+        (load-theme 'solarized-light t t)
+        (load-theme 'solarized-dark t t))
 
       (use-package ample-theme
         :if (not (display-graphic-p))
@@ -229,14 +228,18 @@ If you need some help, send me some electronic mail.
 *** cycle themes
 
     #+BEGIN_SRC emacs-lisp
-      ;; (use-package cycle-themes
-      ;;   :if (display-graphic-p)
-      ;;   :init
-      ;;   (setq cycle-themes-theme-list
-      ;;         '(solarized-light
-      ;;           solarized-dark))
-      ;;   :config
-      ;;   (evil-leader/set-key "ct" #'cycle-themes))
+      (use-package cycle-themes
+        :if (display-graphic-p)
+        :init
+        ;; ↓ deprecated but makes cycle themes work for now ↓
+        (setq byte-compile-warnings '(cl-functions))
+        (require 'cl)
+        ;; ↑ deprecated but makes cycle themes work for now ↑
+        (setq cycle-themes-theme-list
+              '(solarized-light
+                solarized-dark))
+        :config
+        (evil-leader/set-key "ct" #'cycle-themes))
     #+END_SRC
 
 *** terminal settings
