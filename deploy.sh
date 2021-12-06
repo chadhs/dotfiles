@@ -77,6 +77,7 @@ symlink_configs(){
   [ ! -e ~/.zshrc ] && ln -s ~/dotfiles/shells/zshrc .zshrc
   [ ! -e ~/.zprofile ] && ln -s ~/dotfiles/shells/zprofile .zprofile
   [ ! -e ~/.zshenv ] && ln -s ~/dotfiles/shells/zprofile .zshenv
+  [ ! -e ~/.user-env ] && cp ~/dotfiles/shells/user-env ~/.user-env
   [ ! -e ~/.oh-my-zsh/themes/digitalnomad.zsh-theme ] && \
     ln -s ~/dotfiles/shells/digitalnomad.zsh-theme ~/.oh-my-zsh/themes/digitalnomad.zsh-theme
   [ ! -e ~/.bashrc ] && ln -s ~/dotfiles/shells/bashrc .bashrc

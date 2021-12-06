@@ -27,4 +27,4 @@ if [[ $(uname) = "Darwin" ]]; then
 fi
 
 ### additional user ENVs
-[ -e ~/.user-env ] && source ~/.user-env
+[[ -e ~/.user-env ]] && source ~/.user-env
