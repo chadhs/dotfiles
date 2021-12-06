@@ -1,5 +1,5 @@
 #!/bin/zsh
-watchdir="$HOME/notes"
+watchdir="$HOME/src/chadhs/org"
 filepattern="*.*"
-filewatcher -D "${watchdir}/${filepattern}" "cd ${watchdir} && git pull && git add -A && git commit -a -m 'notes update' && git push"
+filewatcher -D "${watchdir}/${filepattern}" "cd ${watchdir} && git pull && git add -A && git commit -a -m '[org update]' && git push"
 exit 0
