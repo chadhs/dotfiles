@@ -1158,7 +1158,7 @@ Explain.
       "ft"  #'typo-mode)) ; (f)ormatting topography (t)oggle
 #+END_SRC
 
-*** org-mode
+*** org mode
 
 Explain.
 
@@ -1171,28 +1171,49 @@ Explain.
                          (require 'ox-md)
                          (require 'ox-beamer))))
     :init
+    ;;; general settings
+    (setq org-directory "~/org")
     (setq org-insert-mode-line-in-empty-file t) ; for .txt file compatability
     (setq org-startup-truncated nil) ; wrap lines, don't truncate.
+    ;;; src code editing settings
     (setq org-src-fontify-natively t)
     (setq org-src-tab-acts-natively t)
     (setq org-src-window-setup 'current-window)
+    ;;; gtd
+    (setq org-agenda-files (list "~/org/gtd.org"))
+    (setq org-todo-keywords
+          '((sequence "TODO" "STARTED" "|" "DONE")))
+    (setq org-deadline-warning-days 3)
+    (setq org-agenda-show-future-repeats nil)
+    (setq org-agenda-window-setup 'current-window)
+    ;;; habits
+    (setq org-log-into-drawer t)
+    ;;; display formatting
+    (setq org-image-actual-width 720)
     (setq org-adapt-indentation nil)
     (setq org-startup-indented t)
+    (setq org-tags-column -100)
     ;;; exporting
     (setq org-export-with-smart-quotes t)
     (setq org-html-postamble nil)
     ;;; keybinds pre load
     (evil-leader/set-key-for-mode 'org-mode
-      "es" 'org-edit-special
-      "ri" 'ielm
-      "il" 'org-insert-link              ; (i)sert (l)ink
-      "ol" 'org-open-at-point            ; (o)pen (l)ink
-      "dl" 'org-toggle-link-display      ; (d)isplay (l)ink toggle
-      "cb" 'org-toggle-checkbox          ; toggle (c)heck(b)ox
-      "at" 'org-table-align              ; (a)lign (t)able
-      "ir" 'org-table-insert-row         ; (i)sert (r)ow
-      "ic" 'org-table-insert-column      ; (i)sert (c)olumn
-      "ns" 'org-toggle-narrow-to-subtree ; (n)arrow (s)ubtree toggle
+      "ots" 'org-todo                                      ; toggle status
+      "oss" 'org-schedule                                  ; set schedule
+      "osd" 'org-deadline                                  ; set deadline
+      "ost" 'org-set-tags                                  ; set tags
+      "oav" 'org-agenda-list                               ; agenda view
+      "oat" 'org-archive-subtree-default-with-confirmation ; archive tree
+      "es"  'org-edit-special
+      "ri"  'ielm                                          ; (r)epl (i)nitialize
+      "il"  'org-insert-link                               ; (i)sert (l)ink
+      "ol"  'org-open-at-point                             ; (o)pen (l)ink
+      "dl"  'org-toggle-link-display                       ; (d)isplay (l)ink toggle
+      "cb"  'org-toggle-checkbox                           ; toggle (c)heck(b)ox
+      "at"  'org-table-align                               ; (a)lign (t)able
+      "ir"  'org-table-insert-row                          ; (i)sert (r)ow
+      "ic"  'org-table-insert-column                       ; (i)sert (c)olumn
+      "ns"  'org-toggle-narrow-to-subtree                  ; (n)arrow (s)ubtree toggle
       )
     (evil-leader/set-key
       ;; set universally and override as needed such as with magit + text-mode
