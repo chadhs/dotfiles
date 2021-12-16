@@ -749,6 +749,7 @@ I've disabled this due to the massive performance degradation I experienced.
     :defer t
     :init
     (add-hook 'after-init-hook #'global-emojify-mode)
+    (add-hook 'after-init-hook #'global-emojify-mode-line-mode)
     :config
     (setq emojify-inhibit-major-modes
           (cl-union emojify-inhibit-major-modes
@@ -1202,7 +1203,6 @@ Explain.
       "oss" 'org-schedule                                  ; set schedule
       "osd" 'org-deadline                                  ; set deadline
       "ost" 'org-set-tags                                  ; set tags
-      "oav" 'org-agenda-list                               ; agenda view
       "oat" 'org-archive-subtree-default-with-confirmation ; archive tree
       "es"  'org-edit-special
       "ri"  'ielm                                          ; (r)epl (i)nitialize
@@ -1216,6 +1216,7 @@ Explain.
       "ns"  'org-toggle-narrow-to-subtree                  ; (n)arrow (s)ubtree toggle
       )
     (evil-leader/set-key
+      "oav" 'org-agenda-list ; org agenda view
       ;; set universally and override as needed such as with magit + text-mode
       "cc" 'org-edit-src-exit
       "cC" 'org-edit-src-abort)
@@ -1233,6 +1234,18 @@ Explain.
                 (org-bullets-mode t)))
     :config
     (setq org-bullets-bullet-list '("◉" "○" "✸" "◇" "▻")))
+
+  (use-package org-pomodoro
+    :defer t
+    :init
+    (setq org-pomodoro-short-break-length 5)
+    (setq org-pomodoro-long-break-length 5)
+    (setq org-pomodoro-mode-line t)
+    (setq org-pomodoro-format ":tomato:%s")
+    ;;; keybinds pre load
+    (evil-leader/set-key
+      "ops" 'org-pomodoro ; (o)rg (p)omodoro (s)tart
+      ))
 #+END_SRC
 
 *** python
@@ -1726,7 +1739,8 @@ N [*]filename [project] ᚠbranch (modes) Err U: line:col 29% [main]
     "%Z "
     "%l:%c "
     "%p "
-    '(:eval (persp-mode-line))))
+    '(:eval (persp-mode-line))
+    '(org-pomodoro-mode-line org-pomodoro-mode-line)))
 #+END_SRC
 
 *** open urls in default browser
