@@ -73,7 +73,7 @@ symlink_configs(){
 
   # all
   [ ! -e ~/.profile ] && ln -s ~/dotfiles/shells/profile .profile
-  [ ! -d ~/.oh-my-zsh ] && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"; rm ~/.zshrc
+  [ ! -d ~/.oh-my-zsh ] && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended; rm ~/.zshrc
   [ ! -e ~/.zshrc ] && ln -s ~/dotfiles/shells/zshrc .zshrc
   [ ! -e ~/.zprofile ] && ln -s ~/dotfiles/shells/zprofile .zprofile
   [ ! -e ~/.zshenv ] && ln -s ~/dotfiles/shells/zprofile .zshenv
