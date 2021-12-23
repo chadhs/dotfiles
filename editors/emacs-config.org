@@ -169,7 +169,11 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
                                      (term-mode              . emacs)
                                      (tide-references-mode   . emacs)
                                      (xref--xref-buffer-mode . emacs))
-             do (evil-set-initial-state mode state)))
+             do (evil-set-initial-state mode state))
+    ;; keybinds
+    (evil-leader/set-key
+      "ww" #'save-buffer
+      "wq" #'save-buffers-kill-terminal))
 
   ;; using to address evil-mode ^r undo bug
   (use-package undo-tree
@@ -388,12 +392,13 @@ Explain.
           (cl-union projectile-globally-ignored-directories
                     '(".git"
                       ".cljs_rhino_repl"
+                      ".cpcache"
                       ".meghanada"
                       ".shadow-cljs"
                       ".svn"
                       "cljs-runtime"
-                      "out"
                       "node_modules"
+                      "out"
                       "repl"
                       "resources/public/js/compiled"
                       "target"
@@ -1170,7 +1175,11 @@ Explain.
            "\\.txt\\'")
     :hook ((org-mode . (lambda ()
                          (require 'ox-md)
-                         (require 'ox-beamer))))
+                         (require 'ox-beamer)))
+           ;; automatically save my orgmode files to disk
+           (org-mode . (lambda ()
+                         (add-hook 'auto-save-hook 'org-save-all-org-buffers nil t)
+                         (auto-save-mode))))
     :init
     ;;; general settings
     (setq org-directory "~/org")
@@ -1240,12 +1249,13 @@ Explain.
     :init
     (setq org-pomodoro-short-break-length 5)
     (setq org-pomodoro-long-break-length 5)
-    (setq org-pomodoro-mode-line t)
+    (setq org-pomodoro-clock-break t)
     (setq org-pomodoro-format ":tomato:%s")
+    (setq org-pomodoro-short-break-format ":palm-tree:%s")
+    (setq org-pomodoro-long-break-format ":palm-tree:%s")
     ;;; keybinds pre load
     (evil-leader/set-key
-      "ops" 'org-pomodoro ; (o)rg (p)omodoro (s)tart
-      ))
+      "ops" 'org-pomodoro)) ; (o)rg (p)omodoro (s)tart
 #+END_SRC
 
 *** python

@@ -295,6 +295,11 @@ nmap <silent> <leader>ev :e $MYVIMRC<cr>
 " 's'ource 'v'imrc)
 nmap <silent> <leader>sv :so $MYVIMRC<cr>
 
+" extra save and quit shortcuts
+nmap <leader>ww :w<CR>
+nmap <leader>wq :wq<CR>
+nmap <leader>qq :q<CR>
+
 " allow jk navigation to not follow line/word wrapping contraints
 nnoremap j gj
 nnoremap k gk
