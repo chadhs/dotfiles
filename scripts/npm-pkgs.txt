@@ -1,13 +1,15 @@
 eslint
-indium
 js-yaml
 jsonlint
-less
 nodemon
 prettier
-sass
-tern
 typescript
 typescript-language-server
-watchman
-yo
+
+## archived but not forgotten
+# indium
+# less
+# sass
+# tern
+# watchman
+# yo

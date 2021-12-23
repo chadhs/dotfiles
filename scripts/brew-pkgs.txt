@@ -3,30 +3,32 @@
 ## include an uncommented list of homebrew packages to install
 
 aspell
-awscli
-bash
 borkdude/brew/clj-kondo
 clojure
 editorconfig
 git
 java11
 nmap
-node
+node@16
 nvm
-pandoc
-postgresql@11
+postgresql@13
 pwgen
 python
 readline
 rlwrap
 ruby
-speedtest-cli
-ssh-copy-id
 shellcheck
-terraform
 the_silver_searcher
-tldr
 tmux
 tree
 wget
 zsh
+
+## archived but not forgotten
+# awscli
+# bash
+# pandoc
+# speedtest-cli
+# ssh-copy-id
+# terraform
+# tldr

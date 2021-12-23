@@ -1,6 +1,8 @@
-ansible
-ansible-lint
-boto
-jmespath
-netaddr
 virtualenvwrapper
+
+## archived but not forgotten
+# ansible
+# ansible-lint
+# boto
+# jmespath
+# netaddr

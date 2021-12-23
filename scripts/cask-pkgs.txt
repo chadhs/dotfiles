@@ -9,16 +9,18 @@ alfred
 appcleaner
 bartender
 daisydisk
-deckset
 docker
-fantastical
 focusatwill
 google-chrome
 iterm2
 karabiner-elements
-keyboard-maestro
 moom
-omnifocus
 slack
 the-unarchiver
-visual-studio-code
+
+## archived but not forgotten
+# deckset
+# fantastical
+# keyboard-maestro
+# omnifocus
+# visual-studio-code
