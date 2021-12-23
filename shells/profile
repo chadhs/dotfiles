@@ -1,12 +1,12 @@
 export PATH="$HOME/bin\
 :/usr/local/opt/openssl/bin\
 :/usr/local/opt/curl/bin\
-:/usr/local/opt/node/bin\
+:/usr/local/opt/node@16/bin\
 :/usr/local/opt/python/libexec/bin\
 :/usr/local/opt/ruby/bin\
 :/usr/local/lib/ruby/gems/3.0.0/bin\
 :$HOME/go/bin\
-:/usr/local/opt/postgresql@11/bin\
+:/usr/local/opt/postgresql@13/bin\
 :/Library/TeX/texbin\
 :/usr/local/bin\
 :/usr/local/sbin\
