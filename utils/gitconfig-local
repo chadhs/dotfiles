@@ -1,0 +1,6 @@
+# gitconfig-local
+# define git configurations here that are machine specific and not stored in version control
+
+## ## company
+## [includeIf "gitdir:~/src/company/**"]
+##   path = ~/.gitconfig-company

@@ -28,3 +28,6 @@ helper = osxkeychain
 ## nm
 [includeIf "gitdir:~/src/nm/**"]
   path = ~/dotfiles/utils/gitconfig.d/gitconfig-nm
+## per machine
+[include]
+  path = ~/.gitconfig-local
