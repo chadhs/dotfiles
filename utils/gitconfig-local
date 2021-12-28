@@ -3,4 +3,4 @@
 
 ## ## company
 ## [includeIf "gitdir:~/src/company/**"]
-##   path = ~/.gitconfig-company
+##   path = ~/.gitconfig.d/company

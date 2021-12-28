@@ -1,5 +1,0 @@
-[user]
-name = "Chad Stovern"
-email = "chadstovern@northwesternmutual.com"
-[core]
-sshCommand = "ssh -i ~/.ssh/chad-nm-mac_rsa"

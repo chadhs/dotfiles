@@ -12,22 +12,6 @@ ui = auto
 [credential]
 helper = osxkeychain
 
-# setup user config per account
-## personal
-[includeIf "gitdir:~/src/chadhs/**"]
-  path = ~/dotfiles/utils/gitconfig.d/gitconfig-chadhs
-## dotfiles
-[includeIf "gitdir:~/dotfiles"]
-  path = ~/dotfiles/utils/gitconfig.d/gitconfig-chadhs
-## techcraft labs
-[includeIf "gitdir:~/src/techcraft-labs/**"]
-  path = ~/dotfiles/utils/gitconfig.d/gitconfig-techcraftlabs
-## techcraft workshop (deprecated)
-[includeIf "gitdir:~/src/techcraft-workshop/**"]
-  path = ~/dotfiles/utils/gitconfig.d/gitconfig-techcraftlabs
-## nm
-[includeIf "gitdir:~/src/nm/**"]
-  path = ~/dotfiles/utils/gitconfig.d/gitconfig-nm
-## per machine
+## per machine config
 [include]
   path = ~/.gitconfig-local
