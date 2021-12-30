@@ -1196,6 +1196,8 @@ Explain.
     (setq org-deadline-warning-days 3)
     (setq org-agenda-show-future-repeats nil)
     (setq org-agenda-window-setup 'current-window)
+    (setq org-refile-targets '((nil :maxlevel . 5)
+                               (org-agenda-files :maxlevel . 5)))
     (setq org-capture-templates
           '(("t" "Task" entry (file+headline "~/org/gtd.org" "inbox")
              "** %?\n%i\n")
@@ -1222,6 +1224,7 @@ Explain.
       "osd" 'org-deadline                                  ; set deadline
       "ost" 'org-set-tags                                  ; set tags
       "oat" 'org-archive-subtree-default-with-confirmation ; archive tree
+      "orf" 'org-refile                                    ; refile
       "es"  'org-edit-special
       "ri"  'ielm                                          ; (r)epl (i)nitialize
       "il"  'org-insert-link                               ; (i)sert (l)ink
