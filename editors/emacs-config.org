@@ -1202,9 +1202,11 @@ Explain.
     (setq org-outline-path-complete-in-steps nil)
     (setq org-capture-templates
           '(("t" "Task" entry (file+headline "~/org/gtd.org" "inbox")
-             "** %?\n%i\n")
+             "** %?\n%i\n"
+             :prepend t)
             ("n" "Note" entry (file+headline "~/org/notes.org" "scratchpad")
-             "** %?\n%i\n")
+             "** %?\n%i\n"
+             :prepend t)
             ("j" "Journal" entry
              (file+headline "~/org/journal.org" "current month")
              "* %u\n%?\n"
