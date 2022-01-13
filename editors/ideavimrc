@@ -20,3 +20,4 @@ map <Leader>fcn :action GotoNextError<CR>
 map <leader>rtn :action RunContextGroup<CR>
 map <leader>rtf :action RerunFailedTests<CR>
 map <leader>cs :action EditorScrollToCenter<CR>
+map <leader>ww :action SaveDocument<CR>
