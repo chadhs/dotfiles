@@ -3,6 +3,7 @@
 useconfigonly = true
 [core]
 ignorecase = false
+excludesfile = ~/.gitignore
 [push]
 default = simple
 [pull]

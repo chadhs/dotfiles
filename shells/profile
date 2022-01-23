@@ -7,6 +7,7 @@ export PATH="$HOME/bin\
 :/usr/local/lib/ruby/gems/3.0.0/bin\
 :$HOME/go/bin\
 :/usr/local/opt/postgresql@13/bin\
+:/usr/local/opt/openjdk@11/bin\
 :/Library/TeX/texbin\
 :/usr/local/bin\
 :/usr/local/sbin\
