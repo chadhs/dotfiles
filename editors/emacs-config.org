@@ -700,8 +700,9 @@ use ~y%~ for yanking a s-expression
     :ensure nil
     :hook (prog-mode . hs-minor-mode)
     :diminish hs-minor-mode
-    :config
-    (evil-define-key 'normal prog-mode-map (kbd "SPC") 'hs-toggle-hiding))
+    ;; :config
+    ;; (evil-define-key 'normal prog-mode-map (kbd "SPC") 'hs-toggle-hiding)
+    )
 #+END_SRC
 
 *** rainbow delimiters
@@ -856,6 +857,18 @@ Honor editorconfig files configuration for whitespace and indentation settings w
 
 #+BEGIN_SRC emacs-lisp
   (setq ispell-program-name "aspell")
+#+END_SRC
+
+*** string manipulation
+#+BEGIN_SRC emacs-lisp
+  (use-package string-inflection
+    :defer t
+    :init
+    (evil-leader/set-key
+      "sit" #'string-inflection-all-cycle
+      "sic" #'string-inflection-lower-camelcase
+      "sik" #'string-inflection-kebab-case
+      "sis" #'string-inflection-underscore))
 #+END_SRC
 
 
