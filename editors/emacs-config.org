@@ -973,7 +973,8 @@ Explain.
   (use-package zprint-mode
     :defer t
     :diminish zprint-mode
-    :hook (((clojure-mode clojurescript-mode) . zprint-mode)))
+    ;; :hook (((clojure-mode clojurescript-mode) . zprint-mode))
+    )
 #+END_SRC
 
 *** elixir
@@ -1567,6 +1568,8 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 
 #+BEGIN_SRC emacs-lisp
   (setq custom-file (concat user-emacs-directory ".emacs-customize.el"))
+  (when (file-exists-p custom-file)
+    (load custom-file))
 #+END_SRC
 
 *** set default starting directory (avoid launching projectile at HOME or src root)
