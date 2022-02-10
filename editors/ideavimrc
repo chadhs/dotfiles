@@ -4,6 +4,7 @@ set surround
 set easymotion
 set ideajoin
 set ideamarks
+set which-key
 
 """" shortcuts
 let mapleader = ","

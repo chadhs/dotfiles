@@ -903,7 +903,7 @@ Explain.
       "ri"  #'cider-jack-in-cljs            ; (r)epl (i)nitialize
       "rr"  #'cider-restart                 ; (r)epl (r)estart
       "rq"  #'cider-quit                    ; (r)epl (q)uit
-      "rc"  #'cider-connect-clojurescript   ; (r)epl (c)onnect
+      "rc"  #'cider-connect-cljs            ; (r)epl (c)onnect
       "eb"  #'cider-eval-buffer             ; (e)val (b)uffer
       "ef"  #'cider-eval-defun-at-point     ; (e)val de(f)un
       "es"  #'cider-eval-sexp-at-point      ; (e)val (s)-expression
