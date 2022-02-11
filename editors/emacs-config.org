@@ -672,6 +672,8 @@ use ~y%~ for yanking a s-expression
     (setq aggressive-indent-excluded-modes
           (cl-union aggressive-indent-excluded-modes
                     '(c-mode
+                      clojure-mode
+                      clojurescript-mode
                       dockerfile-mode
                       html-mode
                       js-mode
