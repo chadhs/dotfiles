@@ -23,6 +23,9 @@ map <leader>rtf :action RerunFailedTests<CR>
 map <leader>cs :action EditorScrollToCenter<CR>
 map <leader>ww :action SaveDocument<CR>
 nmap <leader>/ :nohlsearch<CR>
+nmap w :action EditorNextWordInDifferentHumpsMode<CR>
+nmap b :action EditorPreviousWordInDifferentHumpsMode<CR>
+nmap dw :action EditorDeleteToWordEndInDifferentHumpsMode<CR>
 
 """" settings
 " set the search scan so that it ignores case when the search is all lower
