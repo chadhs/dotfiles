@@ -6,7 +6,7 @@ set ideajoin
 set ideamarks
 set which-key
 
-"""" shortcuts
+"""" key bindings
 let mapleader = ","
 map <Leader>t :action GotoFile<CR>
 map <Leader>b :action Switcher<CR>
@@ -22,3 +22,23 @@ map <leader>rtn :action RunContextGroup<CR>
 map <leader>rtf :action RerunFailedTests<CR>
 map <leader>cs :action EditorScrollToCenter<CR>
 map <leader>ww :action SaveDocument<CR>
+nmap <leader>/ :nohlsearch<CR>
+
+"""" settings
+" set the search scan so that it ignores case when the search is all lower
+" case but recognizes uppercase if it's specified
+set ignorecase
+set smartcase
+
+" When the page starts to scroll, keep the cursor 8 lines from
+" the top and 8 lines from the bottom
+set scrolloff=8
+
+" Incrementally match the search.  I orignally hated this
+" but someone forced me to live with it for a while and told
+" me that I would grow to love it after getting used to it...
+" turns out he was right :)
+set incsearch
+
+" turn on search hilighting
+set hls
