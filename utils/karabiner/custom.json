@@ -2,35 +2,8 @@
   "title": "Custom Rules",
   "rules": [
     {
-      "description": "Change left_command+hjkl to arrow keys",
+      "description": "Change left_command+jk to ↓↑ arrow keys",
       "manipulators": [
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com.omnigroup.OmniFocus3$",
-                "^com.apple.MobileSMS$",
-                "^com.apple.Safari$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "h",
-            "modifiers": {
-              "mandatory": [
-                "left_command"
-              ],
-              "optional": []
-            }
-          },
-          "to": [
-            {
-              "key_code": "left_arrow"
-            }
-          ],
-          "type": "basic"
-        },
         {
           "conditions": [
             {
@@ -80,37 +53,11 @@
             }
           ],
           "type": "basic"
-        },
-        {
-          "conditions": [
-            {
-              "bundle_identifiers": [
-                "^com.omnigroup.OmniFocus3$",
-                "^com.apple.Safari$"
-              ],
-              "type": "frontmost_application_unless"
-            }
-          ],
-          "from": {
-            "key_code": "l",
-            "modifiers": {
-              "mandatory": [
-                "left_command"
-              ],
-              "optional": []
-            }
-          },
-          "to": [
-            {
-              "key_code": "right_arrow"
-            }
-          ],
-          "type": "basic"
         }
       ]
     },
     {
-      "description": "Change right_command+hjkl to arrow keys",
+      "description": "Change right_command+hjkl to ←↓↑→ arrow keys",
       "manipulators": [
         {
           "conditions": [
