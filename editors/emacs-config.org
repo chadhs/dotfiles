@@ -1211,7 +1211,7 @@ Explain.
     ;;; gtd
     (setq org-agenda-files (list "~/org/gtd.org"))
     (setq org-todo-keywords
-          '((sequence "TODO" "STARTED" "|" "DONE")))
+          '((sequence "TODO" "STARTED" "ON HOLD" "|" "DONE")))
     (setq org-deadline-warning-days 3)
     (setq org-agenda-show-future-repeats nil)
     (setq org-agenda-window-setup 'current-window)
