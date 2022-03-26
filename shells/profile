@@ -1,14 +1,22 @@
 export PATH="$HOME/bin\
 :/opt/homebrew/bin\
 :/usr/local/opt/openssl/bin\
+:/opt/homebrew/opt/openssl/bin\
 :/usr/local/opt/curl/bin\
+:/opt/homebrew/opt/curl/bin\
 :/usr/local/opt/node@16/bin\
+:/opt/homebrew/opt/node@16/bin\
 :/usr/local/opt/python/libexec/bin\
+:/opt/homebrew/opt/python/libexec/bin\
 :/usr/local/opt/ruby/bin\
+:/opt/homebrew/opt/ruby/bin\
 :/usr/local/lib/ruby/gems/3.0.0/bin\
+:/opt/homebrew/lib/ruby/gems/3.0.0/bin\
 :$HOME/go/bin\
 :/usr/local/opt/postgresql@13/bin\
+:/opt/homebrew/opt/postgresql@13/bin\
 :/usr/local/opt/openjdk@11/bin\
+:/opt/homebrew/opt/openjdk@11/bin\
 :/Library/TeX/texbin\
 :/usr/local/bin\
 :/usr/local/sbin\
