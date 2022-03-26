@@ -16,7 +16,7 @@ sleep 3
 
 echo "bootstraping install tools..."
 xcode-select --install
-[ -z "$(command -v brew)" ] && /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+[ -z "$(command -v brew)" ] && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 brew install mas
 brew tap homebrew/cask-versions
 brew tap buo/cask-upgrade
