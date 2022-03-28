@@ -181,7 +181,8 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
     :init
     (global-undo-tree-mode)
     :config
-    (evil-set-undo-system 'undo-tree))
+    (evil-set-undo-system 'undo-tree)
+    (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 
   (use-package evil-matchit
     :config
