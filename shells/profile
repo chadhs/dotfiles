@@ -10,8 +10,8 @@ export PATH="$HOME/bin\
 :/opt/homebrew/opt/python/libexec/bin\
 :/usr/local/opt/ruby/bin\
 :/opt/homebrew/opt/ruby/bin\
-:/usr/local/lib/ruby/gems/3.0.0/bin\
-:/opt/homebrew/lib/ruby/gems/3.0.0/bin\
+:/usr/local/lib/ruby/gems/3.1.0/bin\
+:/opt/homebrew/lib/ruby/gems/3.1.0/bin\
 :$HOME/go/bin\
 :/usr/local/opt/postgresql@13/bin\
 :/opt/homebrew/opt/postgresql@13/bin\
