@@ -280,6 +280,7 @@ Explain.
   (use-package perspective
     :if (not (bound-and-true-p persp-mode))
     :config
+    (setq persp-suppress-no-prefix-key-warning t)
     (persp-mode))
 
   (use-package buffer-move
