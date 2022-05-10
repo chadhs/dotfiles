@@ -1271,6 +1271,7 @@ Explain.
       "cc" 'org-edit-src-exit
       "cC" 'org-edit-src-abort)
     (evil-define-key 'normal org-mode-map
+      (kbd "TAB")   #'org-cycle
       (kbd "M-s-j") #'org-table-move-cell-down
       (kbd "M-s-k") #'org-table-move-cell-up
       (kbd "M-s-h") #'org-table-move-cell-left
