@@ -946,7 +946,7 @@ Explain.
     :init
     (setq cider-repl-pop-to-buffer-on-connect nil ; don't show repl buffer on launch
           cider-repl-display-in-current-window t  ; open repl buffer in current window
-          cider-show-error-buffer nil             ; don't show error buffer automatically
+          cider-show-error-buffer t               ; show error buffer automatically
           cider-auto-select-error-buffer nil      ; don't switch to error buffer on error
           cider-font-lock-dynamically t           ; font-lock as much as possible
           cider-save-file-on-load t               ; save file on prompt when evaling
@@ -954,7 +954,9 @@ Explain.
           cider-repl-history-file (concat user-emacs-directory "cider-history")
           cider-repl-wrap-history t
           cider-repl-history-size 3000
-          nrepl-hide-special-buffers t)
+          nrepl-hide-special-buffers nil          ; show buffers for debugging
+          )
+
     (add-hook 'cider-mode-hook (lambda ()
                                  (eldoc-mode)))
     (add-hook 'cider-repl-mode-hook (lambda ()

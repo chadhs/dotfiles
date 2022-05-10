@@ -61,6 +61,9 @@ function update-dotfiles(){
 function fix-emacs-pkgs(){
     rm -rf ~/.emacs.d/elpa/*
 }
+function unfreeze-emacs(){
+  kill -SIGUSR2 $(pgrep -fli emacs)
+}
 
 ## when in a shell in emacs, remind yourself not to launch vim there
 [[ $(uname) = "Darwin" ]] && [[ $EMACS ]] && alias vim='echo "Do not run Vim in a shell within Emacs; use Emacs to edit"'
