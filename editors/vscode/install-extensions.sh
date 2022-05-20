@@ -8,7 +8,6 @@ extensions=(
   ## core
   "vscodevim.vim"
   "editorconfig.editorconfig"
-  "coenraads.bracket-pair-colorizer-2"
   "lucax88x.codeacejumper"
   "ms-azuretools.vscode-docker"
   ## langs

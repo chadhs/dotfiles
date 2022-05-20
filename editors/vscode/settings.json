@@ -57,6 +57,8 @@
   "http.proxyStrictSSL": false,
   "files.trimTrailingWhitespace": true,
   "workbench.colorTheme": "Solarized Light",
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs":"active",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   }
