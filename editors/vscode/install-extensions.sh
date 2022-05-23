@@ -16,6 +16,7 @@ extensions=(
   ### clojure
   "betterthantomorrow.calva"
   "borkdude.clj-kondo"
+  "humao.rest-client"
 )
 
 for extension in "${extensions[@]}"
