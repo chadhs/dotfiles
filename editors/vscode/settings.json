@@ -39,6 +39,10 @@
     {
       "before": ["<leader>", "j", "w"],
       "commands": ["extension.aceJump.multiChar"]
+    },
+    {
+      "before": ["<leader>", "w", "w"],
+      "commands": ["workbench.action.files.save"]
     }
 
   ],
@@ -61,5 +65,10 @@
   "editor.guides.bracketPairs":"active",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
-  }
+  },
+  "workbench.colorCustomizations": {
+  "[Solarized Light]": {}
+  },
+  "workbench.preferredDarkColorTheme": "Solarized Dark",
+  "workbench.preferredLightColorTheme": "Solarized Light"
 }
