@@ -995,7 +995,7 @@ Explain.
   (use-package zprint-mode
     :defer t
     :diminish zprint-mode
-    ;; :hook (((clojure-mode clojurescript-mode) . zprint-mode))
+    :hook (((clojure-mode clojurescript-mode) . zprint-mode))
     )
 #+END_SRC
 
@@ -1247,6 +1247,7 @@ Explain.
     ;;; keybinds pre load
     (evil-leader/set-key-for-mode 'org-mode
       "ots" 'org-todo                                      ; toggle status
+      "ott" 'org-show-todo-tree                            ; toggle todo-tree
       "oss" 'org-schedule                                  ; set schedule
       "osd" 'org-deadline                                  ; set deadline
       "ost" 'org-set-tags                                  ; set tags
