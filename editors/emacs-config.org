@@ -1192,6 +1192,13 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
+  ;;; mac mail link functions
+  (defun org-mac-mail-link-open-link (mid _)
+    (start-process "open-link" nil "open" (format "message://%%3C%s%%3E" mid)))
+
+  (defun org-mac-mail-link-add-message-links ()
+    (org-link-set-parameters "message" :follow #'org-mac-mail-link-open-link))
+
   (use-package org-mode
     :ensure nil
     :mode ("\\.org\\'"
@@ -1202,7 +1209,8 @@ Explain.
            ;; automatically save my orgmode files to disk
            (org-mode . (lambda ()
                          (add-hook 'auto-save-hook 'org-save-all-org-buffers nil t)
-                         (auto-save-mode))))
+                         (auto-save-mode)))
+           (org-mode . org-mac-mail-link-add-message-links))
     :init
     ;;; general settings
     (setq org-directory "~/org")
