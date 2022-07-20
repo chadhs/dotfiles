@@ -1872,8 +1872,12 @@ This section contains general global emacs key bindings.  Mode specific key bind
   ;;; evil line movement tweaks
   (define-key evil-motion-state-map "j" #'evil-next-visual-line)
   (define-key evil-motion-state-map "k" #'evil-previous-visual-line)
+  (define-key evil-motion-state-map (kbd "<down>") #'evil-next-visual-line)
+  (define-key evil-motion-state-map (kbd "<up>") #'evil-previous-visual-line)
   (define-key evil-visual-state-map "j" #'evil-next-visual-line)
   (define-key evil-visual-state-map "k" #'evil-previous-visual-line)
+  (define-key evil-visual-state-map (kbd "<down>") #'evil-next-visual-line)
+  (define-key evil-visual-state-map (kbd "<up>") #'evil-previous-visual-line)
 #+END_SRC
 
 *** window control
