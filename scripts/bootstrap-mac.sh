@@ -36,7 +36,7 @@ brew install --cask $(echo "${cask_pkgs}") # wrapping echo is for array->string 
 
 echo "seting up dotfiles..."
 cd ~ || exit 1
-pip install virtualenvwrapper
+pip3 install virtualenvwrapper
 [ ! -d ~/dotfiles ] && git clone https://github.com/chadhs/dotfiles.git
 sh dotfiles/deploy.sh
 [ -d ~/.virtualenvs ] && rm ~/.virtualenvs/postactivate && ln -s ~/dotfiles/utils/virtualenvwrapper-zsh-hooks/postactivate ~/.virtualenvs/postactivate

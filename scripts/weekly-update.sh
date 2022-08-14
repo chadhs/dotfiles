@@ -20,4 +20,4 @@ pip_pkgs="$(grep '^[^#[:blank:]]' pip-pkgs.txt | tr '\n' ' ')"
   && npm install -g $(echo "${npm_pkgs}") \
   && gem install $(echo "${gem_pkgs}") && gem update \
   && brew install shellcheck lua luarocks hadolint && luarocks install luacheck \
-  && pip install -U $(echo "${pip_pkgs}")
+  && pip3 install -U $(echo "${pip_pkgs}")
