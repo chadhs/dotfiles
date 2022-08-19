@@ -1904,6 +1904,7 @@ This section contains general global emacs key bindings.  Mode specific key bind
 
   ;;; move to next / prev window
   ;; force override bindings from all modes
+  (setq override-global-mode t)
   (bind-keys*
    ("C-k" . evil-window-up)
    ("C-j" . evil-window-down)
