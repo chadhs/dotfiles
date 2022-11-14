@@ -14,7 +14,6 @@
 
 ## include an uncommented list of app ids to install below
 
-937984704
 931657367
 445189367
 413965349
