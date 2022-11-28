@@ -18,9 +18,9 @@ where possible run the lastest stable version via homebrew as a base version.  i
 
 #### current exceptions
 
+- node@16
+- openjdk@17
 - postgres@11
-- java11
-- node@12
 
 ### fun options
 
