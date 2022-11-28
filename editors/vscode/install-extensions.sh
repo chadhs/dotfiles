@@ -17,6 +17,9 @@ extensions=(
   "betterthantomorrow.calva"
   "borkdude.clj-kondo"
   "humao.rest-client"
+  ### java
+  "vscjava.vscode-java-pack"
+  "vscjava.vscode-gradle"
 )
 
 for extension in "${extensions[@]}"

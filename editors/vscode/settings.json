@@ -43,6 +43,10 @@
     {
       "before": ["<leader>", "w", "w"],
       "commands": ["workbench.action.files.save"]
+    },
+    {
+      "before": ["<leader>", "w", "c"],
+      "commands": ["workbench.action.closeActiveEditor"]
     }
 
   ],
