@@ -18,6 +18,7 @@ keepingyouawake
 moom
 slack
 the-unarchiver
+visual-studio-code
 
 ## archived but not forgotten
 # deckset
