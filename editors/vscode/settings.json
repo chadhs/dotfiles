@@ -59,6 +59,14 @@
     {
       "before": ["<leader>", "/"],
       "commands": [":nohl"]
+    },
+    {
+      "before": ["<leader>", "s", "n"],
+      "commands": ["workbench.action.terminal.new"]
+    },
+    {
+      "before": ["<leader>", "s", "v"],
+      "commands": ["workbench.action.terminal.new"]
     }
   ],
   "vim.visualModeKeyBindings": [
