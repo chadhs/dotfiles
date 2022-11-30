@@ -16,8 +16,7 @@ export PATH="$HOME/bin\
 :$HOME/go/bin\
 :/usr/local/opt/postgresql@13/bin\
 :/opt/homebrew/opt/postgresql@13/bin\
-:/usr/local/opt/openjdk@17/bin\
-:/opt/homebrew/opt/openjdk@17/bin\
+:/Library/Java/JavaVirtualMachines/amazon-corretto-17.jdk/Contents/Home/bin\
 :/Library/TeX/texbin\
 :/usr/local/bin\
 :/usr/local/sbin\

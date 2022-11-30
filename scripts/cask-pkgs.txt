@@ -2,19 +2,20 @@
 
 ## include an uncommented list of homebrew cask packages to install
 
-emacs
-macvim
 1password
 alfred
 appcleaner
 bartender
+corretto17
 daisydisk
 docker
+emacs
 focusatwill
 google-chrome
 iterm2
 karabiner-elements
 keepingyouawake
+macvim
 moom
 slack
 the-unarchiver

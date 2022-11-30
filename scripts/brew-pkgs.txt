@@ -10,7 +10,6 @@ git
 nmap
 node@16
 nvm
-openjdk@17
 postgresql@13
 pwgen
 python
