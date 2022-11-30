@@ -47,8 +47,19 @@
     {
       "before": ["<leader>", "w", "c"],
       "commands": ["workbench.action.closeActiveEditor"]
+    },
+    {
+      "before": ["<leader>", "f", "c", "n"],
+      "commands": ["editor.action.marker.nextInFiles"]
+    },
+    {
+      "before": ["<leader>", "f", "c", "p"],
+      "commands": ["editor.action.marker.prevInFiles"]
+    },
+    {
+      "before": ["<leader>", "/"],
+      "commands": [":nohl"]
     }
-
   ],
   "vim.visualModeKeyBindings": [
     {
