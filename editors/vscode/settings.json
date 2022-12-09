@@ -93,5 +93,7 @@
   "[Solarized Light]": {}
   },
   "workbench.preferredDarkColorTheme": "Solarized Dark",
-  "workbench.preferredLightColorTheme": "Solarized Light"
+  "workbench.preferredLightColorTheme": "Solarized Light",
+  "java.import.gradle.wrapper.enabled": false,
+  "java.import.gradle.home": "/usr/local/Cellar/gradle/7.6/libexec"
 }
