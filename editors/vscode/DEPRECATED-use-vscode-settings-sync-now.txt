@@ -1,0 +1,3 @@
+DEPRECATED; use the vscode settings sync system now.
+
+.vscodevimrc is the only exception; it's empty but required.

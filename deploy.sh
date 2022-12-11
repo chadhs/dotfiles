@@ -63,9 +63,6 @@ symlink_configs(){
     [ ! -e ~/bin/macos-reset-routing-table.sh ] && ln -s ~/dotfiles/utils/macos-reset-routing-table.sh ~/bin/macos-reset-routing-table.sh
     [ ! -d ~/iCloudDrive ] && [ -d ~/Library/Mobile\ Documents/com~apple~CloudDocs ] && ln -s ~/Library/Mobile\ Documents/com~apple~CloudDocs ~/iCloudDrive
     [ ! -d ~/Library/Application\ Support/Code/User ] && mkdir -p ~/Library/Application\ Support/Code/User
-    [ ! -d ~/Library/Application\ Support/Code/User/snippets ] && ln -s ~/dotfiles/editors/vscode/snippets ~/Library/Application\ Support/Code/User/snippets
-    [ ! -e ~/Library/Application\ Support/Code/User/settings.json ] && ln -s ~/dotfiles/editors/vscode/settings.json ~/Library/Application\ Support/Code/User/settings.json
-    [ ! -e ~/Library/Application\ Support/Code/User/keybindings.json ] && ln -s ~/dotfiles/editors/vscode/keybindings.json ~/Library/Application\ Support/Code/User/keybindings.json
     [ ! -e ~/.vscodevimrc ] && ln -s ~/dotfiles/editors/vscode/vscodevimrc ~/.vscodevimrc
     [ ! -e ~/.ideavimrc ] && ln -s ~/dotfiles/editors/ideavimrc .ideavimrc
     [ ! -e ~/Library/Application\ Support/espanso/match/common.yml ] && ln -s ~/dotfiles/utils/espanso/common.yml ~/Library/Application\ Support/espanso/match/common.yml
