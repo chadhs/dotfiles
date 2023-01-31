@@ -17,13 +17,12 @@ sleep 3
 echo "bootstraping install tools..."
 xcode-select --install
 [ -z "$(command -v brew)" ] && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+[ -z "$(command -v brew)" ] && eval "$(/opt/homebrew/bin/brew shellenv)"
 brew install mas
 brew tap homebrew/cask-versions
 brew tap buo/cask-upgrade
 
 echo "installing mac app store apps..."
-#read -rp "enter your appleid email address: " appleid
-#mas signin "${appleid}"
 mas install $(echo "${mas_pkgs}") # wrapping echo is for array->string conversion
 
 echo "installing open-source tools..."
