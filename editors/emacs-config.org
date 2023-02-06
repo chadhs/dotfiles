@@ -1271,6 +1271,9 @@ Explain.
     ;;; exporting
     (setq org-export-with-smart-quotes t)
     (setq org-html-postamble nil)
+    (setq org-agenda-custom-commands
+          ;; set agenda views to print to html
+          '(("P" agenda "" nil ("~/.emacs.d/views/agenda.html"))))
     ;;; keybinds pre load
     (evil-leader/set-key-for-mode 'org-mode
       "ots" 'org-todo                                      ; toggle status
@@ -1294,8 +1297,14 @@ Explain.
       "ns"  'org-toggle-narrow-to-subtree                  ; (n)arrow (s)ubtree toggle
       )
     (evil-leader/set-key
-      "oc"  'org-capture     ; capture
-      "oav" 'org-agenda-list ; org agenda view
+      "oc"  'org-capture            ; capture
+      "oav" 'org-agenda-list        ; org agenda view
+      "oaw" 'org-agenda-write       ; org agenda write
+      ;; org agenda print (and open)
+      "oap" (lambda ()
+              (interactive)
+              (org-store-agenda-views)
+              (browse-url (concat "file://" --user-home-dir "/.emacs.d/views/agenda.html")))
       ;; set universally and override as needed such as with magit + text-mode
       "cc" 'org-edit-src-exit
       "cC" 'org-edit-src-abort)
