@@ -1307,6 +1307,9 @@ Explain.
     ;;; keybinds pre load
     (evil-leader/set-key
       "ops" 'org-pomodoro)) ; (o)rg (p)omodoro (s)tart
+
+  (use-package htmlize
+    :defer t)
 #+END_SRC
 
 *** python
