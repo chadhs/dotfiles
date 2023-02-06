@@ -883,6 +883,25 @@ Honor editorconfig files configuration for whitespace and indentation settings w
 
 This section documents installed language and syntax specific packages and their configuration.
 
+*** universal
+
+Explain.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package tree-sitter
+    :ensure t
+    :config
+    ;; activate tree-sitter on any buffer containing code for which it has a parser available
+    (global-tree-sitter-mode)
+    ;; you can easily see the difference tree-sitter-hl-mode makes for python, ts or tsx
+    ;; by switching on and off
+    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+
+  (use-package tree-sitter-langs
+    :ensure t
+    :after tree-sitter)
+#+END_SRC
+
 *** clojure
 
 Explain.
@@ -1207,9 +1226,9 @@ Explain.
                          (require 'ox-md)
                          (require 'ox-beamer)))
            ;; automatically save my orgmode files to disk
-           (org-mode . (lambda ()
-                         (add-hook 'auto-save-hook 'org-save-all-org-buffers nil t)
-                         (auto-save-mode)))
+           ;; (org-mode . (lambda ()
+           ;;               (add-hook 'auto-save-hook 'org-save-all-org-buffers nil t)
+           ;;               (auto-save-mode)))
            (org-mode . org-mac-mail-link-add-message-links))
     :init
     ;;; general settings
@@ -1260,6 +1279,7 @@ Explain.
       "osd" 'org-deadline                                  ; set deadline
       "ost" 'org-set-tags                                  ; set tags
       "oat" 'org-archive-subtree-default-with-confirmation ; archive tree
+      "oac" 'git-auto-commit-mode                          ; auto commit
       "orf" 'org-refile                                    ; refile
       "es"  'org-edit-special
       "ri"  'ielm                                          ; (r)epl (i)nitialize
@@ -1307,6 +1327,13 @@ Explain.
     ;;; keybinds pre load
     (evil-leader/set-key
       "ops" 'org-pomodoro)) ; (o)rg (p)omodoro (s)tart
+
+  (use-package git-auto-commit-mode
+    :defer t
+    :init
+    (setq-default gac-ask-for-summary-p t)
+    (setq-default gac-automatically-push-p t)
+    (setq-default gac-automatically-add-new-files-p t))
 
   (use-package htmlize
     :defer t)
