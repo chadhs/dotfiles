@@ -1284,6 +1284,7 @@ Explain.
       "oat" 'org-archive-subtree-default-with-confirmation ; archive tree
       "oac" 'git-auto-commit-mode                          ; auto commit
       "orf" 'org-refile                                    ; refile
+      "oe"  'org-export-dispatch                           ; export
       "es"  'org-edit-special
       "ri"  'ielm                                          ; (r)epl (i)nitialize
       "il"  'org-insert-link                               ; (i)sert (l)ink
@@ -1342,7 +1343,7 @@ Explain.
     :init
     (setq-default gac-ask-for-summary-p t)
     (setq-default gac-automatically-push-p t)
-    (setq-default gac-automatically-add-new-files-p t))
+    (setq-default gac-automatically-add-new-files-p nil))
 
   (use-package htmlize
     :defer t)
