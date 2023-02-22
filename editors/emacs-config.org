@@ -610,8 +610,9 @@ use ~y%~ for yanking a s-expression
     :defer t
     :diminish "⒫"
     :init
-    (add-hook 'prog-mode-hook 'enable-paredit-mode)
-    (add-hook 'org-mode-hook 'enable-paredit-mode)
+    (add-hook 'emacs-lisp-mode-hook 'enable-paredit-mode)
+    (add-hook 'clojure-mode-hook 'enable-paredit-mode)
+    (add-hook 'clojurescript-mode-hook 'enable-paredit-mode)
     (add-hook 'yaml-mode-hook (lambda ()
                                 (enable-paredit-mode)
                                 (electric-pair-mode)))
