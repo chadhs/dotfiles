@@ -1110,8 +1110,7 @@ Explain.
            "\\.js\\'"
            "\\.jsx\\'"
            "\\.ts\\'"
-           "\\.tsx\\'"
-           )
+           "\\.tsx\\'")
     :init
     (add-hook
      'web-mode-hook
@@ -1149,7 +1148,7 @@ Explain.
           web-mode-enable-auto-quoting nil)
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'web-mode
-      "fh" #'web-beautify-html))
+      "fh" #'web-beautify-html)) ; (f)ormat (h)tml
 
   (use-package pug-mode
     :mode ("\\.pug\\'")
