@@ -1,0 +1,11 @@
+# -*- mode: snippet; require-final-newline: nil -*-
+# name: blog
+# key: :blog
+# --
+#+title: Title
+#+author: Chad Stovern
+#+date: `(format-time-string "%Y-%m-%d")`$0
+#+tags[]: emacs
+#+draft: true
+
+$1
