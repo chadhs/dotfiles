@@ -54,9 +54,9 @@ symlink_configs(){
     [ ! -e ~/.gitconfig-local ] && cp -rp ~/dotfiles/utils/gitconfig-local ~/.gitconfig-local
     [ ! -d ~/.gitconfig.d ] && cp -rp ~/dotfiles/utils/gitconfig.d ~/.gitconfig.d
     [ ! -d ~/.clojure ] && mkdir .clojure
-    [ ! -e ~/.clojure/deps.edn ] && ln -s ~/dotfiles/utils/deps.edn .clojure/deps.edn
+    [ ! -e ~/.clojure/deps.edn ] && cp -rp ~/dotfiles/utils/deps.edn ~/.clojure/deps.edn
     [ ! -d ~/.lein ] && mkdir .lein
-    [ ! -e ~/.lein/profiles.clj ] && ln -s ~/dotfiles/utils/lein_profiles.clj .lein/profiles.clj
+    [ ! -e ~/.lein/profiles.clj ] && cp -rp ~/dotfiles/utils/lein_profiles.clj ~/.lein/profiles.clj
     [ ! -d ~/bin ] && mkdir ~/bin
     [ ! -e ~/bin/reload-safari.scpt ] && ln -s ~/dotfiles/utils/reload-safari.scpt ~/bin/reload-safari.scpt
     [ ! -e ~/bin/reload-chrome.scpt ] && ln -s ~/dotfiles/utils/reload-chrome.scpt ~/bin/reload-chrome.scpt
