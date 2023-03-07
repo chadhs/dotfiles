@@ -276,11 +276,16 @@ Explain.
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  ;; prevent reloading persp-mode when reloading emacs config
   (use-package perspective
-    :if (not (bound-and-true-p persp-mode))
+    :if (not (bound-and-true-p persp-mode)) ; don't reload mode when reloading emacs config
+    :init
+    (add-hook 'kill-emacs-hook #'persp-state-save)
     :config
-    (setq persp-suppress-no-prefix-key-warning t)
+    (setq persp-suppress-no-prefix-key-warning t
+          persp-state-default-file (concat user-emacs-directory ".emacs-perspectives"))
+    (evil-leader/set-key "pl" '(lambda () ; (p)erspectives (l)oad
+                                 (interactive)
+                                 (persp-state-load persp-state-default-file)))
     (persp-mode))
 
   (use-package buffer-move
