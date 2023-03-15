@@ -550,6 +550,8 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
           lsp-auto-guess-root t
           ;; don't set flymake or lsp-ui so the default linter doesn't get trampled
           lsp-diagnostic-package :none)
+    (with-eval-after-load 'lsp-mode
+      (add-to-list 'lsp--formatting-indent-alist `(web-mode . web-mode-code-indent-offset)))
     ;;; keybinds after load
     (evil-leader/set-key
       "jd"  #'lsp-find-definition   ; (j)ump to (d)efinition
@@ -1150,7 +1152,12 @@ Explain.
           web-mode-markup-indent-offset 2
           web-mode-attr-indent-offset 2
           web-mode-attr-value-indent-offset 2
-          web-mode-enable-auto-quoting nil)
+          web-mode-enable-auto-quoting nil
+          web-mode-comment-formats '(("java" . "/*")
+                                     ("javascript" . "//")
+                                     ("typescript" . "//")
+                                     ("php" . "/*")
+                                     ("css" . "/*")))
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'web-mode
       "fh" #'web-beautify-html)) ; (f)ormat (h)tml
