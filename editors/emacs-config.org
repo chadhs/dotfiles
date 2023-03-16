@@ -1153,11 +1153,13 @@ Explain.
           web-mode-attr-indent-offset 2
           web-mode-attr-value-indent-offset 2
           web-mode-enable-auto-quoting nil
-          web-mode-comment-formats '(("java" . "/*")
+          web-mode-comment-formats '(("css" . "/*")
+                                     ("java" . "/*")
                                      ("javascript" . "//")
-                                     ("typescript" . "//")
+                                     ("jsx" . "//")
                                      ("php" . "/*")
-                                     ("css" . "/*")))
+                                     ("typescript" . "//")
+                                     ("tsx" . "//")))
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'web-mode
       "fh" #'web-beautify-html)) ; (f)ormat (h)tml
