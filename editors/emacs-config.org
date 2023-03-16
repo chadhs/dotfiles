@@ -550,6 +550,8 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
           lsp-auto-guess-root t
           ;; don't set flymake or lsp-ui so the default linter doesn't get trampled
           lsp-diagnostic-package :none)
+    (with-eval-after-load 'lsp-mode
+      (add-to-list 'lsp--formatting-indent-alist `(web-mode . web-mode-code-indent-offset)))
     ;;; keybinds after load
     (evil-leader/set-key
       "jd"  #'lsp-find-definition   ; (j)ump to (d)efinition
@@ -1151,7 +1153,14 @@ Explain.
           web-mode-markup-indent-offset 2
           web-mode-attr-indent-offset 2
           web-mode-attr-value-indent-offset 2
-          web-mode-enable-auto-quoting nil)
+          web-mode-enable-auto-quoting nil
+          web-mode-comment-formats '(("css" . "/*")
+                                     ("java" . "/*")
+                                     ("javascript" . "//")
+                                     ("jsx" . "//")
+                                     ("php" . "/*")
+                                     ("typescript" . "//")
+                                     ("tsx" . "//")))
     ;;; keybinds on load
     (evil-leader/set-key-for-mode 'web-mode
       "fh" #'web-beautify-html)) ; (f)ormat (h)tml
@@ -1298,6 +1307,7 @@ Explain.
       "ol"  'org-open-at-point                             ; (o)pen (l)ink
       "jb"  'org-mark-ring-goto                            ; (j)ump (b)ack
       "dl"  'org-toggle-link-display                       ; (d)isplay (l)ink toggle
+      "di"  'org-toggle-inline-images                      ; (d)isplay (ienline images
       "cb"  'org-toggle-checkbox                           ; toggle (c)heck(b)ox
       "at"  'org-table-align                               ; (a)lign (t)able
       "ir"  'org-table-insert-row                          ; (i)sert (r)ow
