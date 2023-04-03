@@ -1307,7 +1307,7 @@ Explain.
       "ol"  'org-open-at-point                             ; (o)pen (l)ink
       "jb"  'org-mark-ring-goto                            ; (j)ump (b)ack
       "dl"  'org-toggle-link-display                       ; (d)isplay (l)ink toggle
-      "di"  'org-toggle-inline-images                      ; (d)isplay (ienline images
+      "di"  'org-toggle-inline-images                      ; (d)isplay (i)nline images
       "cb"  'org-toggle-checkbox                           ; toggle (c)heck(b)ox
       "at"  'org-table-align                               ; (a)lign (t)able
       "ir"  'org-table-insert-row                          ; (i)sert (r)ow
