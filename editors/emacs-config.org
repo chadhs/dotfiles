@@ -157,6 +157,7 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
     (evil-mode 1)
     ;; set initial evil state for particular modes
     (cl-loop for (mode . state) in '((cider-test-report-mode . emacs)
+                                     (cider-inspector-mode   . emacs)
                                      (deft-mode              . emacs)
                                      (dired-mode             . normal)
                                      (magit-mode             . normal)
@@ -966,6 +967,22 @@ Explain.
       "fb"  #'cider-format-buffer           ; (f)ormat (b)uffer
       "ds"  #'cider-doc                     ; (d)oc (s)earch
       "fu"  #'cljr-find-usages              ; (f)ind (u)sages
+      )
+    (evil-leader/set-key-for-mode 'clojurec-mode
+      "eb"  #'cider-eval-buffer		  ; (e)val (b)uffer
+      "ef"  #'cider-eval-defun-at-point	  ; (e)val de(f)un
+      "es"  #'cider-eval-sexp-at-point	  ; (e)val (s)-expression
+      "rtn" #'cider-test-run-ns-tests	  ; (r)un (t)ests (n)amespace
+      "rtp" #'cider-test-run-project-tests  ; (r)un (t)ests (p)roject
+      "rtl" #'cider-test-run-loaded-tests	  ; (r)un (t)ests (l)oaded namespaces
+      "rtf" #'cider-test-rerun-failed-tests ; (r)erun (t)ests (f)ailed tests
+      "rta" #'cider-auto-test-mode          ; (r)un (t)ests (a)utomatically
+      "rb"  #'cider-switch-to-repl-buffer	  ; (r)epl (b)uffer
+      "ff"  #'cider-format-defun		  ; (f)ormat (f)orm
+      "fr"  #'cider-format-region		  ; (f)ormat (r)egion
+      "fb"  #'cider-format-buffer		  ; (f)ormat (b)uffer
+      "ds"  #'cider-doc			  ; (d)oc (s)earch
+      "fu"  #'cljr-find-usages		  ; (f)ind (u)sages
       ))
   (use-package clojure-mode-extra-font-locking
     :defer t)
