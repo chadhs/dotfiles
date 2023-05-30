@@ -14,6 +14,7 @@ export PATH="$HOME/bin\
 :/usr/local/lib/ruby/gems/3.1.0/bin\
 :/opt/homebrew/lib/ruby/gems/3.1.0/bin\
 :$HOME/go/bin\
+:$HOME/.docker/bin\
 :/usr/local/opt/postgresql@13/bin\
 :/opt/homebrew/opt/postgresql@13/bin\
 :/Library/Java/JavaVirtualMachines/amazon-corretto-17.jdk/Contents/Home/bin\
