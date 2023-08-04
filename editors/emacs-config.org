@@ -1302,6 +1302,7 @@ Explain.
     (setq org-startup-indented t)
     (setq org-tags-column -100)
     ;;; exporting
+    (setq image-types (cons 'svg image-types)) ; https://emacs.stackexchange.com/questions/74289/emacs-28-2-error-in-macos-ventura-image-type-invalid-image-type-svg
     (setq org-export-with-smart-quotes t)
     (setq org-html-postamble nil)
     (setq org-agenda-custom-commands
