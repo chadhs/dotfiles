@@ -1218,7 +1218,9 @@ Explain.
       "Mp" 'cs-marked-preview-file
       "il" 'markdown-insert-wiki-link          ; (i)sert (l)ink
       "ol" 'markdown-follow-thing-at-point     ; (o)pen (l)ink
-      "es" 'markdown-edit-code-block)          ; (e)dit (s)pecial
+      "es" 'markdown-edit-code-block           ; (e)dit (s)pecial
+      "at" 'markdown-table-align               ; (a)lign (t)able
+      )
 
     (evil-define-key 'normal markdown-mode-map (kbd "TAB") 'markdown-cycle)
 
