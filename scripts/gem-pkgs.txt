@@ -1,4 +1,7 @@
 bundler
 filewatcher
+rubocop
 scss_lint
+solargraph
+solargraph-rails
 sqlint

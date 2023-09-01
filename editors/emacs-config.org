@@ -544,7 +544,12 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
   (use-package lsp-mode
     :defer t
     :diminish lsp-mode
-    :hook (((js-mode typescript-mode web-mode) . lsp))
+    :hook (((
+             js-mode
+             ruby-mode
+             typescript-mode
+             web-mode
+             ) . lsp))
     :commands lsp
     :config
     (setq lsp-auto-configure t
@@ -901,6 +906,7 @@ Explain.
 #+BEGIN_SRC emacs-lisp
   (use-package tree-sitter
     :ensure t
+    :diminish "🌳"
     :config
     ;; activate tree-sitter on any buffer containing code for which it has a parser available
     (global-tree-sitter-mode)
@@ -1414,19 +1420,28 @@ Explain.
 
 *** ruby
 
-Explain.
+Currently relying on lsp-mode and tree-sitter for ruby lang support.
+
+The following gems should be installed:
+- solargraph
+- rubocop
+- solargraph-rails
 
 #+BEGIN_SRC emacs-lisp
   (use-package inf-ruby
     :defer t
-    :init
-    (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode))
-  (use-package robe
+    :diminish inf-ruby-minor-mode
+    :hook
+    (ruby-mode . inf-ruby-minor-mode))
+  (use-package chruby
     :defer t
-    :init
-    (add-hook 'ruby-mode-hook 'robe-mode)
-    :config
-    (push 'company-robe company-backends))
+    :hook
+    (ruby-mode . chruby-use-corresponding))
+  (use-package rubocopfmt
+    :defer t
+    :diminish rubocopfmt-mode
+    :hook
+    (ruby-mode . rubocopfmt-mode))
 #+END_SRC
 
 *** shell scripting
