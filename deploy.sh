@@ -85,10 +85,6 @@ symlink_configs(){
   [ ! -e ~/.inputrc ] && ln -s ~/dotfiles/shells/inputrc .inputrc
   [ ! -e ~/.tmux.conf ] && ln -s ~/dotfiles/utils/tmux.conf .tmux.conf
   [ ! -d ~/tmp ] && mkdir ~/tmp
-  [ ! -e ~/.vimrc ] && ln -s ~/dotfiles/editors/vimrc .vimrc
-  [ ! -d ~/.vim ] && git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-  vim +PluginClean! +qall
-  vim +PluginInstall! +qall
   [ ! -d ~/.emacs.d ] && mkdir ~/.emacs.d
   [ ! -d ~/.emacs.d/lisp ] && ln -s ~/dotfiles/editors/emacs.d/lisp ~/.emacs.d/lisp
   [ ! -d ~/.emacs.d/snippets ] && ln -s ~/dotfiles/editors/emacs.d/snippets ~/.emacs.d/snippets
@@ -96,6 +92,11 @@ symlink_configs(){
   [ ! -e ~/.emacs.d/views/agenda.html ] && touch ~/.emacs.d/views/agenda.html
   [ ! -e ~/.emacs ] && ln -s ~/dotfiles/editors/emacs.el .emacs
   [ ! -e ~/.emacs.d/emacs-config.org ] && ln -s ~/dotfiles/editors/emacs-config.org ~/.emacs.d/emacs-config.org
+  [ ! -e ~/.vimrc ] && ln -s ~/dotfiles/editors/vimrc .vimrc
+  [ ! -d ~/.vim ] && git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+  vim +PluginClean! +qall
+  vim +PluginInstall! +qall
+  [ ! -d ~/.config/nvim ] && ln -s ~/dotfiles/editors/nvim ~/.config/nvim
   [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig
   [ ! -e ~/.editorconfig ] && ln -s ~/dotfiles/editors/editorconfig .editorconfig
   [ ! -e ~/.eslintrc.json ] && ln -s ~/dotfiles/utils/eslintrc.json ~/.eslintrc.json
