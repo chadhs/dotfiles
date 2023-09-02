@@ -1,4 +1,12 @@
-local lsp = require('lsp-zero').preset({})
+local lsp = require('lsp-zero')
+
+lsp.preset("recommended")
+
+lsp.ensure_installed({
+  'tsserver',
+  'eslint',
+  'clojure_lsp',
+})
 
 lsp.on_attach(function(client, bufnr)
   -- see :help lsp-zero-keybindings
