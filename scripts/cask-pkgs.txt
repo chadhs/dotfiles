@@ -9,6 +9,7 @@ bartender
 corretto17
 daisydisk
 docker
+espanso
 focusatwill
 google-chrome
 iterm2
