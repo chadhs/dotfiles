@@ -9,11 +9,12 @@
 ## 407963104 Pixelmator
 ## 445189367 PopClip
 ## 496437906 Shush
-## 413965349 Soulver
+## 413965349 Soulver 2
+## 1508732804 Soulver 3
 ## 497799835 Xcode
 
 ## include an uncommented list of app ids to install below
 
 931657367
 445189367
-413965349
+1508732804
