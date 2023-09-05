@@ -1346,9 +1346,12 @@ Explain.
       "ns"  'org-toggle-narrow-to-subtree                  ; (n)arrow (s)ubtree toggle
       )
     (evil-leader/set-key
-      "oc"  'org-capture            ; capture
-      "oav" 'org-agenda-list        ; org agenda view
-      "oaw" 'org-agenda-write       ; org agenda write
+      "oc"  'org-capture                                            ; capture
+      "oav" 'org-agenda-list                                        ; org agenda view
+      "oaw" 'org-agenda-write                                       ; org agenda write
+      ;; automatically create a perspective and then open
+      "oog" (lambda () (interactive) (find-file "~/org/gtd.org"))   ; org open gtd
+      "oon" (lambda () (interactive) (find-file "~/org/notes.org")) ; org open notes
       ;; org agenda print (and open)
       "oap" (lambda ()
               (interactive)
