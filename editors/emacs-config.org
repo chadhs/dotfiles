@@ -601,7 +601,7 @@ Explain.
     (setq-default flycheck-check-syntax-automatically '(mode-enabled save))
     ;; disable documentation related emacs lisp checker
     (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc clojure-cider-typed))
-    (setq flycheck-mode-line-prefix "✔"))
+    (setq flycheck-mode-line-prefix "☑"))
 
   ;; (use-package flycheck-inline
   ;;   :defer t
@@ -1275,7 +1275,8 @@ Explain.
            ;; (org-mode . (lambda ()
            ;;               (add-hook 'auto-save-hook 'org-save-all-org-buffers nil t)
            ;;               (auto-save-mode)))
-           (org-mode . org-mac-mail-link-add-message-links))
+           (org-mode . org-mac-mail-link-add-message-links)
+           (org-indent-mode . (lambda () (diminish 'org-indent-mode))))
     :init
     ;;; general settings
     (setq org-directory "~/org")
@@ -1395,6 +1396,7 @@ Explain.
 
   (use-package git-auto-commit-mode
     :defer t
+    :diminish git-auto-commit-mode
     :init
     (setq-default gac-ask-for-summary-p t)
     (setq-default gac-automatically-push-p t)
@@ -1872,6 +1874,7 @@ For built in packages, installed packages use the :diminish keyword via use-pack
   (diminish 'auto-revert-mode "↺")
   (diminish 'subword-mode)
   (diminish 'undo-tree-mode)
+  (diminish 'eldoc-mode "☰")
 #+END_SRC
 
 *** custom mode-line configuration
