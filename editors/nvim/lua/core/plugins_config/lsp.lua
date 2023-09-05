@@ -6,6 +6,7 @@ lsp.ensure_installed({
   'tsserver',
   'eslint',
   'clojure_lsp',
+  'solargraph', -- ruby
 })
 
 lsp.on_attach(function(client, bufnr)

@@ -28,6 +28,8 @@ umask 0002 # grant write permsion to group
 if [[ $(uname) = "Darwin" ]]; then
   ### homebrew
   export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+  ### emacs lsp performance
+  export LSP_USE_PLISTS=true
   ### python
   export WORKON_HOME=~/.virtualenvs
   export PROJECT_HOME=~/src

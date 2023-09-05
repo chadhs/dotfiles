@@ -34,12 +34,16 @@ I like to keep track of how long it takes emacs to load, so this will establish 
   (defconst emacs-start-time (current-time))
 #+END_SRC
 
-*** Emacs garbage collection threshold settings
+*** Emacs performance enhancements
 
 Let's Speed up operations by giving emacs garbage collection a more modern threshold.
-
 #+BEGIN_SRC emacs-lisp
-  (setq gc-cons-threshold 20000000) ; ~20MB
+  (setq gc-cons-threshold 100000000) ; ~100MB
+#+END_SRC
+
+Increase the amount of data which Emacs reads from the process https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
+#+BEGIN_SRC emacs-lisp
+  (setq read-process-output-max (* 1024 1024)) ;; 1mb
 #+END_SRC
 
 *** Load package support
@@ -1281,8 +1285,8 @@ Explain.
     (setq org-src-fontify-natively t)
     (setq org-src-tab-acts-natively t)
     (setq org-src-window-setup 'current-window)
-    ;;; gtd
-    (setq org-agenda-files (list "~/org/gtd.org"))
+    ;;; todo
+    (setq org-agenda-files (list "~/org/todo.org"))
     (setq org-todo-keywords
           '((sequence "TODO" "STARTED" "WAITING" "ON HOLD" "|" "DONE" "DROPPED")))
     (setq org-deadline-warning-days 3)
@@ -1293,15 +1297,19 @@ Explain.
     (setq org-refile-use-outline-path t)
     (setq org-outline-path-complete-in-steps nil)
     (setq org-capture-templates
-          '(("t" "Task" entry (file+headline "~/org/gtd.org" "inbox")
+          '(("t" "Task" entry (file+headline "~/org/todo.org" "inbox")
              "** %?\n%i\n"
              :prepend t)
-            ("n" "Note" entry (file+headline "~/org/notes.org" "scratchpad")
+            ("n" "Note" entry (file+headline "~/org/notes.org" "uncategorized")
              "** %?\n%i\n"
              :prepend t)
             ("j" "Journal" entry
              (file+headline "~/org/journal.org" "current month")
              "* %u\n%?\n"
+             :prepend t)
+            ("s" "Scratch" entry
+             (file+headline "~/org/scratchpad.org" "scratchpad")
+             "** %?\n%i\n"
              :prepend t)))
     ;;; habits
     (setq org-log-into-drawer t)
@@ -1342,9 +1350,12 @@ Explain.
       "ns"  'org-toggle-narrow-to-subtree                  ; (n)arrow (s)ubtree toggle
       )
     (evil-leader/set-key
-      "oc"  'org-capture            ; capture
-      "oav" 'org-agenda-list        ; org agenda view
-      "oaw" 'org-agenda-write       ; org agenda write
+      "oc"  'org-capture                                       ; capture
+      "oav" 'org-agenda-list                                   ; org agenda view
+      "oaw" 'org-agenda-write                                  ; org agenda write
+      ;; automatically create a perspective and then open
+      "oot" (lambda () (interactive) (find-file "~/org/todo.org"))  ; org open todo
+      "oon" (lambda () (interactive) (find-file "~/org/notes.org")) ; org open notes
       ;; org agenda print (and open)
       "oap" (lambda ()
               (interactive)
@@ -1920,6 +1931,10 @@ This section contains general global emacs key bindings.  Mode specific key bind
 
   ;;; (s)ource (e)macs user init file
   (evil-leader/set-key "se" (lambda () (interactive) (load-file user-init-file)))
+
+  ;;; (e)val de(f)un
+  (evil-leader/set-key-for-mode 'emacs-lisp-mode
+    "ef" #'eval-defun)
 
   ;;; (r)estart (e)macs
   (evil-leader/set-key "re" #'restart-emacs)
