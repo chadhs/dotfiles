@@ -34,12 +34,16 @@ I like to keep track of how long it takes emacs to load, so this will establish 
   (defconst emacs-start-time (current-time))
 #+END_SRC
 
-*** Emacs garbage collection threshold settings
+*** Emacs performance enhancements
 
 Let's Speed up operations by giving emacs garbage collection a more modern threshold.
-
 #+BEGIN_SRC emacs-lisp
-  (setq gc-cons-threshold 20000000) ; ~20MB
+  (setq gc-cons-threshold 100000000) ; ~100MB
+#+END_SRC
+
+Increase the amount of data which Emacs reads from the process https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
+#+BEGIN_SRC emacs-lisp
+  (setq read-process-output-max (* 1024 1024)) ;; 1mb
 #+END_SRC
 
 *** Load package support
@@ -1920,6 +1924,10 @@ This section contains general global emacs key bindings.  Mode specific key bind
 
   ;;; (s)ource (e)macs user init file
   (evil-leader/set-key "se" (lambda () (interactive) (load-file user-init-file)))
+
+  ;;; (e)val de(f)un
+  (evil-leader/set-key-for-mode 'emacs-lisp-mode
+    "ef" #'eval-defun)
 
   ;;; (r)estart (e)macs
   (evil-leader/set-key "re" #'restart-emacs)
