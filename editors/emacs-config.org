@@ -1285,8 +1285,8 @@ Explain.
     (setq org-src-fontify-natively t)
     (setq org-src-tab-acts-natively t)
     (setq org-src-window-setup 'current-window)
-    ;;; gtd
-    (setq org-agenda-files (list "~/org/gtd.org"))
+    ;;; todo
+    (setq org-agenda-files (list "~/org/todo.org"))
     (setq org-todo-keywords
           '((sequence "TODO" "STARTED" "WAITING" "ON HOLD" "|" "DONE" "DROPPED")))
     (setq org-deadline-warning-days 3)
@@ -1297,15 +1297,19 @@ Explain.
     (setq org-refile-use-outline-path t)
     (setq org-outline-path-complete-in-steps nil)
     (setq org-capture-templates
-          '(("t" "Task" entry (file+headline "~/org/gtd.org" "inbox")
+          '(("t" "Task" entry (file+headline "~/org/todo.org" "inbox")
              "** %?\n%i\n"
              :prepend t)
-            ("n" "Note" entry (file+headline "~/org/notes.org" "scratchpad")
+            ("n" "Note" entry (file+headline "~/org/notes.org" "uncategorized")
              "** %?\n%i\n"
              :prepend t)
             ("j" "Journal" entry
              (file+headline "~/org/journal.org" "current month")
              "* %u\n%?\n"
+             :prepend t)
+            ("s" "Scratch" entry
+             (file+headline "~/org/scratchpad.org" "scratchpad")
+             "** %?\n%i\n"
              :prepend t)))
     ;;; habits
     (setq org-log-into-drawer t)
@@ -1346,11 +1350,11 @@ Explain.
       "ns"  'org-toggle-narrow-to-subtree                  ; (n)arrow (s)ubtree toggle
       )
     (evil-leader/set-key
-      "oc"  'org-capture                                            ; capture
-      "oav" 'org-agenda-list                                        ; org agenda view
-      "oaw" 'org-agenda-write                                       ; org agenda write
+      "oc"  'org-capture                                       ; capture
+      "oav" 'org-agenda-list                                   ; org agenda view
+      "oaw" 'org-agenda-write                                  ; org agenda write
       ;; automatically create a perspective and then open
-      "oog" (lambda () (interactive) (find-file "~/org/gtd.org"))   ; org open gtd
+      "oot" (lambda () (interactive) (find-file "~/org/todo.org"))  ; org open todo
       "oon" (lambda () (interactive) (find-file "~/org/notes.org")) ; org open notes
       ;; org agenda print (and open)
       "oap" (lambda ()
