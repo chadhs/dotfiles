@@ -2,4 +2,4 @@
 # name: checkbox
 # key: cb
 # --
-[ ] $1
+- [ ] $1
