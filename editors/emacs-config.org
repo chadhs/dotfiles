@@ -1355,8 +1355,9 @@ Explain.
       "oav" 'org-agenda-list                                   ; org agenda view
       "oaw" 'org-agenda-write                                  ; org agenda write
       ;; automatically create a perspective and then open
-      "oot" (lambda () (interactive) (find-file "~/org/todo.org"))  ; org open todo
-      "oon" (lambda () (interactive) (find-file "~/org/notes.org")) ; org open notes
+      "oot" (lambda () (interactive) (find-file "~/org/todo.org"))       ; org open todo
+      "oon" (lambda () (interactive) (find-file "~/org/notes.org"))      ; org open notes
+      "oos" (lambda () (interactive) (find-file "~/org/scratchpad.org")) ; org open scratchpad
       ;; org agenda print (and open)
       "oap" (lambda ()
               (interactive)
