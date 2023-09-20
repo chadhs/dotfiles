@@ -18,4 +18,4 @@ vim.opt.smartcase = true
 vim.opt.showmatch = true
 
 vim.opt.backup = false
-vim.opt.backupdir = "~/tmp"
+vim.opt.backupdir = os.getenv("HOME") .. "/.config/nvim/cache"
