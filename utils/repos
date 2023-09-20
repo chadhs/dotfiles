@@ -1,0 +1,13 @@
+#!/bin/bash
+## copy this to ~/bin/ and modify the path
+export GIT_PAGER=cat
+export REPOS_PATH=~/path/to/src
+function runinrepo {
+  BLUE='\033[1;34m'
+  NC='\033[0m' # No Color
+  echo "${BLUE}${PWD##*/}${NC}";
+  $*;
+  echo;
+}
+export -f runinrepo;
+find -s ${REPOS_PATH:-.} -maxdepth 2 -mindepth 2 -name .git -type d -execdir sh -c "runinrepo $*;" \;
