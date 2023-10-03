@@ -8,7 +8,6 @@ appcleaner
 bartender
 corretto17
 daisydisk
-docker
 espanso
 focusatwill
 google-chrome
@@ -22,6 +21,7 @@ the-unarchiver
 
 ## archived but not forgotten
 # deckset
+# docker
 # emacs
 # fantastical
 # keyboard-maestro

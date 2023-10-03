@@ -559,7 +559,9 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
     (setq lsp-auto-configure t
           lsp-auto-guess-root t
           ;; don't set flymake or lsp-ui so the default linter doesn't get trampled
-          lsp-diagnostic-package :none)
+          lsp-diagnostic-package :none
+          lsp-rubocop-use-bundler nil
+          lsp-solargraph-use-bundler nil)
     (with-eval-after-load 'lsp-mode
       (add-to-list 'lsp--formatting-indent-alist `(web-mode . web-mode-code-indent-offset))
       (add-to-list 'lsp-language-id-configuration `(".*\\.html\\.erb$" . "html")))
