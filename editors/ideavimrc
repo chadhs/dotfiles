@@ -23,6 +23,7 @@ map <leader>rtf :action RerunFailedTests<CR>
 map <leader>cs :action EditorScrollToCenter<CR>
 map <leader>ww :action SaveDocument<CR>
 nmap <leader>/ :nohlsearch<CR>
+map <M-x> :action GotoAction<CR>
 """ set movement to camelCase by default
 map w [w
 map e ]w
