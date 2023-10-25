@@ -48,7 +48,7 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'tpope/vim-fugitive' "this is just for airline branch display
 
 " auto-completion engine
-Plugin 'ajh17/VimCompletesMe'
+Plugin 'vim-scripts/VimCompletesMe'
 
 " star for visual-mode
 Plugin 'thinca/vim-visualstar'
