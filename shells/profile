@@ -6,7 +6,7 @@ export PATH="$HOME/bin\
 :/usr/local/opt/curl/bin\
 :/opt/homebrew/opt/curl/bin\
 :/usr/local/opt/node@16/bin\
-:/opt/homebrew/opt/node@16/bin\
+:/opt/homebrew/opt/node@20/bin\
 :/usr/local/opt/python@3/libexec/bin\
 :/opt/homebrew/opt/python@3/libexec/bin\
 :/usr/local/opt/ruby/bin\
