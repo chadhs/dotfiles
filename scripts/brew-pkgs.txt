@@ -8,7 +8,7 @@ clojure
 editorconfig
 git
 nmap
-node@16
+node@20
 nvim
 nvm
 pwgen
@@ -27,7 +27,7 @@ zsh
 # awscli
 # bash
 # pandoc
-# postgresql@13
+# postgresql@14
 # speedtest-cli
 # ssh-copy-id
 # terraform

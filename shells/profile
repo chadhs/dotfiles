@@ -5,7 +5,7 @@ export PATH="$HOME/bin\
 :/opt/homebrew/opt/openssl/bin\
 :/usr/local/opt/curl/bin\
 :/opt/homebrew/opt/curl/bin\
-:/usr/local/opt/node@16/bin\
+:/usr/local/opt/node@20/bin\
 :/opt/homebrew/opt/node@20/bin\
 :/usr/local/opt/python@3/libexec/bin\
 :/opt/homebrew/opt/python@3/libexec/bin\
