@@ -115,6 +115,14 @@ use-package is great for lazy-loading packages efficiently.
   ;;   (foo-mode 1))
 #+END_SRC
 
+*** Add support for installing emacs packages from source
+
+#+BEGIN_SRC emacs-lisp
+  (use-package quelpa)
+  (use-package quelpa-use-package)
+#+END_SRC
+
+
 *** Show package load time
 
 Here's where we report how long it took to load all installed packages to the Messages buffer.
@@ -439,6 +447,15 @@ Explain.
     (projectile-mode))
 #+END_SRC
 
+direnv - load environment variables from .envrc files per project
+
+#+BEGIN_SRC elisp
+  (use-package envrc
+    :defer t
+    :init
+    (envrc-global-mode))
+#+END_SRC
+
 *** documentation
 
 #+BEGIN_SRC emacs-lisp
@@ -587,6 +604,65 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
           lsp-ui-peek-enable nil
           lsp-ui-imenu-enable nil
           lsp-ui-doc-enable nil))
+#+END_SRC
+
+*** ai tools
+
+Tools that automate parts of your workflow.
+
+#+BEGIN_SRC elisp
+  ;; (defun cs-copilot-or-company-tab ()
+  ;;   (interactive)
+  ;;   (or
+  ;;    (copilot-accept-completion)
+  ;;    (company-indent-or-complete-common nil)
+  ;;    ))
+
+  ;; (defun cs/no-copilot-mode ()
+  ;;   "Helper for `cs/no-copilot-modes'."
+  ;;   (copilot-mode -1))
+
+  ;; (defvar cs/no-copilot-modes
+  ;;   '(org-mode
+  ;;     markdown-mode
+  ;;     text-mode
+  ;;     fundamental-mode
+  ;;     eshell-mode
+  ;;     shell-mode
+  ;;     vterm-mode
+  ;;     term-mode
+  ;;     comint-mode
+  ;;     compilation-mode
+  ;;     minibuffer-inactive-mode
+  ;;     )
+  ;;   "Modes in which copilot is inconvenient.")
+
+  ;; (defvar cs/copilot-manual-mode nil
+  ;;   "When `t' will only show completions when manually triggered, e.g. via M-C-<return>.")
+
+  ;; (defun cs/copilot-disable-predicate ()
+  ;;   (or cs/copilot-manual-mode
+  ;;       (member major-mode cs/no-copilot-modes)
+  ;;       (company--active-p)
+  ;;       ))
+
+  ;; (use-package copilot
+  ;;   :diminish "✈"
+  ;;   :quelpa (copilot :fetcher github
+  ;;                    :repo "zerolfx/copilot.el"
+  ;;                    :branch "main"
+  ;;                    :files ("dist" "*.el"))
+  ;;   :hook ((prog-mode . copilot-mode))
+  ;;   :config
+  ;;   (add-to-list 'copilot-disable-predicates #'cs/copilot-disable-predicate)
+  ;;   ;; (setq copilot-enable-predicates '(evil-insert-state-p)) ; evil-mode compatibility
+  ;;   ;; (with-eval-after-load 'company
+  ;;   ;;   (delq 'company-preview-if-just-one-frontend company-frontends) ; disable inline previews
+  ;;   ;;   (define-key company-mode-map (kbd "<tab>") 'cs-copilot-or-company-tab)
+  ;;   ;;   (define-key company-mode-map (kbd "TAB") 'cs-copilot-or-company-tab)
+  ;;   ;;   (define-key company-active-map (kbd "<tab>") 'cs-copilot-or-company-tab)
+  ;;   ;;   (define-key company-active-map (kbd "TAB") 'cs-copilot-or-company-tab))
+  ;;   )
 #+END_SRC
 
 *** syntax checking
