@@ -6,6 +6,7 @@ aspell
 borkdude/brew/clj-kondo
 clojure
 editorconfig
+direnv
 git
 nmap
 node@20

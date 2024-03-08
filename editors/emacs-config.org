@@ -447,6 +447,15 @@ Explain.
     (projectile-mode))
 #+END_SRC
 
+direnv - load environment variables from .envrc files per project
+
+#+BEGIN_SRC elisp
+  (use-package envrc
+    :defer t
+    :init
+    (envrc-global-mode))
+#+END_SRC
+
 *** documentation
 
 #+BEGIN_SRC emacs-lisp
