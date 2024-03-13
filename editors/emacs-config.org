@@ -1457,7 +1457,7 @@ Explain.
       (kbd "TAB")   #'org-cycle
       (kbd "M-s-j") #'org-table-move-cell-down
       (kbd "M-s-k") #'org-table-move-cell-up
-      (kbd "M-s-h") #'org-table-move-cell-left
+      ;; (kbd "M-s-h") #'org-table-move-cell-left
       (kbd "M-s-l") #'org-table-move-cell-right))
 
   (use-package org-bullets
