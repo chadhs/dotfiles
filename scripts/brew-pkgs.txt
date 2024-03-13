@@ -6,6 +6,7 @@ aspell
 borkdude/brew/clj-kondo
 clojure
 editorconfig
+cfn-lint
 direnv
 git
 nmap
