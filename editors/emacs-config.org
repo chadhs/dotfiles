@@ -1617,14 +1617,12 @@ Explain.
 *** cloudformation
 #+BEGIN_SRC emacs-lisp
   ;; cloudformation yaml
-  (with-eval-after-load 'yaml-mode
+  (define-derived-mode cfn-yaml-mode yaml-mode
+    "CFN-YAML"
+    "Simple mode to edit CloudFormation template in YAML format.")
 
-    (define-derived-mode cfn-yaml-mode yaml-mode
-      "CFN-YAML"
-      "Simple mode to edit CloudFormation template in YAML format.")
-
-    (add-to-list 'magic-mode-alist
-                 '("\\(---\n\\)?AWSTemplateFormatVersion:" . cfn-yaml-mode)))
+  (add-to-list 'magic-mode-alist
+               '("\\(---\n\\)?AWSTemplateFormatVersion:" . cfn-yaml-mode))
 
 
   ;; cloudformation json
