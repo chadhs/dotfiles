@@ -6,7 +6,7 @@
 alfred
 appcleaner
 bartender
-corretto17
+corretto@17
 daisydisk
 espanso
 focusatwill
