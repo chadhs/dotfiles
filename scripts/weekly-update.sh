@@ -18,7 +18,7 @@ echo "updating packages..."
 . ~/.sh_aliases \
   && update-dotfiles \
   && brew update && brew doctor && brew upgrade; brew cleanup \
-  && mas outdated && rehash && mas upgrade \
+  && mas outdated && mas outdated && rehash && mas upgrade \
   && brew cu -a --cleanup \
   && npm install -g $(echo "${npm_pkgs}") \
   && gem install $(echo "${gem_pkgs}") && gem update \
