@@ -7,7 +7,6 @@
 ## 924726344 Deliveries
 ## 1289197285 MindNode
 ## 407963104 Pixelmator
-## 445189367 PopClip
 ## 496437906 Shush
 ## 413965349 Soulver 2
 ## 1508732804 Soulver 3
@@ -16,5 +15,4 @@
 ## include an uncommented list of app ids to install below
 
 931657367
-445189367
 1508732804

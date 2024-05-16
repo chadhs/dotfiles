@@ -15,6 +15,7 @@ karabiner-elements
 keepingyouawake
 macvim
 moom
+popclip
 the-unarchiver
 
 ## not installed by default
