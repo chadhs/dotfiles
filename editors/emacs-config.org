@@ -1373,6 +1373,9 @@ Explain.
     (setq org-src-fontify-natively t)
     (setq org-src-tab-acts-natively t)
     (setq org-src-window-setup 'current-window)
+    ;; list of languages allowed to execute within org-mode
+    (org-babel-do-load-languages 'org-babel-load-languages
+                                 (append org-babel-load-languages '((sql . t))))
     ;;; todo
     (setq org-agenda-files (list "~/org/todo.org"))
     (setq org-todo-keywords
