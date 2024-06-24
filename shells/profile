@@ -9,6 +9,9 @@ export PATH="$HOME/bin\
 :/opt/homebrew/opt/node@20/bin\
 :/usr/local/opt/python@3/libexec/bin\
 :/opt/homebrew/opt/python@3/libexec/bin\
+:/opt/homebrew/opt/arm-none-eabi-gcc@8/bin\
+:/opt/homebrew/opt/arm-none-eabi-binutils/bin\
+:/opt/homebrew/opt/avr-gcc@8/bin\
 :/usr/local/opt/ruby/bin\
 :/opt/homebrew/opt/ruby/bin\
 :/usr/local/lib/ruby/gems/3.1.0/bin\
