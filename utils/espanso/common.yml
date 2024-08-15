@@ -90,6 +90,8 @@ matches:
       |)__)
       -“-“-
       O RLY?
+  - trigger: ",,kirby"
+    replace: "(>'-')> <('-'<) ^('-')^ v('-')v(>'-')> (^-^)"
 
   ## messages
   ### slack
