@@ -1243,6 +1243,7 @@ Explain.
                  (string-equal "ts" (file-name-extension buffer-file-name))
                  (string-equal "tsx" (file-name-extension buffer-file-name)))
          ;; (setup-tide-mode)
+         (cs/use-linter-from-package-json)
          (cs/enable-eslint-webmode)
          (cs/use-prettier-if-config-exists-in-project-root)
          (setq-local electric-pair-pairs (append electric-pair-pairs '((?\' . ?\')))) ; single quotes
