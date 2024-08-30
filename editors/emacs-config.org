@@ -387,11 +387,11 @@ Explain.
           neo-autorefresh t
           neo-force-change-root t))
 
-  (use-package linum
+  (use-package display-line-numbers
     :ensure nil
-    :hook (prog-mode . linum-mode)
+    :hook (prog-mode . display-line-numbers-mode)
     :config
-    (evil-leader/set-key "nn" #'linum-mode))
+    (evil-leader/set-key "nn" #'display-line-numbers-mode))
 #+END_SRC
 
 *** project management
