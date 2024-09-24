@@ -581,7 +581,7 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
           lsp-solargraph-use-bundler nil)
     (with-eval-after-load 'lsp-mode
       (add-to-list 'lsp--formatting-indent-alist `(web-mode . web-mode-code-indent-offset))
-      (add-to-list 'lsp-language-id-configuration `(".*\\.html\\.erb$" . "html")))
+      (add-to-list 'lsp-language-id-configuration `(".*\\.erb$" . "html")))
     ;;; keybinds after load
     (evil-leader/set-key
       "jd"  #'lsp-find-definition   ; (j)ump to (d)efinition
@@ -1216,7 +1216,7 @@ Explain.
   (use-package web-mode
     :mode ("\\.ejs\\'"
            "\\.html\\'"
-           "\\.html\\.erb\\'"
+           "\\.erb\\'"
            "\\.j2\\'"
            "\\.jinja\\'"
            "\\.php\\'"

@@ -5,3 +5,4 @@ scss_lint
 solargraph
 solargraph-rails
 sqlint
+scss_lint_reporter_checkstyle
