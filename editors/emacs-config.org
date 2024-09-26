@@ -1538,10 +1538,21 @@ The following gems should be installed:
     :diminish inf-ruby-minor-mode
     :hook
     (ruby-mode . inf-ruby-minor-mode))
+
   (use-package chruby
     :defer t
     :hook
     (ruby-mode . chruby-use-corresponding))
+
+  ;; (use-package asdf
+  ;;   :quelpa (copilot :fetcher github
+  ;;                    :repo "tabfugnic/asdf.el"
+  ;;                    :branch "main"
+  ;;                    :files ("asdf.el"))
+  ;;   :defer t
+  ;;   :hook
+  ;;   (ruby-mode . asdf-enable))
+
   (use-package rubocopfmt
     :defer t
     :diminish rubocopfmt-mode
