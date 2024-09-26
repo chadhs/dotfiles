@@ -581,7 +581,7 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
           lsp-solargraph-use-bundler nil)
     (with-eval-after-load 'lsp-mode
       (add-to-list 'lsp--formatting-indent-alist `(web-mode . web-mode-code-indent-offset))
-      (add-to-list 'lsp-language-id-configuration `(".*\\.html\\.erb$" . "html")))
+      (add-to-list 'lsp-language-id-configuration `(".*\\.erb$" . "html")))
     ;;; keybinds after load
     (evil-leader/set-key
       "jd"  #'lsp-find-definition   ; (j)ump to (d)efinition
@@ -1216,7 +1216,7 @@ Explain.
   (use-package web-mode
     :mode ("\\.ejs\\'"
            "\\.html\\'"
-           "\\.html\\.erb\\'"
+           "\\.erb\\'"
            "\\.j2\\'"
            "\\.jinja\\'"
            "\\.php\\'"
@@ -1447,6 +1447,8 @@ Explain.
       "oav" 'org-agenda-list                                   ; org agenda view
       "oaw" 'org-agenda-write                                  ; org agenda write
       ;; automatically create a perspective and then open
+      "oot" (lambda () (interactive) (find-file "~/org/todo.org"))       ; org open todo
+      "oon" (lambda () (interactive) (find-file "~/org/notes.org"))      ; org open notes
       "ooo" (lambda () (interactive) (find-file "~/org/README.org"))     ; org open README
       "oos" (lambda () (interactive) (find-file "~/org/scratchpad.org")) ; org open scratchpad
       ;; org agenda print (and open)
@@ -1454,6 +1456,7 @@ Explain.
               (interactive)
               (org-store-agenda-views)
               (browse-url (concat "file://" --user-home-dir "/.emacs.d/views/agenda.html")))
+      "oCg" 'org-clock-goto
       ;; set universally and override as needed such as with magit + text-mode
       "cc" 'org-edit-src-exit
       "cC" 'org-edit-src-abort)
@@ -1485,6 +1488,26 @@ Explain.
     ;;; keybinds pre load
     (evil-leader/set-key
       "ops" 'org-pomodoro)) ; (o)rg (p)omodoro (s)tart
+
+  (use-package org-clock
+    :ensure nil
+    :config
+    ;; Display the clock persistence between sessions
+    (org-clock-persistence-insinuate)
+
+    ;; Set the default clock report settings
+    (setq org-clock-persist 'history)
+    (setq org-clock-in-switch-to-state "STARTED")
+    (setq org-clock-out-remove-zero-time-clocks t)
+
+    ;; Optional: Set default tags or properties
+    (setq org-clock-default-task t)
+    (evil-leader/set-key-for-mode 'org-mode
+      "ci" 'org-clock-in
+      "co" 'org-clock-out
+      "cg" 'org-clock-goto
+      )
+    )
 
   (use-package git-auto-commit-mode
     :defer t
