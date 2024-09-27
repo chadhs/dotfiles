@@ -13,6 +13,7 @@ focusatwill
 iterm2
 karabiner-elements
 keepingyouawake
+kitty
 macvim
 moom
 popclip
