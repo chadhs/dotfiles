@@ -1389,6 +1389,7 @@ Explain.
                                (org-agenda-files :maxlevel . 5)))
     (setq org-refile-use-outline-path t)
     (setq org-outline-path-complete-in-steps nil)
+    ;; rethink this as it is outdated....
     (setq org-capture-templates
           '(("t" "Task" entry (file+headline "~/org/todo.org" "inbox")
              "** %?\n%i\n"
