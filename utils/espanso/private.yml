@@ -1,0 +1,12 @@
+name: private
+parent: default
+
+# ↓ modify the entries below for this particular computer ↓
+matches:
+  ## phone numbers
+  - trigger: ",,phx"
+    replace: "555-555-5555"
+
+  ## email addresses
+  - trigger: ",,eme"
+    replace: "chad@example.com"

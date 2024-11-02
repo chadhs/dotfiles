@@ -66,6 +66,7 @@ symlink_configs(){
     [ ! -e ~/.vscodevimrc ] && ln -s ~/dotfiles/editors/vscode/vscodevimrc ~/.vscodevimrc
     [ ! -e ~/.ideavimrc ] && ln -s ~/dotfiles/editors/ideavimrc .ideavimrc
     [ ! -e ~/Library/Application\ Support/espanso/match/common.yml ] && ln -s ~/dotfiles/utils/espanso/common.yml ~/Library/Application\ Support/espanso/match/common.yml
+    [ ! -e ~/Library/Application\ Support/espanso/match/private.yml ] && cp -rp ~/dotfiles/utils/espanso/private.yml ~/Library/Application\ Support/espanso/match/private.yml
     [ ! -e ~/.config/karabiner/assets/complex_modifications/custom.json ] && ln -s ~/dotfiles/utils/karabiner/custom.json ~/.config/karabiner/assets/complex_modifications/custom.json
     [ ! -d ~/.config/kitty ] && mkdir ~/.config/kitty && ln -s ~/dotfiles/utils/kitty/kitty.conf ~/.config/kitty/kitty.conf && ln -s ~/dotfiles/utils/kitty/kitty.app.png ~/.config/kitty/kitty.app.png && ln -s ~/dotfiles/utils/kitty/current-theme.conf ~/.config/kitty/current-theme.conf
   fi
