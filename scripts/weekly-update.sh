@@ -10,7 +10,6 @@ cask_pkgs="$(grep '^[^#[:blank:]]' cask-pkgs.txt | tr '\n' ' ')"
 mas_pkgs="$(grep '^[^#[:blank:]]' mas-pkgs.txt | tr '\n' ' ')"
 npm_pkgs="$(grep '^[^#[:blank:]]' npm-pkgs.txt | tr '\n' ' ')"
 gem_pkgs="$(grep '^[^#[:blank:]]' gem-pkgs.txt | tr '\n' ' ')"
-pip_pkgs="$(grep '^[^#[:blank:]]' pip-pkgs.txt | tr '\n' ' ')"
 
 ## do it!
 ### in the install commands below, wrapping echo is for array->string conversion
@@ -23,7 +22,6 @@ echo "updating packages..."
   && npm install -g $(echo "${npm_pkgs}") \
   && gem install $(echo "${gem_pkgs}") && gem update \
   && brew install shellcheck lua luarocks hadolint && luarocks install luacheck \
-  && pip3 install -U --break-system-packages $(echo "${pip_pkgs}") \
   && echo "installing missing brew packages..." \
   && brew install $(echo "${brew_pkgs}") \
   && echo "installing missing brew cask packages..." \

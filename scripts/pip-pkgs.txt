@@ -1,8 +1,8 @@
-virtualenvwrapper
-
 ## archived but not forgotten
 # ansible
 # ansible-lint
 # boto
 # jmespath
 # netaddr
+## this is now handled by brew per the warning pip now gives for system ruby
+# virtualenvwrapper

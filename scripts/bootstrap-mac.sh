@@ -39,11 +39,13 @@ brew install --cask $(echo "${cask_pkgs}") # wrapping echo is for array->string 
 
 echo "seting up dotfiles..."
 cd ~ || exit 1
-pip3 install virtualenvwrapper
 [ ! -d ~/dotfiles ] && git clone https://github.com/chadhs/dotfiles.git
 sh dotfiles/deploy.sh
 [ -d ~/.virtualenvs ] && rm ~/.virtualenvs/postactivate && ln -s ~/dotfiles/utils/virtualenvwrapper-zsh-hooks/postactivate ~/.virtualenvs/postactivate
 [ -d ~/.virtualenvs ] && rm ~/.virtualenvs/postdeactivate && ln -s ~/dotfiles/utils/virtualenvwrapper-zsh-hooks/postdeactivate ~/.virtualenvs/postdeactivate
+
+echo "refresh running environment"
+rehash
 
 echo "don't forget to fetch any ssh keys you need from your secure vault!"
 echo "don't forget to fetch any gnupg keys you need from your secure vault!"
