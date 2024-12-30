@@ -22,6 +22,7 @@ shellcheck
 the_silver_searcher
 tmux
 tree
+virtualenvwrapper
 wget
 zsh
 
