@@ -1909,6 +1909,8 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 
 #+BEGIN_SRC emacs-lisp
   (setq require-final-newline t)
+  ;; don't allow other modes to trample this setting in a local buffer
+  (setq-default require-final-newline t)
 #+END_SRC
 
 *** word wrapping
