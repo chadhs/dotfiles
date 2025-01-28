@@ -567,6 +567,9 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
     :diminish lsp-mode
     :hook (((
              js-mode
+             js-ts-mode
+             js-jsx-mode
+             tsx-ts-mode
              ruby-mode
              typescript-mode
              web-mode
@@ -1213,6 +1216,10 @@ Explain.
     (flycheck-add-mode 'javascript-eslint 'web-mode)
     (flycheck-select-checker 'javascript-eslint))
 
+  ;; universal js settings
+  (setq js-indent-level 2)
+  (setq js-jsx-indent-level 2)
+
   (use-package web-mode
     :mode ("\\.ejs\\'"
            "\\.html\\'"
@@ -1223,7 +1230,8 @@ Explain.
            "\\.js\\'"
            "\\.jsx\\'"
            "\\.ts\\'"
-           "\\.tsx\\'")
+           "\\.tsx\\'"
+           )
     :init
     (add-hook
      'web-mode-hook
@@ -1250,8 +1258,8 @@ Explain.
          (setq-local electric-pair-text-pairs electric-pair-pairs)
          (electric-pair-mode 1)
          (evil-leader/set-key-for-mode 'web-mode
-           "fp" 'prettier-js-mode ; (f)ormat (p)rettier
-           "lf" #'eslint-fix))))  ; (l)int (f)ix
+           "fp" 'prettier-js-mode		; (f)ormat (p)rettier
+           "lf" #'eslint-fix))))		; (l)int (f)ix
     :config
     (setq css-indent-offset 2
           web-mode-code-indent-offset 2
@@ -1267,7 +1275,7 @@ Explain.
                                      ("php" . "/*")
                                      ("typescript" . "//")
                                      ("tsx" . "//")))
-    ;;; keybinds on load
+  ;;; keybinds on load
     (evil-leader/set-key-for-mode 'web-mode
       "fh" #'web-beautify-html)) ; (f)ormat (h)tml
 
