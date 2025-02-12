@@ -11,3 +11,4 @@ ControlPath /tmp/%%h-%%p-%%r
 ## IdentityFile ~/.ssh/id_rsa
 
 Include config.d/*
+Include ~/.colima/ssh_config

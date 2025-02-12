@@ -1465,7 +1465,7 @@ Explain.
               (interactive)
               (org-store-agenda-views)
               (browse-url (concat "file://" --user-home-dir "/.emacs.d/views/agenda.html")))
-      "oCg" 'org-clock-goto
+      ;; "oCg" 'org-clock-goto
       ;; set universally and override as needed such as with magit + text-mode
       "cc" 'org-edit-src-exit
       "cC" 'org-edit-src-abort)
@@ -1498,25 +1498,25 @@ Explain.
     (evil-leader/set-key
       "ops" 'org-pomodoro)) ; (o)rg (p)omodoro (s)tart
 
-  (use-package org-clock
-    :ensure nil
-    :config
-    ;; Display the clock persistence between sessions
-    (org-clock-persistence-insinuate)
+  ;; (use-package org-clock
+  ;;   :ensure nil
+  ;;   :config
+  ;;   ;; Display the clock persistence between sessions
+  ;;   (org-clock-persistence-insinuate)
 
-    ;; Set the default clock report settings
-    (setq org-clock-persist 'history)
-    (setq org-clock-in-switch-to-state "STARTED")
-    (setq org-clock-out-remove-zero-time-clocks t)
+  ;;   ;; Set the default clock report settings
+  ;;   (setq org-clock-persist 'history)
+  ;;   (setq org-clock-in-switch-to-state "STARTED")
+  ;;   (setq org-clock-out-remove-zero-time-clocks t)
 
-    ;; Optional: Set default tags or properties
-    (setq org-clock-default-task t)
-    (evil-leader/set-key-for-mode 'org-mode
-      "ci" 'org-clock-in
-      "co" 'org-clock-out
-      "cg" 'org-clock-goto
-      )
-    )
+  ;;   ;; Optional: Set default tags or properties
+  ;;   (setq org-clock-default-task t)
+  ;;   (evil-leader/set-key-for-mode 'org-mode
+  ;;     "ci" 'org-clock-in
+  ;;     "co" 'org-clock-out
+  ;;     "cg" 'org-clock-goto
+  ;;     )
+  ;;   )
 
   (use-package git-auto-commit-mode
     :defer t
