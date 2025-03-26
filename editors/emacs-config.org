@@ -891,6 +891,7 @@ As you start typing a key command in emacs, a pop-up modal will appear at the bo
 
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
+    :ensure nil
     :diminish which-key-mode
     :config
     (which-key-mode))
@@ -917,6 +918,7 @@ Honor editorconfig files configuration for whitespace and indentation settings w
 
 #+BEGIN_SRC emacs-lisp
   (use-package editorconfig
+    :ensure nil
     :diminish "↹"
     :init
     (setq auto-mode-alist
@@ -1718,6 +1720,7 @@ Explain.
   (use-package lua-mode
     :defer t)
   (use-package json-mode
+    :ensure nil
     :defer t
     :config
     (setq js-indent-level 2))
