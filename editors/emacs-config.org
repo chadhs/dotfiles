@@ -560,7 +560,14 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
     :diminish "⇥"
     :config
     (global-company-mode)
-    (company-tng-configure-default))
+    (company-tng-configure-default)
+    (define-key company-active-map [escape]
+  	      (lambda ()
+  		(interactive)
+  		(company-complete)
+  		(company-abort)
+  		(when (bound-and-true-p evil-mode)
+  		  (evil-force-normal-state)))))
 
   (use-package lsp-mode
     :defer t
