@@ -38,12 +38,12 @@ I like to keep track of how long it takes emacs to load, so this will establish 
 
 Let's Speed up operations by giving emacs garbage collection a more modern threshold.
 #+BEGIN_SRC emacs-lisp
-  (setq gc-cons-threshold 100000000) ; ~100MB
+  (setq gc-cons-threshold 200000000) ; ~200MB
 #+END_SRC
 
 Increase the amount of data which Emacs reads from the process https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
 #+BEGIN_SRC emacs-lisp
-  (setq read-process-output-max (* 1024 1024)) ;; 1mb
+  (setq read-process-output-max (* 10 1024 1024)) ;; 10mb
 #+END_SRC
 
 *** Load package support
