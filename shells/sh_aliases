@@ -65,6 +65,9 @@ function update-dotfiles(){
 ## fix emacs packages
 function fix-emacs-pkgs(){
     rm -rf ~/.emacs.d/elpa/*
+    rm -rf ~/.emacs.d/eln-cache/*
+    rm -rf ~/.emacs.d/.cache/*
+    rm -rf ~/.emacs.d/tree-sitter/*
 }
 function unfreeze-emacs(){
   kill -SIGUSR2 $(pgrep -fli emacs)
