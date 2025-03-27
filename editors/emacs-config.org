@@ -562,27 +562,26 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
     (global-company-mode)
     (company-tng-configure-default)
     (define-key company-active-map [escape]
-  	      (lambda ()
-  		(interactive)
-  		(company-complete)
-  		(company-abort)
-  		(when (bound-and-true-p evil-mode)
-  		  (evil-force-normal-state)))))
+                (lambda ()
+                  (interactive)
+                  (company-complete)
+                  (company-abort)
+                  (when (bound-and-true-p evil-mode)
+                    (evil-force-normal-state)))))
 
   (use-package lsp-mode
     :defer t
     :diminish lsp-mode
     :hook (((
-             js-mode
              js-ts-mode
-             js-jsx-mode
+             typescript-ts-mode
              tsx-ts-mode
              ruby-mode
-             typescript-mode
              web-mode
-             ) . lsp))
-    :commands lsp
+             ) . lsp-deferred))
+    :commands (lsp-deferred lsp)
     :config
+    (setq lsp-prefer-capf t)
     (setq lsp-auto-configure t
           lsp-auto-guess-root t
           ;; don't set flymake or lsp-ui so the default linter doesn't get trampled
@@ -790,11 +789,14 @@ use ~y%~ for yanking a s-expression
                       html-mode
                       java-mode
                       javascript-mode
+                      js-ts-mode
                       js-mode
                       pug-mode
                       terraform-mode
                       tide-mode
                       typscript-mode
+                      typescript-ts-mode
+                      tsx-ts-mode
                       web-mode))))
 #+END_SRC
 
@@ -998,19 +1000,30 @@ This section documents installed language and syntax specific packages and their
 Explain.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package tree-sitter
-    :ensure t
-    :diminish "🌳"
+  (use-package treesit
+    :ensure nil
+    ;; only load treesit if installed Emacs supports it
+    :if (fboundp 'treesit-language-available-p)
     :config
-    ;; activate tree-sitter on any buffer containing code for which it has a parser available
-    (global-tree-sitter-mode)
-    ;; you can easily see the difference tree-sitter-hl-mode makes for python, ts or tsx
-    ;; by switching on and off
-    (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
-
-  (use-package tree-sitter-langs
-    :ensure t
-    :after tree-sitter)
+    ;; Optionally, set up language grammar sources for automatic installation:
+    (setq treesit-language-source-alist
+          '((javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+            (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+            (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")))
+    (setq treesit-language-source-alist
+          '((javascript    "https://github.com/tree-sitter/tree-sitter-javascript")
+            (typescript    "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+            (tsx           "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+            (clojure       "https://github.com/swannodette/tree-sitter-clojure")
+            (clojurescript "https://github.com/swannodette/tree-sitter-clojure")
+            (ruby          "https://github.com/tree-sitter/tree-sitter-ruby")
+            (python        "https://github.com/tree-sitter/tree-sitter-python")
+            (go            "https://github.com/tree-sitter/tree-sitter-go")
+            (java          "https://github.com/tree-sitter/tree-sitter-java")))
+    ;; Automatically install grammars if they aren’t already available.
+    (dolist (lang '(javascript typescript tsx))
+      (unless (treesit-language-available-p lang)
+        (treesit-install-language-grammar lang))))
 #+END_SRC
 
 *** clojure
@@ -1208,13 +1221,21 @@ Explain.
   ;; use project local executables
   (use-package add-node-modules-path
     :defer t
-    :hook (((js-mode typescript-mode web-mode) . add-node-modules-path)))
+    :hook (((
+             js-ts-mode
+             typescript-ts-mode
+             tsx-ts-mode
+             ) . add-node-modules-path)))
 
   ;; prettier formatting
   (use-package prettier-js
     :defer t
     :diminish prettier-js-mode
-    :hook (((js-mode typescript-mode web-mode) . cs/use-prettier-if-config-exists-in-project-root)))
+    :hook (((
+             js-ts-mode
+             typescript-ts-mode
+             tsx-ts-mode
+             ) . cs/use-prettier-if-config-exists-in-project-root)))
 
   (use-package eslint-fix
     :defer t
@@ -1229,18 +1250,56 @@ Explain.
   (setq js-indent-level 2)
   (setq js-jsx-indent-level 2)
 
+  ;; Configure js-ts-mode for plain JavaScript files.
+  (defun cs/js-ts-common-setup ()
+    "Common configuration for JavaScript, TSX, and TypeScript modes."
+    (setq-local typescript-indent-level 2
+                js-indent-level 2
+                indent-tabs-mode nil)
+    (cs/use-linter-from-package-json)
+    (cs/enable-eslint-webmode)
+    (cs/use-prettier-if-config-exists-in-project-root)
+    (setq-local electric-pair-pairs (append electric-pair-pairs '((?\' . ?\')))) ; add single quotes
+    (setq-local electric-pair-text-pairs electric-pair-pairs)
+    (electric-pair-mode 1))
+
+  (use-package js-ts-mode
+    :ensure nil
+    :mode ("\\.js\\'" . js-ts-mode)
+    :hook (js-ts-mode . (lambda ()
+                          (cs/js-ts-common-setup)
+                          (evil-leader/set-key-for-mode 'js-ts-mode
+                            "fp" 'prettier-js-mode
+                            "lf" #'eslint-fix))))
+
+  ;; Configure typescript-ts-mode for TypeScript files.
+  (use-package typescript-ts-mode
+    :ensure nil
+    :mode ("\\.ts\\'" . typescript-ts-mode)
+    :hook (typescript-ts-mode . (lambda ()
+                                  (cs/js-ts-common-setup)
+                                  (evil-leader/set-key-for-mode 'typescript-ts-mode
+                                    "fp" 'prettier-js-mode
+                                    "lf" #'eslint-fix))))
+
+  ;; Configure tsx-ts-mode for TSX and JSX files.
+  (use-package tsx-ts-mode
+    :ensure nil
+    :mode (("\\.tsx\\'" . tsx-ts-mode)
+           ("\\.jsx\\'" . tsx-ts-mode))
+    :hook (tsx-ts-mode . (lambda ()
+                           (cs/js-ts-common-setup)
+                           (evil-leader/set-key-for-mode 'tsx-ts-mode
+                             "fp" 'prettier-js-mode
+                             "lf" #'eslint-fix))))
+
   (use-package web-mode
     :mode ("\\.ejs\\'"
            "\\.html\\'"
            "\\.erb\\'"
            "\\.j2\\'"
            "\\.jinja\\'"
-           "\\.php\\'"
-           "\\.js\\'"
-           "\\.jsx\\'"
-           "\\.ts\\'"
-           "\\.tsx\\'"
-           )
+           "\\.php\\'")
     :init
     (add-hook
      'web-mode-hook
@@ -1251,24 +1310,6 @@ Explain.
          (setq-local electric-pair-inhibit-predicate
                      (lambda (c)
                        (if (char-equal c ?{) t (electric-pair-default-inhibit c)))))))
-    (add-hook
-     'web-mode-hook
-     (lambda ()
-       ;; specific settings for js/ts & jsx/tsx
-       (when (or (string-equal "js" (file-name-extension buffer-file-name))
-                 (string-equal "jsx" (file-name-extension buffer-file-name))
-                 (string-equal "ts" (file-name-extension buffer-file-name))
-                 (string-equal "tsx" (file-name-extension buffer-file-name)))
-         ;; (setup-tide-mode)
-         (cs/use-linter-from-package-json)
-         (cs/enable-eslint-webmode)
-         (cs/use-prettier-if-config-exists-in-project-root)
-         (setq-local electric-pair-pairs (append electric-pair-pairs '((?\' . ?\')))) ; single quotes
-         (setq-local electric-pair-text-pairs electric-pair-pairs)
-         (electric-pair-mode 1)
-         (evil-leader/set-key-for-mode 'web-mode
-           "fp" 'prettier-js-mode		; (f)ormat (p)rettier
-           "lf" #'eslint-fix))))		; (l)int (f)ix
     :config
     (setq css-indent-offset 2
           web-mode-code-indent-offset 2
@@ -1279,11 +1320,7 @@ Explain.
           web-mode-enable-auto-quoting nil
           web-mode-comment-formats '(("css" . "/*")
                                      ("java" . "/*")
-                                     ("javascript" . "//")
-                                     ("jsx" . "//")
-                                     ("php" . "/*")
-                                     ("typescript" . "//")
-                                     ("tsx" . "//")))
+                                     ("php" . "/*")))
   ;;; keybinds on load
     (evil-leader/set-key-for-mode 'web-mode
       "fh" #'web-beautify-html)) ; (f)ormat (h)tml
