@@ -380,6 +380,9 @@ Explain.
   (use-package smex
     :defer t)
 
+  (use-package ag
+    :defer t)
+
   (use-package neotree
     :defer t
     :init
@@ -2290,11 +2293,12 @@ This section contains general global emacs key bindings.  Mode specific key bind
 
   ;;; projects / files / buffers
   (evil-leader/set-key
-    "Ff" #'find-file                     ; (F)ind (f)ile
-    "t"  #'counsel-projectile-find-file  ; emulate command-(t)
-    "b"  #'ivy-switch-buffer             ; switch to (b)uffer
-    "kb" #'kill-buffer                   ; (k)ill (b)uffer
-    "gf" #'counsel-projectile-ag)        ; (g)rep in project (f)iles (C-c C-o to open results in a buffer)
+    "Ff" #'find-file                    ; (F)ind (f)ile
+    "t"  #'counsel-projectile-find-file ; emulate command-(t)
+    "b"  #'ivy-switch-buffer            ; switch to (b)uffer
+    "kb" #'kill-buffer                  ; (k)ill (b)uffer
+    "gf" #'counsel-projectile-ag        ; (g)rep in project (f)iles (C-c C-o to open results in a buffer)
+    "gF" #'projectile-ag)               ; (g)rep in project (F)iles opening results in a buffer
 
   ;;; neotree
   (evil-leader/set-key "nt" #'neotree-toggle)
