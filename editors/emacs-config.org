@@ -1008,17 +1008,13 @@ Explain.
     ;; only load treesit if installed Emacs supports it
     :if (fboundp 'treesit-language-available-p)
     :config
-    ;; Optionally, set up language grammar sources for automatic installation:
-    (setq treesit-language-source-alist
-          '((javascript "https://github.com/tree-sitter/tree-sitter-javascript")
-            (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-            (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")))
+    ;; set up language grammar sources for automatic installation:
     (setq treesit-language-source-alist
           '((javascript    "https://github.com/tree-sitter/tree-sitter-javascript")
             (typescript    "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
             (tsx           "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-            (clojure       "https://github.com/swannodette/tree-sitter-clojure")
-            (clojurescript "https://github.com/swannodette/tree-sitter-clojure")
+            ;; clojure: no support yet
+            ;; clojurescript: no support yet
             (ruby          "https://github.com/tree-sitter/tree-sitter-ruby")
             (python        "https://github.com/tree-sitter/tree-sitter-python")
             (go            "https://github.com/tree-sitter/tree-sitter-go")
