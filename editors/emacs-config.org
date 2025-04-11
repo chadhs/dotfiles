@@ -1010,17 +1010,37 @@ Explain.
     :config
     ;; set up language grammar sources for automatic installation:
     (setq treesit-language-source-alist
-          '((javascript    "https://github.com/tree-sitter/tree-sitter-javascript")
+          '(
+  	  (javascript    "https://github.com/tree-sitter/tree-sitter-javascript")
             (typescript    "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
             (tsx           "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+            (json          "https://github.com/tree-sitter/tree-sitter-json")
+            (css          "https://github.com/tree-sitter/tree-sitter-css")
+            (html          "https://github.com/tree-sitter/tree-sitter-html")
+            (regex          "https://github.com/tree-sitter/tree-sitter-regex")
+            (bash          "https://github.com/tree-sitter/tree-sitter-bash")
             ;; clojure: no support yet
             ;; clojurescript: no support yet
             (ruby          "https://github.com/tree-sitter/tree-sitter-ruby")
             (python        "https://github.com/tree-sitter/tree-sitter-python")
             (go            "https://github.com/tree-sitter/tree-sitter-go")
-            (java          "https://github.com/tree-sitter/tree-sitter-java")))
+            (java          "https://github.com/tree-sitter/tree-sitter-java")
+  	  ))
     ;; Automatically install grammars if they aren’t already available.
-    (dolist (lang '(javascript typescript tsx))
+    (dolist (lang '(
+  		  javascript
+  		  typescript
+  		  tsx
+  		  json
+  		  css
+  		  html
+  		  regex
+  		  bash
+  		  ruby
+  		  python
+  		  go
+  		  java
+  		  ))
       (unless (treesit-language-available-p lang)
         (treesit-install-language-grammar lang))))
 #+END_SRC
