@@ -28,10 +28,6 @@ mas install $(echo "${mas_pkgs}") # wrapping echo is for array->string conversio
 echo "installing open-source tools..."
 sudo xcodebuild -license accept
 brew install $(echo "${brew_pkgs}") # wrapping echo is for array->string conversion
-### emacs
-brew tap d12frosted/emacs-plus
-brew install emacs-plus@29 --with-native-comp
-ln -s /opt/homebrew/opt/emacs-plus@29/Emacs.app /Applications
 
 echo "installing non mac app store apps..."
 export HOMEBREW_CASK_OPTS="--appdir=/Applications"

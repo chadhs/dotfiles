@@ -8,6 +8,7 @@ appcleaner
 bartender
 corretto@17
 daisydisk
+emacs
 espanso
 focusatwill
 iterm2
@@ -26,7 +27,6 @@ the-unarchiver
 ## archived but not forgotten
 # deckset
 # docker
-# emacs
 # fantastical
 # keyboard-maestro
 # omnifocus
