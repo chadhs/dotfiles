@@ -1269,7 +1269,6 @@ Explain.
   (setq js-indent-level 2)
   (setq js-jsx-indent-level 2)
 
-  ;; Configure js-ts-mode for plain JavaScript files.
   (defun cs/js-ts-common-setup ()
     "Common configuration for JavaScript, TSX, and TypeScript modes."
     (setq-local typescript-indent-level 2
@@ -1282,6 +1281,7 @@ Explain.
     (setq-local electric-pair-text-pairs electric-pair-pairs)
     (electric-pair-mode 1))
 
+  ;; Configure js-ts-mode for plain JavaScript files.
   (use-package js-ts-mode
     :ensure nil
     :mode ("\\.js\\'" . js-ts-mode)
