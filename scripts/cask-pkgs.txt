@@ -11,6 +11,7 @@ daisydisk
 emacs
 espanso
 focusatwill
+ghostty
 iterm2
 karabiner-elements
 keepingyouawake
