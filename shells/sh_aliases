@@ -50,9 +50,63 @@ if [[ $(uname) = "Darwin" ]]; then
     alias chromedev='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 &'
 
     ### kitty
-    settabcolor-kitty() {
-      kitty @ set-tab-color active_bg=${1} inactive_bg=${1}
+    # Map a name to a hex color, or pass through if it's already a hex code.
+    get_hex_color() {
+      local name lc
+      name=$1
+      # lowercase it portably
+      lc=$(printf '%s' "$name" | tr '[:upper:]' '[:lower:]')
+
+      case "$lc" in
+        red)    echo "#dc322f"; return 0 ;;  # Solarized red
+        orange) echo "#cb4b16"; return 0 ;;  # Solarized orange
+        yellow) echo "#b58900"; return 0 ;;  # Solarized yellow
+        green)  echo "#859900"; return 0 ;;  # Solarized green
+        blue)   echo "#268bd2"; return 0 ;;  # Solarized blue
+      esac
+
+      # if it's a 6‑digit hex (with optional leading #), normalize and return
+      if printf '%s' "$name" | grep -Eq '^#?[0-9A-Fa-f]{6}$'; then
+        printf "#%s\n" "${name#"#"}"
+        return 0
+      fi
+
+      echo "Error: '$name' is not a valid color" >&2
+      return 1
     }
+
+    # Dim a hex color by a given percentage (default 50%)
+    dim_color() {
+      local hex factor r g b
+      hex="${1#"#"}"          # strip any leading “#”
+      factor=${2:-50}         # percent brightness (0–100)
+
+      # convert each channel
+      r=$(( 16#${hex:0:2} * factor / 100 ))
+      g=$(( 16#${hex:2:2} * factor / 100 ))
+      b=$(( 16#${hex:4:2} * factor / 100 ))
+
+      # clamp to 0–255
+      (( r>255 )) && r=255
+      (( g>255 )) && g=255
+      (( b>255 )) && b=255
+
+      printf "#%02x%02x%02x\n" "$r" "$g" "$b"
+    }
+
+    # Main function (you’ve renamed this)
+    kitty_set_tab_color() {
+      local input active_hex dimmed
+      input=${1:?Usage: kitty_set_tab_color <color-name|#RRGGBB>}
+      active_hex=$(get_hex_color "$input") || return 1
+      dimmed=$(dim_color "$active_hex" 50)
+      kitty @ set-tab-color active_bg="$active_hex" inactive_bg="$dimmed"
+    }
+
+    # Alias for convenience
+    alias kct='kitty_set_tab_color'
+    ### end kitty
+
 fi
 
 ## update dot files
