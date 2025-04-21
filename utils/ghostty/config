@@ -1,0 +1,28 @@
+# This is the configuration file for Ghostty.
+#
+# This template file has been automatically created at the following
+# path since Ghostty couldn't find any existing config files on your system:
+#
+#   /Users/chadhs/Library/Application Support/com.mitchellh.ghostty/config
+#
+# The template does not set any default options, since Ghostty ships
+# with sensible defaults for all options. Users should only need to set
+# options that they want to change from the default.
+#
+# Run `ghostty +show-config --default --docs` to view a list of
+# all available config options and their default values.
+#
+# Additionally, each config option is also explained in detail
+# on Ghostty's website, at https://ghostty.org/docs/config.
+
+## My Config Options
+# Use Solarized Light when your OS is in light mode,
+# and Solarized Dark when it’s in dark mode
+#theme = "light:Builtin Solarized Light,dark:Builtin Solarized Dark"
+theme = "Builtin Solarized Dark"
+font-family = "Menlo"
+font-size = 14
+# Number of columns (width in character cells)
+window-width  = 128
+# Number of rows    (height in character cells)
+window-height =  84

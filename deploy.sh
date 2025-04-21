@@ -69,7 +69,7 @@ symlink_configs(){
     [ ! -e ~/Library/Application\ Support/espanso/match/private.yml ] && cp -rp ~/dotfiles/utils/espanso/private.yml ~/Library/Application\ Support/espanso/match/private.yml
     [ ! -e ~/.config/karabiner/assets/complex_modifications/custom.json ] && ln -s ~/dotfiles/utils/karabiner/custom.json ~/.config/karabiner/assets/complex_modifications/custom.json
     [ ! -d ~/.config/kitty ] && mkdir ~/.config/kitty && ln -s ~/dotfiles/utils/kitty/kitty.conf ~/.config/kitty/kitty.conf && ln -s ~/dotfiles/utils/kitty/kitty.app.png ~/.config/kitty/kitty.app.png && ln -s ~/dotfiles/utils/kitty/current-theme.conf ~/.config/kitty/current-theme.conf
-    [ ! -d ~/.config/ghostty ] && mkdir ~/.config/ghostty && ln -s ~/dotfiles/utils/ghostty/ghostty.conf ~/.config/ghostty/config
+    [ ! -d ~/.config/ghostty ] && mkdir ~/.config/ghostty && ln -s ~/dotfiles/utils/ghostty/config ~/.config/ghostty/config
   fi
 
 
