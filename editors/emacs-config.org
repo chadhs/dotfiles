@@ -271,6 +271,7 @@ experimenting with auto-toggling the themes based on matching os level light and
     (auto-dark-themes '((solarized-dark) (solarized-light)))
     (auto-dark-allow-osascript t)
     (auto-dark-allow-powershell nil)
+    (auto-dark-detection-method 'osascript)
     :init (auto-dark-mode))
 #+END_SRC
 
