@@ -246,6 +246,8 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
 
 *** cycle themes
 
+experimenting with auto-toggling the themes based on matching os level light and dark mode
+
 #+BEGIN_SRC emacs-lisp
   (use-package cycle-themes
     :if (display-graphic-p)
@@ -261,6 +263,15 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
             ))
     :config
     (evil-leader/set-key "ct" #'cycle-themes))
+
+  (use-package auto-dark
+    :if (display-graphic-p)
+    :diminish auto-dark-mode
+    :custom
+    (auto-dark-themes '((solarized-dark) (solarized-light)))
+    (auto-dark-allow-osascript t)
+    (auto-dark-allow-powershell nil)
+    :init (auto-dark-mode))
 #+END_SRC
 
 *** terminal settings
@@ -2052,10 +2063,14 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
     (setq ls-lisp-use-insert-directory-program nil))
 #+END_SRC
 
-*** initial widow size and position (`left . -1` is to get close to right align)
+*** initial widow size and position
+
+(-=left . -1=- is to get close to right align)
+experimenting with a larger starting frame.
 
 #+BEGIN_SRC emacs-lisp
-  (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
+  ;; (setq initial-frame-alist '((top . 0) (left . -1) (width . 120) (height . 80)))
+  (setq initial-frame-alist '((top . 0) (left . -1) (width . 184) (height . 86)))
 #+END_SRC
 
 *** prevent verticle split automatically on larger displays
