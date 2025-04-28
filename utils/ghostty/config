@@ -18,8 +18,8 @@
 ## My Config Options
 # Use Solarized Light when your OS is in light mode,
 # and Solarized Dark when it’s in dark mode
-#theme = "light:Builtin Solarized Light,dark:Builtin Solarized Dark"
-theme = "Builtin Solarized Dark"
+theme = "light:Builtin Solarized Light,dark:Builtin Solarized Dark"
+#theme = "Builtin Solarized Dark"
 font-family = "Menlo"
 font-size = 14
 # Number of columns (width in character cells)
