@@ -5,14 +5,13 @@
 1password
 alfred
 appcleaner
-bartender
 corretto@17
 daisydisk
 emacs
 espanso
 focusatwill
 ghostty
-iterm2
+jordanbaird-ice
 karabiner-elements
 keepingyouawake
 kitty
@@ -26,9 +25,11 @@ the-unarchiver
 # slack
 
 ## archived but not forgotten
+# bartender
 # deckset
 # docker
 # fantastical
+# iterm2
 # keyboard-maestro
 # omnifocus
 # visual-studio-code
