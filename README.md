@@ -18,8 +18,8 @@ where possible run the lastest stable version via homebrew as a base version.  i
 
 #### current exceptions
 
-- node@20
-- corretto17 (amazon jdk)
+- node@22
+- corretto21 (amazon jdk)
 
 ### fun options
 
