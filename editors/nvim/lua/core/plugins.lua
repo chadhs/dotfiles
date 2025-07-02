@@ -33,7 +33,7 @@ local plugins = {
   { 'echasnovski/mini.nvim', version = false },
   {
     'VonHeikemen/lsp-zero.nvim',
-    branch = 'v2.x',
+    branch = 'v4.x',
     dependencies = {
       -- LSP Support
       {'neovim/nvim-lspconfig'},             -- Required
@@ -47,6 +47,7 @@ local plugins = {
     }
   },
   "tpope/vim-fugitive",
+  "sheerun/vim-polyglot",
 }
 
 local opts = {}
