@@ -14,7 +14,7 @@ os_setup(){
     system_os="macos"
     pkg_install="brew install"
     package_list="editorconfig git tmux zsh"
-    cask_package_list="emacs macvim"
+    cask_package_list="emacs-app macvim-app"
   elif [ "$system_type" = "FreeBSD" ]; then
     system_os="freebsd"
     pkg_install="sudo pkg install -y"

@@ -5,9 +5,9 @@
 1password
 alfred
 appcleaner
-corretto@17
+corretto@21
 daisydisk
-emacs
+emacs-app
 espanso
 focusatwill
 ghostty
@@ -15,7 +15,7 @@ jordanbaird-ice
 karabiner-elements
 keepingyouawake
 kitty
-macvim
+macvim-app
 moom
 popclip
 the-unarchiver

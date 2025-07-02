@@ -10,7 +10,7 @@ cfn-lint
 direnv
 git
 nmap
-node@20
+node@22
 nvim
 nvm
 pwgen
