@@ -20,6 +20,7 @@ where possible run the lastest stable version via homebrew as a base version.  i
 
 - node@22
 - corretto21 (amazon jdk)
+- postgresql@17
 
 ### fun options
 
