@@ -26,3 +26,4 @@ font-size = 14
 window-width  = 128
 # Number of rows    (height in character cells)
 window-height =  84
+keybind = shift+enter=text:\n

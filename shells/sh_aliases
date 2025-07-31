@@ -107,6 +107,8 @@ if [[ $(uname) = "Darwin" ]]; then
     alias kct='kitty_set_tab_color'
     ### end kitty
 
+    ### ghostty
+    alias ssh='TERM=xterm-256color /usr/bin/ssh'
 fi
 
 ## update dot files
