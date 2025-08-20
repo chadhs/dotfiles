@@ -108,6 +108,7 @@ symlink_configs(){
   [ ! -e ~/.tern-config ] && ln -s ~/dotfiles/utils/tern-config .tern-config
   [ ! -e ~/.indium.json ] && ln -s ~/dotfiles/utils/indium.json .indium.json
   [ ! -e ~/.zprint.edn ] && ln -s ~/dotfiles/utils/zprint.edn .zprint.edn
+  [ ! -d ~/.virtualenvs ] && mkdir ~/.virtualenvs
 }
 
 
