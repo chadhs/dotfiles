@@ -2,7 +2,6 @@ eslint
 js-yaml
 jsonlint
 nodemon
-@openai/codex
 prettier
 typescript
 typescript-language-server
