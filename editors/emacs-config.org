@@ -1027,12 +1027,12 @@ Explain.
             (typescript    "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
             (tsx           "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
             (json          "https://github.com/tree-sitter/tree-sitter-json")
-            (css          "https://github.com/tree-sitter/tree-sitter-css")
+            (css           "https://github.com/tree-sitter/tree-sitter-css")
             (html          "https://github.com/tree-sitter/tree-sitter-html")
-            (regex          "https://github.com/tree-sitter/tree-sitter-regex")
-            (bash          "https://github.com/tree-sitter/tree-sitter-bash")
-            ;; clojure: no support yet
-            ;; clojurescript: no support yet
+            (regex         "https://github.com/tree-sitter/tree-sitter-regex")
+            ;; (bash          "https://github.com/tree-sitter/tree-sitter-bash")
+            ;; (clojure       "no support yet")
+            ;; (clojurescript "no support yet")
             (ruby          "https://github.com/tree-sitter/tree-sitter-ruby")
             (python        "https://github.com/tree-sitter/tree-sitter-python")
             (go            "https://github.com/tree-sitter/tree-sitter-go")
@@ -1047,7 +1047,9 @@ Explain.
   		  css
   		  html
   		  regex
-  		  bash
+  		  ;; bash
+  		  ;; clojure
+  		  ;; clojurescript-mode
   		  ruby
   		  python
   		  go

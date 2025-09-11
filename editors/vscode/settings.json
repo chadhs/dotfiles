@@ -1,4 +1,25 @@
 {
+  "workbench.colorTheme": "Solarized Light",
+  "window.autoDetectColorScheme": true,
+  "workbench.preferredDarkColorTheme": "Solarized Dark",
+  "workbench.preferredLightColorTheme": "Solarized Light",
+  "workbench.colorCustomizations": {
+    "[Solarized Dark]": {
+      "editorCursor.foreground": "#657b83"
+    }
+  },
+  "editor.formatOnSave": true,
+  "editor.fontSize": 14,
+  "editor.minimap.enabled": false,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "always"
+  },
+  "github.copilot.nextEditSuggestions.enabled": true,
+  "git.autofetch": true,
+  "http.proxyStrictSSL": false,
+  "files.trimTrailingWhitespace": true,
   "vim.leader": ",",
   "vim.vimrc.enable": true,
   "vim.vimrc.path": "$HOME/.vscodevimrc",
@@ -72,28 +93,7 @@
   "vim.visualModeKeyBindings": [
     {
       "before": ["<leader>", "c", "l"],
-      "commands": [
-        "editor.action.commentLine",
-        "extension.vim_escape"
-      ]
+      "commands": ["editor.action.commentLine", "extension.vim_escape"]
     }
-  ],
-  "git.autofetch": true,
-  "editor.fontSize": 14,
-  "editor.minimap.enabled": false,
-  "http.proxyStrictSSL": false,
-  "files.trimTrailingWhitespace": true,
-  "workbench.colorTheme": "Solarized Light",
-  "editor.bracketPairColorization.enabled": true,
-  "editor.guides.bracketPairs":"active",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "workbench.colorCustomizations": {
-  "[Solarized Light]": {}
-  },
-  "workbench.preferredDarkColorTheme": "Solarized Dark",
-  "workbench.preferredLightColorTheme": "Solarized Light",
-  "java.import.gradle.wrapper.enabled": false,
-  "java.import.gradle.home": "/usr/local/Cellar/gradle/7.6/libexec"
+  ]
 }
