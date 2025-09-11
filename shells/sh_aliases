@@ -36,6 +36,8 @@ if [[ $(uname) = "Darwin" ]]; then
     alias caskall='brew cu -a --cleanup'
     alias masup='mas upgrade'
     alias speedtest='speedtest-cli'
+    alias genpass='pwgen -s -1 16 | tee >(pbcopy)'
+    alias genuuid='uuidgen | tr "[:upper:]" "[:lower:]" | tee >(pbcopy)'
     ### stop correction intrusion
     zshonly alias npm='nocorrect npm'
     zshonly alias kubectl='nocorrect kubectl'
