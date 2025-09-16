@@ -36,6 +36,7 @@ if [[ $(uname) = "Darwin" ]]; then
   ### python
   export WORKON_HOME=~/.virtualenvs
   export PROJECT_HOME=~/src
+  source virtualenvwrapper_lazy.sh
   ### node
   export NVM_DIR="$HOME/.nvm"
   #### load the nvm script but don't run it; we'll use system node for cli tools like linters
