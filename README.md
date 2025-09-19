@@ -4,13 +4,25 @@ configs and systems preferences for all the machines i frequent now and in the f
 
 obviously you **want to read** the best part... [emacs-config.org](editors/emacs-config.org)
 
-## deployment
+## scripts
+### setting up a new mac
+the `bootstrap-mac.sh` script is designed to be run once for initial setup, although it should remain safe to re-run if interrupted.
+
+`cd scripts && sh bootstrap-mac.sh`
+
+### keeping config changes in sync
+the `deploy.sh` script is designed to setup base packages and symlinks; it is also called by the bootstrap script.
 
 `sh deploy.sh` is idempotent and safe to run on every login.
 
+### keeping your mac packages up to date
+the `weekly-update.sh` script is designed to update all brew, cask, app store, npm (global), ruby (global), and python (global) packages.
+
+`cd scripts && sh weekly-update.sh`
+
 ## more info
 
-for now check out the deploy.sh script and the various files; i promise it's not too exciting. ^_^
+this repo also contains other utility scripts, editor settings, etc...  feel free to use anything you find useful. ^_^
 
 ### lang version philosophy
 
