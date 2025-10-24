@@ -1785,7 +1785,11 @@ Explain.
 *** other syntaxes
 
 #+BEGIN_SRC emacs-lisp
+  (use-package dotenv-mode
+    :defer t
+    :mode "\\.env\\..*\\'")
   (use-package dockerfile-mode
+    :defer t
     :mode "Dockerfile\\'")
   (use-package lua-mode
     :defer t)
