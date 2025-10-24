@@ -226,18 +226,6 @@ return {
         rust_analyzer = {},    -- Rust
         ts_ls = {},            -- TypeScript/JavaScript
 
-        lua_ls = {             -- Lua
-          settings = {
-            Lua = {
-              completion = {
-                callSnippet = 'Replace',
-              },
-              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              -- diagnostics = { disable = { 'missing-fields' } },
-            },
-          },
-        },
-
         -- Additional language servers
         bashls = {},           -- Bash
         html = {},             -- HTML
@@ -248,9 +236,6 @@ return {
         eslint = {},           -- ESLint (JavaScript/TypeScript linting)
 
         lua_ls = {
-          -- cmd = { ... },
-          -- filetypes = { ... },
-          -- capabilities = {},
           settings = {
             Lua = {
               completion = {
