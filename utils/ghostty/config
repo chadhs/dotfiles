@@ -30,11 +30,13 @@ keybind = shift+enter=text:\n
 
 ### window splitting
 ## Keybindings for splitting
-keybind = ctrl+backslash=new_split:right
-keybind = ctrl+minus=new_split:down
+## - use alt to not conflict with tmux and nvim using ctrl
+keybind = alt+backslash=new_split:right
+keybind = alt+minus=new_split:down
 
 ## Keybindings for moving between splits
-keybind = ctrl+h=goto_split:left
-keybind = ctrl+j=goto_split:bottom
-keybind = ctrl+k=goto_split:top
-keybind = ctrl+l=goto_split:right
+## - use alt to not conflict with tmux and nvim using ctrl
+keybind = alt+h=goto_split:left
+keybind = alt+j=goto_split:bottom
+keybind = alt+k=goto_split:top
+keybind = alt+l=goto_split:right

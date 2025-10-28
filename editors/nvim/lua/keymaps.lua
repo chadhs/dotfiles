@@ -26,10 +26,38 @@ vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' }
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+-- NOTE: Commented out explicit <C-h/j/k/l> window navigation mappings.
+-- vim-tmux-navigator now owns these to enable seamless tmux/Nvim navigation.
+-- vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
+-- vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
+-- vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
+-- vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+-- Split creation keybinds
+vim.keymap.set('n', '<C-\\>', '<cmd>vsplit<CR>', { desc = 'Create vertical split' })
+vim.keymap.set('n', '<C-->', '<cmd>split<CR>', { desc = 'Create horizontal split' })
+vim.keymap.set('n', '<C-_>', '<cmd>split<CR>', { desc = 'Create horizontal split (underscore alias)' })
+
+-- Zoom current split (toggle) - built-in Neovim
+local zoomed = false
+vim.keymap.set('n', '<C-z>', function()
+  if zoomed then
+    vim.cmd('wincmd =')
+    zoomed = false
+  else
+    vim.cmd('wincmd |')
+    vim.cmd('wincmd _')
+    zoomed = true
+  end
+end, { desc = 'Zoom current split (toggle)' })
+
+-- Window management
+vim.keymap.set('n', '<leader>wc', '<cmd>close<CR>', { desc = '[W]indow [C]lose' })
+vim.keymap.set('n', '<leader>wm', '<cmd>only<CR>', { desc = '[W]indow [M]ake main (close others)' })
+
+-- Alternative built-in zoom options
+-- vim.keymap.set('n', '<C-x>', '<C-w>|', { desc = 'Zoom current split (maximize width)' })
+-- vim.keymap.set('n', '<leader>uz', '<C-w>=', { desc = 'Unzoom (restore equal splits)' })
 
 -- NOTE: Some terminals have colliding keymaps or are not able to send distinct keycodes
 -- vim.keymap.set("n", "<C-S-h>", "<C-w>H", { desc = "Move window to the left" })
@@ -59,13 +87,42 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 vim.keymap.set("n", "<leader>Fd", vim.cmd.Ex)
 vim.keymap.set("n", "<leader>/", vim.cmd.nohlsearch)
 
--- Go up one directory in netrw buffers
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "netrw",
-    callback = function()
-      -- Map ^ to netrw's "u" (up-dir). Must remap so netrw's buffer-local 'u' mapping triggers.
-      vim.keymap.set("n", "^", "u", { buffer = true, remap = true, desc = "Go up one directory in netrw" })
-    end,
+-- Netrw: make ^ behave like 'u' (parent directory)
+-- Some setups see netrw re-apply its own mappings after FileType runs.
+-- To ensure our override sticks, (re)apply it on FileType and on BufWinEnter.
+local netrw_group = vim.api.nvim_create_augroup("custom-netrw-keys", { clear = true })
+
+local function set_netrw_parent_map(buf)
+  -- Remove any existing mapping for ^ in this buffer, then map to 'u'
+  pcall(vim.keymap.del, 'n', '^', { buffer = buf })
+  vim.keymap.set('n', '^', '-', {
+    buffer = buf,
+    remap = true, -- leverage netrw's own mapping for '-' (parent dir)
+    silent = true,
+    desc = 'Netrw: go up one directory',
+  })
+end
+
+-- When the netrw filetype is set, schedule our mapping so it runs after netrw's mappings
+vim.api.nvim_create_autocmd('FileType', {
+  desc = "Netrw: remap ^ to u (parent directory)",
+  group = netrw_group,
+  pattern = 'netrw',
+  callback = function(args)
+    vim.schedule(function()
+      set_netrw_parent_map(args.buf)
+    end)
+  end,
+})
+
+-- Also re-apply when (re)entering a netrw window to beat late remaps
+vim.api.nvim_create_autocmd('BufWinEnter', {
+  group = netrw_group,
+  callback = function(args)
+    if vim.bo[args.buf].filetype == 'netrw' then
+      set_netrw_parent_map(args.buf)
+    end
+  end,
 })
 
 -- vimrc keybind to explore
