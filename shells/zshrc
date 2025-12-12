@@ -105,7 +105,7 @@ export LANG=en_US.UTF-8
 ########################################
 
 ## set default editor
-EDITOR="vim"
+EDITOR="nvim"
 export EDITOR
 
 ### vi mode fixes

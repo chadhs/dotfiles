@@ -13,7 +13,7 @@ os_setup(){
   if [ "$system_type" = "Darwin" ]; then
     system_os="macos"
     pkg_install="brew install"
-    package_list="editorconfig git tmux zsh"
+    package_list="editorconfig git nvim tmux zsh"
     cask_package_list="emacs-app macvim-app"
   elif [ "$system_type" = "FreeBSD" ]; then
     system_os="freebsd"
@@ -97,8 +97,9 @@ symlink_configs(){
   [ ! -e ~/.emacs.d/emacs-config.org ] && ln -s ~/dotfiles/editors/emacs-config.org ~/.emacs.d/emacs-config.org
   [ ! -e ~/.vimrc ] && ln -s ~/dotfiles/editors/vimrc .vimrc
   [ ! -d ~/.vim ] && git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-  vim +PluginClean! +qall
-  vim +PluginInstall! +qall
+  ## deprecated
+  # vim +PluginClean! +qall
+  # vim +PluginInstall! +qall
   [ ! -d ~/.config/nvim ] && ln -s ~/dotfiles/editors/nvim ~/.config/nvim
   [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig
   [ ! -e ~/.editorconfig ] && ln -s ~/dotfiles/editors/editorconfig .editorconfig

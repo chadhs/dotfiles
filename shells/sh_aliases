@@ -24,7 +24,8 @@ zshonly disable r
 ## mac only aliases
 if [[ $(uname) = "Darwin" ]]; then
     alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs "$@"'
-    alias vim='mvim -v'
+    #alias vim='mvim -v'
+    alias vim='nvim'
     alias flushdns='dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
     alias restart_en0='sudo ifconfig en0 down && sudo ifconfig en0 up'
     alias sortlaunchpad='defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock'

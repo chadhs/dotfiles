@@ -48,6 +48,8 @@ matches:
     replace: "install"
   - trigger: "reponse"
     replace: "response"
+  - trigger: "ghot"
+    replace: "ghost"
 
   ## characters
   - trigger: ",,up"
