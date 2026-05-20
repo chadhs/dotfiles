@@ -31,7 +31,6 @@ zsh
 # bash
 # pandoc
 # postgresql@14
-# speedtest-cli
 # ssh-copy-id
 # terraform
 # tldr
