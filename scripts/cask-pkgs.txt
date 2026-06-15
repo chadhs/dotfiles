@@ -14,7 +14,6 @@ ghostty
 jordanbaird-ice
 karabiner-elements
 keepingyouawake
-kitty
 macvim-app
 moom
 popclip
@@ -31,5 +30,6 @@ the-unarchiver
 # fantastical
 # iterm2
 # keyboard-maestro
+# kitty
 # omnifocus
 # visual-studio-code
