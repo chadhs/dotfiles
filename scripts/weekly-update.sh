@@ -18,7 +18,6 @@ echo "updating packages..."
   && update-dotfiles \
   && brew update && brew doctor && brew upgrade; brew cleanup \
   && mas outdated && mas outdated && rehash && mas upgrade \
-  && brew cu -a --cleanup \
   && npm install -g $(echo "${npm_pkgs}") \
   && gem install $(echo "${gem_pkgs}") && gem update \
   && brew install shellcheck lua luarocks hadolint && luarocks install luacheck \

@@ -2,10 +2,12 @@
 
 ## preflight checks
 [ $(dirname "${0}") != "." ] && { echo "please run from within scripts dir, exiting..." ; exit 1; }
-[ ! -r brew-pkgs.txt ] && { echo "missing package list, exiting..." ; exit 1; }
+[ ! -r brew-pkgs.txt ] && { echo "missing brew package list, exiting..." ; exit 1; }
+[ ! -r cask-pkgs.txt ] && { echo "missing cask package list, exiting..." ; exit 1; }
 
 ## read in packages to install
 brew_pkgs="$(grep '^[^#[:blank:]]' brew-pkgs.txt | tr '\n' ' ')"
+cask_pkgs="$(grep '^[^#[:blank:]]' cask-pkgs.txt | tr '\n' ' ')"
 
 ## do it!
 ### in the install commands below, wrapping echo is for array->string conversion
@@ -13,4 +15,6 @@ brew_pkgs="$(grep '^[^#[:blank:]]' brew-pkgs.txt | tr '\n' ' ')"
   && echo "updating brew packages..." \
   && brew update && brew doctor && brew upgrade; brew cleanup \
   && echo "installing missing brew packages..." \
-  && brew install $(echo "${brew_pkgs}")
+  && brew install $(echo "${brew_pkgs}") \
+  && echo "installing missing brew cask packages..." \
+  && brew install --cask $(echo "${cask_pkgs}")
