@@ -11,13 +11,14 @@ emacs-app
 espanso
 focusatwill
 ghostty
-jordanbaird-ice
 karabiner-elements
 keepingyouawake
 macvim-app
 moom
 popclip
 the-unarchiver
+thaw
+whichspace
 
 ## not installed by default
 # google-chrome
