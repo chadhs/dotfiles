@@ -15,7 +15,8 @@ mas_pkgs="$(grep '^[^#[:blank:]]' "${SCRIPT_DIR}/mas-pkgs.txt" | tr '\n' ' ')"
 # shellcheck disable=SC1090
 . ~/.sh_aliases \
   && echo "updating mac app store apps..." \
-  && mas outdated \
-  && mas upgrade \
+  # Refresh mas's outdated cache twice + rehash so upgrade does not
+  # retry apps that were already updated (historical mas quirk).
+  && mas outdated && mas outdated && rehash && mas upgrade \
   && echo "installing missing mac app store apps..." \
-  && mas install ${=mas_pkgs}
+  && mas outdated && mas install ${=mas_pkgs}

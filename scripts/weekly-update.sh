@@ -24,8 +24,9 @@ echo "updating packages..."
   && echo "reconciling Brewfile packages..." \
   && brew bundle --file="${BREWFILE}" \
   && echo "updating Mac App Store apps..." \
-  && mas outdated \
-  && mas upgrade \
+  # Refresh mas's outdated cache twice + rehash so upgrade does not
+  # retry apps that were already updated (historical mas quirk).
+  && mas outdated && mas outdated && rehash && mas upgrade \
   && echo "updating global npm packages..." \
   && npm install -g ${=npm_pkgs} \
   && echo "updating global gem packages..." \
