@@ -1,1 +1,3 @@
-source ~/.profile
+# sourced for login zsh only
+# PATH/env live in zshenv -> profile; avoid re-sourcing profile here
+# (previously both zshenv and zprofile pointed at this file and doubled PATH)

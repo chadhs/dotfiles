@@ -1,4 +1,6 @@
-# cask install list
+# cask install list (LEGACY)
+# Prefer the repo-root Brewfile + `brew bundle` for installs/updates.
+# Kept for reference / archived package notes.
 
 ## include an uncommented list of homebrew cask packages to install
 

@@ -7,7 +7,7 @@ alias ll='ls -lh'
 alias lla='ls -lah'
 alias cd..='cd ..'
 ## fix backspace in vim in zsh in emacs :grin:
-stty erase '^?'
+stty erase '^?' 2>/dev/null || true
 ## check weather
 alias checkweather='curl wttr.in'
 
@@ -33,8 +33,8 @@ if [[ $(uname) = "Darwin" ]]; then
     alias brewup='brew update && brew doctor && brew upgrade; brew cleanup'
     alias brewforce='brew update && brew doctor; brew upgrade; brew cleanup'
     alias brewfix='brew update-reset'
-    alias caskup='brew cu -y --cleanup'
-    alias caskall='brew cu -a --cleanup'
+    alias caskup='brew upgrade --cask && brew cleanup'
+    alias caskall='brew upgrade --cask --greedy && brew cleanup'
     alias masup='mas upgrade'
     alias speedtest='networkQuality'
     alias genpass='pwgen -s -1 16 | tee >(pbcopy)'

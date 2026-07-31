@@ -1,16 +1,21 @@
 #!/bin/zsh
+set -euo pipefail
+
+## resolve paths (safe to run from anywhere)
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname "${0}")" && pwd)"
 
 ## preflight checks
-[ $(dirname "${0}") != "." ] && { echo "please run from within scripts dir, exiting..." ; exit 1; }
-[ ! -r mas-pkgs.txt ] && { echo "missing package list, exiting..." ; exit 1; }
+[ -r "${SCRIPT_DIR}/mas-pkgs.txt" ] || { echo "missing package list, exiting..." ; exit 1; }
 
 ## read in packages to install
-mas_pkgs="$(grep '^[^#[:blank:]]' mas-pkgs.txt | tr '\n' ' ')"
+mas_pkgs="$(grep '^[^#[:blank:]]' "${SCRIPT_DIR}/mas-pkgs.txt" | tr '\n' ' ')"
 
 ## do it!
-### in the install commands below, wrapping echo is for array->string conversion
+# Prefer Brewfile + `brew bundle` for new setups; this script remains for mas-only refreshes.
+# shellcheck disable=SC1090
 . ~/.sh_aliases \
   && echo "updating mac app store apps..." \
-  && mas outdated && mas outdated && rehash && mas upgrade \
+  && mas outdated \
+  && mas upgrade \
   && echo "installing missing mac app store apps..." \
-  && mas outdated && mas install $(echo "${mas_pkgs}")
+  && mas install ${=mas_pkgs}

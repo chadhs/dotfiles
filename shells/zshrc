@@ -68,7 +68,7 @@ fi
 # User configuration
 
 ######################################
-### see .zshenv for PATH defintion ###
+### see .zshenv for PATH definition ###
 ######################################
 # export MANPATH="/usr/local/man:$MANPATH"
 

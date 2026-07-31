@@ -1,0 +1,3 @@
+# sourced for every zsh (login, interactive, scripts)
+# keep PATH and env here; put login-only hooks in zprofile
+source ~/.profile

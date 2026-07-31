@@ -1,20 +1,18 @@
 #!/bin/zsh
+set -euo pipefail
+
+## resolve paths (safe to run from anywhere)
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname "${0}")" && pwd)"
+REPO_ROOT="$(CDPATH= cd -- "${SCRIPT_DIR}/.." && pwd)"
+BREWFILE="${REPO_ROOT}/Brewfile"
 
 ## preflight checks
-[ $(dirname "${0}") != "." ] && { echo "please run from within scripts dir, exiting..." ; exit 1; }
-[ ! -r brew-pkgs.txt ] && { echo "missing brew package list, exiting..." ; exit 1; }
-[ ! -r cask-pkgs.txt ] && { echo "missing cask package list, exiting..." ; exit 1; }
-
-## read in packages to install
-brew_pkgs="$(grep '^[^#[:blank:]]' brew-pkgs.txt | tr '\n' ' ')"
-cask_pkgs="$(grep '^[^#[:blank:]]' cask-pkgs.txt | tr '\n' ' ')"
+[ -r "${BREWFILE}" ] || { echo "missing Brewfile at ${BREWFILE}, exiting..." ; exit 1; }
 
 ## do it!
-### in the install commands below, wrapping echo is for array->string conversion
+# shellcheck disable=SC1090
 . ~/.sh_aliases \
   && echo "updating brew packages..." \
-  && brew update && brew doctor && brew upgrade; brew cleanup \
-  && echo "installing missing brew packages..." \
-  && brew install $(echo "${brew_pkgs}") \
-  && echo "installing missing brew cask packages..." \
-  && brew install --cask $(echo "${cask_pkgs}")
+  && brew update && brew doctor && brew upgrade && brew cleanup \
+  && echo "reconciling Brewfile packages..." \
+  && brew bundle --file="${BREWFILE}"

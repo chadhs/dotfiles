@@ -1,4 +1,6 @@
-# mas install list
+# mas install list (LEGACY)
+# Prefer the repo-root Brewfile + `brew bundle` for installs/updates.
+# Kept for reference / archived package notes.
 
 ## id to app name mappings
 

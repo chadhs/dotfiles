@@ -8,17 +8,29 @@ obviously you **want to read** the best part... [emacs-config.org](editors/emacs
 ### setting up a new mac
 the `bootstrap-mac.sh` script is designed to be run once for initial setup, although it should remain safe to re-run if interrupted.
 
-`cd scripts && sh bootstrap-mac.sh`
+```sh
+git clone https://github.com/chadhs/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+sh scripts/bootstrap-mac.sh
+```
+
+it will:
+- wait for Xcode Command Line Tools
+- install Homebrew if needed
+- install packages from the root `Brewfile` (`brew bundle`)
+- apply macOS defaults (`scripts/macos-defaults.sh`)
+- run `deploy.sh` for symlinks / shell setup
+- optionally switch your login shell to Homebrew zsh
 
 ### keeping config changes in sync
 the `deploy.sh` script is designed to setup base packages and symlinks; it is also called by the bootstrap script.
 
-`sh deploy.sh` is idempotent and safe to run on every login.
+`sh deploy.sh` is idempotent and safe to re-run for symlink maintenance (prefer running it intentionally, not as a login hook).
 
 ### keeping your mac packages up to date
-the `weekly-update.sh` script is designed to update all brew, cask, app store, npm (global), ruby (global), and python (global) packages.
+the `weekly-update.sh` script updates brew (via `Brewfile` + `brew upgrade`), Mac App Store apps, and global npm/gem packages.
 
-`cd scripts && sh weekly-update.sh`
+`sh scripts/weekly-update.sh` (safe to run from any cwd)
 
 ## more info
 

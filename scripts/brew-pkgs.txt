@@ -1,4 +1,6 @@
-# brew install list
+# brew install list (LEGACY)
+# Prefer the repo-root Brewfile + `brew bundle` for installs/updates.
+# Kept for reference / archived package notes.
 
 ## include an uncommented list of homebrew packages to install
 

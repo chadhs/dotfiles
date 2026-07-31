@@ -77,8 +77,17 @@ symlink_configs(){
   [ ! -e ~/.profile ] && ln -s ~/dotfiles/shells/profile .profile
   [ ! -d ~/.oh-my-zsh ] && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended; rm ~/.zshrc
   [ ! -e ~/.zshrc ] && ln -s ~/dotfiles/shells/zshrc .zshrc
-  [ ! -e ~/.zprofile ] && ln -s ~/dotfiles/shells/zprofile .zprofile
-  [ ! -e ~/.zshenv ] && ln -s ~/dotfiles/shells/zprofile .zshenv
+  # PATH/env in zshenv only — do not also source profile from zprofile (doubles PATH)
+  if [ -L ~/.zshenv ] && [ "$(readlink ~/.zshenv)" = "$HOME/dotfiles/shells/zprofile" ]; then
+    rm ~/.zshenv
+  fi
+  if [ -L ~/.zprofile ] && [ "$(readlink ~/.zprofile)" = "$HOME/dotfiles/shells/zprofile" ]; then
+    # refresh so existing machines pick up the login-only stub
+    ln -sfn ~/dotfiles/shells/zprofile ~/.zprofile
+  elif [ ! -e ~/.zprofile ]; then
+    ln -s ~/dotfiles/shells/zprofile .zprofile
+  fi
+  [ ! -e ~/.zshenv ] && ln -s ~/dotfiles/shells/zshenv .zshenv
   [ ! -e ~/.user-env ] && cp ~/dotfiles/shells/user-env ~/.user-env
   [ ! -e ~/.oh-my-zsh/themes/digitalnomad.zsh-theme ] && \
     ln -s ~/dotfiles/shells/digitalnomad.zsh-theme ~/.oh-my-zsh/themes/digitalnomad.zsh-theme

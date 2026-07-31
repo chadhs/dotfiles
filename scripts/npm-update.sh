@@ -1,13 +1,16 @@
 #!/bin/zsh
+set -euo pipefail
+
+## resolve paths (safe to run from anywhere)
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname "${0}")" && pwd)"
 
 ## preflight checks
-[ $(dirname "${0}") != "." ] && { echo "please run from within scripts dir, exiting..." ; exit 1; }
-[ ! -r npm-pkgs.txt ] && { echo "missing package list, exiting..." ; exit 1; }
+[ -r "${SCRIPT_DIR}/npm-pkgs.txt" ] || { echo "missing package list, exiting..." ; exit 1; }
 
 ## read in packages to install
-npm_pkgs="$(grep '^[^#[:blank:]]' npm-pkgs.txt | tr '\n' ' ')"
+npm_pkgs="$(grep '^[^#[:blank:]]' "${SCRIPT_DIR}/npm-pkgs.txt" | tr '\n' ' ')"
 
 ## do it!
-### in the install commands below, wrapping echo is for array->string conversion
+# shellcheck disable=SC1090
 . ~/.sh_aliases \
-  && npm install -g $(echo "${npm_pkgs}") \
+  && npm install -g ${=npm_pkgs}

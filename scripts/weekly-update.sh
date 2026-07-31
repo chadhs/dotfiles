@@ -1,29 +1,33 @@
 #!/bin/zsh
+set -euo pipefail
+
+## resolve paths (safe to run from anywhere)
+SCRIPT_DIR="$(CDPATH= cd -- "$(dirname "${0}")" && pwd)"
+REPO_ROOT="$(CDPATH= cd -- "${SCRIPT_DIR}/.." && pwd)"
+BREWFILE="${REPO_ROOT}/Brewfile"
 
 ## preflight checks
-[ $(dirname "${0}") != "." ] && { echo "please run from within scripts dir, exiting..." ; exit 1; }
-[ ! -r npm-pkgs.txt ] || [ ! -r gem-pkgs.txt ] || [ ! -r pip-pkgs.txt ] && { echo "missing package lists, exiting..." ; exit 1; }
+[ -r "${BREWFILE}" ] || { echo "missing Brewfile at ${BREWFILE}, exiting..." ; exit 1; }
+[ -r "${SCRIPT_DIR}/npm-pkgs.txt" ] || { echo "missing npm package list, exiting..." ; exit 1; }
+[ -r "${SCRIPT_DIR}/gem-pkgs.txt" ] || { echo "missing gem package list, exiting..." ; exit 1; }
 
-## read in packages to install
-brew_pkgs="$(grep '^[^#[:blank:]]' brew-pkgs.txt | tr '\n' ' ')"
-cask_pkgs="$(grep '^[^#[:blank:]]' cask-pkgs.txt | tr '\n' ' ')"
-mas_pkgs="$(grep '^[^#[:blank:]]' mas-pkgs.txt | tr '\n' ' ')"
-npm_pkgs="$(grep '^[^#[:blank:]]' npm-pkgs.txt | tr '\n' ' ')"
-gem_pkgs="$(grep '^[^#[:blank:]]' gem-pkgs.txt | tr '\n' ' ')"
+## read in language package lists
+npm_pkgs="$(grep '^[^#[:blank:]]' "${SCRIPT_DIR}/npm-pkgs.txt" | tr '\n' ' ')"
+gem_pkgs="$(grep '^[^#[:blank:]]' "${SCRIPT_DIR}/gem-pkgs.txt" | tr '\n' ' ')"
 
 ## do it!
-### in the install commands below, wrapping echo is for array->string conversion
 echo "updating packages..."
+# shellcheck disable=SC1090
 . ~/.sh_aliases \
   && update-dotfiles \
-  && brew update && brew doctor && brew upgrade; brew cleanup \
-  && mas outdated && mas outdated && rehash && mas upgrade \
-  && npm install -g $(echo "${npm_pkgs}") \
-  && gem install $(echo "${gem_pkgs}") && gem update \
-  && brew install shellcheck lua luarocks hadolint && luarocks install luacheck \
-  && echo "installing missing brew packages..." \
-  && brew install $(echo "${brew_pkgs}") \
-  && echo "installing missing brew cask packages..." \
-  && brew install --cask $(echo "${cask_pkgs}") \
-  && echo "installing missing mac app store apps..." \
-  && mas outdated && mas install $(echo "${mas_pkgs}")
+  && brew update && brew doctor && brew upgrade && brew cleanup \
+  && echo "reconciling Brewfile packages..." \
+  && brew bundle --file="${BREWFILE}" \
+  && echo "updating Mac App Store apps..." \
+  && mas outdated \
+  && mas upgrade \
+  && echo "updating global npm packages..." \
+  && npm install -g ${=npm_pkgs} \
+  && echo "updating global gem packages..." \
+  && gem install ${=gem_pkgs} \
+  && echo "done."
