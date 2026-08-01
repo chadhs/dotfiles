@@ -9,8 +9,8 @@ vim.o.number = true
 --  Experiment for yourself to see if you like it!
 -- vim.o.relativenumber = true
 
--- Enable mouse mode, can be useful for resizing splits for example!
-vim.o.mouse = 'a'
+-- Mouse off to match retired vimrc (`set mouse-=a`). Re-enable with `vim.o.mouse = 'a'` if useful for resizing.
+vim.o.mouse = ''
 
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
@@ -94,4 +94,15 @@ vim.opt.incsearch = true
 vim.opt.showmatch = true
 
 vim.opt.backup = false
-vim.opt.backupdir = os.getenv("HOME") .. "/.config/nvim/cache"
+vim.opt.backupdir = os.getenv 'HOME' .. '/.config/nvim/cache'
+
+-- Allow background buffers without forcing a write (old vimrc `set hidden`)
+vim.opt.hidden = true
+-- Auto-write before commands like :next (old vimrc `set autowrite`)
+vim.opt.autowrite = true
+
+-- Folds: treesitter expressions, start with folding disabled (open) like old `nofoldenable`
+vim.opt.foldmethod = 'expr'
+vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+vim.opt.foldenable = false
+vim.opt.foldopen = { 'block', 'insert', 'jump', 'mark', 'percent', 'quickfix', 'search', 'tag', 'undo' }

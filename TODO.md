@@ -3,41 +3,41 @@
 ## Neovim: gaps vs retired Vim/MacVim setup
 
 Tracked after removing classic Vim/Vundle/MacVim in favor of Kickstart-based Neovim.
-No changes required immediately; pursue as muscle memory or workflows demand.
+Restored in `editors/nvim` to match old vimrc / IdeaVim muscle memory.
 
 ### High-value keybinds / workflows to restore
 
-- [ ] File/buffer pickers: old `,t` (CtrlP) / `,b` (CtrlPBuffer) → Telescope equivalents on `,` leader
-- [ ] Project search: old `,gf` (Ack/`ag`) → Telescope live grep (familiar binding)
-- [ ] File tree: old `,nt` (NERDTree) → enable neo-tree (already in kickstart, commented out) or keep `,Fd` netrw and document it
-- [ ] Buffer close keeping split: old `bd` → `Bclose` behavior
-- [ ] Save/quit shortcuts: `,ww` / `,wq` / `,qq`
-- [ ] Edit/reload config: `,ev` / `,sv` for Neovim config
-- [ ] Undo tree UI: old `,gu` (Gundo)
-- [ ] EasyMotion-style jump: old `,jl` (still in IdeaVim)
-- [ ] Split resize: `,` + arrow keys
-- [ ] Toggle line numbers: `,nn`
-- [ ] cwd helpers: `,cd` (file’s dir) / `,cds` (`~/src`)
-- [ ] Marked 2 preview: `,m` (if still using Marked)
-- [ ] Wrap-aware motion: `j`/`k` as `gj`/`gk`
-- [ ] Fold toggle on `<space>` (vim used syntax folds, started collapsed)
+- [x] File/buffer pickers: old `,t` (CtrlP) / `,b` (CtrlPBuffer) → Telescope `git_files` / `buffers`
+- [x] Project search: old `,gf` (Ack/`ag`) → Telescope live grep
+- [x] File tree: old `,nt` (NERDTree) → neo-tree toggle on `,nt` (right side; `,Fd` netrw kept)
+- [x] Buffer close keeping split: `:bd` → `Bclose` (Lua implementation in `keymaps.lua`)
+- [x] Save/quit shortcuts: `,ww` / `,wq` / `,qq`
+- [x] Edit/reload config: `,ev` / `,sv` for Neovim config
+- [x] Undo tree UI: old `,gu` (Gundo) → undotree
+- [x] EasyMotion-style jump: old `,jl` (vim-easymotion, matches IdeaVim)
+- [x] Split resize: `,` + arrow keys
+- [x] Toggle line numbers: `,nn`
+- [x] cwd helpers: `,cd` (file’s dir) / `,cds` (`~/src`)
+- [x] Marked 2 preview: `,m` (macOS `open -a 'Marked 2.app'`)
+- [x] Wrap-aware motion: `j`/`k` as `gj`/`gk`
+- [x] Fold toggle on `<space>` (treesitter folds, `foldenable` off like old vim)
 
 ### Plugins / behaviors to consider
 
-- [ ] **vim-surround** (and ideally **vim-repeat**) — daily driver in old vimrc; confirm whether `mini` covers enough
-- [ ] **Autopairs** — kickstart `autopairs` is commented out (old delimitMate; excluded clojure/lisp)
-- [ ] **Rainbow parens** — used heavily for Lisp/Clojure
-- [ ] Load **nvim-paredit** — `lua/custom/plugins/paredit.lua` exists but is not required from `lazy-plugins.lua`
-- [ ] Narrow region (NrrwRgn) — only if you still miss that workflow
-- [ ] visualstar — `*` over visual selection
-- [ ] Org/Markdown/Ansible-specific plugins — only if treesitter/LSP feel thin vs old vim-orgmode / vim-markdown / ansible-vim
+- [x] **Surround** — `mini.surround` with vim-surround-compatible maps (`ys`/`ds`/`cs`/`S`) + **vim-repeat**
+- [x] **Autopairs** — kickstart `autopairs` enabled; disabled for clojure/lisp (and scheme/racket)
+- [x] **Rainbow parens** — `rainbow-delimiters.nvim` (treesitter)
+- [x] Load **nvim-paredit** — required from `lazy-plugins.lua` for lisp-family filetypes
+- [ ] Narrow region (NrrwRgn) — deferred; only if you still miss that workflow
+- [x] visualstar — `*` / `#` over visual selection (Lua in `keymaps.lua`)
+- [ ] Org/Markdown/Ansible-specific plugins — deferred; treesitter/LSP cover the common case
 
 ### Option / UX differences (optional)
 
-- [ ] Mouse: old vim had mouse off; nvim enables `mouse=a` — decide intentional or not
-- [ ] Restore cursor position on file reopen (vim `BufReadPost` jumplist autocmd)
-- [ ] `hidden` / `autowrite` / fold defaults if you notice behavioral differences
-- [ ] Align zoom key with old `,zw` vs current `<C-z>` if preferred
+- [x] Mouse: off (`mouse=`), matching old vimrc
+- [x] Restore cursor position on file reopen (`BufReadPost`)
+- [x] `hidden` / `autowrite` / fold defaults restored
+- [x] Zoom: keep `<C-z>` and restore old `,zw` alias
 
 ### Already covered (no action)
 
