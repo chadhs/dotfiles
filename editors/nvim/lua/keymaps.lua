@@ -110,10 +110,15 @@ vim.keymap.set('n', '<leader>qq', '<cmd>quit<CR>', { desc = 'Quit' })
 vim.keymap.set('n', '<leader>ev', function()
   vim.cmd.edit(vim.fn.stdpath 'config' .. '/init.lua')
 end, { desc = 'Edit Neovim config' })
+-- Reload options/keymaps only. Re-sourcing init.lua would re-run lazy.setup and break.
 vim.keymap.set('n', '<leader>sv', function()
-  vim.cmd.source(vim.fn.stdpath 'config' .. '/init.lua')
-  vim.notify('Sourced Neovim config', vim.log.levels.INFO)
-end, { desc = 'Source Neovim config' })
+  local config = vim.fn.stdpath 'config'
+  package.loaded['options'] = nil
+  package.loaded['keymaps'] = nil
+  dofile(config .. '/lua/options.lua')
+  dofile(config .. '/lua/keymaps.lua')
+  vim.notify('Reloaded options.lua + keymaps.lua (restart for plugin changes)', vim.log.levels.INFO)
+end, { desc = 'Reload Neovim options/keymaps' })
 
 -- Toggle line numbers
 vim.keymap.set('n', '<leader>nn', '<cmd>set invnumber<CR>', { desc = 'Toggle line numbers' })
@@ -131,19 +136,69 @@ vim.keymap.set('n', '<leader><Right>', '<cmd>vertical resize -5<CR>', { desc = '
 vim.keymap.set('n', '<leader>cd', '<cmd>cd %:p:h<CR><cmd>pwd<CR>', { desc = "cd to current file's directory" })
 vim.keymap.set('n', '<leader>cds', '<cmd>cd ~/src<CR><cmd>pwd<CR>', { desc = 'cd to ~/src' })
 
--- Preview current file in Marked 2 (macOS)
-vim.keymap.set('n', '<leader>m', "<cmd>silent !open -a 'Marked 2.app' '%:p'<CR>", { desc = 'Preview in Marked 2' })
+-- Preview current file in Marked 2 (macOS only)
+vim.keymap.set('n', '<leader>m', function()
+  if vim.fn.has 'mac' == 0 and vim.fn.has 'macunix' == 0 then
+    vim.notify('Marked 2 preview is only available on macOS', vim.log.levels.WARN)
+    return
+  end
+  local path = vim.fn.expand '%:p'
+  vim.fn.jobstart({ 'open', '-a', 'Marked 2.app', path }, { detach = true })
+end, { desc = 'Preview in Marked 2' })
 
 -- Wrap-aware motion
 vim.keymap.set({ 'n', 'x' }, 'j', 'gj', { desc = 'Down (display line)' })
 vim.keymap.set({ 'n', 'x' }, 'k', 'gk', { desc = 'Up (display line)' })
 
 -- Fold toggle (matches old vim <space> za)
-vim.keymap.set('n', '<Space>', 'za', { desc = 'Toggle fold' })
+vim.keymap.set('n', '<Space>', function()
+  local line = vim.fn.line '.'
+  if vim.fn.foldlevel(line) == 0 then
+    return
+  end
+  if vim.fn.foldclosed(line) == -1 then
+    vim.cmd 'normal! zc'
+  else
+    vim.cmd 'normal! zo'
+  end
+end, { desc = 'Toggle fold', silent = true })
 
 -- visualstar: * / # over a visual selection (old thinca/vim-visualstar)
-vim.keymap.set('x', '*', [[y/\V<C-R>=escape(@",'/\')<CR><CR>]], { desc = 'Search forward for visual selection' })
-vim.keymap.set('x', '#', [[y?\V<C-R>=escape(@",'/\')<CR><CR>]], { desc = 'Search backward for visual selection' })
+local function visual_star(forward)
+  local start_pos = vim.fn.getpos 'v'
+  local end_pos = vim.fn.getpos '.'
+  local start_row, start_col = start_pos[2], start_pos[3]
+  local end_row, end_col = end_pos[2], end_pos[3]
+  if start_row > end_row or (start_row == end_row and start_col > end_col) then
+    start_row, end_row = end_row, start_row
+    start_col, end_col = end_col, start_col
+  end
+
+  local lines = vim.api.nvim_buf_get_text(0, start_row - 1, start_col - 1, end_row - 1, end_col, {})
+  local selected = table.concat(lines, '\n')
+  if selected == '' then
+    return
+  end
+
+  local pattern = '\\V' .. vim.fn.escape(selected, '\\'):gsub('\n', '\\n')
+  vim.fn.setreg('/', pattern)
+  vim.opt.hlsearch = true
+
+  -- Exit visual mode, then jump to the next/previous match from the selection end.
+  local esc = vim.api.nvim_replace_termcodes('<Esc>', true, false, true)
+  vim.api.nvim_feedkeys(esc, 'nx', false)
+  local flags = forward and 'W' or 'bW'
+  if vim.fn.search(pattern, flags) == 0 then
+    -- Wrap like normal n/N when wrapscan is set
+    vim.fn.search(pattern, forward and 'w' or 'bw')
+  end
+end
+vim.keymap.set('x', '*', function()
+  visual_star(true)
+end, { desc = 'Search forward for visual selection' })
+vim.keymap.set('x', '#', function()
+  visual_star(false)
+end, { desc = 'Search backward for visual selection' })
 
 -- Bclose: close buffer without destroying the split (old bclose.vim)
 vim.api.nvim_create_user_command('Bclose', function()
