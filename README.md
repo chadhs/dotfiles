@@ -32,7 +32,7 @@ the `deploy.sh` script is designed to setup base packages and symlinks; it is al
 
 `sh scripts/weekly-update.sh` (safe to run from any cwd)
 
-for ad-hoc updates from a shell, use the aliases: `brewup`, `caskup`, `masup`, `npmup`, `gemup`
+for ad-hoc brew/cask/mas updates from a shell, use the aliases: `brewup`, `caskup`, `masup` (npm/gem globals are handled by weekly-update)
 
 ## more info
 

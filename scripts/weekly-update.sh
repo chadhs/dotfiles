@@ -11,9 +11,13 @@ BREWFILE="${REPO_ROOT}/Brewfile"
 [ -r "${SCRIPT_DIR}/npm-pkgs.txt" ] || { echo "missing npm package list, exiting..." ; exit 1; }
 [ -r "${SCRIPT_DIR}/gem-pkgs.txt" ] || { echo "missing gem package list, exiting..." ; exit 1; }
 
+## read in language package lists
+npm_pkgs="$(grep '^[^#[:blank:]]' "${SCRIPT_DIR}/npm-pkgs.txt" | tr '\n' ' ')"
+gem_pkgs="$(grep '^[^#[:blank:]]' "${SCRIPT_DIR}/gem-pkgs.txt" | tr '\n' ' ')"
+
 ## do it!
-# Single maintenance entry point. Ad-hoc: brewup / caskup / masup / npmup / gemup.
-# masup (via alias) keeps the intentional double `mas outdated` + rehash workaround.
+# Single maintenance entry point. Ad-hoc brew/cask/mas: brewup / caskup / masup.
+# masup keeps the intentional double `mas outdated` + rehash workaround.
 echo "updating packages..."
 # shellcheck disable=SC1090
 . ~/.sh_aliases \
@@ -24,7 +28,7 @@ echo "updating packages..."
   && echo "updating Mac App Store apps..." \
   && masup \
   && echo "updating global npm packages..." \
-  && npmup \
+  && npm install -g ${=npm_pkgs} \
   && echo "updating global gem packages..." \
-  && gemup \
+  && gem install ${=gem_pkgs} \
   && echo "done."

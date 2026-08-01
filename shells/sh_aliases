@@ -48,20 +48,8 @@ if [[ $(uname) = "Darwin" ]]; then
     ### browser reloading
     alias livereload-safari="filewatcher '**/*' 'osascript ~/bin/reload-safari.scpt' &"
     alias livereload-chrome="filewatcher '**/*' 'osascript ~/bin/reload-chrome.scpt' &"
-    ### node / ruby globals (from package lists)
+    ### node
     alias npmlist='npm list -g --depth=0 2>/dev/null'
-    function npmup(){
-      local pkgs
-      pkgs="$(grep '^[^#[:blank:]]' ~/dotfiles/scripts/npm-pkgs.txt | tr '\n' ' ')"
-      [ -n "${pkgs}" ] || { echo "no npm packages listed" ; return 1; }
-      npm install -g ${=pkgs}
-    }
-    function gemup(){
-      local pkgs
-      pkgs="$(grep '^[^#[:blank:]]' ~/dotfiles/scripts/gem-pkgs.txt | tr '\n' ' ')"
-      [ -n "${pkgs}" ] || { echo "no gem packages listed" ; return 1; }
-      gem install ${=pkgs}
-    }
     ### js
     alias chromedev='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 &'
     ### ghostty
