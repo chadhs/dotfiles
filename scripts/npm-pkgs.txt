@@ -7,9 +7,7 @@ typescript
 typescript-language-server
 
 ## archived but not forgotten
-# indium
 # less
 # sass
-# tern
 # watchman
 # yo

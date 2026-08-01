@@ -20,7 +20,7 @@ set -o vi
 CLICOLOR="YES"; export CLICOLOR
 
 ## set default editor
-EDITOR="vim"
+EDITOR="nvim"
 export EDITOR
 
 ## aliases

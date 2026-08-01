@@ -7,15 +7,19 @@ alias ll='ls -lh'
 alias lla='ls -lah'
 alias cd..='cd ..'
 ## fix backspace in vim in zsh in emacs :grin:
-stty erase '^?'
+stty erase '^?' 2>/dev/null || true
 ## check weather
 alias checkweather='curl wttr.in'
 
 ## preflight shell check
 function zshonly(){
-  ## only run command if shell is zsh
+  ## only run command if this is an interactive login zsh
+  ## (must return 0 when skipped — scripts source this file under `set -e`)
+  local currshell
   currshell=$(ps -p $$ | grep $$ | awk '{ print $4 }')
-  [[ "${currshell}" = "-zsh" ]] && "${@}"
+  if [[ "${currshell}" = "-zsh" ]]; then
+    "${@}"
+  fi
 }
 
 ## oh-my-zsh aliases to remove
@@ -24,18 +28,18 @@ zshonly disable r
 ## mac only aliases
 if [[ $(uname) = "Darwin" ]]; then
     alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs "$@"'
-    #alias vim='mvim -v'
     alias vim='nvim'
     alias flushdns='dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
     alias restart_en0='sudo ifconfig en0 down && sudo ifconfig en0 up'
     alias sortlaunchpad='defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock'
     alias brewdoc='brew update && brew doctor'
-    alias brewup='brew update && brew doctor && brew upgrade; brew cleanup'
+    alias brewup='brew update && brew doctor && brew upgrade && brew cleanup'
     alias brewforce='brew update && brew doctor; brew upgrade; brew cleanup'
     alias brewfix='brew update-reset'
-    alias caskup='brew cu -y --cleanup'
-    alias caskall='brew cu -a --cleanup'
-    alias masup='mas upgrade'
+    alias caskup='brew upgrade --cask && brew cleanup'
+    alias caskall='brew upgrade --cask --greedy && brew cleanup'
+    # double `mas outdated` + rehash avoids retrying already-upgraded apps (mas quirk)
+    alias masup='mas outdated && mas outdated && rehash && mas upgrade'
     alias speedtest='networkQuality'
     alias genpass='pwgen -s -1 16 | tee >(pbcopy)'
     alias genuuid='uuidgen | tr "[:upper:]" "[:lower:]" | tee >(pbcopy)'
@@ -75,10 +79,9 @@ function unfreeze-emacs(){
   kill -SIGUSR2 $(pgrep -fli emacs)
 }
 
-## when in a shell in emacs, remind yourself not to launch vim there
-[[ $(uname) = "Darwin" ]] && [[ $EMACS ]] && alias vim='echo "Do not run Vim in a shell within Emacs; use Emacs to edit"'
-### hack to be able to update vim using vi command avoiding the message above when in emacs
-[[ $(uname) = "Darwin" ]] && [[ $EMACS ]] && alias vimup='vi +PluginInstall! +qall'
+## when in a shell in emacs, remind yourself not to launch vim/nvim there
+[[ $(uname) = "Darwin" ]] && [[ -n "${EMACS:-}" ]] && alias vim='echo "Do not run Vim/Neovim in a shell within Emacs; use Emacs to edit"'
+[[ $(uname) = "Darwin" ]] && [[ -n "${EMACS:-}" ]] && alias nvim='echo "Do not run Vim/Neovim in a shell within Emacs; use Emacs to edit"'
 
 ## man page color and search hilighting
 export PAGER="less"

@@ -14,7 +14,7 @@ os_setup(){
     system_os="macos"
     pkg_install="brew install"
     package_list="editorconfig git nvim tmux zsh"
-    cask_package_list="emacs-app macvim-app"
+    cask_package_list="emacs-app"
   elif [ "$system_type" = "FreeBSD" ]; then
     system_os="freebsd"
     pkg_install="sudo pkg install -y"
@@ -62,23 +62,34 @@ symlink_configs(){
     [ ! -e ~/bin/reload-chrome.scpt ] && ln -s ~/dotfiles/utils/reload-chrome.scpt ~/bin/reload-chrome.scpt
     [ ! -e ~/bin/macos-reset-routing-table.sh ] && ln -s ~/dotfiles/utils/macos-reset-routing-table.sh ~/bin/macos-reset-routing-table.sh
     [ ! -d ~/iCloudDrive ] && [ -d ~/Library/Mobile\ Documents/com~apple~CloudDocs ] && ln -s ~/Library/Mobile\ Documents/com~apple~CloudDocs ~/iCloudDrive
-    [ ! -d ~/Library/Application\ Support/Code/User ] && mkdir -p ~/Library/Application\ Support/Code/User
-    [ ! -e ~/.vscodevimrc ] && ln -s ~/dotfiles/editors/vscode/vscodevimrc ~/.vscodevimrc
     [ ! -e ~/.ideavimrc ] && ln -s ~/dotfiles/editors/ideavimrc .ideavimrc
     [ ! -e ~/Library/Application\ Support/espanso/match/common.yml ] && ln -s ~/dotfiles/utils/espanso/common.yml ~/Library/Application\ Support/espanso/match/common.yml
     [ ! -e ~/Library/Application\ Support/espanso/match/private.yml ] && cp -rp ~/dotfiles/utils/espanso/private.yml ~/Library/Application\ Support/espanso/match/private.yml
     [ ! -e ~/.config/karabiner/assets/complex_modifications/custom.json ] && ln -s ~/dotfiles/utils/karabiner/custom.json ~/.config/karabiner/assets/complex_modifications/custom.json
-    [ ! -d ~/.config/kitty ] && mkdir ~/.config/kitty && ln -s ~/dotfiles/utils/kitty/kitty.conf ~/.config/kitty/kitty.conf && ln -s ~/dotfiles/utils/kitty/kitty.app.png ~/.config/kitty/kitty.app.png && ln -s ~/dotfiles/utils/kitty/current-theme.conf ~/.config/kitty/current-theme.conf
-    [ ! -d ~/.config/ghostty ] && mkdir ~/.config/ghostty && ln -s ~/dotfiles/utils/ghostty/config ~/.config/ghostty/config
+    mkdir -p ~/.config/ghostty
+    [ ! -e ~/.config/ghostty/config ] && ln -s ~/dotfiles/utils/ghostty/config ~/.config/ghostty/config
+    # Finder "Open With" → Ghostty + nvim (replaces occasional MacVim GUI use)
+    ln -sfn ~/dotfiles/utils/Open\ in\ Neovim.app /Applications/Open\ in\ Neovim.app
+    [ ! -e ~/bin/open-in-neovim.sh ] && ln -s ~/dotfiles/utils/open-in-neovim.sh ~/bin/open-in-neovim.sh
   fi
 
 
   # all
   [ ! -e ~/.profile ] && ln -s ~/dotfiles/shells/profile .profile
-  [ ! -d ~/.oh-my-zsh ] && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended; rm ~/.zshrc
+  if [ ! -d ~/.oh-my-zsh ]; then
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+    rm -f ~/.zshrc
+  fi
   [ ! -e ~/.zshrc ] && ln -s ~/dotfiles/shells/zshrc .zshrc
-  [ ! -e ~/.zprofile ] && ln -s ~/dotfiles/shells/zprofile .zprofile
-  [ ! -e ~/.zshenv ] && ln -s ~/dotfiles/shells/zprofile .zshenv
+  # PATH/env in zshenv only — zprofile is login-only and must not source profile.
+  # Force-correct repo-managed symlinks so a pull of the split files can't leave
+  # ~/.zshenv pointing at the empty zprofile stub (breaks Homebrew on PATH).
+  if [ -L ~/.zshenv ] || [ ! -e ~/.zshenv ]; then
+    ln -sfn ~/dotfiles/shells/zshenv ~/.zshenv
+  fi
+  if [ -L ~/.zprofile ] || [ ! -e ~/.zprofile ]; then
+    ln -sfn ~/dotfiles/shells/zprofile ~/.zprofile
+  fi
   [ ! -e ~/.user-env ] && cp ~/dotfiles/shells/user-env ~/.user-env
   [ ! -e ~/.oh-my-zsh/themes/digitalnomad.zsh-theme ] && \
     ln -s ~/dotfiles/shells/digitalnomad.zsh-theme ~/.oh-my-zsh/themes/digitalnomad.zsh-theme
@@ -95,19 +106,12 @@ symlink_configs(){
   [ ! -e ~/.emacs.d/views/agenda.html ] && touch ~/.emacs.d/views/agenda.html
   [ ! -e ~/.emacs ] && ln -s ~/dotfiles/editors/emacs.el .emacs
   [ ! -e ~/.emacs.d/emacs-config.org ] && ln -s ~/dotfiles/editors/emacs-config.org ~/.emacs.d/emacs-config.org
-  [ ! -e ~/.vimrc ] && ln -s ~/dotfiles/editors/vimrc .vimrc
-  [ ! -d ~/.vim ] && git clone https://github.com/gmarik/Vundle.vim.git ~/.vim/bundle/Vundle.vim
-  ## deprecated
-  # vim +PluginClean! +qall
-  # vim +PluginInstall! +qall
   [ ! -d ~/.config/nvim ] && ln -s ~/dotfiles/editors/nvim ~/.config/nvim
   [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig
   [ ! -e ~/.editorconfig ] && ln -s ~/dotfiles/editors/editorconfig .editorconfig
   [ ! -e ~/.eslintrc.json ] && ln -s ~/dotfiles/utils/eslintrc.json ~/.eslintrc.json
   [ ! -e ~/.prettierrc.json ] && ln -s ~/dotfiles/utils/prettierrc.json ~/.prettierrc.json
   [ ! -e ~/jsconfig.json ] && ln -s ~/dotfiles/utils/jsconfig.json ~/jsconfig.json
-  [ ! -e ~/.tern-config ] && ln -s ~/dotfiles/utils/tern-config .tern-config
-  [ ! -e ~/.indium.json ] && ln -s ~/dotfiles/utils/indium.json .indium.json
   [ ! -e ~/.zprint.edn ] && ln -s ~/dotfiles/utils/zprint.edn .zprint.edn
   [ ! -d ~/.virtualenvs ] && mkdir ~/.virtualenvs
 }

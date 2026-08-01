@@ -15,8 +15,6 @@ export PATH="$HOME/bin\
 :/opt/homebrew/opt/avr-gcc@8/bin\
 :/usr/local/opt/ruby/bin\
 :/opt/homebrew/opt/ruby/bin\
-:/usr/local/lib/ruby/gems/3.1.0/bin\
-:/opt/homebrew/lib/ruby/gems/3.1.0/bin\
 :$HOME/go/bin\
 :$HOME/.docker/bin\
 :/usr/local/opt/postgresql@17/bin\
@@ -26,6 +24,21 @@ export PATH="$HOME/bin\
 :/usr/local/bin\
 :/usr/local/sbin\
 :${PATH}"
+
+## Homebrew Ruby gem bindir for the active brew ruby only.
+# Do not `find` under lib/ruby/gems — that picks up stale 3.x trees and nested
+# gem package bins, which shadow `ruby`/`gem`/`bundle` from Homebrew.
+for ruby_bin in /opt/homebrew/opt/ruby/bin/ruby /usr/local/opt/ruby/bin/ruby; do
+  if [ -x "${ruby_bin}" ]; then
+    gem_user_bin="$("${ruby_bin}" -e 'print Gem.bindir' 2>/dev/null)" || true
+    if [ -n "${gem_user_bin}" ] && [ -d "${gem_user_bin}" ]; then
+      PATH="${gem_user_bin}:${PATH}"
+    fi
+    break
+  fi
+done
+export PATH
+
 umask 0002 # grant write permsion to group
 
 ## mac only path updates
