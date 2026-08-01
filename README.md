@@ -28,9 +28,11 @@ the `deploy.sh` script is designed to setup base packages and symlinks; it is al
 `sh deploy.sh` is idempotent and safe to re-run for symlink maintenance (prefer running it intentionally, not as a login hook).
 
 ### keeping your mac packages up to date
-the `weekly-update.sh` script updates brew (via `Brewfile` + `brew upgrade`), Mac App Store apps, and global npm/gem packages.
+`scripts/weekly-update.sh` is the single full maintenance entry point: brew upgrade, Brewfile reconcile, Mac App Store apps, and global npm/gem packages.
 
 `sh scripts/weekly-update.sh` (safe to run from any cwd)
+
+for ad-hoc updates from a shell, use the aliases: `brewup`, `caskup`, `masup`, `npmup`, `gemup`
 
 ## more info
 

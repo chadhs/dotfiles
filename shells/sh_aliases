@@ -30,12 +30,13 @@ if [[ $(uname) = "Darwin" ]]; then
     alias restart_en0='sudo ifconfig en0 down && sudo ifconfig en0 up'
     alias sortlaunchpad='defaults write com.apple.dock ResetLaunchPad -bool true; killall Dock'
     alias brewdoc='brew update && brew doctor'
-    alias brewup='brew update && brew doctor && brew upgrade; brew cleanup'
+    alias brewup='brew update && brew doctor && brew upgrade && brew cleanup'
     alias brewforce='brew update && brew doctor; brew upgrade; brew cleanup'
     alias brewfix='brew update-reset'
     alias caskup='brew upgrade --cask && brew cleanup'
     alias caskall='brew upgrade --cask --greedy && brew cleanup'
-    alias masup='mas upgrade'
+    # double `mas outdated` + rehash avoids retrying already-upgraded apps (mas quirk)
+    alias masup='mas outdated && mas outdated && rehash && mas upgrade'
     alias speedtest='networkQuality'
     alias genpass='pwgen -s -1 16 | tee >(pbcopy)'
     alias genuuid='uuidgen | tr "[:upper:]" "[:lower:]" | tee >(pbcopy)'
@@ -47,8 +48,20 @@ if [[ $(uname) = "Darwin" ]]; then
     ### browser reloading
     alias livereload-safari="filewatcher '**/*' 'osascript ~/bin/reload-safari.scpt' &"
     alias livereload-chrome="filewatcher '**/*' 'osascript ~/bin/reload-chrome.scpt' &"
-    ### node
+    ### node / ruby globals (from package lists)
     alias npmlist='npm list -g --depth=0 2>/dev/null'
+    function npmup(){
+      local pkgs
+      pkgs="$(grep '^[^#[:blank:]]' ~/dotfiles/scripts/npm-pkgs.txt | tr '\n' ' ')"
+      [ -n "${pkgs}" ] || { echo "no npm packages listed" ; return 1; }
+      npm install -g ${=pkgs}
+    }
+    function gemup(){
+      local pkgs
+      pkgs="$(grep '^[^#[:blank:]]' ~/dotfiles/scripts/gem-pkgs.txt | tr '\n' ' ')"
+      [ -n "${pkgs}" ] || { echo "no gem packages listed" ; return 1; }
+      gem install ${=pkgs}
+    }
     ### js
     alias chromedev='/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --remote-debugging-port=9222 &'
     ### ghostty

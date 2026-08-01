@@ -11,24 +11,20 @@ BREWFILE="${REPO_ROOT}/Brewfile"
 [ -r "${SCRIPT_DIR}/npm-pkgs.txt" ] || { echo "missing npm package list, exiting..." ; exit 1; }
 [ -r "${SCRIPT_DIR}/gem-pkgs.txt" ] || { echo "missing gem package list, exiting..." ; exit 1; }
 
-## read in language package lists
-npm_pkgs="$(grep '^[^#[:blank:]]' "${SCRIPT_DIR}/npm-pkgs.txt" | tr '\n' ' ')"
-gem_pkgs="$(grep '^[^#[:blank:]]' "${SCRIPT_DIR}/gem-pkgs.txt" | tr '\n' ' ')"
-
 ## do it!
+# Single maintenance entry point. Ad-hoc: brewup / caskup / masup / npmup / gemup.
+# masup (via alias) keeps the intentional double `mas outdated` + rehash workaround.
 echo "updating packages..."
 # shellcheck disable=SC1090
 . ~/.sh_aliases \
   && update-dotfiles \
-  && brew update && brew doctor && brew upgrade && brew cleanup \
+  && brewup \
   && echo "reconciling Brewfile packages..." \
   && brew bundle --file="${BREWFILE}" \
   && echo "updating Mac App Store apps..." \
-  # Refresh mas's outdated cache twice + rehash so upgrade does not
-  # retry apps that were already updated (historical mas quirk).
-  && mas outdated && mas outdated && rehash && mas upgrade \
+  && masup \
   && echo "updating global npm packages..." \
-  && npm install -g ${=npm_pkgs} \
+  && npmup \
   && echo "updating global gem packages..." \
-  && gem install ${=gem_pkgs} \
+  && gemup \
   && echo "done."
