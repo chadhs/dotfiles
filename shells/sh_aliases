@@ -13,9 +13,13 @@ alias checkweather='curl wttr.in'
 
 ## preflight shell check
 function zshonly(){
-  ## only run command if shell is zsh
+  ## only run command if this is an interactive login zsh
+  ## (must return 0 when skipped — scripts source this file under `set -e`)
+  local currshell
   currshell=$(ps -p $$ | grep $$ | awk '{ print $4 }')
-  [[ "${currshell}" = "-zsh" ]] && "${@}"
+  if [[ "${currshell}" = "-zsh" ]]; then
+    "${@}"
+  fi
 }
 
 ## oh-my-zsh aliases to remove
