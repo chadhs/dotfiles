@@ -105,6 +105,7 @@ symlink_configs(){
   [ ! -d ~/.emacs.d/views ] && mkdir ~/.emacs.d/views
   [ ! -e ~/.emacs.d/views/agenda.html ] && touch ~/.emacs.d/views/agenda.html
   [ ! -e ~/.emacs ] && ln -s ~/dotfiles/editors/emacs.el .emacs
+  [ ! -e ~/.emacs.d/early-init.el ] && ln -s ~/dotfiles/editors/early-init.el ~/.emacs.d/early-init.el
   [ ! -e ~/.emacs.d/emacs-config.org ] && ln -s ~/dotfiles/editors/emacs-config.org ~/.emacs.d/emacs-config.org
   [ ! -d ~/.config/nvim ] && ln -s ~/dotfiles/editors/nvim ~/.config/nvim
   [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig

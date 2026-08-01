@@ -36,10 +36,7 @@ I like to keep track of how long it takes emacs to load, so this will establish 
 
 *** Emacs performance enhancements
 
-Let's Speed up operations by giving emacs garbage collection a more modern threshold.
-#+BEGIN_SRC emacs-lisp
-  (setq gc-cons-threshold 200000000) ; ~200MB
-#+END_SRC
+Startup GC / file-name-handler tuning lives in =early-init.el= and is restored at the end of this file after packages load.
 
 Increase the amount of data which Emacs reads from the process https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
 #+BEGIN_SRC emacs-lisp
@@ -57,9 +54,9 @@ Increase the amount of data which Emacs reads from the process https://emacs-lsp
 
 #+BEGIN_SRC emacs-lisp
   (setq package-archives
-        '(("gnu"          . "http://elpa.gnu.org/packages/")
-          ("melpa"        . "http://melpa.org/packages/")
-          ("melpa-stable" . "http://stable.melpa.org/packages/")))
+        '(("gnu"          . "https://elpa.gnu.org/packages/")
+          ("melpa"        . "https://melpa.org/packages/")
+          ("melpa-stable" . "https://stable.melpa.org/packages/")))
 #+END_SRC
 
 *** Pin packages
@@ -117,9 +114,14 @@ use-package is great for lazy-loading packages efficiently.
 
 *** Add support for installing emacs packages from source
 
+Quelpa is only needed for source installs (e.g. commented Copilot setup). Keep it deferred so normal startups do not pay for it.
+
 #+BEGIN_SRC emacs-lisp
-  (use-package quelpa)
-  (use-package quelpa-use-package)
+  (use-package quelpa
+    :defer t)
+  (use-package quelpa-use-package
+    :defer t
+    :after quelpa)
 #+END_SRC
 
 
@@ -246,23 +248,21 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
 
 *** cycle themes
 
-experimenting with auto-toggling the themes based on matching os level light and dark mode
+=auto-dark= follows the OS appearance. =,ct= manually toggles between Solarized dark/light without the unmaintained =cycle-themes= package (and its deprecated =cl= dependency).
 
 #+BEGIN_SRC emacs-lisp
-  (use-package cycle-themes
-    :if (display-graphic-p)
-    :init
-    ;; ↓ deprecated but makes cycle themes work for now ↓
-    (setq byte-compile-warnings '(cl-functions))
-    (require 'cl)
-    ;; ↑ deprecated but makes cycle themes work for now ↑
-    (setq cycle-themes-theme-list
-          '(
-            solarized-dark
-            solarized-light
-            ))
-    :config
-    (evil-leader/set-key "ct" #'cycle-themes))
+  (defun cs/toggle-solarized-theme ()
+    "Toggle between solarized-dark and solarized-light."
+    (interactive)
+    (if (member 'solarized-dark custom-enabled-themes)
+        (progn
+          (disable-theme 'solarized-dark)
+          (load-theme 'solarized-light t))
+      (disable-theme 'solarized-light)
+      (load-theme 'solarized-dark t)))
+
+  (when (display-graphic-p)
+    (evil-leader/set-key "ct" #'cs/toggle-solarized-theme))
 
   (use-package auto-dark
     :if (display-graphic-p)
@@ -277,7 +277,7 @@ experimenting with auto-toggling the themes based on matching os level light and
 
 *** terminal settings
 
-Explain.
+Dedicated zsh terminal via =multi-term=, with scroll/Yasnippet tweaks so shells stay usable under Evil.
 
 #+BEGIN_SRC emacs-lisp
   (use-package multi-term
@@ -298,7 +298,7 @@ Explain.
 
 *** window management
 
-Explain.
+Perspectives persist workspaces across restarts; buffer-move and zoom-window cover day-to-day layout tweaks.
 
 #+BEGIN_SRC emacs-lisp
   (use-package perspective
@@ -370,7 +370,7 @@ Explain.
 
 *** navigation
 
-Explain.
+Ivy/Counsel for completion UI, Projectile-aware file/grep helpers, and Neotree for occasional tree browsing.
 
 #+BEGIN_SRC emacs-lisp
   (use-package ivy
@@ -411,7 +411,7 @@ Explain.
 
 *** project management
 
-Explain.
+Projectile for project roots/indexing plus =envrc= so each project can load its own =.envrc=.
 
 #+BEGIN_SRC emacs-lisp
   ;;; project management
@@ -520,7 +520,7 @@ magit so awesome.
     :init
     ;; ? will pop up the built-in hotkeys from status mode
     (evil-leader/set-key
-      "gg"  #'magit-dispatch-popup
+      "gg"  #'magit-dispatch
       "gst" #'magit-status
       "gd"  #'magit-diff-working-tree
       "gco" #'magit-checkout
@@ -575,11 +575,13 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
     :diminish "⇥"
     :config
     (global-company-mode)
-    (company-tng-configure-default)
+    (if (fboundp 'company-tng-mode)
+        (company-tng-mode 1)
+      (when (fboundp 'company-tng-configure-default)
+        (company-tng-configure-default)))
     (define-key company-active-map [escape]
                 (lambda ()
                   (interactive)
-                  (company-complete)
                   (company-abort)
                   (when (bound-and-true-p evil-mode)
                     (evil-force-normal-state)))))
@@ -591,6 +593,7 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
              js-ts-mode
              typescript-ts-mode
              tsx-ts-mode
+             go-mode
              ruby-mode
              web-mode
              ) . lsp-deferred))
@@ -691,7 +694,7 @@ Tools that automate parts of your workflow.
 
 *** syntax checking
 
-Explain.
+Flycheck as the primary linter UI; Flymake is available but not forced globally (lsp diagnostics stay disabled so Flycheck owns the gutter).
 
 #+BEGIN_SRC emacs-lisp
   (use-package flycheck
@@ -718,7 +721,7 @@ Explain.
 
 *** paredit
 
-Explain.
+Structural editing for Lisp-family buffers (and a few others).
 
 barf = push out of current sexp \\
 slurp = pull into current sexp \\
@@ -809,7 +812,7 @@ use ~y%~ for yanking a s-expression
                       pug-mode
                       terraform-mode
                       tide-mode
-                      typscript-mode
+                      typescript-mode
                       typescript-ts-mode
                       tsx-ts-mode
                       web-mode))))
@@ -839,7 +842,7 @@ use ~y%~ for yanking a s-expression
 
 *** rainbow delimiters
 
-Explain.
+Color nested delimiters in programming modes (and YAML) for quicker structure scanning.
 
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-delimiters
@@ -851,7 +854,7 @@ Explain.
 
 *** column width enforcement
 
-Explain.
+Highlight text past column 100 in selected modes (Clojure/JSON/shell).
 
 #+BEGIN_SRC emacs-lisp
   (use-package column-enforce-mode
@@ -880,26 +883,26 @@ Explain.
 
 *** emoji / unicode support 😎👍🏼🚀
 
-I've disabled this due to the massive performance degradation I experienced.
+Disabled: global emojify caused massive performance degradation. Keep the stanza commented if you ever want to re-enable selectively.
 
 #+BEGIN_SRC emacs-lisp
-  (use-package emojify
-    :defer t
-    :init
-    (add-hook 'after-init-hook #'global-emojify-mode)
-    (add-hook 'after-init-hook #'global-emojify-mode-line-mode)
-    :config
-    (setq emojify-inhibit-major-modes
-          (cl-union emojify-inhibit-major-modes
-                    '(cider-mode
-                      cider-repl-mode
-                      cider-test-report-mode
-                      shell-script-mode
-                      sql-mode
-                      term-mode
-                      web-mode
-                      yaml-mode))
-          emojify-prog-contexts "none"))
+  ;; (use-package emojify
+  ;;   :defer t
+  ;;   :init
+  ;;   (add-hook 'after-init-hook #'global-emojify-mode)
+  ;;   (add-hook 'after-init-hook #'global-emojify-mode-line-mode)
+  ;;   :config
+  ;;   (setq emojify-inhibit-major-modes
+  ;;         (cl-union emojify-inhibit-major-modes
+  ;;                   '(cider-mode
+  ;;                     cider-repl-mode
+  ;;                     cider-test-report-mode
+  ;;                     shell-script-mode
+  ;;                     sql-mode
+  ;;                     term-mode
+  ;;                     web-mode
+  ;;                     yaml-mode))
+  ;;         emojify-prog-contexts "none"))
 #+END_SRC
 
 *** keybind discovery
@@ -1012,7 +1015,7 @@ This section documents installed language and syntax specific packages and their
 
 *** universal
 
-Explain.
+Tree-sitter grammar sources. Install missing grammars on demand with =M-x cs/treesit-install-grammars= (not during every startup).
 
 #+BEGIN_SRC emacs-lisp
   (use-package treesit
@@ -1020,50 +1023,57 @@ Explain.
     ;; only load treesit if installed Emacs supports it
     :if (fboundp 'treesit-language-available-p)
     :config
-    ;; set up language grammar sources for automatic installation:
     (setq treesit-language-source-alist
-          '(
-  	  (javascript    "https://github.com/tree-sitter/tree-sitter-javascript")
-            (typescript    "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-            (tsx           "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-            (json          "https://github.com/tree-sitter/tree-sitter-json")
-            (css           "https://github.com/tree-sitter/tree-sitter-css")
-            (html          "https://github.com/tree-sitter/tree-sitter-html")
-            (regex         "https://github.com/tree-sitter/tree-sitter-regex")
-            ;; (bash          "https://github.com/tree-sitter/tree-sitter-bash")
-            ;; (clojure       "no support yet")
-            ;; (clojurescript "no support yet")
-            (ruby          "https://github.com/tree-sitter/tree-sitter-ruby")
-            (python        "https://github.com/tree-sitter/tree-sitter-python")
-            (go            "https://github.com/tree-sitter/tree-sitter-go")
-            (java          "https://github.com/tree-sitter/tree-sitter-java")
-  	  ))
-    ;; Automatically install grammars if they aren’t already available.
-    (dolist (lang '(
-  		  javascript
-  		  typescript
-  		  tsx
-  		  json
-  		  css
-  		  html
-  		  regex
-  		  ;; bash
-  		  ;; clojure
-  		  ;; clojurescript-mode
-  		  ruby
-  		  python
-  		  go
-  		  java
-  		  ))
-      (unless (treesit-language-available-p lang)
-        (treesit-install-language-grammar lang))))
+          '((javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+            (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+            (tsx        "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+            (json       "https://github.com/tree-sitter/tree-sitter-json")
+            (css        "https://github.com/tree-sitter/tree-sitter-css")
+            (html       "https://github.com/tree-sitter/tree-sitter-html")
+            (regex      "https://github.com/tree-sitter/tree-sitter-regex")
+            (ruby       "https://github.com/tree-sitter/tree-sitter-ruby")
+            (python     "https://github.com/tree-sitter/tree-sitter-python")
+            (go         "https://github.com/tree-sitter/tree-sitter-go")
+            (java       "https://github.com/tree-sitter/tree-sitter-java")))
+
+    (defvar cs/treesit-languages
+      '(javascript typescript tsx json css html regex ruby python go java)
+      "Grammars managed by `cs/treesit-install-grammars'.")
+
+    (defun cs/treesit-install-grammars ()
+      "Install any missing tree-sitter grammars from `cs/treesit-languages'."
+      (interactive)
+      (dolist (lang cs/treesit-languages)
+        (unless (treesit-language-available-p lang)
+          (message "Installing tree-sitter grammar: %s" lang)
+          (treesit-install-language-grammar lang)))))
 #+END_SRC
 
 *** clojure
 
-Explain.
+CIDER + clj-kondo + clj-refactor for Clojure/ClojureScript/.cljc editing.
 
 #+BEGIN_SRC emacs-lisp
+  (defun cs/cider-common-leader-keys (mode)
+    "Shared CIDER Evil leader keys for MODE."
+    (evil-leader/set-key-for-mode mode
+      "rr"  #'cider-restart
+      "rq"  #'cider-quit
+      "eb"  #'cider-eval-buffer
+      "ef"  #'cider-eval-defun-at-point
+      "es"  #'cider-eval-sexp-at-point
+      "rtn" #'cider-test-run-ns-tests
+      "rtp" #'cider-test-run-project-tests
+      "rtl" #'cider-test-run-loaded-tests
+      "rtf" #'cider-test-rerun-failed-tests
+      "rta" #'cider-auto-test-mode
+      "rb"  #'cider-switch-to-repl-buffer
+      "ff"  #'cider-format-defun
+      "fr"  #'cider-format-region
+      "fb"  #'cider-format-buffer
+      "ds"  #'cider-doc
+      "fu"  #'cljr-find-usages))
+
   (use-package clojure-mode
     :defer t
     :init
@@ -1074,63 +1084,15 @@ Explain.
     :config
     (require 'flycheck-clj-kondo)
     ;;; keybinds on load
+    (cs/cider-common-leader-keys 'clojure-mode)
     (evil-leader/set-key-for-mode 'clojure-mode
-      "ri"  #'cider-jack-in                 ; (r)epl (i)nitialize
-      "rr"  #'cider-restart                 ; (r)epl (r)estart
-      "rq"  #'cider-quit                    ; (r)epl (q)uit
-      "rc"  #'cider-connect                 ; (r)epl (c)onnect
-      "eb"  #'cider-eval-buffer             ; (e)val (b)uffer
-      "ef"  #'cider-eval-defun-at-point     ; (e)val de(f)un
-      "es"  #'cider-eval-sexp-at-point      ; (e)val (s)-expression
-      "rtn" #'cider-test-run-ns-tests       ; (r)un (t)ests (n)amespace
-      "rtp" #'cider-test-run-project-tests  ; (r)un (t)ests (p)roject
-      "rtl" #'cider-test-run-loaded-tests   ; (r)un (t)ests (l)oaded namespaces
-      "rtf" #'cider-test-rerun-failed-tests ; (r)erun (t)ests (f)ailed tests
-      "rta" #'cider-auto-test-mode          ; (r)un (t)ests (a)utomatically
-      "rb"  #'cider-switch-to-repl-buffer   ; (r)epl (b)uffer
-      "ff"  #'cider-format-defun            ; (f)ormat (f)orm
-      "fr"  #'cider-format-region           ; (f)ormat (r)egion
-      "fb"  #'cider-format-buffer           ; (f)ormat (b)uffer
-      "ds"  #'cider-doc                     ; (d)oc (s)earch
-      "fu"  #'cljr-find-usages              ; (f)ind (u)sages
-      ;; add keybindings here to replace cljr-helm (,rf)
-      )
+      "ri" #'cider-jack-in
+      "rc" #'cider-connect)
+    (cs/cider-common-leader-keys 'clojurescript-mode)
     (evil-leader/set-key-for-mode 'clojurescript-mode
-      "ri"  #'cider-jack-in-cljs            ; (r)epl (i)nitialize
-      "rr"  #'cider-restart                 ; (r)epl (r)estart
-      "rq"  #'cider-quit                    ; (r)epl (q)uit
-      "rc"  #'cider-connect-cljs            ; (r)epl (c)onnect
-      "eb"  #'cider-eval-buffer             ; (e)val (b)uffer
-      "ef"  #'cider-eval-defun-at-point     ; (e)val de(f)un
-      "es"  #'cider-eval-sexp-at-point      ; (e)val (s)-expression
-      "rtn" #'cider-test-run-ns-tests       ; (r)un (t)ests (n)amespace
-      "rtp" #'cider-test-run-project-tests  ; (r)un (t)ests (p)roject
-      "rtl" #'cider-test-run-loaded-tests   ; (r)un (t)ests (l)oaded namespaces
-      "rtf" #'cider-test-rerun-failed-tests ; (r)erun (t)ests (f)ailed tests
-      "rta" #'cider-auto-test-mode          ; (r)un (t)ests (a)utomatically
-      "rb"  #'cider-switch-to-repl-buffer   ; (r)epl (b)uffer
-      "ff"  #'cider-format-defun            ; (f)ormat (f)orm
-      "fr"  #'cider-format-region           ; (f)ormat (r)egion
-      "fb"  #'cider-format-buffer           ; (f)ormat (b)uffer
-      "ds"  #'cider-doc                     ; (d)oc (s)earch
-      "fu"  #'cljr-find-usages              ; (f)ind (u)sages
-      )
-    (evil-leader/set-key-for-mode 'clojurec-mode
-      "eb"  #'cider-eval-buffer		  ; (e)val (b)uffer
-      "ef"  #'cider-eval-defun-at-point	  ; (e)val de(f)un
-      "es"  #'cider-eval-sexp-at-point	  ; (e)val (s)-expression
-      "rtn" #'cider-test-run-ns-tests	  ; (r)un (t)ests (n)amespace
-      "rtp" #'cider-test-run-project-tests  ; (r)un (t)ests (p)roject
-      "rtl" #'cider-test-run-loaded-tests	  ; (r)un (t)ests (l)oaded namespaces
-      "rtf" #'cider-test-rerun-failed-tests ; (r)erun (t)ests (f)ailed tests
-      "rta" #'cider-auto-test-mode          ; (r)un (t)ests (a)utomatically
-      "rb"  #'cider-switch-to-repl-buffer	  ; (r)epl (b)uffer
-      "ff"  #'cider-format-defun		  ; (f)ormat (f)orm
-      "fr"  #'cider-format-region		  ; (f)ormat (r)egion
-      "fb"  #'cider-format-buffer		  ; (f)ormat (b)uffer
-      "ds"  #'cider-doc			  ; (d)oc (s)earch
-      "fu"  #'cljr-find-usages		  ; (f)ind (u)sages
-      ))
+      "ri" #'cider-jack-in-cljs
+      "rc" #'cider-connect-cljs)
+    (cs/cider-common-leader-keys 'clojurec-mode))
   (use-package clojure-mode-extra-font-locking
     :defer t)
   (use-package cider
@@ -1192,11 +1154,13 @@ Explain.
 
 *** elixir
 
+Alchemist is largely unmaintained; keep syntax highlighting via =elixir-mode=. Prefer ElixirLS through =lsp-mode= if you return to Elixir work.
+
 #+BEGIN_SRC emacs-lisp
   (use-package elixir-mode
     :defer t)
-  (use-package alchemist
-    :defer t)
+  ;; (use-package alchemist
+  ;;   :defer t)
 #+END_SRC
 
 *** emacs-lisp
@@ -1215,28 +1179,20 @@ Explain.
 
 *** golang
 
+Formatting via =goimports=; navigation/completion via =gopls= through =lsp-mode= (shared =,jd= / =,fu= bindings).
+
 #+BEGIN_SRC emacs-lisp
   (use-package go-mode
     :defer t
     :hook ((go-mode . (lambda ()
-                        (if (not (string-match "go" compile-command))
-                            (set (make-local-variable 'compile-command)
-                                 "go build -v && go test -v && go vet")))))
+                        (unless (string-match-p "go" compile-command)
+                          (setq-local compile-command "go build -v && go test -v && go vet"))
+                        (add-hook 'before-save-hook #'gofmt-before-save nil t))))
     :init
     (setq gofmt-command "goimports")
-    (add-hook 'before-save-hook 'gofmt-before-save)
     :config
-    ;;; hotkeys
     (evil-leader/set-key-for-mode 'go-mode
-      "CC"  #'compile       ; (C)ompile (C)ode
-      "jd"  #'godef-jump    ; (j)ump to (d)ef
-      "jb"  #'pop-tag-mark) ; (j)ump (b)ack
-    )
-  (use-package company-go
-    :defer t
-    :init
-    (with-eval-after-load 'company
-      (add-to-list 'company-backends 'company-go)))
+      "CC" #'compile)) ; (C)ompile (C)ode
 #+END_SRC
 
 *** graphql
@@ -1248,7 +1204,7 @@ Explain.
 
 *** html / css / javascript / typescript / web templates
 
-Explain.
+Tree-sitter JS/TS/TSX modes with project-local ESLint/Prettier, plus =web-mode= for templates.
 
 #+BEGIN_SRC emacs-lisp
   ;; use project local executables
@@ -1430,7 +1386,7 @@ Explain.
 
 *** org mode
 
-Explain.
+Agenda, capture templates, Mac Mail links, HTML agenda export, and related Org tooling.
 
 #+BEGIN_SRC emacs-lisp
   ;;; mac mail link functions
@@ -1611,7 +1567,7 @@ Explain.
 
 *** python
 
-Explain.
+Elpy remains for now. Prefer migrating to =lsp-pyright= / =python-lsp-server= via =lsp-mode= when Elpy friction shows up.
 
 #+BEGIN_SRC emacs-lisp
   (use-package elpy
@@ -1680,6 +1636,7 @@ shell-script-mode is a built-in mode, but i'm using the use-package stanza for c
     :ensure nil
     :defer t
     :mode "\\.sh\\'"
+    :hook (shell-script-mode . electric-pair-local-mode)
     :init
     (setq sh-basic-offset 2
           sh-indentation  2)
@@ -1698,8 +1655,7 @@ shell-script-mode is a built-in mode, but i'm using the use-package stanza for c
                       ("\\zprofile\\'"      . shell-script-mode)
                       ("\\.zprofile\\'"     . shell-script-mode)
                       ("\\zshrc\\'"         . shell-script-mode)
-                      ("\\.zshrc\\'"        . shell-script-mode))))
-    (electric-pair-mode 1))
+                      ("\\.zshrc\\'"        . shell-script-mode)))))
 #+END_SRC
 
 *** stylesheets
@@ -1708,17 +1664,17 @@ shell-script-mode is a built-in mode, but i'm using the use-package stanza for c
   (use-package css-mode
     :ensure nil
     :mode "\\.css\\'"
+    :hook (css-mode . electric-pair-local-mode)
     :config
-    (setq css-indent-offset 2)
-    (electric-pair-mode 1))
+    (setq css-indent-offset 2))
 
   (use-package scss-mode
     :ensure nil
     :mode ("\\.scss\\'"
            "\\.sass\\'")
+    :hook (scss-mode . electric-pair-local-mode)
     :config
-    (setq css-indent-offset 2)
-    (electric-pair-mode 1))
+    (setq css-indent-offset 2))
 
   (use-package rainbow-mode
     :defer t
@@ -1731,7 +1687,7 @@ shell-script-mode is a built-in mode, but i'm using the use-package stanza for c
 
 *** yaml
 
-Explain.
+YAML editing with trailing-whitespace cleanup on save.
 
 #+BEGIN_SRC emacs-lisp
   (use-package yaml-mode
@@ -1763,11 +1719,10 @@ Explain.
                  '("\\({\n *\\)? *[\"']AWSTemplateFormatVersion" . cfn-json-mode)))
 
 
-  ;; set up cfn-lint integration if flycheck is installed
-  (when (featurep 'flycheck)
+  ;; Register after Flycheck loads (:defer t means featurep is false at tangle time)
+  (with-eval-after-load 'flycheck
     (flycheck-define-checker cfn-lint
       "AWS CloudFormation linter using cfn-lint."
-
       :command ("cfn-lint" "-f" "parseable" source)
       :error-patterns ((warning line-start (file-name) ":" line ":" column
                                 ":" (one-or-more digit) ":" (one-or-more digit) ":"
@@ -1776,10 +1731,9 @@ Explain.
                               ":" (one-or-more digit) ":" (one-or-more digit) ":"
                               (id "E" (one-or-more digit)) ":" (message) line-end))
       :modes (cfn-json-mode cfn-yaml-mode))
-
     (add-to-list 'flycheck-checkers 'cfn-lint)
-    (add-hook 'cfn-json-mode-hook 'flycheck-mode)
-    (add-hook 'cfn-yaml-mode-hook 'flycheck-mode))
+    (add-hook 'cfn-json-mode-hook #'flycheck-mode)
+    (add-hook 'cfn-yaml-mode-hook #'flycheck-mode))
 #+END_SRC
 
 *** other syntaxes
@@ -1890,54 +1844,67 @@ Explain: Electric return functionality
 *** use localized javascript linter
 
 #+BEGIN_SRC emacs-lisp
+  (defun cs/package-json-mentions-p (package-file needle)
+    "Return non-nil if PACKAGE-FILE contains NEEDLE (string search)."
+    (when (and package-file (file-readable-p package-file))
+      (with-temp-buffer
+        (insert-file-contents package-file)
+        (goto-char (point-min))
+        (search-forward needle nil t))))
+
   (defun cs/use-linter-from-package-json ()
-    (let* ((package-root (locate-dominating-file
-                          (or (buffer-file-name) default-directory)
-                          "package.json"))
-           (linter-root (locate-dominating-file
-                         (or (buffer-file-name) default-directory)
-                         "node_modules"))
+    "Prefer project-local eslint/standard binaries when declared in package.json."
+    (let* ((root (or (buffer-file-name) default-directory))
+           (package-root (locate-dominating-file root "package.json"))
+           (linter-root (locate-dominating-file root "node_modules"))
            (eslint-bin (and linter-root (expand-file-name "node_modules/.bin/eslint" linter-root)))
            (standard-bin (and linter-root (expand-file-name "node_modules/.bin/standard" linter-root)))
            (package-file (and package-root (expand-file-name "package.json" package-root)))
-           (grep-eslint (concat "grep eslint " package-file))
-           (grep-standard (concat "grep \'\"lint\"\\: \"standard\' " package-file))
-           (eslint-p (not (string= "" (shell-command-to-string grep-eslint))))
-           (standard-p (not (string= "" (shell-command-to-string grep-standard)))))
-      (when (and package-file (file-exists-p package-file))
+           (eslint-p (cs/package-json-mentions-p package-file "eslint"))
+           (standard-p (cs/package-json-mentions-p package-file "\"lint\": \"standard")))
+      (when package-file
         (cond
-         ((bound-and-true-p eslint-p)
+         (eslint-p
           (when (and eslint-bin (file-executable-p eslint-bin))
-            (progn
-              (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
-                                                               '(javascript-jshint javascript-standard)))
-              (setq-local flycheck-javascript-eslint-executable eslint-bin))))
-         ((bound-and-true-p standard-p)
+            (setq-local flycheck-disabled-checkers
+                        (cl-union flycheck-disabled-checkers
+                                  '(javascript-jshint javascript-standard)))
+            (setq-local flycheck-javascript-eslint-executable eslint-bin)))
+         (standard-p
           (when (and standard-bin (file-executable-p standard-bin))
-            (progn
-              (setq-local flycheck-disabled-checkers (cl-union flycheck-disabled-checkers
-                                                               '(javascript-jshint javascript-eslint)))
-              (setq-local flycheck-javascript-standard-executable standard-bin))))))))
+            (setq-local flycheck-disabled-checkers
+                        (cl-union flycheck-disabled-checkers
+                                  '(javascript-jshint javascript-eslint)))
+            (setq-local flycheck-javascript-standard-executable standard-bin)))))))
 #+END_SRC
 
 *** use prettier when prettierrc detected
 
 #+BEGIN_SRC emacs-lisp
   (defun cs/use-prettier-if-config-exists-in-project-root ()
+    "Enable prettier-js-mode when a Prettier config exists in the project."
     (let* ((package-root (locate-dominating-file
                           (or (buffer-file-name) default-directory)
                           "package.json"))
            (package-file (and package-root (expand-file-name "package.json" package-root)))
-           (grep-prettierrc (concat "grep prettier" package-file))
-           ;; ↓ this needs to be fixed
-           (prettierrc-embedded (not (string= "" (shell-command-to-string grep-prettierrc))))
-           ;; ↑ this needs to be fixed
-           (prettierrc (and package-root (file-exists-p (expand-file-name ".prettierrc" package-root))))
-           (prettierrc-json (and package-root (file-exists-p (expand-file-name ".prettierrc.json" package-root))))
-           (prettierrc-js (and package-root (file-exists-p (expand-file-name ".prettierrc.js" package-root))))
-           (prettierrc-config-js (and package-root (file-exists-p (expand-file-name ".prettierrc.config.js" package-root))))
-           (prettier-config-p (not (eq nil (or prettierrc-embedded prettierrc prettierrc-json prettierrc-js prettierrc-config-js)))))
-      (when prettier-config-p (prettier-js-mode))))
+           (config-names '(".prettierrc"
+                           ".prettierrc.json"
+                           ".prettierrc.js"
+                           ".prettierrc.cjs"
+                           ".prettierrc.mjs"
+                           ".prettierrc.yml"
+                           ".prettierrc.yaml"
+                           ".prettierrc.toml"
+                           "prettier.config.js"
+                           "prettier.config.cjs"
+                           "prettier.config.mjs"))
+           (config-file-p (and package-root
+                               (cl-some (lambda (name)
+                                          (file-exists-p (expand-file-name name package-root)))
+                                        config-names)))
+           (package-dep-p (cs/package-json-mentions-p package-file "prettier")))
+      (when (or config-file-p package-dep-p)
+        (prettier-js-mode))))
 #+END_SRC
 
 
@@ -1949,8 +1916,10 @@ This section is where all general emacs configuration lives.
 
 #+BEGIN_SRC emacs-lisp
   (when (memq window-system '(mac ns))
-    (setenv "PATH" (shell-command-to-string "source ~/.profile && printf $PATH"))
-    (setq exec-path (cl-union (split-string (shell-command-to-string "source ~/.profile && printf $PATH") ":") exec-path)))
+    (let ((path-from-shell (string-trim-right
+                            (shell-command-to-string "source ~/.profile && printf '%s' \"$PATH\""))))
+      (setenv "PATH" path-from-shell)
+      (setq exec-path (cl-union (split-string path-from-shell ":") exec-path))))
 #+END_SRC
 
 *** macOS keybinding fix
@@ -2009,7 +1978,7 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 
 #+BEGIN_SRC emacs-lisp
   (setq-default word-wrap t)
-  (visual-line-mode 1)
+  (global-visual-line-mode 1)
 #+END_SRC
 
 *** move through camelCaseWords
@@ -2089,7 +2058,7 @@ experimenting with a larger starting frame.
 *** tab settings
 
 #+BEGIN_SRC emacs-lisp
-  (setq indent-tabs-mode nil)
+  (setq-default indent-tabs-mode nil)
 #+END_SRC
 
 *** show trailing whitespace in buffers
@@ -2104,11 +2073,7 @@ experimenting with a larger starting frame.
 *** remember cursor position in buffers
 
 #+BEGIN_SRC emacs-lisp
-  (if (version< emacs-version "25.1")
-      (lambda ()
-        (require 'saveplace)
-        (setq-default save-place t))
-    (save-place-mode 1))
+  (save-place-mode 1)
 #+END_SRC
 
 *** store auto-save and backup files in ~/.emacs.d/backups/
@@ -2475,6 +2440,12 @@ be explicit about where to enable "electric return", as some modes have their ow
 *** report emacs total load time
 
 #+BEGIN_SRC emacs-lisp
+  ;; Restore startup GC / file-name-handler settings from early-init.el
+  (setq gc-cons-threshold (* 64 1024 1024) ; 64MB while editing
+        gc-cons-percentage 0.1)
+  (when (boundp 'cs--file-name-handler-alist)
+    (setq file-name-handler-alist cs--file-name-handler-alist))
+
   (let ((elapsed (float-time (time-subtract (current-time)
                                             emacs-start-time))))
     (message "Loaded emacs in %.3fs" elapsed))
