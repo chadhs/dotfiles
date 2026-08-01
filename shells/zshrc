@@ -67,9 +67,9 @@ fi
 
 # User configuration
 
-######################################
+#######################################
 ### see .zshenv for PATH definition ###
-######################################
+#######################################
 # export MANPATH="/usr/local/man:$MANPATH"
 
 source $ZSH/oh-my-zsh.sh
