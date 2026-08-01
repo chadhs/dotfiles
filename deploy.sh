@@ -68,7 +68,8 @@ symlink_configs(){
     [ ! -e ~/Library/Application\ Support/espanso/match/common.yml ] && ln -s ~/dotfiles/utils/espanso/common.yml ~/Library/Application\ Support/espanso/match/common.yml
     [ ! -e ~/Library/Application\ Support/espanso/match/private.yml ] && cp -rp ~/dotfiles/utils/espanso/private.yml ~/Library/Application\ Support/espanso/match/private.yml
     [ ! -e ~/.config/karabiner/assets/complex_modifications/custom.json ] && ln -s ~/dotfiles/utils/karabiner/custom.json ~/.config/karabiner/assets/complex_modifications/custom.json
-    [ ! -d ~/.config/ghostty ] && mkdir ~/.config/ghostty && ln -s ~/dotfiles/utils/ghostty/config ~/.config/ghostty/config
+    mkdir -p ~/.config/ghostty
+    [ ! -e ~/.config/ghostty/config ] && ln -s ~/dotfiles/utils/ghostty/config ~/.config/ghostty/config
   fi
 
 
@@ -114,8 +115,6 @@ symlink_configs(){
   [ ! -e ~/.eslintrc.json ] && ln -s ~/dotfiles/utils/eslintrc.json ~/.eslintrc.json
   [ ! -e ~/.prettierrc.json ] && ln -s ~/dotfiles/utils/prettierrc.json ~/.prettierrc.json
   [ ! -e ~/jsconfig.json ] && ln -s ~/dotfiles/utils/jsconfig.json ~/jsconfig.json
-  [ ! -e ~/.tern-config ] && ln -s ~/dotfiles/utils/tern-config .tern-config
-  [ ! -e ~/.indium.json ] && ln -s ~/dotfiles/utils/indium.json .indium.json
   [ ! -e ~/.zprint.edn ] && ln -s ~/dotfiles/utils/zprint.edn .zprint.edn
   [ ! -d ~/.virtualenvs ] && mkdir ~/.virtualenvs
 }
