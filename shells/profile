@@ -25,13 +25,18 @@ export PATH="$HOME/bin\
 :/usr/local/sbin\
 :${PATH}"
 
-## Homebrew Ruby gem bindirs (version-agnostic; avoids pinning e.g. 3.1.0)
-# use find so zsh does not error on unmatched globs
-while IFS= read -r gem_bin; do
-  [ -d "${gem_bin}" ] && PATH="${gem_bin}:${PATH}"
-done <<EOF
-$(find /opt/homebrew/lib/ruby/gems /usr/local/lib/ruby/gems -type d -name bin 2>/dev/null)
-EOF
+## Homebrew Ruby gem bindir for the active brew ruby only.
+# Do not `find` under lib/ruby/gems — that picks up stale 3.x trees and nested
+# gem package bins, which shadow `ruby`/`gem`/`bundle` from Homebrew.
+for ruby_bin in /opt/homebrew/opt/ruby/bin/ruby /usr/local/opt/ruby/bin/ruby; do
+  if [ -x "${ruby_bin}" ]; then
+    gem_user_bin="$("${ruby_bin}" -e 'print Gem.bindir' 2>/dev/null)" || true
+    if [ -n "${gem_user_bin}" ] && [ -d "${gem_user_bin}" ]; then
+      PATH="${gem_user_bin}:${PATH}"
+    fi
+    break
+  fi
+done
 export PATH
 
 umask 0002 # grant write permsion to group

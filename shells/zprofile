@@ -1,3 +1,8 @@
-# sourced for login zsh only
-# PATH/env live in zshenv -> profile; avoid re-sourcing profile here
-# (previously both zshenv and zprofile pointed at this file and doubled PATH)
+# sourced for login zsh only (after /etc/zprofile)
+#
+# macOS runs `path_helper` from /etc/zprofile *after* ~/.zshenv, which reorders
+# PATH and puts /usr/bin before Homebrew. Re-apply profile here so login shells
+# (Terminal, Ghostty) keep brew ruby/nvim/etc. first.
+#
+# Non-login zsh (e.g. some scripted invocations) only gets ~/.zshenv → profile.
+source ~/.profile
