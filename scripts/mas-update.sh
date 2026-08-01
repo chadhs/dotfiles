@@ -3,20 +3,19 @@ set -euo pipefail
 
 ## resolve paths (safe to run from anywhere)
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname "${0}")" && pwd)"
+REPO_ROOT="$(CDPATH= cd -- "${SCRIPT_DIR}/.." && pwd)"
+BREWFILE="${REPO_ROOT}/Brewfile"
 
 ## preflight checks
-[ -r "${SCRIPT_DIR}/mas-pkgs.txt" ] || { echo "missing package list, exiting..." ; exit 1; }
-
-## read in packages to install
-mas_pkgs="$(grep '^[^#[:blank:]]' "${SCRIPT_DIR}/mas-pkgs.txt" | tr '\n' ' ')"
+[ -r "${BREWFILE}" ] || { echo "missing Brewfile at ${BREWFILE}, exiting..." ; exit 1; }
 
 ## do it!
-# Prefer Brewfile + `brew bundle` for new setups; this script remains for mas-only refreshes.
+# `mas outdated && mas outdated && rehash && mas upgrade` is intentional: refreshing the
+# outdated list twice and rehashing avoids mas retrying apps that were already upgraded
+# (historical mas quirk). Missing App Store apps are reconciled via Brewfile.
 # shellcheck disable=SC1090
 . ~/.sh_aliases \
   && echo "updating mac app store apps..." \
-  # Refresh mas's outdated cache twice + rehash so upgrade does not
-  # retry apps that were already updated (historical mas quirk).
   && mas outdated && mas outdated && rehash && mas upgrade \
-  && echo "installing missing mac app store apps..." \
-  && mas outdated && mas install ${=mas_pkgs}
+  && echo "reconciling Brewfile mas packages..." \
+  && brew bundle --file="${BREWFILE}"
