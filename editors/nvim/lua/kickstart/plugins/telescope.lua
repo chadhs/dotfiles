@@ -87,14 +87,12 @@ return {
 
       ------------
       -- CUSTOM --
+      -- Old CtrlP/Ack muscle memory on `,` leader
       ------------
-      vim.keymap.set('n', '<leader>Ff', builtin.find_files, {})
-      vim.keymap.set('n', '<leader>t', builtin.git_files, {})
-      vim.keymap.set('n', '<leader>b', builtin.buffers, {})
-      vim.keymap.set('n', '<leader>gf', builtin.live_grep, {})
-      ------------
-      -- CUSTOM --
-      ------------
+      vim.keymap.set('n', '<leader>Ff', builtin.find_files, { desc = 'Find files (all)' })
+      vim.keymap.set('n', '<leader>t', builtin.git_files, { desc = 'Find git files (CtrlP)' })
+      vim.keymap.set('n', '<leader>b', builtin.buffers, { desc = 'Find buffers (CtrlPBuffer)' })
+      vim.keymap.set('n', '<leader>gf', builtin.live_grep, { desc = 'Live grep (Ack)' })
 
       -- Slightly advanced example of overriding default behavior and theme
       -- vim.keymap.set('n', '<leader>/', function()
