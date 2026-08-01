@@ -900,7 +900,8 @@ As you start typing a key command in emacs, a pop-up modal will appear at the bo
 
 #+BEGIN_SRC emacs-lisp
   (use-package which-key
-    :ensure nil
+    ;; Built into Emacs 30+; :ensure t still no-ops when the built-in is present.
+    :ensure t
     :diminish which-key-mode
     :config
     (which-key-mode))
@@ -927,7 +928,8 @@ Honor editorconfig files configuration for whitespace and indentation settings w
 
 #+BEGIN_SRC emacs-lisp
   (use-package editorconfig
-    :ensure nil
+    ;; Built into Emacs 30+; :ensure t still no-ops when the built-in is present.
+    :ensure t
     :diminish "↹"
     :init
     (setq auto-mode-alist
@@ -1054,6 +1056,9 @@ CIDER + clj-kondo + clj-refactor for Clojure/ClojureScript/.cljc editing.
       "ds"  #'cider-doc
       "fu"  #'cljr-find-usages))
 
+  ;; Install before clojure-mode :config may run (cold install dependency ordering).
+  (use-package flycheck-clj-kondo)
+
   (use-package clojure-mode
     :defer t
     :init
@@ -1122,8 +1127,6 @@ CIDER + clj-kondo + clj-refactor for Clojure/ClojureScript/.cljc editing.
     :init
     (setq cljr-warn-on-eval nil)
     )
-  (use-package flycheck-clj-kondo
-    :defer t)
   ;; (use-package flycheck-clojure
   ;;   :defer t)
   (use-package zprint-mode
