@@ -22,6 +22,9 @@ it will:
 - run `deploy.sh` for symlinks / shell setup
 - optionally switch your login shell to Homebrew zsh
 
+### Brewfile location
+the `Brewfile` lives at the **repo root** (not under `scripts/`). that matches Homebrew’s usual layout so `cd ~/dotfiles && brew bundle` works without extra flags, while `scripts/weekly-update.sh` still passes `--file` explicitly.
+
 ### keeping config changes in sync
 the `deploy.sh` script is designed to setup base packages and symlinks; it is also called by the bootstrap script.
 
@@ -33,6 +36,13 @@ the `deploy.sh` script is designed to setup base packages and symlinks; it is al
 `sh scripts/weekly-update.sh` (safe to run from any cwd)
 
 for ad-hoc brew/cask/mas updates from a shell, use the aliases: `brewup`, `caskup`, `masup` (npm/gem globals are handled by weekly-update)
+
+### opening files from Finder with Neovim
+MacVim is no longer installed. for occasional GUI/Finder opens, deploy links **Open in Neovim.app**, which launches the file in Ghostty running `nvim`.
+
+after `sh deploy.sh`:
+- Finder → right click file → **Open With** → **Open in Neovim**
+- (optional) set as default for a file type via **Get Info** → Open with → Change All
 
 ## more info
 

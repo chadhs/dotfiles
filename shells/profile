@@ -15,8 +15,6 @@ export PATH="$HOME/bin\
 :/opt/homebrew/opt/avr-gcc@8/bin\
 :/usr/local/opt/ruby/bin\
 :/opt/homebrew/opt/ruby/bin\
-:/usr/local/lib/ruby/gems/3.1.0/bin\
-:/opt/homebrew/lib/ruby/gems/3.1.0/bin\
 :$HOME/go/bin\
 :$HOME/.docker/bin\
 :/usr/local/opt/postgresql@17/bin\
@@ -26,6 +24,16 @@ export PATH="$HOME/bin\
 :/usr/local/bin\
 :/usr/local/sbin\
 :${PATH}"
+
+## Homebrew Ruby gem bindirs (version-agnostic; avoids pinning e.g. 3.1.0)
+# use find so zsh does not error on unmatched globs
+while IFS= read -r gem_bin; do
+  [ -d "${gem_bin}" ] && PATH="${gem_bin}:${PATH}"
+done <<EOF
+$(find /opt/homebrew/lib/ruby/gems /usr/local/lib/ruby/gems -type d -name bin 2>/dev/null)
+EOF
+export PATH
+
 umask 0002 # grant write permsion to group
 
 ## mac only path updates

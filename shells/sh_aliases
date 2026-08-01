@@ -24,7 +24,6 @@ zshonly disable r
 ## mac only aliases
 if [[ $(uname) = "Darwin" ]]; then
     alias emacs='/Applications/Emacs.app/Contents/MacOS/Emacs "$@"'
-    #alias vim='mvim -v'
     alias vim='nvim'
     alias flushdns='dscacheutil -flushcache;sudo killall -HUP mDNSResponder'
     alias restart_en0='sudo ifconfig en0 down && sudo ifconfig en0 up'
@@ -76,10 +75,9 @@ function unfreeze-emacs(){
   kill -SIGUSR2 $(pgrep -fli emacs)
 }
 
-## when in a shell in emacs, remind yourself not to launch vim there
-[[ $(uname) = "Darwin" ]] && [[ $EMACS ]] && alias vim='echo "Do not run Vim in a shell within Emacs; use Emacs to edit"'
-### hack to be able to update vim using vi command avoiding the message above when in emacs
-[[ $(uname) = "Darwin" ]] && [[ $EMACS ]] && alias vimup='vi +PluginInstall! +qall'
+## when in a shell in emacs, remind yourself not to launch vim/nvim there
+[[ $(uname) = "Darwin" ]] && [[ $EMACS ]] && alias vim='echo "Do not run Vim/Neovim in a shell within Emacs; use Emacs to edit"'
+[[ $(uname) = "Darwin" ]] && [[ $EMACS ]] && alias nvim='echo "Do not run Vim/Neovim in a shell within Emacs; use Emacs to edit"'
 
 ## man page color and search hilighting
 export PAGER="less"
