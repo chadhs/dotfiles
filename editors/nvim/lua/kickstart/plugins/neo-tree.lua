@@ -18,7 +18,7 @@ return {
   opts = {
     filesystem = {
       window = {
-        position = 'right', -- match old NERDTreeWinPos = "right"
+        position = 'left',
         mappings = {
           ['\\'] = 'close_window',
         },
