@@ -18,19 +18,20 @@ npm_pkgs="$(grep '^[^#[:blank:]]' "${SCRIPT_DIR}/npm-pkgs.txt" | tr '\n' ' ')"
 gem_pkgs="$(grep '^[^#[:blank:]]' "${SCRIPT_DIR}/gem-pkgs.txt" | tr '\n' ' ')"
 
 ## do it!
-# Single maintenance entry point. Ad-hoc brew/cask/mas: brewup / caskup / masup.
-# masup keeps the intentional double `mas outdated` + rehash workaround.
-echo "updating packages..."
+# Source aliases first (separate statement) so brewup/masup expand. A single
+# ` . aliases && brewup ` line is parsed before aliases exist, so brewup fails.
 # shellcheck disable=SC1090
-. ~/.sh_aliases \
-  && update-dotfiles \
-  && brewup \
-  && echo "reconciling Brewfile packages..." \
-  && brew bundle --file="${BREWFILE}" \
-  && echo "updating Mac App Store apps..." \
-  && masup \
-  && echo "updating global npm packages..." \
-  && npm install -g ${=npm_pkgs} \
-  && echo "updating global gem packages..." \
-  && gem install ${=gem_pkgs} \
-  && echo "done."
+. ~/.sh_aliases
+
+echo "updating packages..."
+update-dotfiles
+brewup
+echo "reconciling Brewfile packages..."
+brew bundle --file="${BREWFILE}"
+echo "updating Mac App Store apps..."
+masup
+echo "updating global npm packages..."
+npm install -g ${=npm_pkgs}
+echo "updating global gem packages..."
+gem install ${=gem_pkgs}
+echo "done."
