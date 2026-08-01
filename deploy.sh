@@ -77,17 +77,15 @@ symlink_configs(){
   [ ! -e ~/.profile ] && ln -s ~/dotfiles/shells/profile .profile
   [ ! -d ~/.oh-my-zsh ] && sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended; rm ~/.zshrc
   [ ! -e ~/.zshrc ] && ln -s ~/dotfiles/shells/zshrc .zshrc
-  # PATH/env in zshenv only — do not also source profile from zprofile (doubles PATH)
-  if [ -L ~/.zshenv ] && [ "$(readlink ~/.zshenv)" = "$HOME/dotfiles/shells/zprofile" ]; then
-    rm ~/.zshenv
+  # PATH/env in zshenv only — zprofile is login-only and must not source profile.
+  # Force-correct repo-managed symlinks so a pull of the split files can't leave
+  # ~/.zshenv pointing at the empty zprofile stub (breaks Homebrew on PATH).
+  if [ -L ~/.zshenv ] || [ ! -e ~/.zshenv ]; then
+    ln -sfn ~/dotfiles/shells/zshenv ~/.zshenv
   fi
-  if [ -L ~/.zprofile ] && [ "$(readlink ~/.zprofile)" = "$HOME/dotfiles/shells/zprofile" ]; then
-    # refresh so existing machines pick up the login-only stub
+  if [ -L ~/.zprofile ] || [ ! -e ~/.zprofile ]; then
     ln -sfn ~/dotfiles/shells/zprofile ~/.zprofile
-  elif [ ! -e ~/.zprofile ]; then
-    ln -s ~/dotfiles/shells/zprofile .zprofile
   fi
-  [ ! -e ~/.zshenv ] && ln -s ~/dotfiles/shells/zshenv .zshenv
   [ ! -e ~/.user-env ] && cp ~/dotfiles/shells/user-env ~/.user-env
   [ ! -e ~/.oh-my-zsh/themes/digitalnomad.zsh-theme ] && \
     ln -s ~/dotfiles/shells/digitalnomad.zsh-theme ~/.oh-my-zsh/themes/digitalnomad.zsh-theme
