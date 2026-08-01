@@ -4,10 +4,10 @@
 ;(package-initialize)
 
 ;; prevent emacs from saving customizations to this file
-(setq custom-file (concat user-emacs-directory ".emacs-customize.el"))
+(setq custom-file (expand-file-name ".emacs-customize.el" user-emacs-directory))
 
 ;; always follow the emacs-config.org symlink without prompting
 (setq vc-follow-symlinks t)
 
 ;; load the fully documented emacs-config.org configuration
-(org-babel-load-file "~/.emacs.d/emacs-config.org")
+(org-babel-load-file (expand-file-name "emacs-config.org" user-emacs-directory))
