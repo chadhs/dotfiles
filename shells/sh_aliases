@@ -76,8 +76,8 @@ function unfreeze-emacs(){
 }
 
 ## when in a shell in emacs, remind yourself not to launch vim/nvim there
-[[ $(uname) = "Darwin" ]] && [[ $EMACS ]] && alias vim='echo "Do not run Vim/Neovim in a shell within Emacs; use Emacs to edit"'
-[[ $(uname) = "Darwin" ]] && [[ $EMACS ]] && alias nvim='echo "Do not run Vim/Neovim in a shell within Emacs; use Emacs to edit"'
+[[ $(uname) = "Darwin" ]] && [[ -n "${EMACS:-}" ]] && alias vim='echo "Do not run Vim/Neovim in a shell within Emacs; use Emacs to edit"'
+[[ $(uname) = "Darwin" ]] && [[ -n "${EMACS:-}" ]] && alias nvim='echo "Do not run Vim/Neovim in a shell within Emacs; use Emacs to edit"'
 
 ## man page color and search hilighting
 export PAGER="less"

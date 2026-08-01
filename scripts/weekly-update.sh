@@ -1,5 +1,7 @@
 #!/bin/zsh
-set -euo pipefail
+# No `set -u`: we source ~/.sh_aliases and run `cd` (update-dotfiles), which can
+# trip nounset in user hooks (e.g. chruby_auto's RUBY_AUTO_VERSION) and aliases.
+set -eo pipefail
 
 ## resolve paths (safe to run from anywhere)
 SCRIPT_DIR="$(CDPATH= cd -- "$(dirname "${0}")" && pwd)"
