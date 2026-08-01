@@ -36,11 +36,9 @@ I like to keep track of how long it takes emacs to load, so this will establish 
 
 *** Emacs performance enhancements
 
-Raise GC during package load, then restore a sane threshold at the end of this file.
-
+Let's Speed up operations by giving emacs garbage collection a more modern threshold.
 #+BEGIN_SRC emacs-lisp
-  (setq gc-cons-threshold (* 200 1024 1024) ; ~200MB while loading
-        gc-cons-percentage 0.6)
+  (setq gc-cons-threshold 200000000) ; ~200MB
 #+END_SRC
 
 Increase the amount of data which Emacs reads from the process https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
@@ -2420,10 +2418,6 @@ be explicit about where to enable "electric return", as some modes have their ow
 *** report emacs total load time
 
 #+BEGIN_SRC emacs-lisp
-  ;; Restore a sane GC threshold after package load
-  (setq gc-cons-threshold (* 64 1024 1024) ; 64MB while editing
-        gc-cons-percentage 0.1)
-
   (let ((elapsed (float-time (time-subtract (current-time)
                                             emacs-start-time))))
     (message "Loaded emacs in %.3fs" elapsed))
