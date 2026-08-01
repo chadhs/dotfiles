@@ -36,7 +36,12 @@ I like to keep track of how long it takes emacs to load, so this will establish 
 
 *** Emacs performance enhancements
 
-Startup GC / file-name-handler tuning lives in =early-init.el= and is restored at the end of this file after packages load.
+Raise GC during package load, then restore a sane threshold at the end of this file.
+
+#+BEGIN_SRC emacs-lisp
+  (setq gc-cons-threshold (* 200 1024 1024) ; ~200MB while loading
+        gc-cons-percentage 0.6)
+#+END_SRC
 
 Increase the amount of data which Emacs reads from the process https://emacs-lsp.github.io/lsp-mode/page/performance/#increase-the-amount-of-data-which-emacs-reads-from-the-process
 #+BEGIN_SRC emacs-lisp
@@ -246,24 +251,11 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
     (load-theme 'ample t))
 #+END_SRC
 
-*** cycle themes
+*** auto theme (OS light / dark)
 
-=auto-dark= follows the OS appearance. =,ct= manually toggles between Solarized dark/light without the unmaintained =cycle-themes= package (and its deprecated =cl= dependency).
+=auto-dark= follows the OS appearance. Manual theme cycling was removed so it cannot fight OS auto-toggling.
 
 #+BEGIN_SRC emacs-lisp
-  (defun cs/toggle-solarized-theme ()
-    "Toggle between solarized-dark and solarized-light."
-    (interactive)
-    (if (member 'solarized-dark custom-enabled-themes)
-        (progn
-          (disable-theme 'solarized-dark)
-          (load-theme 'solarized-light t))
-      (disable-theme 'solarized-light)
-      (load-theme 'solarized-dark t)))
-
-  (when (display-graphic-p)
-    (evil-leader/set-key "ct" #'cs/toggle-solarized-theme))
-
   (use-package auto-dark
     :if (display-graphic-p)
     :diminish auto-dark-mode
@@ -575,13 +567,11 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
     :diminish "⇥"
     :config
     (global-company-mode)
-    (if (fboundp 'company-tng-mode)
-        (company-tng-mode 1)
-      (when (fboundp 'company-tng-configure-default)
-        (company-tng-configure-default)))
+    (company-tng-configure-default)
     (define-key company-active-map [escape]
                 (lambda ()
                   (interactive)
+                  (company-complete)
                   (company-abort)
                   (when (bound-and-true-p evil-mode)
                     (evil-force-normal-state)))))
@@ -594,6 +584,7 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
              typescript-ts-mode
              tsx-ts-mode
              go-mode
+             elixir-mode
              ruby-mode
              web-mode
              ) . lsp-deferred))
@@ -883,26 +874,26 @@ Highlight text past column 100 in selected modes (Clojure/JSON/shell).
 
 *** emoji / unicode support 😎👍🏼🚀
 
-Disabled: global emojify caused massive performance degradation. Keep the stanza commented if you ever want to re-enable selectively.
+Global emojify with expensive modes opted out via =emojify-inhibit-major-modes=.
 
 #+BEGIN_SRC emacs-lisp
-  ;; (use-package emojify
-  ;;   :defer t
-  ;;   :init
-  ;;   (add-hook 'after-init-hook #'global-emojify-mode)
-  ;;   (add-hook 'after-init-hook #'global-emojify-mode-line-mode)
-  ;;   :config
-  ;;   (setq emojify-inhibit-major-modes
-  ;;         (cl-union emojify-inhibit-major-modes
-  ;;                   '(cider-mode
-  ;;                     cider-repl-mode
-  ;;                     cider-test-report-mode
-  ;;                     shell-script-mode
-  ;;                     sql-mode
-  ;;                     term-mode
-  ;;                     web-mode
-  ;;                     yaml-mode))
-  ;;         emojify-prog-contexts "none"))
+  (use-package emojify
+    :defer t
+    :init
+    (add-hook 'after-init-hook #'global-emojify-mode)
+    (add-hook 'after-init-hook #'global-emojify-mode-line-mode)
+    :config
+    (setq emojify-inhibit-major-modes
+          (cl-union emojify-inhibit-major-modes
+                    '(cider-mode
+                      cider-repl-mode
+                      cider-test-report-mode
+                      shell-script-mode
+                      sql-mode
+                      term-mode
+                      web-mode
+                      yaml-mode))
+          emojify-prog-contexts "none"))
 #+END_SRC
 
 *** keybind discovery
@@ -1015,7 +1006,7 @@ This section documents installed language and syntax specific packages and their
 
 *** universal
 
-Tree-sitter grammar sources. Install missing grammars on demand with =M-x cs/treesit-install-grammars= (not during every startup).
+Tree-sitter grammar sources. Missing grammars are installed automatically on startup (no-op once present).
 
 #+BEGIN_SRC emacs-lisp
   (use-package treesit
@@ -1035,18 +1026,9 @@ Tree-sitter grammar sources. Install missing grammars on demand with =M-x cs/tre
             (python     "https://github.com/tree-sitter/tree-sitter-python")
             (go         "https://github.com/tree-sitter/tree-sitter-go")
             (java       "https://github.com/tree-sitter/tree-sitter-java")))
-
-    (defvar cs/treesit-languages
-      '(javascript typescript tsx json css html regex ruby python go java)
-      "Grammars managed by `cs/treesit-install-grammars'.")
-
-    (defun cs/treesit-install-grammars ()
-      "Install any missing tree-sitter grammars from `cs/treesit-languages'."
-      (interactive)
-      (dolist (lang cs/treesit-languages)
-        (unless (treesit-language-available-p lang)
-          (message "Installing tree-sitter grammar: %s" lang)
-          (treesit-install-language-grammar lang)))))
+    (dolist (lang '(javascript typescript tsx json css html regex ruby python go java))
+      (unless (treesit-language-available-p lang)
+        (treesit-install-language-grammar lang))))
 #+END_SRC
 
 *** clojure
@@ -1154,13 +1136,11 @@ CIDER + clj-kondo + clj-refactor for Clojure/ClojureScript/.cljc editing.
 
 *** elixir
 
-Alchemist is largely unmaintained; keep syntax highlighting via =elixir-mode=. Prefer ElixirLS through =lsp-mode= if you return to Elixir work.
+Syntax via =elixir-mode=; language features via ElixirLS through =lsp-mode= (install =elixir-ls= on PATH). Alchemist was removed as unmaintained.
 
 #+BEGIN_SRC emacs-lisp
   (use-package elixir-mode
     :defer t)
-  ;; (use-package alchemist
-  ;;   :defer t)
 #+END_SRC
 
 *** emacs-lisp
@@ -2440,11 +2420,9 @@ be explicit about where to enable "electric return", as some modes have their ow
 *** report emacs total load time
 
 #+BEGIN_SRC emacs-lisp
-  ;; Restore startup GC / file-name-handler settings from early-init.el
+  ;; Restore a sane GC threshold after package load
   (setq gc-cons-threshold (* 64 1024 1024) ; 64MB while editing
         gc-cons-percentage 0.1)
-  (when (boundp 'cs--file-name-handler-alist)
-    (setq file-name-handler-alist cs--file-name-handler-alist))
 
   (let ((elapsed (float-time (time-subtract (current-time)
                                             emacs-start-time))))
