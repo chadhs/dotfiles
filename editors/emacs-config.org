@@ -20,9 +20,13 @@ If you need some help, send me some electronic mail.
 - [[#user-functions][User functions]]
 - [[#general-configuration][General configuration]]
 - [[#general-global-key-bindings][General global key bindings]]
+:END:
 
 
 ** Package management
+:PROPERTIES:
+:CUSTOM_ID: package-management
+:END:
 
 I use =use-package= for installing and managing package loading.  This section contains configuration to bootstrap =use-package=.
 
@@ -53,7 +57,25 @@ Increase the amount of data which Emacs reads from the process https://emacs-lsp
   (setq package-enable-at-startup nil)
 #+END_SRC
 
+*** Trust corporate TLS inspection
+
+Optional: if =~/.config/certs/emacs-ca-bundle.pem= exists (work Mac), trust it so HTTPS package archives work. Missing on personal machines is fine — this is a no-op then.
+
+Regenerate after corporate cert rotation (example):
+=cat /etc/ssl/cert.pem ~/.config/certs/zscaler-root-ca.pem > ~/.config/certs/emacs-ca-bundle.pem=
+
+#+BEGIN_SRC emacs-lisp
+  (let ((ca-bundle (expand-file-name "~/.config/certs/emacs-ca-bundle.pem")))
+    (when (file-readable-p ca-bundle)
+      (setq gnutls-trustfiles (list ca-bundle)
+            gnutls-verify-error t)))
+#+END_SRC
+
 *** Define package repositories
+
+Use HTTPS for all archives. On work Macs the optional CA bundle above
+covers corporate TLS inspection; on personal Macs the system trust store
+is enough.
 
 #+BEGIN_SRC emacs-lisp
   (setq package-archives
@@ -141,6 +163,9 @@ Here's where we report how long it took to load all installed packages to the Me
 
 
 ** General package configuration
+:PROPERTIES:
+:CUSTOM_ID: general-package-configuration
+:END:
 
 This section documents installed packages and their configuration.  Language and syntax specific packages are in the following section.
 
@@ -695,7 +720,37 @@ Flycheck as the primary linter UI; Flymake is available but not forced globally 
     (setq-default flycheck-check-syntax-automatically '(mode-enabled save))
     ;; disable documentation related emacs lisp checker
     (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc clojure-cider-typed))
-    (setq flycheck-mode-line-prefix "☑"))
+    (setq flycheck-mode-line-prefix "☑")
+    ;; Org 9.7+ returns propertized string line numbers from `org-lint';
+    ;; flycheck still expects a number — coerce before constructing errors.
+    (flycheck-define-generic-checker 'org-lint
+      "An Org mode syntax checker using `org-lint'."
+      :start
+      (lambda (checker callback)
+        (condition-case err
+            (let ((errors
+                   (delq nil
+                         (mapcar
+                          (lambda (e)
+                            (pcase e
+                              (`(,_n [,line ,_trust ,desc ,_checker])
+                               (flycheck-error-new-at
+                                (if (numberp line)
+                                    line
+                                  (string-to-number (format "%s" line)))
+                                nil 'info desc
+                                :checker checker))
+                              (_
+                               (flycheck-error-new-at
+                                1 nil 'warning
+                                (format "Unexpected org-lint format: %S" e)
+                                :checker checker))))
+                          (org-lint)))))
+              (funcall callback 'finished errors))
+          (error (funcall callback 'errored
+                          (error-message-string err)))))
+      :modes '(org-mode)
+      :enabled #'flycheck-org-lint-available-p))
 
   ;; (use-package flycheck-inline
   ;;   :defer t
@@ -1001,6 +1056,9 @@ Honor editorconfig files configuration for whitespace and indentation settings w
 
 
 ** Language and syntax package configuration
+:PROPERTIES:
+:CUSTOM_ID: language-and-syntax-package-configuration
+:END:
 
 This section documents installed language and syntax specific packages and their configuration.
 
@@ -1756,6 +1814,9 @@ YAML editing with trailing-whitespace cleanup on save.
 
 
 ** User functions
+:PROPERTIES:
+:CUSTOM_ID: user-functions
+:END:
 
 This section documents any custom functions and their purpose.
 
@@ -1890,6 +1951,9 @@ Explain: Electric return functionality
 
 
 ** General configuration
+:PROPERTIES:
+:CUSTOM_ID: general-configuration
+:END:
 
 This section is where all general emacs configuration lives.
 
@@ -2135,6 +2199,9 @@ N [*]filename [project] ᚠbranch (modes) Err U: line:col 29% [main]
 
 
 ** General global key bindings
+:PROPERTIES:
+:CUSTOM_ID: general-global-key-bindings
+:END:
 
 This section contains general global emacs key bindings.  Mode specific key bindings (global and mode local) are within each use-package stanza.
 
