@@ -52,7 +52,7 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 | projectile + ivy/counsel | Telescope (+ git root) |
 | envrc | direnv.vim |
 | editorconfig | Neovim built-in (`vim.g.editorconfig`) |
-| yasnippet | LuaSnip + friendly-snippets (+ Emacs snipmate dirs if present) |
+| yasnippet | LuaSnip + friendly-snippets (+ optional `stdpath('config')/snippets`) |
 | solarized + auto-dark | solarized.nvim + auto-dark-mode.nvim |
 | org-mode | nvim-orgmode (basic) |
 | deft | Telescope notes dirs |

@@ -1,5 +1,5 @@
--- Load personal + friendly snippets (Emacs yasnippet parity)
--- LuaSnip itself is owned by blink.cmp in auto-complete.lua; this only adds snippet sources.
+-- Load personal + friendly snippets (yasnippet-style parity without sharing Emacs dirs)
+-- LuaSnip itself is also pulled in by blink.cmp in auto-complete.lua; this adds snippet sources.
 return {
   {
     'rafamadriz/friendly-snippets',
@@ -14,13 +14,10 @@ return {
       if not snipmate_ok then
         return
       end
+      -- Optional Neovim-local snippets only (not ~/.emacs.d/snippets)
       local personal = vim.fn.stdpath 'config' .. '/snippets'
       if vim.fn.isdirectory(personal) == 1 then
         snipmate.lazy_load { paths = { personal } }
-      end
-      local emacs_snip = vim.fn.expand '~/.emacs.d/snippets'
-      if vim.fn.isdirectory(emacs_snip) == 1 then
-        snipmate.lazy_load { paths = { emacs_snip } }
       end
     end,
   },
@@ -35,10 +32,6 @@ return {
       local personal = vim.fn.stdpath 'config' .. '/snippets'
       if vim.fn.isdirectory(personal) == 1 then
         snipmate.lazy_load { paths = { personal } }
-      end
-      local emacs_snip = vim.fn.expand '~/.emacs.d/snippets'
-      if vim.fn.isdirectory(emacs_snip) == 1 then
-        snipmate.lazy_load { paths = { emacs_snip } }
       end
     end,
   },
