@@ -348,10 +348,12 @@ vim.keymap.set('n', '<leader>dv', function()
 end, { desc = 'Describe / help tags' })
 
 -- Comment paragraph (evil-nerd-commenter ,cp)
-vim.keymap.set('n', '<leader>cp', function()
-  vim.cmd 'normal! vip'
-  require('Comment.api').toggle.linewise(vim.fn.visualmode())
-end, { desc = 'Comment paragraph' })
+-- Use Comment.nvim's visual plug: enters visual on ip, then toggles the selection.
+vim.keymap.set('n', '<leader>cp', 'vip<Plug>(comment_toggle_linewise_visual)', {
+  remap = true,
+  silent = true,
+  desc = 'Comment paragraph',
+})
 
 -- Clear / recenter screen (Emacs ,cs)
 vim.keymap.set('n', '<leader>cs', 'zz', { desc = 'Clear / recenter screen' })
