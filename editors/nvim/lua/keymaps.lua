@@ -136,8 +136,8 @@ vim.keymap.set('n', '<leader><Right>', '<cmd>vertical resize -5<CR>', { desc = '
 vim.keymap.set('n', '<leader>cd', '<cmd>cd %:p:h<CR><cmd>pwd<CR>', { desc = "cd to current file's directory" })
 vim.keymap.set('n', '<leader>cds', '<cmd>cd ~/src<CR><cmd>pwd<CR>', { desc = 'cd to ~/src' })
 
--- Preview current file in Marked 2 (macOS only)
-vim.keymap.set('n', '<leader>m', function()
+-- Preview current file in Marked 2 (macOS only) — Emacs markdown ,Mp
+vim.keymap.set('n', '<leader>Mp', function()
   if vim.fn.has 'mac' == 0 and vim.fn.has 'macunix' == 0 then
     vim.notify('Marked 2 preview is only available on macOS', vim.log.levels.WARN)
     return
@@ -145,6 +145,15 @@ vim.keymap.set('n', '<leader>m', function()
   local path = vim.fn.expand '%:p'
   vim.fn.jobstart({ 'open', '-a', 'Marked 2.app', path }, { detach = true })
 end, { desc = 'Preview in Marked 2' })
+-- Keep old ,m alias for vimrc muscle memory
+vim.keymap.set('n', '<leader>m', function()
+  if vim.fn.has 'mac' == 0 and vim.fn.has 'macunix' == 0 then
+    vim.notify('Marked 2 preview is only available on macOS', vim.log.levels.WARN)
+    return
+  end
+  local path = vim.fn.expand '%:p'
+  vim.fn.jobstart({ 'open', '-a', 'Marked 2.app', path }, { detach = true })
+end, { desc = 'Preview in Marked 2 (alias)' })
 
 -- Wrap-aware motion
 vim.keymap.set({ 'n', 'x' }, 'j', 'gj', { desc = 'Down (display line)' })
@@ -222,6 +231,133 @@ end, { desc = 'Close buffer without closing split' })
 
 -- Make :bd use Bclose (keeps the split layout)
 vim.cmd [[cnoreabbrev <expr> bd (getcmdtype() ==# ':' && getcmdline() ==# 'bd') ? 'Bclose' : 'bd']]
+
+------------
+-- EMACS PARITY KEYBINDS
+-- Matching evil-leader maps from editors/emacs-config.org
+------------
+
+-- (k)ill (b)uffer without destroying the split
+vim.keymap.set('n', '<leader>kb', '<cmd>Bclose<CR>', { desc = 'Kill buffer (keep split)' })
+
+-- (d)elete trailing (w)hitespace
+vim.keymap.set('n', '<leader>dw', function()
+  local view = vim.fn.winsaveview()
+  vim.cmd [[keeppatterns %s/\s\+$//e]]
+  vim.fn.winrestview(view)
+end, { desc = 'Delete trailing whitespace' })
+
+-- (l)ine (t)runcate toggle (Emacs truncate-lines ↔ wrap)
+vim.keymap.set('n', '<leader>lt', '<cmd>setlocal wrap!<CR>', { desc = 'Toggle line wrap/truncate' })
+
+-- (k)ill-(r)ing / yank history
+vim.keymap.set('n', '<leader>kr', function()
+  require('telescope.builtin').registers()
+end, { desc = 'Yank / register history' })
+
+-- Bookmarks (Emacs bookmark-* )
+vim.keymap.set('n', '<leader>ml', function()
+  require('telescope.builtin').marks()
+end, { desc = 'Bookmark jump (list)' })
+vim.keymap.set('n', '<leader>mj', function()
+  require('telescope.builtin').marks()
+end, { desc = 'Bookmark jump' })
+vim.keymap.set('n', '<leader>ms', function()
+  vim.ui.input({ prompt = 'Mark name: ' }, function(name)
+    if name and name ~= '' then
+      vim.cmd('mark ' .. name)
+    end
+  end)
+end, { desc = 'Bookmark set' })
+vim.keymap.set('n', '<leader>md', function()
+  vim.ui.input({ prompt = 'Delete mark: ' }, function(name)
+    if name and name ~= '' then
+      vim.cmd('delmarks ' .. name)
+    end
+  end)
+end, { desc = 'Bookmark delete' })
+
+-- (P)ackage (l)ist → Lazy
+vim.keymap.set('n', '<leader>Pl', '<cmd>Lazy<CR>', { desc = 'Package list (Lazy)' })
+vim.keymap.set('n', '<leader>Pu', '<cmd>Lazy sync<CR>', { desc = 'Package update (Lazy sync)' })
+vim.keymap.set('n', '<leader>Pi', '<cmd>Lazy install<CR>', { desc = 'Package install' })
+
+-- Flycheck-shaped diagnostic maps
+vim.keymap.set('n', '<leader>fcn', function()
+  vim.diagnostic.jump { count = 1, float = true }
+end, { desc = 'Diagnostic next' })
+vim.keymap.set('n', '<leader>fcp', function()
+  vim.diagnostic.jump { count = -1, float = true }
+end, { desc = 'Diagnostic previous' })
+vim.keymap.set('n', '<leader>fcl', vim.diagnostic.setloclist, { desc = 'Diagnostic list' })
+vim.keymap.set('n', '<leader>fcb', function()
+  vim.diagnostic.reset()
+  if package.loaded['lint'] then
+    require('lint').try_lint()
+  end
+  vim.cmd 'edit' -- nudge LSP refresh
+  vim.notify('Diagnostics refreshed', vim.log.levels.INFO)
+end, { desc = 'Diagnostic refresh buffer' })
+
+-- Deft-shaped notes roots
+local function notes_telescope(subdir)
+  local root = vim.fn.expand('~/notes/' .. subdir)
+  if vim.fn.isdirectory(root) == 0 then
+    vim.notify('Notes dir missing: ' .. root, vim.log.levels.WARN)
+    return
+  end
+  require('telescope.builtin').find_files { cwd = root, prompt_title = 'Notes: ' .. subdir }
+end
+vim.keymap.set('n', '<leader>nc', function()
+  notes_telescope 'common'
+end, { desc = 'Notes: common' })
+vim.keymap.set('n', '<leader>np', function()
+  notes_telescope 'personal'
+end, { desc = 'Notes: personal' })
+vim.keymap.set('n', '<leader>nw', function()
+  notes_telescope 'work'
+end, { desc = 'Notes: work' })
+vim.keymap.set('n', '<leader>nf', function()
+  local roots = {
+    vim.fn.expand '~/notes/common',
+    vim.fn.expand '~/notes/personal',
+    vim.fn.expand '~/notes/work',
+  }
+  require('telescope.builtin').find_files {
+    search_dirs = roots,
+    prompt_title = 'Notes: all',
+  }
+end, { desc = 'Notes: find file' })
+
+-- (d)ash (d)oc — macOS Dash.app
+vim.keymap.set('n', '<leader>dd', function()
+  if vim.fn.has 'mac' == 0 and vim.fn.has 'macunix' == 0 then
+    vim.notify('Dash is only available on macOS', vim.log.levels.WARN)
+    return
+  end
+  local word = vim.fn.expand '<cword>'
+  if word == '' then
+    return
+  end
+  vim.fn.jobstart({ 'open', 'dash://' .. word }, { detach = true })
+end, { desc = 'Dash documentation' })
+
+-- (d)escribe (v)ariable — Lua/help stand-in for Emacs describe-variable
+vim.keymap.set('n', '<leader>dv', function()
+  require('telescope.builtin').help_tags()
+end, { desc = 'Describe / help tags' })
+
+-- Comment paragraph (evil-nerd-commenter ,cp)
+vim.keymap.set('n', '<leader>cp', function()
+  vim.cmd 'normal! vip'
+  require('Comment.api').toggle.linewise(vim.fn.visualmode())
+end, { desc = 'Comment paragraph' })
+
+-- Clear / recenter screen (Emacs ,cs)
+vim.keymap.set('n', '<leader>cs', 'zz', { desc = 'Clear / recenter screen' })
+
+-- EditorConfig is built into Neovim 0.9+; ensure enabled
+vim.g.editorconfig = true
 
 -- Netrw: make ^ behave like 'u' (parent directory)
 -- Some setups see netrw re-apply its own mappings after FileType runs.
