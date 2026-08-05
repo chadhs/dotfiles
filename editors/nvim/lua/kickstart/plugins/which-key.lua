@@ -57,13 +57,24 @@ return {
         },
       },
 
-      -- Document existing key chains
+      -- Document existing key chains (Emacs evil-leader flavored)
       spec = {
-        { '<leader>s', group = '[S]earch' },
+        { '<leader>s', group = '[S]earch / [S]ource' },
         { '<leader>w', group = '[W]indow / write' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
-        { '<leader>n', group = '[N]umbers / neo-tree' },
-        { '<leader>c', group = '[C]omment / cd' },
+        { '<leader>n', group = '[N]otes / [N]umbers / neo-tree' },
+        { '<leader>c', group = '[C]omment / cd / clear' },
+        { '<leader>g', group = '[G]it / [G]rep' },
+        { '<leader>f', group = '[F]ind / [F]lycheck / [F]ormat' },
+        { '<leader>j', group = '[J]ump' },
+        { '<leader>P', group = '[P]ackages (Lazy)' },
+        { '<leader>d', group = '[D]ocs / [D]elete ws' },
+        { '<leader>k', group = '[K]ill buffer / yank' },
+        { '<leader>m', group = '[M]arks / Marked' },
+        { '<leader>si', group = '[S]tring [I]nflection' },
+        { '<leader>o', group = '[O]rg mode' },
+        { '<leader>F', group = '[F]ind file / dired' },
+        { '<leader>l', group = '[L]ine wrap' },
       },
     },
   },

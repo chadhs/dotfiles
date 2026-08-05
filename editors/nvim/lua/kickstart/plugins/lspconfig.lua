@@ -92,6 +92,10 @@ return {
           --  To jump back, press <C-t>.
           map('grd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
 
+          -- Emacs lsp-mode evil-leader maps
+          map('<leader>jd', require('telescope.builtin').lsp_definitions, '[J]ump to [D]efinition')
+          map('<leader>fu', require('telescope.builtin').lsp_references, '[F]ind [U]sages')
+
           -- WARN: This is not Goto Definition, this is Goto Declaration.
           --  For example, in C this would take you to the header.
           map('grD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
@@ -208,32 +212,25 @@ return {
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        -- clangd = {},
-        -- gopls = {},
-        -- pyright = {},
-        -- rust_analyzer = {},
-        -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
-        --
-        -- Some languages (like typescript) have entire language plugins that can be useful:
-        --    https://github.com/pmizio/typescript-tools.nvim
-        --
-        -- But for many setups, the LSP (`ts_ls`) will work just fine
-
-        -- Auto-configure LSP servers based on treesitter languages
-        clangd = {},           -- C/C++
-        gopls = {},            -- Go
-        pyright = {},          -- Python
-        rust_analyzer = {},    -- Rust
-        ts_ls = {},            -- TypeScript/JavaScript
-
-        -- Additional language servers
-        bashls = {},           -- Bash
-        html = {},             -- HTML
-        cssls = {},            -- CSS
-        jsonls = {},           -- JSON
-        yamlls = {},          -- YAML
-        dockerls = {},        -- Docker
-        eslint = {},           -- ESLint (JavaScript/TypeScript linting)
+        -- Languages covered in Emacs lsp-mode / language sections
+        clangd = {}, -- C/C++
+        gopls = {}, -- Go
+        pyright = {}, -- Python (Emacs still has elpy; pyright is the nvim path)
+        rust_analyzer = {}, -- Rust
+        ts_ls = {}, -- TypeScript/JavaScript
+        bashls = {}, -- Bash / shell
+        html = {}, -- HTML / templates
+        cssls = {}, -- CSS
+        jsonls = {}, -- JSON
+        yamlls = {}, -- YAML
+        dockerls = {}, -- Dockerfile
+        eslint = {}, -- ESLint
+        ruby_lsp = {}, -- Ruby (Emacs solargraph; ruby_lsp is the modern default)
+        clojure_lsp = {}, -- Clojure
+        jdtls = {}, -- Java (Emacs lsp-java)
+        elixirls = {}, -- Elixir
+        terraformls = {}, -- Terraform
+        graphql = {}, -- GraphQL
 
         lua_ls = {
           settings = {
@@ -241,8 +238,6 @@ return {
               completion = {
                 callSnippet = 'Replace',
               },
-              -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-              -- diagnostics = { disable = { 'missing-fields' } },
             },
           },
         },
@@ -263,14 +258,17 @@ return {
       -- for you, so that they are available from within Neovim.
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
-        'stylua', -- Used to format Lua code
-        'typescript-language-server', -- Required for ts_ls (TypeScript/JavaScript)
-        -- Additional tools that complement the LSP servers
-        'prettier', -- JavaScript/TypeScript/HTML/CSS formatter
-        'black', -- Python formatter
-        'isort', -- Python import sorter
-        'shellcheck', -- Shell script linter
-        'eslint_d', -- Faster ESLint daemon
+        'stylua',
+        'typescript-language-server',
+        'prettier',
+        'prettierd',
+        'black',
+        'isort',
+        'shellcheck',
+        'eslint_d',
+        'goimports',
+        'rubocop',
+        'clj-kondo',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
