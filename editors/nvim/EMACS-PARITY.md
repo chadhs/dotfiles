@@ -77,6 +77,17 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 - **CIDER** test runners / clj-refactor — Conjure covers eval/doc; jack-in UX differs
 - **lsp-java** project import polish — `jdtls` via Mason is the stand-in
 
+## Optional trims (if you want a thinner config)
+
+Everything below works and is tested; pull out only if you prefer less surface area:
+
+| Piece | Why you might drop it |
+| --- | --- |
+| `orgmode` | Emacs remains the better Org daily driver; nvim-orgmode is basic |
+| `kulala` | Only needed if you edit `.http` restclient files in nvim |
+| `jdtls` / `elixirls` Mason servers | Heavy first-time installs if you rarely touch Java/Elixir in nvim |
+| `text-case` (`,si*`) | Convenience; not needed for core edit/LSP/git flow |
+
 ## Quick verification
 
 ```sh
