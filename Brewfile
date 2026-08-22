@@ -20,6 +20,7 @@ brew "pwgen"
 brew "python"
 brew "readline"
 brew "rlwrap"
+brew "ripgrep" # Telescope live_grep (`,gf`)
 brew "ruby"
 brew "shellcheck"
 brew "the_silver_searcher"

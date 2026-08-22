@@ -160,9 +160,9 @@ return {
           --
           -- This may be unwanted, since they displace some of your code
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
-            map('<leader>th', function()
+            map('<leader>ih', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-            end, '[T]oggle Inlay [H]ints')
+            end, '[I]nlay [H]ints toggle')
           end
         end,
       })
@@ -260,13 +260,11 @@ return {
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua',
-        'typescript-language-server',
         'prettier',
         'prettierd',
         'black',
         'isort',
         'shellcheck',
-        'eslint_d',
         'goimports',
         'rubocop',
         'clj-kondo',

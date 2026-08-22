@@ -44,7 +44,6 @@ require('lazy').setup({
   require 'kickstart.plugins.treesitter',
 
   require 'custom.plugins.solarized',
-  require 'custom.plugins.comment',
   require 'custom.plugins.auto-complete',
   require 'custom.plugins.navigation',
   require 'custom.plugins.paredit',

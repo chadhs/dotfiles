@@ -19,8 +19,8 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 | `,nn` toggle line numbers | same | |
 | `,wc` / `,wm` window close/main | same | |
 | `,jl` avy line | EasyMotion `,jl` | also `,jw` / `,jc` |
-| `,cl` comment lines | Comment.nvim | |
-| `,m` Marked preview | same (macOS) | |
+| `,cl` comment lines | built-in `gcc`/`gc` | also `,cb` / `,cp` |
+| `,Mp` Marked preview | same (macOS) | bookmarks stay on `,ml` / `,ms` / `,md` |
 | `,ev` / `,sv` | edit / reload nvim options+keymaps | Emacs uses `,ee` / `,se` for emacs |
 | `,jd` lsp definition | same | also kickstart `grd` |
 | `,fu` lsp references | same | also kickstart `grr` |
@@ -65,7 +65,7 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 
 ### Linters (nvim-lint)
 
-`eslint_d` (js/ts), `clj-kondo`, `shellcheck`, `cfn_lint`, `rubocop` — tools installed via Mason where available; `cfn-lint` / `clj-kondo` also come from the Brewfile on macOS.
+`clj-kondo`, `shellcheck`, `cfn_lint`, `rubocop` — tools installed via Mason where available; `cfn-lint` / `clj-kondo` also come from the Brewfile on macOS. JS/TS diagnostics come from the eslint LSP (not nvim-lint).
 
 ## Known gaps (intentionally thinner)
 
