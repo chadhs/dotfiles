@@ -10,8 +10,8 @@ return {
         return vim.fn.executable(name) == 1
       end
 
-      -- Clear noisy defaults; opt into Emacs-parity linters when present on PATH
-      -- (Mason may install eslint_d/shellcheck/etc. later under stdpath data).
+      -- Clear noisy defaults; opt into Emacs-parity linters when present on PATH.
+      -- JS/TS linting is the eslint LSP (not nvim-lint) to avoid duplicate diagnostics.
       local function mason_bin(name)
         return vim.fn.stdpath 'data' .. '/mason/bin/' .. name
       end
@@ -24,13 +24,6 @@ return {
       if available 'clj-kondo' then
         lint.linters_by_ft.clojure = { 'clj-kondo' }
         lint.linters_by_ft.clojurescript = { 'clj-kondo' }
-      end
-      if available 'eslint_d' or available 'eslint' then
-        local eslint = available 'eslint_d' and 'eslint_d' or 'eslint'
-        lint.linters_by_ft.javascript = { eslint }
-        lint.linters_by_ft.javascriptreact = { eslint }
-        lint.linters_by_ft.typescript = { eslint }
-        lint.linters_by_ft.typescriptreact = { eslint }
       end
       if available 'shellcheck' then
         lint.linters_by_ft.sh = { 'shellcheck' }

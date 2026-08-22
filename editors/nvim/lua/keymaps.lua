@@ -5,8 +5,7 @@
 --  See `:help hlsearch`
 -- vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
--- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+-- Diagnostic keymaps live under ,fc* (Emacs flycheck parity) so ,qq can quit immediately.
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -134,7 +133,7 @@ vim.keymap.set('n', '<leader><Right>', '<cmd>vertical resize -5<CR>', { desc = '
 
 -- cwd helpers
 vim.keymap.set('n', '<leader>cd', '<cmd>cd %:p:h<CR><cmd>pwd<CR>', { desc = "cd to current file's directory" })
-vim.keymap.set('n', '<leader>cds', '<cmd>cd ~/src<CR><cmd>pwd<CR>', { desc = 'cd to ~/src' })
+vim.keymap.set('n', '<leader>cS', '<cmd>cd ~/src<CR><cmd>pwd<CR>', { desc = 'cd to ~/src' })
 
 -- Preview current file in Marked 2 (macOS only) — Emacs markdown ,Mp
 vim.keymap.set('n', '<leader>Mp', function()
@@ -145,15 +144,6 @@ vim.keymap.set('n', '<leader>Mp', function()
   local path = vim.fn.expand '%:p'
   vim.fn.jobstart({ 'open', '-a', 'Marked 2.app', path }, { detach = true })
 end, { desc = 'Preview in Marked 2' })
--- Keep old ,m alias for vimrc muscle memory
-vim.keymap.set('n', '<leader>m', function()
-  if vim.fn.has 'mac' == 0 and vim.fn.has 'macunix' == 0 then
-    vim.notify('Marked 2 preview is only available on macOS', vim.log.levels.WARN)
-    return
-  end
-  local path = vim.fn.expand '%:p'
-  vim.fn.jobstart({ 'open', '-a', 'Marked 2.app', path }, { detach = true })
-end, { desc = 'Preview in Marked 2 (alias)' })
 
 -- Wrap-aware motion
 vim.keymap.set({ 'n', 'x' }, 'j', 'gj', { desc = 'Down (display line)' })
@@ -347,9 +337,13 @@ vim.keymap.set('n', '<leader>dv', function()
   require('telescope.builtin').help_tags()
 end, { desc = 'Describe / help tags' })
 
--- Comment paragraph (evil-nerd-commenter ,cp)
--- Use Comment.nvim's visual plug: enters visual on ip, then toggles the selection.
-vim.keymap.set('n', '<leader>cp', 'vip<Plug>(comment_toggle_linewise_visual)', {
+-- Comment line / selection / paragraph (evil-nerd-commenter ,cl / ,cb / ,cp)
+-- Neovim 0.10+ built-in commenting (`gcc` / `gc` / `gb`); Comment.nvim is archived.
+vim.keymap.set('n', '<leader>cl', 'gcc', { remap = true, silent = true, desc = 'Comment line' })
+vim.keymap.set('x', '<leader>cl', 'gc', { remap = true, silent = true, desc = 'Comment selection' })
+vim.keymap.set('n', '<leader>cb', 'gbc', { remap = true, silent = true, desc = 'Comment block' })
+vim.keymap.set('x', '<leader>cb', 'gb', { remap = true, silent = true, desc = 'Comment block' })
+vim.keymap.set('n', '<leader>cp', 'vipgc', {
   remap = true,
   silent = true,
   desc = 'Comment paragraph',

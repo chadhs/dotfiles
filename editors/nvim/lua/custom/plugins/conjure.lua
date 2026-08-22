@@ -7,6 +7,8 @@ return {
     init = function()
       -- Keep Conjure on localleader (`,`) like Emacs CIDER leader maps
       vim.g['conjure#mapping#prefix'] = ','
+      -- Only the CIDER-shaped aliases below; defaults would collide with leader maps.
+      vim.g['conjure#mapping#enable_defaults'] = false
       -- Prefer HUD + log without stealing focus on connect
       vim.g['conjure#log#hud#enabled'] = true
       vim.g['conjure#log#wrap'] = true
