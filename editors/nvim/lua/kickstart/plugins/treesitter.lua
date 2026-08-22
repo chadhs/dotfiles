@@ -4,10 +4,20 @@ return {
     -- main is required on Neovim 0.12+; master is frozen and crashes on markdown injections
     branch = 'main',
     lazy = false,
-    build = ':TSUpdate',
+    -- Do not use build = ':TSUpdate'. That command is the old master installer and
+    -- clones parsers into stdpath('data') (the gitignore mv error on :Lazy update).
     config = function()
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter-intro`
       -- Highlighting/folds/indent are Neovim builtins; this plugin only installs parsers + queries.
+      local ts = require 'nvim-treesitter'
+      if type(ts.install) ~= 'function' then
+        vim.notify(
+          'nvim-treesitter is still on the old master API. In :Lazy, press x on nvim-treesitter, then S to reinstall from main, and restart.',
+          vim.log.levels.ERROR
+        )
+        return
+      end
+
       local parsers = {
         'bash',
         'c',
@@ -39,7 +49,11 @@ return {
         'vimdoc',
         'yaml',
       }
-      require('nvim-treesitter').install(parsers)
+      local wanted = {}
+      for _, lang in ipairs(parsers) do
+        wanted[lang] = true
+      end
+      ts.install(parsers)
 
       -- Ruby indent is still more reliable with vim's regex indent (same as the old master config).
       local disable_indent = { ruby = true }
@@ -70,15 +84,15 @@ return {
             return
           end
 
-          local installed_ok, installed = pcall(require('nvim-treesitter').get_installed, 'parsers')
+          local installed_ok, installed = pcall(ts.get_installed, 'parsers')
           if installed_ok and vim.tbl_contains(installed, language) then
             treesitter_try_attach(buf, language)
             return
           end
 
-          local available = require('nvim-treesitter').get_available()
-          if vim.tbl_contains(available, language) then
-            require('nvim-treesitter').install(language):await(function()
+          -- Only fetch parsers we opted into (not every filetype, e.g. gitignore).
+          if wanted[language] then
+            ts.install(language):await(function()
               treesitter_try_attach(buf, language)
             end)
           else
