@@ -46,6 +46,7 @@ require('lazy').setup({
   require 'custom.plugins.solarized',
   require 'custom.plugins.auto-complete',
   require 'custom.plugins.navigation',
+  require 'custom.plugins.subword',
   require 'custom.plugins.paredit',
   require 'custom.plugins.undotree',
   require 'custom.plugins.easymotion',

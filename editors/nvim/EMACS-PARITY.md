@@ -58,6 +58,7 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 | deft | Telescope notes dirs |
 | magit + diff-hl | Neogit + gitsigns |
 | paredit / rainbow | nvim-paredit + rainbow-delimiters |
+| `global-subword-mode` | nvim-spider (`w`/`e`/`b`/`ge`; `W`/`E`/`B` stay WORDs) |
 
 ### LSP servers enabled
 
