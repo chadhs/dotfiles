@@ -14,6 +14,7 @@ brew "git"
 brew "nmap"
 brew "node@22"
 brew "nvim"
+brew "tree-sitter-cli" # nvim-treesitter `main` (Neovim 0.12+) needs the CLI to install parsers
 brew "nvm"
 brew "pwgen"
 brew "python"
