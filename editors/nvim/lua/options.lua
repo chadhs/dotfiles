@@ -106,3 +106,17 @@ vim.opt.foldmethod = 'expr'
 vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 vim.opt.foldenable = false
 vim.opt.foldopen = { 'block', 'insert', 'jump', 'mark', 'percent', 'quickfix', 'search', 'tag', 'undo' }
+
+-- Neovide GUI settings. Terminal Neovim keeps the options above unchanged.
+if vim.g.neovide then
+  vim.o.guifont = 'Menlo:h14'
+  vim.o.mouse = 'a'
+
+  vim.g.neovide_remember_window_size = true
+  vim.g.neovide_proxy_icon = true
+  vim.g.neovide_input_macos_option_key_is_meta = 'only_left'
+
+  -- Keep motion restrained, closer to the Emacs GUI than Neovide's defaults.
+  vim.g.neovide_cursor_animation_length = 0
+  vim.g.neovide_scroll_animation_length = 0.12
+end
