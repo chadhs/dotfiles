@@ -32,7 +32,7 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 | `,lt` truncate-lines toggle | `wrap!` | |
 | `,kb` kill buffer | `Bclose` | keeps split |
 | `,kr` kill-ring / yank history | Telescope `registers` | |
-| `,ml` / `,ms` / `,md` bookmarks | Telescope marks + `:mark` / `:delmarks` | |
+| `,ml` / `,ms` / `,md` bookmarks | named persistent bookmarks (`custom.bookmarks`) | `,mj` also jumps; stored in `stdpath('data')/bookmarks.json`; files open at position, dirs open netrw (`hijack_netrw_behavior = disabled`); native vim marks untouched |
 | `,Pl` package list | `:Lazy` | |
 | `,nc` / `,np` / `,nw` deft notes | Telescope in `~/notes/{common,personal,work}` | |
 | `,fb` format buffer | Conform | was bare `,f` in stock Kickstart |

@@ -245,26 +245,20 @@ vim.keymap.set('n', '<leader>kr', function()
   require('telescope.builtin').registers()
 end, { desc = 'Yank / register history' })
 
--- Bookmarks (Emacs bookmark-* )
+-- Bookmarks (Emacs bookmark-set / bookmark-jump / bookmark-delete parity).
+-- Named, persistent bookmarks via custom.bookmarks; vim's native marks
+-- (m a, ' a) are untouched and still work out of the box.
+vim.keymap.set('n', '<leader>ms', function()
+  require('custom.bookmarks').prompt_set()
+end, { desc = 'Bookmark set' })
 vim.keymap.set('n', '<leader>ml', function()
-  require('telescope.builtin').marks()
+  require('custom.bookmarks').list()
 end, { desc = 'Bookmark jump (list)' })
 vim.keymap.set('n', '<leader>mj', function()
-  require('telescope.builtin').marks()
+  require('custom.bookmarks').list()
 end, { desc = 'Bookmark jump' })
-vim.keymap.set('n', '<leader>ms', function()
-  vim.ui.input({ prompt = 'Mark name: ' }, function(name)
-    if name and name ~= '' then
-      vim.cmd('mark ' .. name)
-    end
-  end)
-end, { desc = 'Bookmark set' })
 vim.keymap.set('n', '<leader>md', function()
-  vim.ui.input({ prompt = 'Delete mark: ' }, function(name)
-    if name and name ~= '' then
-      vim.cmd('delmarks ' .. name)
-    end
-  end)
+  require('custom.bookmarks').list { delete = true }
 end, { desc = 'Bookmark delete' })
 
 -- (P)ackage (l)ist → Lazy
