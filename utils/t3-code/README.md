@@ -14,37 +14,48 @@ picking it once covers both appearances.
 3. Select **Solarized** as your theme. It'll follow your OS/app appearance
    mode automatically.
 
+Re-import the same file after you change it; T3 Code treats a matching `id`
+as an update.
+
 ## How it's built
 
-T3 Code themes are JSON files mapping ~57 UI roles (canvas, sidebar, toolbar,
-status colors, terminal, etc. — see `packages/shared/src/themePalettes.ts` in
-the T3 Code repo) to CSS colors, with an optional `variants.dark` block for
-the other appearance.
+T3 Code themes map ~57 UI roles (canvas, sidebar, toolbar, status colors,
+terminal, etc.) to CSS colors, with an optional `variants.dark` block for
+the other appearance. The role list lives in
+`apps/web/src/themePalette.ts` (`THEME_COLOR_ROLES`) in the T3 Code repo.
 
-Solarized only defines 16 swatches (8 monotones + 8 accents), far fewer than
-the role list, so `generate_solarized_theme.py` derives the rest, following
-[Schoonover's own reading pairs](https://ethanschoonover.com/solarized/)
+Solarized only defines 16 swatches (8 monotones + 8 accents). Roles here
+follow [Schoonover's own reading pairs](https://ethanschoonover.com/solarized/)
 rather than inventing a new hierarchy:
 
-- **Text pairing**: Solarized tunes two foreground/background pairs per mode
-  to carry identical contrast — `base3:base00` (light) / `base03:base0`
-  (dark) for text on the plain canvas, and `base2:base01` (light) /
-  `base02:base1` (dark) for text on a highlighted surface (sidebar, code
-  blocks, secondary buttons). Each role here uses whichever pair matches the
-  surface it actually renders on.
-- **Muted text** (`textMuted`, `placeholder`, `iconMuted`, etc.) uses
-  Solarized's own third tier, "comments / secondary content" — `base1`
-  (light) / `base01` (dark) — exactly as documented. That's genuinely low
-  contrast (~2.5:1), by design: it's meant to visually recede the way code
-  comments do. This theme reproduces that rather than boosting it for WCAG AA.
+- **Text pairing**: two foreground/background pairs per mode carry the same
+  contrast — `base3:base00` (light) / `base03:base0` (dark) for text on the
+  plain canvas, and `base2:base01` (light) / `base02:base1` (dark) for text
+  on a highlighted surface (sidebar, code blocks, secondary buttons). Each
+  role uses whichever pair matches the surface it actually renders on.
+- **Muted text** (`textMuted`, `placeholder`, `iconMuted`,
+  `mutedForeground`, `sidebarMutedForeground`): Solarized's comment tier
+  (`base1` light / `base01` dark) is ~2.5:1 by design and nearly disappears
+  on these surfaces. Placeholders, timestamps, and sidebar counts need to
+  stay readable, so that tier is nudged toward black/white to a ~3.6:1
+  floor (still short of WCAG AA 4.5:1). The committed hexes are
+  `#7a8282` / `#717979` (light, canvas vs highlighted) and `#727f86` /
+  `#7c8990` (dark). Body text on canvas lands around 4.1:1 light / 4.8:1
+  dark — Solarized's own designed contrast, not AA.
 - **Derived surfaces** (raised panels, hover/active/selected rows, status
   backgrounds): mixed between adjacent Solarized tones and the accent hue
-  rather than invented from scratch, so they stay visually part of the
-  palette.
+  so they stay visually part of the palette. Sidebar hover/active stays
+  subtle on purpose; a wider contrast spread read heavier than Solarized.
 - **Accents**: blue (`#268bd2`) for focus/accent/links, red (`#dc322f`) for
   errors, orange (`#cb4b16`) for warnings, violet (`#6c71c4`) for the
-  "update available" indicator — all straight from Solarized's accent set.
+  "update available" indicator.
 
-Re-run `python3 generate_solarized_theme.py` after changing a design
-decision in the script; it asserts the full 57-role list is covered and
-prints the resulting contrast ratios for the key text pairs.
+## Updating the theme
+
+Edit hex values in `solarized-theme.json` directly. Keep every role in both
+`colors` and `variants.dark` — T3 Code fills omitted keys from its default
+pink/purple palette, which will look wrong next to Solarized.
+
+If T3 Code adds roles, copy the new names from `THEME_COLOR_ROLES` and pick
+the nearest existing pair (canvas vs highlighted surface, or the matching
+status accent).
