@@ -90,11 +90,18 @@ return {
       -- Old CtrlP/Ack muscle memory on `,` leader
       ------------
       vim.keymap.set('n', '<leader>Ff', builtin.find_files, { desc = 'Find files (all)' })
-      -- Prefer git_files in a repo (faster / respects .gitignore); fall back outside git
+      -- Prefer git_files in a repo (always rooted at the repo toplevel, even from a
+      -- subdirectory; see telescope's set_opts_cwd). Outside a repo, fall back to
+      -- find_files scoped to the current buffer's directory and its children, rather
+      -- than nvim's launch directory, which could be much broader.
       vim.keymap.set('n', '<leader>t', function()
         local ok = pcall(builtin.git_files)
         if not ok then
-          builtin.find_files()
+          local dir = vim.fn.expand '%:p:h'
+          if dir == '' or vim.fn.isdirectory(dir) == 0 then
+            dir = vim.loop.cwd()
+          end
+          builtin.find_files { cwd = dir }
         end
       end, { desc = 'Find project files (CtrlP)' })
       vim.keymap.set('n', '<leader>b', builtin.buffers, { desc = 'Find buffers (CtrlPBuffer)' })

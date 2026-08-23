@@ -17,6 +17,9 @@ return {
   },
   opts = {
     filesystem = {
+      -- Keep netrw as the default directory view (Emacs dired parity, `,Fd`);
+      -- neo-tree stays available on demand via `,nt`.
+      hijack_netrw_behavior = 'disabled',
       window = {
         position = 'left',
         mappings = {
