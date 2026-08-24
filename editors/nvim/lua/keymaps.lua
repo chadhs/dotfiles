@@ -145,9 +145,12 @@ vim.keymap.set('n', '<leader>Mp', function()
   vim.fn.jobstart({ 'open', '-a', 'Marked 2.app', path }, { detach = true })
 end, { desc = 'Preview in Marked 2' })
 
--- Wrap-aware motion
-vim.keymap.set({ 'n', 'x' }, 'j', 'gj', { desc = 'Down (display line)' })
-vim.keymap.set({ 'n', 'x' }, 'k', 'gk', { desc = 'Up (display line)' })
+-- Display-line motion (Emacs visual-line-mode / evil-next-visual-line).
+-- gj/gk walk screen lines, so j/k move through wraps instead of skipping them.
+vim.keymap.set({ 'n', 'x', 'o' }, 'j', 'gj', { silent = true, desc = 'Down (display line)' })
+vim.keymap.set({ 'n', 'x', 'o' }, 'k', 'gk', { silent = true, desc = 'Up (display line)' })
+vim.keymap.set({ 'n', 'x', 'o' }, '<Down>', 'gj', { silent = true, desc = 'Down (display line)' })
+vim.keymap.set({ 'n', 'x', 'o' }, '<Up>', 'gk', { silent = true, desc = 'Up (display line)' })
 
 -- Fold toggle (matches old vim <space> za)
 vim.keymap.set('n', '<Space>', function()

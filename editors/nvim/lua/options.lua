@@ -26,6 +26,11 @@ end)
 -- Enable break indent
 vim.o.breakindent = true
 
+-- Soft-wrap at word boundaries (Emacs visual-line-mode + word-wrap).
+-- j/k are mapped to gj/gk so they move by these display lines.
+vim.o.wrap = true
+vim.o.linebreak = true
+
 -- Save undo history
 vim.o.undofile = true
 
