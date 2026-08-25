@@ -1,0 +1,21 @@
+#!/bin/zsh
+
+set -eo pipefail
+
+for chruby_root in /opt/homebrew/opt/chruby /usr/local/opt/chruby; do
+  if [[ -r "$chruby_root/share/chruby/chruby.sh" ]]; then
+    source "$chruby_root/share/chruby/chruby.sh"
+    source "$chruby_root/share/chruby/auto.sh"
+    chruby_auto
+    break
+  fi
+done
+
+set -u
+
+if [[ -z "${RUBY_ROOT:-}" ]]; then
+  print -u2 "project-ruby-exec: no Ruby selected; add .ruby-version or configure chruby"
+  exit 78
+fi
+
+exec "$@"

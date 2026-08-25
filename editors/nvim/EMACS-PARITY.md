@@ -47,7 +47,7 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 | --- | --- |
 | lsp-mode + company | mason + lspconfig + blink.cmp |
 | flycheck | nvim-lint + vim.diagnostic |
-| prettier / eslint / black / rubocop / goimports | Conform + eslint LSP + mason tools |
+| prettier / eslint / black / project-aware StandardRB or RuboCop / goimports | Conform + eslint LSP + mason tools |
 | CIDER | Conjure |
 | projectile + ivy/counsel | Telescope (`custom.root`: lcd to buffer/netrw dir; `,t` / `,gf` use git project) |
 | envrc | direnv.vim |
@@ -62,11 +62,21 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 
 ### LSP servers enabled
 
-`clangd`, `gopls`, `pyright`, `rust_analyzer`, `ts_ls`, `bashls`, `html`, `cssls`, `jsonls`, `yamlls`, `dockerls`, `eslint`, `lua_ls`, `ruby_lsp`, `clojure_lsp`, `jdtls`, `elixirls`, `terraformls`, `graphql`
+`clangd`, `gopls`, `pyright`, `rust_analyzer`, `ts_ls`, `bashls`, `html`, `cssls`, `jsonls`, `yamlls`, `dockerls`, `eslint`, `lua_ls`, project-aware `solargraph` / `ruby_lsp`, `clojure_lsp`, `jdtls`, `elixirls`, `terraformls`, `graphql`
 
 ### Linters (nvim-lint)
 
-`clj-kondo`, `shellcheck`, `cfn_lint`, `rubocop` — tools installed via Mason where available; `cfn-lint` / `clj-kondo` also come from the Brewfile on macOS. JS/TS diagnostics come from the eslint LSP (not nvim-lint).
+`clj-kondo`, `shellcheck`, `cfn_lint`, and project-aware `standardrb` / `rubocop` — tools installed via Mason or the current Ruby bundle where available; `cfn-lint` / `clj-kondo` also come from the Brewfile on macOS. JS/TS diagnostics come from the eslint LSP (not nvim-lint).
+
+### Ruby formatter and linter selection
+
+Emacs and Neovim use the same project-aware rule for Ruby buffers. Starting at the buffer's directory and stopping at the Git root, the nearest `.standard.yml` or `.rubocop.yml` wins. Without either config, a direct `standard*` or `rubocop*` declaration in the nearest `Gemfile` / `gems.rb` selects the tool. Silent projects fall back to RuboCop. Bundled declarations run through `bundle exec`.
+
+Formatting and diagnostics are disabled for a buffer when one directory contains both conventional config files or one manifest directly declares both formatter families. Files with other names, such as a command-specific `.rubocop_beep.yml`, do not select RuboCop.
+
+Ruby language servers follow direct bundle declarations: `solargraph*` selects bundled Solargraph and `ruby-lsp*` selects bundled Ruby LSP. A project declaring neither uses global Solargraph under its `.ruby-version`; declaring both disables LSP for that buffer. Every Ruby subprocess runs through `utils/project-ruby-exec`, so Mason's Homebrew Ruby cannot write native extensions into another Ruby's gem home.
+
+Reek is opt-in. It runs only when the nearest project directly declares the `reek` gem or contains `.reek.yml`; transitive installation alone does not enable it.
 
 ## Known gaps (intentionally thinner)
 

@@ -230,6 +230,12 @@ vim.cmd [[cnoreabbrev <expr> bd (getcmdtype() ==# ':' && getcmdline() ==# 'bd') 
 -- Matching evil-leader maps from editors/emacs-config.org
 ------------
 
+-- ⌘c copies the visual selection. Unmapped <D-c> falls through to visual
+-- `c` (change), which cuts and, with unnamedplus, still hits the clipboard.
+vim.keymap.set({ 'v', 's' }, '<D-c>', function()
+  vim.cmd [[normal! "+y]]
+end, { silent = true, desc = 'Copy selection' })
+
 -- (k)ill (b)uffer without destroying the split
 vim.keymap.set('n', '<leader>kb', '<cmd>Bclose<CR>', { desc = 'Kill buffer (keep split)' })
 
@@ -280,7 +286,11 @@ vim.keymap.set('n', '<leader>fcl', vim.diagnostic.setloclist, { desc = 'Diagnost
 vim.keymap.set('n', '<leader>fcb', function()
   vim.diagnostic.reset()
   if package.loaded['lint'] then
-    require('lint').try_lint()
+    if vim.bo.filetype == 'ruby' then
+      require('custom.ruby_tooling').try_lint()
+    else
+      require('lint').try_lint()
+    end
   end
   vim.cmd 'edit' -- nudge LSP refresh
   vim.notify('Diagnostics refreshed', vim.log.levels.INFO)

@@ -56,6 +56,8 @@ if [[ $(uname) = "Darwin" ]]; then
   #### load the nvm script but don't run it; we'll use system node for cli tools like linters
   [[ -s "/usr/local/opt/nvm/nvm.sh" ]] && source /usr/local/opt/nvm/nvm.sh --no-use
   [[ -s "/opt/homebrew/opt/nvm/nvm.sh" ]] && source /opt/homebrew/opt/nvm/nvm.sh --no-use
+  ### ruby
+  export OVERMIND_SHELL=/bin/zsh
 fi
 
 ### additional user ENVs

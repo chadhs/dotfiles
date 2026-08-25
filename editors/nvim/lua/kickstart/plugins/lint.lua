@@ -5,6 +5,7 @@ return {
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
       local lint = require 'lint'
+      local ruby_tooling = require 'custom.ruby_tooling'
 
       local function exe(name)
         return vim.fn.executable(name) == 1
@@ -30,11 +31,72 @@ return {
         lint.linters_by_ft.bash = { 'shellcheck' }
         lint.linters_by_ft.zsh = { 'shellcheck' }
       end
-      if available 'rubocop' then
-        lint.linters_by_ft.ruby = { 'rubocop' }
-      end
       if available 'cfn-lint' then
         lint.linters_by_ft.cfn = { 'cfn_lint' }
+      end
+
+      local function project_linter(parent, executable, bundled)
+        return function()
+          local linter = vim.deepcopy(lint.linters[parent])
+          linter.cmd = ruby_tooling.command
+          local prefix = bundled and { 'bundle', 'exec', executable } or { executable }
+          linter.args = vim.list_extend(prefix, linter.args)
+          linter.ignore_exitcode = true
+          return linter
+        end
+      end
+
+      local function reek_linter(bundled)
+        local prefix = bundled and { 'bundle', 'exec', 'reek' } or { 'reek' }
+        return {
+          cmd = ruby_tooling.command,
+          args = vim.list_extend(prefix, {
+            '--format',
+            'json',
+            function()
+              return vim.api.nvim_buf_get_name(0)
+            end,
+          }),
+          stdin = false,
+          ignore_exitcode = true,
+          parser = function(output)
+            if output == '' then
+              return {}
+            end
+            local ok, smells = pcall(vim.json.decode, output)
+            if not ok or type(smells) ~= 'table' then
+              return {}
+            end
+            local diagnostics = {}
+            for _, smell in ipairs(smells) do
+              local lines = smell.lines or {}
+              local message = smell.message or 'Code smell'
+              if smell.context and smell.context ~= '' then
+                message = smell.context .. ': ' .. message
+              end
+              table.insert(diagnostics, {
+                source = 'reek',
+                code = smell.smell_type,
+                message = message,
+                severity = vim.diagnostic.severity.WARN,
+                lnum = math.max((lines[1] or 1) - 1, 0),
+                col = 0,
+              })
+            end
+            return diagnostics
+          end,
+        }
+      end
+
+      lint.linters.standardrb_bundle = project_linter('standardrb', 'standardrb', true)
+      lint.linters.rubocop_bundle = project_linter('rubocop', 'rubocop', true)
+      lint.linters.standardrb_project = project_linter('standardrb', 'standardrb', false)
+      lint.linters.rubocop_project = project_linter('rubocop', 'rubocop', false)
+      lint.linters.reek_bundle = function()
+        return reek_linter(true)
+      end
+      lint.linters.reek_project = function()
+        return reek_linter(false)
       end
 
       -- Detect CloudFormation templates (Emacs cfn-yaml-mode / cfn-json-mode)
@@ -64,7 +126,11 @@ return {
             return
           end
           -- Never let a missing linter binary abort the autocmd chain
-          pcall(lint.try_lint)
+          if vim.bo.filetype == 'ruby' then
+            pcall(ruby_tooling.try_lint)
+          else
+            pcall(lint.try_lint)
+          end
         end,
       })
     end,

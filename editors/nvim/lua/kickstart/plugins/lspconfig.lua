@@ -201,6 +201,29 @@ return {
       --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with blink.cmp, and then broadcast that to the servers.
       local capabilities = require('blink.cmp').get_lsp_capabilities()
+      local ruby_tooling = require 'custom.ruby_tooling'
+
+      local function ruby_root(server_name)
+        return function(bufnr, on_dir)
+          local selected, result = ruby_tooling.language_server(bufnr)
+          if selected == server_name then
+            on_dir(result.root)
+          end
+        end
+      end
+
+      local function ruby_command(executable, arguments)
+        return function(dispatchers, config)
+          local result = ruby_tooling.resolve_path(config.root_dir)
+          local command = { ruby_tooling.command }
+          if result.lsp_bundled then
+            vim.list_extend(command, { 'bundle', 'exec' })
+          end
+          table.insert(command, executable)
+          vim.list_extend(command, arguments or {})
+          return vim.lsp.rpc.start(command, dispatchers, { cwd = config.root_dir })
+        end
+      end
 
       -- Enable the following language servers
       --  Feel free to add/remove any LSPs that you want here. They will automatically be installed.
@@ -226,7 +249,6 @@ return {
         yamlls = {}, -- YAML
         dockerls = {}, -- Dockerfile
         eslint = {}, -- ESLint
-        ruby_lsp = {}, -- Ruby (Emacs solargraph; ruby_lsp is the modern default)
         clojure_lsp = {}, -- Clojure
         jdtls = {}, -- Java (Emacs lsp-java)
         elixirls = {}, -- Elixir
@@ -241,6 +263,17 @@ return {
               },
             },
           },
+        },
+      }
+
+      local ruby_servers = {
+        solargraph = {
+          cmd = ruby_command('solargraph', { 'stdio' }),
+          root_dir = ruby_root 'solargraph',
+        },
+        ruby_lsp = {
+          cmd = ruby_command 'ruby-lsp',
+          root_dir = ruby_root 'ruby_lsp',
         },
       }
 
@@ -284,6 +317,12 @@ return {
         -- This handles overriding only values explicitly passed
         -- by the server configuration above. Useful when disabling
         -- certain features of an LSP (for example, turning off formatting for ts_ls)
+        server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+        vim.lsp.config(server_name, server)
+        vim.lsp.enable(server_name)
+      end
+
+      for server_name, server in pairs(ruby_servers) do
         server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
         vim.lsp.config(server_name, server)
         vim.lsp.enable(server_name)

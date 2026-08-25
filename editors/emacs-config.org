@@ -608,7 +608,6 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
              tsx-ts-mode
              go-mode
              elixir-mode
-             ruby-mode
              web-mode
              ) . lsp-deferred))
     :commands (lsp-deferred lsp)
@@ -1635,6 +1634,7 @@ Currently relying on lsp-mode and tree-sitter for ruby lang support.
 
 The following gems should be installed:
 - solargraph
+- standard
 - rubocop
 - solargraph-rails
 
@@ -1646,9 +1646,7 @@ The following gems should be installed:
     (ruby-mode . inf-ruby-minor-mode))
 
   (use-package chruby
-    :defer t
-    :hook
-    (ruby-mode . chruby-use-corresponding))
+    :defer t)
 
   ;; (use-package asdf
   ;;   :quelpa (copilot :fetcher github
@@ -1661,9 +1659,256 @@ The following gems should be installed:
 
   (use-package rubocopfmt
     :defer t
-    :diminish rubocopfmt-mode
-    :hook
-    (ruby-mode . rubocopfmt-mode))
+    :diminish rubocopfmt-mode)
+
+  (defconst cs/ruby-tool-manifests '("Gemfile" "gems.rb"))
+
+  (defun cs/ruby-tool-start-directory (path)
+    "Return the directory from which Ruby tooling should resolve PATH."
+    (let ((expanded (expand-file-name path)))
+      (if (file-directory-p expanded)
+          (file-name-as-directory expanded)
+        (file-name-directory expanded))))
+
+  (defun cs/ruby-tool-search-boundary (directory)
+    "Return the Git root or home boundary for DIRECTORY."
+    (or (locate-dominating-file directory ".git")
+        (let ((home (file-name-as-directory (expand-file-name "~"))))
+          (if (string-prefix-p home (file-name-as-directory directory))
+              home
+            "/"))))
+
+  (defun cs/ruby-tool-ancestor-directories (directory)
+    "Return DIRECTORY and its parents through the project boundary."
+    (let ((current (file-name-as-directory (expand-file-name directory)))
+          (boundary (file-name-as-directory
+                     (expand-file-name (cs/ruby-tool-search-boundary directory))))
+          directories)
+      (while current
+        (push current directories)
+        (if (string-equal (directory-file-name current)
+                          (directory-file-name boundary))
+            (setq current nil)
+          (let ((parent (file-name-directory (directory-file-name current))))
+            (setq current
+                  (unless (string-equal (directory-file-name parent)
+                                        (directory-file-name current))
+                    parent)))))
+      (nreverse directories)))
+
+  (defun cs/ruby-tool-nearest-manifest (directories)
+    "Return the nearest Bundler manifest under DIRECTORIES."
+    (catch 'manifest
+      (dolist (directory directories)
+        (dolist (name cs/ruby-tool-manifests)
+          (let ((path (expand-file-name name directory)))
+            (when (file-exists-p path)
+              (throw 'manifest path)))))))
+
+  (defun cs/ruby-tool-manifest-declarations (manifest)
+    "Return the formatter families declared directly in MANIFEST."
+    (let (standardrb rubocop solargraph ruby-lsp reek)
+      (when (and manifest (file-readable-p manifest))
+        (with-temp-buffer
+          (insert-file-contents manifest)
+          (goto-char (point-min))
+          (while (re-search-forward
+                  "^[[:space:]]*gem[[:space:]]*\\(?:([[:space:]]*\\)?[\"']\\([^\"']+\\)[\"']"
+                  nil t)
+            (let ((name (match-string-no-properties 1)))
+              (cond
+               ((or (string-equal name "standard")
+                    (string-prefix-p "standard-" name))
+                (setq standardrb t))
+               ((or (string-equal name "rubocop")
+                    (string-prefix-p "rubocop-" name))
+                (setq rubocop t))
+               ((or (string-equal name "solargraph")
+                    (string-prefix-p "solargraph-" name))
+                (setq solargraph t))
+               ((or (string-equal name "ruby-lsp")
+                    (string-prefix-p "ruby-lsp-" name))
+                (setq ruby-lsp t))
+               ((string-equal name "reek")
+                (setq reek t)))))))
+      (list :standardrb standardrb
+            :rubocop rubocop
+            :solargraph solargraph
+            :ruby-lsp ruby-lsp
+            :reek reek)))
+
+  (defun cs/ruby-tool-nearest-file (directories name)
+    "Return the nearest file named NAME under DIRECTORIES."
+    (catch 'found
+      (dolist (directory directories)
+        (let ((path (expand-file-name name directory)))
+          (when (file-exists-p path)
+            (throw 'found path))))))
+
+  (defun cs/enrich-ruby-tooling (result directories manifest declarations)
+    "Add LSP and Reek decisions to formatter RESULT."
+    (let ((reek-config (cs/ruby-tool-nearest-file directories ".reek.yml"))
+          (solargraph (plist-get declarations :solargraph))
+          (ruby-lsp (plist-get declarations :ruby-lsp)))
+      (setq result (plist-put result :reek
+                              (and (or (plist-get declarations :reek) reek-config) t)))
+      (setq result (plist-put result :reek-bundled
+                              (and (plist-get declarations :reek) t)))
+      (setq result (plist-put result :reek-config reek-config))
+      (cond
+       ((and solargraph ruby-lsp)
+        (setq result (plist-put result :lsp-ambiguous t))
+        (setq result (plist-put result :lsp-message
+                                (concat "both Solargraph and Ruby LSP are declared in " manifest))))
+       (ruby-lsp
+        (setq result (plist-put result :language-server 'ruby-lsp-ls))
+        (setq result (plist-put result :lsp-bundled t))
+        (setq result (plist-put result :lsp-source 'manifest)))
+       (solargraph
+        (setq result (plist-put result :language-server 'ruby-ls))
+        (setq result (plist-put result :lsp-bundled t))
+        (setq result (plist-put result :lsp-source 'manifest)))
+       (t
+        (setq result (plist-put result :language-server 'ruby-ls))
+        (setq result (plist-put result :lsp-bundled nil))
+        (setq result (plist-put result :lsp-source 'fallback))))
+      result))
+
+  (defun cs/resolve-ruby-tooling (&optional path)
+    "Resolve project-aware Ruby tooling for PATH or the current buffer."
+    (let* ((start (cs/ruby-tool-start-directory
+                   (or path buffer-file-name default-directory)))
+           (directories (cs/ruby-tool-ancestor-directories start))
+           (manifest (cs/ruby-tool-nearest-manifest directories))
+           (declarations (cs/ruby-tool-manifest-declarations manifest))
+           config-result
+           result)
+      (catch 'config
+        (dolist (directory directories)
+          (let ((standard-config (expand-file-name ".standard.yml" directory))
+                (rubocop-config (expand-file-name ".rubocop.yml" directory)))
+            (cond
+             ((and (file-exists-p standard-config)
+                   (file-exists-p rubocop-config))
+              (setq config-result
+                    (list :ambiguous t
+                          :message (concat "both .standard.yml and .rubocop.yml exist in " directory)
+                          :root directory))
+              (throw 'config config-result))
+             ((or (file-exists-p standard-config)
+                  (file-exists-p rubocop-config))
+              (setq config-result
+                    (list :tool (if (file-exists-p standard-config) 'standardrb 'rubocop)
+                          :bundled (and manifest t)
+                          :manifest manifest
+                          :root (if manifest (file-name-directory manifest) directory)
+                          :source 'config))
+              (throw 'config config-result))))))
+      (setq result
+            (or config-result
+                (let ((standardrb (plist-get declarations :standardrb))
+                      (rubocop (plist-get declarations :rubocop)))
+                  (cond
+                   ((and standardrb rubocop)
+                    (list :ambiguous t
+                          :message (concat "both StandardRB and RuboCop are declared in " manifest)
+                          :root (file-name-directory manifest)))
+                   ((or standardrb rubocop)
+                    (list :tool (if standardrb 'standardrb 'rubocop)
+                          :bundled t
+                          :manifest manifest
+                          :root (file-name-directory manifest)
+                          :source 'manifest))
+                   (t
+                    (list :tool 'rubocop
+                          :bundled nil
+                          :manifest manifest
+                          :root (if manifest (file-name-directory manifest) start)
+                          :source 'fallback))))))
+      (cs/enrich-ruby-tooling result directories manifest declarations)))
+
+  (defconst cs/project-ruby-exec
+    (expand-file-name "~/dotfiles/utils/project-ruby-exec"))
+
+  (defun cs/flycheck-project-command (command)
+    "Run Flycheck COMMAND under the project Ruby and bundle when declared."
+    (let* ((program (file-name-nondirectory (car command)))
+           (bundled
+            (cond
+             ((member program '("standardrb" "rubocop"))
+              (plist-get cs/ruby-tooling-resolution :bundled))
+             ((string-equal program "reek")
+              (plist-get cs/ruby-tooling-resolution :reek-bundled)))))
+      (append (list cs/project-ruby-exec)
+              (when bundled '("bundle" "exec"))
+              (list program)
+              (cdr command))))
+
+  (defun cs/ruby-language-server-command (resolution)
+    "Build the project-Ruby LSP command from RESOLUTION."
+    (let ((command (list cs/project-ruby-exec)))
+      (when (plist-get resolution :lsp-bundled)
+        (setq command (append command '("bundle" "exec"))))
+      (pcase (plist-get resolution :language-server)
+        ('ruby-ls (append command '("solargraph" "stdio")))
+        ('ruby-lsp-ls (append command '("ruby-lsp"))))))
+
+  (defun cs/setup-ruby-language-server (resolution)
+    "Start only the Ruby language server selected by RESOLUTION."
+    (if (plist-get resolution :lsp-ambiguous)
+        (progn
+          (setq-local lsp-enabled-clients '(ruby-tooling-disabled))
+          (message "Ruby LSP disabled: %s" (plist-get resolution :lsp-message)))
+      (let ((server (plist-get resolution :language-server))
+            (command (cs/ruby-language-server-command resolution)))
+        (setq-local lsp-enabled-clients (list server))
+        (pcase server
+          ('ruby-ls
+           (setq-local lsp-solargraph-use-bundler nil
+                       lsp-solargraph-server-command command))
+          ('ruby-lsp-ls
+           (setq-local lsp-ruby-lsp-use-bundler nil
+                       lsp-ruby-lsp-server-command command)))
+        (lsp-deferred))))
+
+  (defun cs/setup-ruby-tooling ()
+    "Select one Ruby formatter and matching Flycheck checker for this buffer."
+    (when (fboundp 'chruby-use-corresponding)
+      (chruby-use-corresponding))
+    (require 'rubocopfmt)
+    (let ((resolution (cs/resolve-ruby-tooling)))
+      (setq-local cs/ruby-tooling-resolution resolution)
+      (setq-local flycheck-disabled-checkers
+                  (if (plist-get resolution :reek)
+                      (remove 'ruby-reek
+                              (and (boundp 'flycheck-disabled-checkers)
+                                   flycheck-disabled-checkers))
+                    (cl-union (and (boundp 'flycheck-disabled-checkers)
+                                   flycheck-disabled-checkers)
+                              '(ruby-reek))))
+      (if (plist-get resolution :ambiguous)
+          (progn
+            (when (bound-and-true-p rubocopfmt-mode)
+              (rubocopfmt-mode -1))
+            (setq-local flycheck-disabled-checkers
+                        (cl-union (and (boundp 'flycheck-disabled-checkers)
+                                       flycheck-disabled-checkers)
+                                  '(ruby-standard ruby-rubocop)))
+            (message "Ruby tooling disabled: %s" (plist-get resolution :message)))
+        (let ((tool (plist-get resolution :tool))
+              (bundled (plist-get resolution :bundled)))
+          (setq-local rubocopfmt-rubocop-command (symbol-name tool)
+                      rubocopfmt-use-bundler-when-possible bundled
+                      flycheck-checker (if (eq tool 'standardrb)
+                                           'ruby-standard
+                                         'ruby-rubocop)
+                      flycheck-command-wrapper-function
+                      #'cs/flycheck-project-command)
+          (rubocopfmt-mode 1)))
+      (cs/setup-ruby-language-server resolution)))
+
+  (add-hook 'ruby-mode-hook #'cs/setup-ruby-tooling)
+  (add-hook 'ruby-ts-mode-hook #'cs/setup-ruby-tooling)
 #+END_SRC
 
 *** shell scripting
