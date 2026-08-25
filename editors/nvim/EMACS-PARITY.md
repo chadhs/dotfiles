@@ -8,9 +8,9 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 
 | Emacs (evil-leader `,`) | Neovim | Notes |
 | --- | --- | --- |
-| `,t` project file | `,t` Telescope git files | rooted at the current buffer's git project (`lcd` / `use_file_path`), not nvim's launch directory |
+| `,t` project file | `,t` Telescope git files | git project of the current buffer (`use_file_path`); window cwd is the file/netrw directory so `:e` is relative there |
 | `,b` buffer switch | `,b` Telescope buffers | |
-| `,gf` project grep | `,gf` Telescope live_grep | same buffer project root as `,t` |
+| `,gf` project grep | `,gf` Telescope live_grep | same git project as `,t` |
 | `,Ff` find file | `,Ff` Telescope find_files | |
 | `,Fd` dired here | `,Fd` netrw (`:Ex`) | |
 | `,nt` neotree | `,nt` neo-tree | |
@@ -49,7 +49,7 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 | flycheck | nvim-lint + vim.diagnostic |
 | prettier / eslint / black / rubocop / goimports | Conform + eslint LSP + mason tools |
 | CIDER | Conjure |
-| projectile + ivy/counsel | Telescope (+ buffer project root via `custom.root` lcd) |
+| projectile + ivy/counsel | Telescope (`custom.root`: lcd to buffer/netrw dir; `,t` / `,gf` use git project) |
 | envrc | direnv.vim |
 | editorconfig | Neovim built-in (`vim.g.editorconfig`) |
 | yasnippet | LuaSnip + friendly-snippets (+ optional `stdpath('config')/snippets`) |

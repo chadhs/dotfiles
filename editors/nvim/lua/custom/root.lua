@@ -1,6 +1,5 @@
--- Project root from the current buffer (Emacs projectile / default-directory).
--- Window-local lcd so :pwd, :e, ,t, and ,gf follow the file or netrw listing,
--- not nvim's launch directory.
+-- Buffer/netrw directory as window cwd (Emacs default-directory).
+-- :e is relative to that folder. ,t / ,gf still use project() (git root).
 
 local M = {}
 
@@ -9,6 +8,13 @@ local function home()
 end
 
 function M.dir()
+  if vim.bo.filetype == 'netrw' then
+    local cur = vim.b.netrw_curdir
+    if type(cur) == 'string' and cur ~= '' and vim.fn.isdirectory(cur) == 1 then
+      return vim.fs.normalize(cur)
+    end
+  end
+
   local name = vim.api.nvim_buf_get_name(0)
   if name == '' then
     return vim.uv.cwd()
@@ -42,10 +48,11 @@ function M.project()
 end
 
 local function should_skip(root)
-  if vim.bo.buftype ~= '' then
+  -- Netrw is sometimes 'nofile'; still lcd so :e follows the listing.
+  if vim.bo.buftype ~= '' and vim.bo.filetype ~= 'netrw' then
     return true
   end
-  if vim.api.nvim_buf_get_name(0) == '' then
+  if vim.api.nvim_buf_get_name(0) == '' and vim.bo.filetype ~= 'netrw' then
     return true
   end
   if not root or root == '' then
@@ -58,8 +65,8 @@ local function should_skip(root)
   return vim.fn.resolve(root) == vim.fn.resolve(home())
 end
 
-function M.lcd_to_project()
-  local root = M.project()
+function M.lcd_to_dir()
+  local root = M.dir()
   if should_skip(root) then
     return
   end
@@ -69,10 +76,15 @@ function M.lcd_to_project()
   pcall(vim.cmd, 'lcd ' .. vim.fn.fnameescape(root))
 end
 
-vim.api.nvim_create_autocmd('BufEnter', {
+vim.api.nvim_create_autocmd({ 'BufEnter', 'BufReadPost', 'FileType' }, {
   group = vim.api.nvim_create_augroup('custom-root-lcd', { clear = true }),
-  desc = 'lcd to the current buffer git root (or directory)',
-  callback = M.lcd_to_project,
+  desc = 'lcd to the current buffer or netrw directory',
+  callback = function(args)
+    if args.event == 'FileType' and args.match ~= 'netrw' then
+      return
+    end
+    M.lcd_to_dir()
+  end,
 })
 
 return M

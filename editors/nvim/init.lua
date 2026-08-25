@@ -99,7 +99,7 @@ require 'options'
 -- [[ Basic Keymaps ]]
 require 'keymaps'
 
--- [[ Buffer project root (lcd + ,t / ,gf) ]]
+-- [[ Buffer/netrw directory (lcd for :e; ,t / ,gf use git project) ]]
 require 'custom.root'
 
 -- [[ Install `lazy.nvim` plugin manager ]]
