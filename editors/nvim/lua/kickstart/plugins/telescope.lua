@@ -90,22 +90,18 @@ return {
       -- Old CtrlP/Ack muscle memory on `,` leader
       ------------
       vim.keymap.set('n', '<leader>Ff', builtin.find_files, { desc = 'Find files (all)' })
-      -- Prefer git_files in a repo (always rooted at the repo toplevel, even from a
-      -- subdirectory; see telescope's set_opts_cwd). Outside a repo, fall back to
-      -- find_files scoped to the current buffer's directory and its children, rather
-      -- than nvim's launch directory, which could be much broader.
+      -- Prefer git_files from the current file's repo (use_file_path), not nvim's
+      -- launch cwd. Outside a repo, find_files in the buffer's project dir.
       vim.keymap.set('n', '<leader>t', function()
-        local ok = pcall(builtin.git_files)
+        local ok = pcall(builtin.git_files, { use_file_path = true })
         if not ok then
-          local dir = vim.fn.expand '%:p:h'
-          if dir == '' or vim.fn.isdirectory(dir) == 0 then
-            dir = vim.loop.cwd()
-          end
-          builtin.find_files { cwd = dir }
+          builtin.find_files { cwd = require('custom.root').project() }
         end
       end, { desc = 'Find project files (CtrlP)' })
       vim.keymap.set('n', '<leader>b', builtin.buffers, { desc = 'Find buffers (CtrlPBuffer)' })
-      vim.keymap.set('n', '<leader>gf', builtin.live_grep, { desc = 'Live grep (Ack)' })
+      vim.keymap.set('n', '<leader>gf', function()
+        builtin.live_grep { cwd = require('custom.root').project() }
+      end, { desc = 'Live grep (Ack)' })
 
       -- Slightly advanced example of overriding default behavior and theme
       -- vim.keymap.set('n', '<leader>/', function()

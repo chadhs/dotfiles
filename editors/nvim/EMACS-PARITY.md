@@ -8,9 +8,9 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 
 | Emacs (evil-leader `,`) | Neovim | Notes |
 | --- | --- | --- |
-| `,t` project file | `,t` Telescope git files | |
+| `,t` project file | `,t` Telescope git files | rooted at the current buffer's git project (`lcd` / `use_file_path`), not nvim's launch directory |
 | `,b` buffer switch | `,b` Telescope buffers | |
-| `,gf` project grep | `,gf` Telescope live_grep | |
+| `,gf` project grep | `,gf` Telescope live_grep | same buffer project root as `,t` |
 | `,Ff` find file | `,Ff` Telescope find_files | |
 | `,Fd` dired here | `,Fd` netrw (`:Ex`) | |
 | `,nt` neotree | `,nt` neo-tree | |
@@ -32,7 +32,7 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 | `,lt` truncate-lines toggle | `wrap!` | |
 | `,kb` kill buffer | `Bclose` | keeps split |
 | `,kr` kill-ring / yank history | Telescope `registers` | |
-| `,ml` / `,ms` / `,md` bookmarks | named persistent bookmarks (`custom.bookmarks`) | `,mj` also jumps; stored in `stdpath('data')/bookmarks.json`; files open at position, dirs open netrw (`hijack_netrw_behavior = disabled`); native vim marks untouched |
+| `,ml` / `,ms` / `,md` bookmarks | named persistent bookmarks ([emacs-bookmarks.nvim](https://github.com/chadhs/emacs-bookmarks.nvim)) | `,mj` also jumps; stored in `stdpath('data')/bookmarks.json`; files open at position, dirs open netrw (`hijack_netrw_behavior = disabled`); native vim marks untouched |
 | `,Pl` package list | `:Lazy` | |
 | `,nc` / `,np` / `,nw` deft notes | Telescope in `~/notes/{common,personal,work}` | |
 | `,fb` format buffer | Conform | was bare `,f` in stock Kickstart |
@@ -49,7 +49,7 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 | flycheck | nvim-lint + vim.diagnostic |
 | prettier / eslint / black / rubocop / goimports | Conform + eslint LSP + mason tools |
 | CIDER | Conjure |
-| projectile + ivy/counsel | Telescope (+ git root) |
+| projectile + ivy/counsel | Telescope (+ buffer project root via `custom.root` lcd) |
 | envrc | direnv.vim |
 | editorconfig | Neovim built-in (`vim.g.editorconfig`) |
 | yasnippet | LuaSnip + friendly-snippets (+ optional `stdpath('config')/snippets`) |

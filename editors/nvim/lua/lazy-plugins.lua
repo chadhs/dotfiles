@@ -56,6 +56,7 @@ require('lazy').setup({
   require 'custom.plugins.conjure',
   require 'custom.plugins.rest',
   require 'custom.plugins.direnv',
+  require 'custom.plugins.emacs-bookmarks',
   require 'custom.plugins.orgmode',
   require 'custom.plugins.string-case',
   require 'custom.plugins.snippets',

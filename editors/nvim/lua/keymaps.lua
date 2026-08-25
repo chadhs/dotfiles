@@ -249,19 +249,19 @@ vim.keymap.set('n', '<leader>kr', function()
 end, { desc = 'Yank / register history' })
 
 -- Bookmarks (Emacs bookmark-set / bookmark-jump / bookmark-delete parity).
--- Named, persistent bookmarks via custom.bookmarks; vim's native marks
+-- Named, persistent bookmarks via emacs-bookmarks.nvim; vim's native marks
 -- (m a, ' a) are untouched and still work out of the box.
 vim.keymap.set('n', '<leader>ms', function()
-  require('custom.bookmarks').prompt_set()
+  require('emacs-bookmarks').prompt_set()
 end, { desc = 'Bookmark set' })
 vim.keymap.set('n', '<leader>ml', function()
-  require('custom.bookmarks').list()
+  require('emacs-bookmarks').list()
 end, { desc = 'Bookmark jump (list)' })
 vim.keymap.set('n', '<leader>mj', function()
-  require('custom.bookmarks').list()
+  require('emacs-bookmarks').list()
 end, { desc = 'Bookmark jump' })
 vim.keymap.set('n', '<leader>md', function()
-  require('custom.bookmarks').list { delete = true }
+  require('emacs-bookmarks').list { delete = true }
 end, { desc = 'Bookmark delete' })
 
 -- (P)ackage (l)ist → Lazy
