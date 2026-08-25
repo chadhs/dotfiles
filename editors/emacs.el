@@ -1,4 +1,4 @@
-;;; emacs config bootstrap
+;;; emacs config bootstrap -*- lexical-binding: t -*-
 
 ;; prevent emacs from automatically adding a package section to this file
 ;(package-initialize)

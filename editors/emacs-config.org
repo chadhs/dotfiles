@@ -1,4 +1,5 @@
 #+TITLE: Emacs Configuration
+#+PROPERTY: header-args:emacs-lisp :lexical t
 
 This file bootstraps a complete Emacs environment to my liking. \\
 If you're new to Emacs check out spacemacs: http://spacemacs.org.
@@ -6,6 +7,7 @@ If you're new to Emacs check out spacemacs: http://spacemacs.org.
 If you need some help, send me some electronic mail.
 
 #+BEGIN_SRC emacs-lisp
+  ;;; -*- lexical-binding: t -*-
   (setq user-full-name "Chad Stovern"
         user-mail-address "hello@chadstovern.com")
 #+END_SRC
