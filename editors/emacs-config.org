@@ -194,7 +194,16 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
     :config
     ;; load evil-leader first so it's initialized for evil-mode
     (global-evil-leader-mode)
-    (evil-leader/set-leader ","))
+    (evil-leader/set-leader ",")
+    ;; Emacs 31 visits files as fundamental-mode then the real major
+    ;; mode. evil-leader only binds "," when it turns on, so re-enable
+    ;; after major-mode is set so mode-local maps attach.
+    (defun cs/reenable-evil-leader-mode ()
+      "Turn evil-leader off and on so the mode-local map matches `major-mode'."
+      (when (bound-and-true-p evil-local-mode)
+        (evil-leader-mode -1)
+        (evil-leader-mode 1)))
+    (add-hook 'after-change-major-mode-hook #'cs/reenable-evil-leader-mode t))
 
   (use-package evil
     :config
@@ -2730,6 +2739,17 @@ be explicit about where to enable "electric return", as some modes have their ow
     "fcn" 'flycheck-next-error     ; (f)ly(c)heck (n)ext
     "fcp" 'flycheck-previous-error ; (f)ly(c)heck (p)revious
     "fcl" 'flycheck-list-errors)   ; (f)ly(c)heck (l)ist
+#+END_SRC
+
+*** attach mode-local evil-leader maps
+
+Buffers already visiting during init (this org file, *scratch*) enabled
+evil-leader before =set-key-for-mode= ran.
+
+#+BEGIN_SRC emacs-lisp
+  (dolist (buf (buffer-list))
+    (with-current-buffer buf
+      (cs/reenable-evil-leader-mode)))
 #+END_SRC
 
 *** report emacs total load time
