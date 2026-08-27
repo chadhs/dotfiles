@@ -4,9 +4,3 @@
 ## ## company
 ## [includeIf "gitdir:~/src/company/**"]
 ##   path = ~/.gitconfig.d/company
-
-# Strip Cursor Co-authored-by / Made-with trailers. Scripts live in
-# ~/dotfiles/utils/git-hooks (deploy.sh links them to ~/.config/git/hooks).
-[core]
-  hooksPath = ~/.config/git/hooks
-

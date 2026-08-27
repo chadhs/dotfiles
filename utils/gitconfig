@@ -4,6 +4,7 @@ useconfigonly = true
 [core]
 ignorecase = false
 excludesfile = ~/.gitignore
+hooksPath = ~/.config/git/hooks
 [push]
 default = simple
 [pull]
