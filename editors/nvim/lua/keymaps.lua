@@ -230,11 +230,27 @@ vim.cmd [[cnoreabbrev <expr> bd (getcmdtype() ==# ':' && getcmdline() ==# 'bd') 
 -- Matching evil-leader maps from editors/emacs-config.org
 ------------
 
--- ⌘c copies the visual selection. Unmapped <D-c> falls through to visual
--- `c` (change), which cuts and, with unnamedplus, still hits the clipboard.
+-- Super/Command (⌘). Unmapped <D-x> drops Super and runs the bare key
+-- (visual ⌘c became `c` / change; ⌘a became `a`). Nop leftovers, then overlay.
+local cmd_modes = { 'n', 'v', 'x', 's', 'o', 'i', 'c', 't' }
+for i = 33, 126 do
+  pcall(vim.keymap.set, cmd_modes, '<D-' .. string.char(i) .. '>', '<Nop>', { silent = true })
+end
+
+vim.keymap.set({ 'n', 'i', 'v', 'x', 's' }, '<D-a>', '<Esc>ggVG', { silent = true, desc = 'Select all' })
+
 vim.keymap.set({ 'v', 's' }, '<D-c>', function()
   vim.cmd [[normal! "+y]]
 end, { silent = true, desc = 'Copy selection' })
+
+vim.keymap.set({ 'n', 'i', 'v', 's', 'c', 't' }, '<D-v>', function()
+  local mode = vim.fn.mode()
+  if mode == 'v' or mode == 'V' or mode == '\22' or mode == 's' or mode == 'S' then
+    vim.cmd [[normal! "+P]]
+  else
+    vim.api.nvim_paste(vim.fn.getreg '+', true, -1)
+  end
+end, { silent = true, desc = 'Paste' })
 
 -- (k)ill (b)uffer without destroying the split
 vim.keymap.set('n', '<leader>kb', '<cmd>Bclose<CR>', { desc = 'Kill buffer (keep split)' })

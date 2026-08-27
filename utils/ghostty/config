@@ -28,6 +28,16 @@ window-width  = 128
 window-height =  84
 keybind = shift+enter=text:\n
 
+## Super/Command: Neovim vs zsh
+# ⌘a unbound so nvim select-all receives <D-a> (not Ghostty select_all).
+# ⌘c is performable: copy a terminal selection if one exists, otherwise
+# pass through for visual copy in nvim.
+# ⌘v stays Ghostty paste so zsh and nvim insert mode both get clipboard
+# text (bracketed paste). Neovide uses Neovim's <D-v> map instead.
+keybind = super+a=unbind
+keybind = performable:super+c=copy_to_clipboard
+keybind = super+v=paste_from_clipboard
+
 ### window splitting
 ## Keybindings for splitting
 ## - use alt to not conflict with tmux and nvim using ctrl
