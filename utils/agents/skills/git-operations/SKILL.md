@@ -15,4 +15,5 @@ Set rules to follow when creating branches, PRs, and other git operations within
 4. Ask for permission before staging, committing, and opening the PR unless explicitly asked to do so.
 5. PRs should default to being a Draft.
 6. When writing PR descriptions be sure to use the unslop skill when writing them.
-7. Always open the PRs in the default browser once they are created.
+7. If using GitHub, if the gh cli is not authenticated, leverage direnv to ensure the correct token is loaded to auth to the correct account for the repo you are woking in.
+8. Always open the PRs in the default browser once they are created.
