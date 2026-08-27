@@ -102,6 +102,13 @@ symlink_configs(){
     [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig .gitconfig
     [ ! -e ~/.gitconfig-local ] && cp -rp ~/dotfiles/utils/gitconfig-local ~/.gitconfig-local
     [ ! -d ~/.gitconfig.d ] && cp -rp ~/dotfiles/utils/gitconfig.d ~/.gitconfig.d
+    mkdir -p ~/.config/git
+    if [ -d ~/.config/git/hooks ] && [ ! -L ~/.config/git/hooks ]; then
+      rm -rf ~/.config/git/hooks
+    fi
+    ln -sfn ~/dotfiles/utils/git-hooks ~/.config/git/hooks
+    mkdir -p ~/.cursor/rules
+    ln -sfn ~/dotfiles/utils/cursor/rules/no-cursor-attribution.mdc ~/.cursor/rules/no-cursor-attribution.mdc
     [ ! -d ~/.clojure ] && mkdir .clojure
     [ ! -e ~/.clojure/deps.edn ] && cp -rp ~/dotfiles/utils/deps.edn ~/.clojure/deps.edn
     [ ! -d ~/.lein ] && mkdir .lein

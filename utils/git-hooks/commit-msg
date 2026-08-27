@@ -1,0 +1,37 @@
+#!/bin/sh
+# Strip Cursor attribution trailers, then run the repo-local hook if present.
+# Installed as the global commit-msg hook via core.hooksPath.
+
+msg_file=$1
+tmp="${msg_file}.cursor-strip"
+
+awk '
+  BEGIN { skip_blank = 0 }
+  /^Co-authored-by:[[:space:]]*Cursor[[:space:]]*</ { skip_blank = 1; next }
+  /^Co-authored-by:[[:space:]]*cursoragent@/ { skip_blank = 1; next }
+  /^Made-with:[[:space:]]*Cursor[[:space:]]*$/ { skip_blank = 1; next }
+  /^Made with \[Cursor\]/ { skip_blank = 1; next }
+  /^Made with Cursor[[:space:]]*$/ { skip_blank = 1; next }
+  /^[[:space:]]*$/ {
+    if (skip_blank) next
+    print
+    next
+  }
+  { skip_blank = 0; print }
+' "$msg_file" > "$tmp" && mv "$tmp" "$msg_file"
+
+local_hook=
+if [ -d .git ] || git rev-parse --git-dir >/dev/null 2>&1; then
+  git_dir=$(git rev-parse --git-dir 2>/dev/null) || git_dir=.git
+  if [ -x "$git_dir/hooks/commit-msg" ]; then
+    local_hook="$git_dir/hooks/commit-msg"
+  elif [ -x .husky/commit-msg ]; then
+    local_hook=.husky/commit-msg
+  fi
+fi
+
+if [ -n "$local_hook" ]; then
+  exec "$local_hook" "$@"
+fi
+
+exit 0

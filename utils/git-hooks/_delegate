@@ -1,0 +1,15 @@
+#!/bin/sh
+# Delegate to the repo-local hook so global core.hooksPath does not skip it.
+
+hook_name=$(basename "$0")
+git_dir=$(git rev-parse --git-dir 2>/dev/null) || git_dir=.git
+
+if [ -x "$git_dir/hooks/$hook_name" ]; then
+  exec "$git_dir/hooks/$hook_name" "$@"
+fi
+
+if [ -x ".husky/$hook_name" ]; then
+  exec ".husky/$hook_name" "$@"
+fi
+
+exit 0

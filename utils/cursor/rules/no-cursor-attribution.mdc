@@ -1,0 +1,17 @@
+---
+description: Never add Cursor or AI attribution to git commits or pull requests
+alwaysApply: true
+---
+
+# No Cursor attribution
+
+Do not add Cursor, AI, or tool attribution to commits, pull requests, or code comments.
+
+Never include any of these:
+- `Co-authored-by: Cursor`
+- `Co-authored-by: cursoragent@cursor.com`
+- `Made with Cursor`
+- `Made-with: Cursor`
+- `--trailer` flags that mention Cursor
+
+Commit messages and PR bodies should contain only the subject and body the user asked for.
