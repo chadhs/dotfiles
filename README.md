@@ -30,6 +30,11 @@ the `deploy.sh` script is designed to setup base packages and symlinks; it is al
 
 `sh deploy.sh` is idempotent and safe to re-run for symlink maintenance (prefer running it intentionally, not as a login hook).
 
+### agent skills
+shared skills live in `utils/agents/skills/`. after `deploy.sh`, Claude and Cursor load them via `~/.agents/skills` (Claude also via `~/.claude/skills`).
+
+machine-only skills (e.g. company-specific) go in `~/.agents/skills-local/`. re-run `deploy.sh` after adding one so it is linked into the merge dir. a local skill with the same name as a shared skill wins on that machine.
+
 ### keeping your mac packages up to date
 `scripts/weekly-update.sh` is the single full maintenance entry point: brew upgrade, Brewfile reconcile, Mac App Store apps, and global npm/gem packages.
 

@@ -41,6 +41,55 @@ verify_packages(){
   [ "$system_os" = "macos" ] && brew install --cask $cask_package_list
 }
 
+# Symlink each skill directory from src into dest. Skip missing globs and hidden names.
+link_skills_from(){
+  src="$1"
+  dest="$2"
+  for skill in "$src"/*; do
+    [ -e "$skill" ] || continue
+    [ -d "$skill" ] || continue
+    name="$(basename "$skill")"
+    case "$name" in
+      .*) continue ;;
+    esac
+    ln -sfn "$skill" "$dest/$name"
+  done
+}
+
+# Merge repo + machine-local skill dirs into ~/.agents/skills as per-skill symlinks.
+# Local names override shared names. ~/.claude/skills points at the merge dir.
+link_agent_skills(){
+  shared="$HOME/dotfiles/utils/agents/skills"
+  local_dir="$HOME/.agents/skills-local"
+  dest="$HOME/.agents/skills"
+
+  mkdir -p "$shared" "$local_dir" "$dest" "$HOME/.claude"
+
+  if [ -L "$dest" ]; then
+    rm -f "$dest"
+    mkdir -p "$dest"
+  fi
+
+  link_skills_from "$shared" "$dest"
+  link_skills_from "$local_dir" "$dest"
+
+  for entry in "$dest"/*; do
+    [ -L "$entry" ] || continue
+    name="$(basename "$entry")"
+    case "$name" in
+      .*) continue ;;
+    esac
+    if [ -d "$shared/$name" ] || [ -d "$local_dir/$name" ]; then
+      continue
+    fi
+    rm -f "$entry"
+  done
+
+  if [ -L "$HOME/.claude/skills" ] || [ ! -e "$HOME/.claude/skills" ]; then
+    ln -sfn "$dest" "$HOME/.claude/skills"
+  fi
+}
+
 symlink_configs(){
   cd ~ || exit 1
 
@@ -114,6 +163,7 @@ symlink_configs(){
   [ ! -e ~/jsconfig.json ] && ln -s ~/dotfiles/utils/jsconfig.json ~/jsconfig.json
   [ ! -e ~/.zprint.edn ] && ln -s ~/dotfiles/utils/zprint.edn .zprint.edn
   [ ! -d ~/.virtualenvs ] && mkdir ~/.virtualenvs
+  link_agent_skills
 }
 
 
