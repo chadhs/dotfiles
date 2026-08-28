@@ -75,7 +75,7 @@ where possible run the lastest stable version via homebrew as a base version.  i
 
 #### current exceptions
 
-- node@22
+- node@24
 - corretto21 (amazon jdk)
 - postgresql@17
 

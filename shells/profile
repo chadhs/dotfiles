@@ -6,8 +6,8 @@ export PATH="$HOME/bin\
 :/opt/homebrew/opt/openssl/bin\
 :/usr/local/opt/curl/bin\
 :/opt/homebrew/opt/curl/bin\
-:/usr/local/opt/node@22/bin\
-:/opt/homebrew/opt/node@22/bin\
+:/usr/local/opt/node@24/bin\
+:/opt/homebrew/opt/node@24/bin\
 :/usr/local/opt/python@3/libexec/bin\
 :/opt/homebrew/opt/python@3/libexec/bin\
 :/opt/homebrew/opt/arm-none-eabi-gcc@8/bin\

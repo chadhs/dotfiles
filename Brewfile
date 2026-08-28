@@ -12,7 +12,7 @@ brew "cfn-lint"
 brew "direnv"
 brew "git"
 brew "nmap"
-brew "node@22"
+brew "node@24"
 brew "nvim"
 brew "tree-sitter-cli" # nvim-treesitter `main` (Neovim 0.12+) needs the CLI to install parsers
 brew "nvm"
