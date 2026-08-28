@@ -2,7 +2,17 @@
 
 configs and systems preferences for all the machines i frequent now and in the future.
 
-obviously you **want to read** the best part... [emacs-config.org](editors/emacs-config.org)
+obviously you **want to read** the best part... [emacs-config.org](editors/emacs-config.org) — and its nvim counterpart: [editors/nvim/README.md](editors/nvim/README.md) with the [emacs parity keymap doc](editors/nvim/EMACS-PARITY.md).
+
+## what's in here
+
+| dir | contents |
+| --- | --- |
+| `editors/` | emacs config ([emacs-config.org](editors/emacs-config.org)), neovim config ([editors/nvim](editors/nvim/README.md)), `ideavimrc`, `editorconfig`, jetbrains plugins |
+| `shells/` | zsh + bash profiles/rc files, `inputrc`, the `digitalnomad` zsh theme |
+| `utils/` | `gitconfig`, `tmux.conf`, ghostty + karabiner + espanso config, `ssh_config`, agent skills, misc tool config and scripts (`project-ruby-exec`, `autogit.sh`, ...) |
+| `scripts/` | `bootstrap-mac.sh`, `deploy.sh`, `doctor.sh`, `weekly-update.sh`, `macos-defaults.sh`, `links.conf`, npm/gem package lists |
+| `.github/` | CI: shellcheck, `links.conf` lint, and syntax checks run on push/PR |
 
 ## scripts
 ### setting up a new mac
@@ -47,6 +57,8 @@ for ad-hoc brew/cask/mas updates from a shell, use the aliases: `brewup`, `casku
 ### checking machine health
 `sh scripts/doctor.sh` verifies this machine still matches what `deploy.sh` sets up: symlinks intact and pointing at the repo, copy-once baseline files present (warns on drift from the repo version), git identity configured, toolchain present, Brewfile packages installed, and agent skills linked. FAILs mean broken setup (usually re-run `deploy.sh`); WARNs are informational. safe to run anytime, from any cwd.
 
+the same lint/syntax checks (shellcheck, `links.conf` validation) also run remotely on every push/PR via [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
 ### manual steps after bootstrap
 things that can't be automated from the shell, in rough order:
 
@@ -71,15 +83,15 @@ this repo also contains other utility scripts, editor settings, etc...  feel fre
 
 ### lang version philosophy
 
-where possible run the lastest stable version via homebrew as a base version.  if you need a specific version for development use a version manager or docker.
+where possible run the latest stable version via homebrew as a base version.  if you need a specific version for development use a version manager or docker.
 
 #### current exceptions
 
 - node@24
 - corretto21 (amazon jdk)
-- postgresql@17
+- postgresql@17 (lives commented-out in the [Brewfile](Brewfile); uncomment it on a machine when you actually need it)
 
-(this list mirrors the pinned versions in the [Brewfile](Brewfile); update both together.)
+(node@24 and corretto21 are pinned in the [Brewfile](Brewfile); keep this list in sync with it.)
 
 ### fun options
 
