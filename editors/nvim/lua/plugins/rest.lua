@@ -4,7 +4,14 @@ return {
     'mistweaverco/kulala.nvim',
     ft = { 'http', 'rest' },
     keys = {
-      { '<leader>ef', function() require('kulala').run() end, desc = 'REST: send request', ft = { 'http', 'rest' } },
+      {
+        '<leader>ef',
+        function()
+          require('kulala').run()
+        end,
+        desc = 'REST: send request',
+        ft = { 'http', 'rest' },
+      },
     },
     opts = {
       global_keymaps = false,

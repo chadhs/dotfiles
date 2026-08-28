@@ -22,8 +22,8 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 | `,cl` comment lines | built-in `gcc`/`gc` | also `,cb` / `,cp` |
 | `,Mp` Marked preview | same (macOS) | bookmarks stay on `,ml` / `,ms` / `,md` |
 | `,ev` / `,sv` | edit / reload nvim options+keymaps | Emacs uses `,ee` / `,se` for emacs |
-| `,jd` lsp definition | same | also kickstart `grd` |
-| `,fu` lsp references | same | also kickstart `grr` |
+| `,jd` lsp definition | same | also default `grd` |
+| `,fu` lsp references | same | also default `grr` |
 | `,gst` magit status | Neogit | |
 | `,gg` magit dispatch | Neogit floating | |
 | `,gca` / `,gaa` / `,gpu`… | Magit-shaped git maps | uses Neogit + Fugitive `:Git` |
@@ -35,7 +35,7 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 | `,ml` / `,ms` / `,md` bookmarks | named persistent bookmarks ([emacs-bookmarks.nvim](https://github.com/chadhs/emacs-bookmarks.nvim)) | `,mj` also jumps; stored in `stdpath('data')/bookmarks.json`; files open at position, dirs open netrw (`hijack_netrw_behavior = disabled`); native vim marks untouched |
 | `,Pl` package list | `:Lazy` | |
 | `,nc` / `,np` / `,nw` deft notes | Telescope in `~/notes/{common,personal,work}` | |
-| `,fb` format buffer | Conform | was bare `,f` in stock Kickstart |
+| `,fb` format buffer | Conform | was bare `,f` in the original kickstart base |
 | `,sit` / `,sic` / `,sik` / `,sis` | text-case.nvim | |
 | `,dd` dash-at-point | Dash.app (macOS) | |
 | CIDER `,eb` / `,ef` / `,ri`… | Conjure (clojure ft) | |

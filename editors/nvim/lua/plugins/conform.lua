@@ -1,4 +1,4 @@
-local ruby_tooling = require 'custom.ruby_tooling'
+local ruby_tooling = require 'lib.ruby_tooling'
 
 local function ruby_project_root(_, ctx)
   return ruby_tooling.resolve(ctx.buf).root

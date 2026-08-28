@@ -76,7 +76,7 @@ return {
       end
 
       vim.api.nvim_create_autocmd('FileType', {
-        group = vim.api.nvim_create_augroup('kickstart-treesitter', { clear = true }),
+        group = vim.api.nvim_create_augroup('treesitter-highlight-activations', { clear = true }),
         callback = function(args)
           local buf, filetype = args.buf, args.match
           local language = vim.treesitter.language.get_lang(filetype)

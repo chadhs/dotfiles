@@ -5,7 +5,7 @@ return {
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
       local lint = require 'lint'
-      local ruby_tooling = require 'custom.ruby_tooling'
+      local ruby_tooling = require 'lib.ruby_tooling'
 
       local function exe(name)
         return vim.fn.executable(name) == 1

@@ -31,16 +31,8 @@ function M.dir()
 end
 
 function M.git_root()
-  local git = vim.fn.finddir('.git', M.dir() .. ';')
-  if git == '' then
-    return nil
-  end
-  local path = vim.fs.normalize(vim.fn.fnamemodify(git, ':p'))
-  path = path:gsub('/+$', '')
-  if vim.fn.fnamemodify(path, ':t') == '.git' then
-    path = vim.fn.fnamemodify(path, ':h')
-  end
-  return path
+  -- vim.fs.root matches .git whether it is a directory (repo) or a file (worktree/submodule)
+  return vim.fs.root(M.dir(), '.git')
 end
 
 function M.project()

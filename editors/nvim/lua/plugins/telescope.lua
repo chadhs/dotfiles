@@ -95,21 +95,21 @@ return {
       vim.keymap.set('n', '<leader>t', function()
         local ok = pcall(builtin.git_files, { use_file_path = true })
         if not ok then
-          builtin.find_files { cwd = require('custom.root').project() }
+          builtin.find_files { cwd = require('lib.root').project() }
         end
       end, { desc = 'Find project files (CtrlP)' })
       vim.keymap.set('n', '<leader>b', builtin.buffers, { desc = 'Find buffers (CtrlPBuffer)' })
       vim.keymap.set('n', '<leader>gf', function()
-        builtin.live_grep { cwd = require('custom.root').project() }
+        builtin.live_grep { cwd = require('lib.root').project() }
       end, { desc = 'Live grep (Ack)' })
 
       -- Slightly advanced example of overriding default behavior and theme
       -- vim.keymap.set('n', '<leader>/', function()
-		-- 	-- You can pass additional configuration to Telescope to change the theme, layout, etc.
-		-- 	builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-		-- 					     winblend = 10,
-		-- 					     previewer = false,
-		-- 	})
+      -- 	-- You can pass additional configuration to Telescope to change the theme, layout, etc.
+      -- 	builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+      -- 					     winblend = 10,
+      -- 					     previewer = false,
+      -- 	})
       -- end, { desc = '[/] Fuzzily search in current buffer' })
 
       -- It's also possible to pass additional configuration options.

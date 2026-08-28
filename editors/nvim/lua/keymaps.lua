@@ -73,7 +73,7 @@ vim.keymap.set('n', '<leader>wm', '<cmd>only<CR>', { desc = '[W]indow [M]ake mai
 --  See `:help vim.hl.on_yank()`
 vim.api.nvim_create_autocmd('TextYankPost', {
   desc = 'Highlight when yanking (copying) text',
-  group = vim.api.nvim_create_augroup('kickstart-highlight-yank', { clear = true }),
+  group = vim.api.nvim_create_augroup('highlight-yank', { clear = true }),
   callback = function()
     vim.hl.on_yank()
   end,
@@ -303,7 +303,7 @@ vim.keymap.set('n', '<leader>fcb', function()
   vim.diagnostic.reset()
   if package.loaded['lint'] then
     if vim.bo.filetype == 'ruby' then
-      require('custom.ruby_tooling').try_lint()
+      require('lib.ruby_tooling').try_lint()
     else
       require('lint').try_lint()
     end
