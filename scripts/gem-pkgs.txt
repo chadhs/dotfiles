@@ -1,3 +1,6 @@
+# global gem packages maintained by scripts/weekly-update.sh
+# unpinned by design — latest stable wins (see "lang version philosophy" in README)
+
 bundler
 filewatcher
 rubocop

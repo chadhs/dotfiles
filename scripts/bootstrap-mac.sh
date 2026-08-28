@@ -2,8 +2,8 @@
 set -eu
 
 ## resolve paths (safe to run from anywhere)
-SCRIPT_DIR="$(CDPATH= cd -- "$(dirname "${0}")" && pwd)"
-REPO_ROOT="$(CDPATH= cd -- "${SCRIPT_DIR}/.." && pwd)"
+SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname "${0}")" && pwd)"
+REPO_ROOT="$(CDPATH='' cd -- "${SCRIPT_DIR}/.." && pwd)"
 BREWFILE="${REPO_ROOT}/Brewfile"
 
 ## preflight checks

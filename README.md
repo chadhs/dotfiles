@@ -30,6 +30,8 @@ the `deploy.sh` script is designed to setup base packages and symlinks; it is al
 
 `sh deploy.sh` is idempotent and safe to re-run for symlink maintenance (prefer running it intentionally, not as a login hook).
 
+all managed symlinks and copy-once baseline files are defined in **`scripts/links.conf`** — the single source of truth shared by `deploy.sh` (applies them) and `scripts/doctor.sh` (verifies them). to manage a new config file, add a line there rather than editing the scripts. run with `DOTFILES_LINKS_ONLY=1 sh deploy.sh` to apply links without the repo update or package installs.
+
 ### agent skills
 shared skills live in `utils/agents/skills/`. after `deploy.sh`, Claude and Cursor load them via `~/.agents/skills` (Claude also via `~/.claude/skills`).
 
@@ -42,11 +44,25 @@ machine-only skills (e.g. company-specific) go in `~/.agents/skills-local/`. re-
 
 for ad-hoc brew/cask/mas updates from a shell, use the aliases: `brewup`, `caskup`, `masup` (npm/gem globals are handled by weekly-update)
 
-### opening files from Finder with Neovim
-MacVim is no longer installed. for occasional GUI/Finder opens, deploy links **Open in Neovim.app**, which launches the file in Ghostty running `nvim`.
+### checking machine health
+`sh scripts/doctor.sh` verifies this machine still matches what `deploy.sh` sets up: symlinks intact and pointing at the repo, copy-once baseline files present (warns on drift from the repo version), git identity configured, toolchain present, Brewfile packages installed, and agent skills linked. FAILs mean broken setup (usually re-run `deploy.sh`); WARNs are informational. safe to run anytime, from any cwd.
 
-after `sh deploy.sh`:
-- Finder → right click file → **Open With** → **Open in Neovim**
+### manual steps after bootstrap
+things that can't be automated from the shell, in rough order:
+
+1. **1Password SSH agent** — System Settings → 1Password → enable SSH agent (then set `IdentityFile`/`IdentityAgent` in `~/.ssh/config.d/ssh_config`). this replaces fetching keys from the vault by hand.
+2. **sign into 1Password, iCloud, and the App Store** — `mas` and `scripts/weekly-update.sh` need a signed-in App Store.
+3. **Karabiner-Elements permissions** — grant the system extension and Input Monitoring when macOS prompts (System Settings → Privacy & Security).
+4. **espanso** — grant Accessibility permission, then enable it as a login item.
+5. **Emacs.app first launch** — if Gatekeeper complains, right-click → Open (cask builds are signed but not always notarized).
+6. **PopClip / Moom / other cask apps** — grant Accessibility permissions as prompted on first launch.
+
+`sh scripts/doctor.sh` after finishing to confirm everything landed.
+
+### GUI neovim (neovide)
+MacVim is no longer installed. for occasional GUI/Finder opens, use **Neovide** (installed via the Brewfile); it shares this repo's `init.lua`, so colors and plugins match terminal nvim.
+
+- Finder → right click file → **Open With** → **Neovide**
 - (optional) set as default for a file type via **Get Info** → Open with → Change All
 
 ## more info
@@ -62,6 +78,8 @@ where possible run the lastest stable version via homebrew as a base version.  i
 - node@22
 - corretto21 (amazon jdk)
 - postgresql@17
+
+(this list mirrors the pinned versions in the [Brewfile](Brewfile); update both together.)
 
 ### fun options
 

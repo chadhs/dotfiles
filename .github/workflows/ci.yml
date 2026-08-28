@@ -1,0 +1,32 @@
+name: ci
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck (sh scripts)
+        # weekly-update.sh is zsh; shellcheck only supports sh/bash/dash/ksh
+        run: shellcheck deploy.sh scripts/bootstrap-mac.sh scripts/macos-defaults.sh scripts/doctor.sh
+      - name: link manifest lint
+        run: |
+          awk -F'|' '
+            /^[[:space:]]*(#|$)/ { next }
+            NF != 4                              { print "links.conf:" NR ": expected mode|scope|target|source"; exit 1 }
+            $1 !~ /^(link|force|forcelink|copy)$/ { print "links.conf:" NR ": bad mode " $1; exit 1 }
+            $2 !~ /^(mac|all)$/                   { print "links.conf:" NR ": bad scope " $2; exit 1 }
+            $3 == "" || $4 == ""                  { print "links.conf:" NR ": empty target/source"; exit 1 }
+          ' scripts/links.conf && echo "links.conf OK"
+      - name: syntax check (sh scripts)
+        run: |
+          sh -n deploy.sh
+          for f in scripts/*.sh; do sh -n "$f"; done
+      - name: syntax check (zsh script)
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq zsh
+          zsh -n scripts/weekly-update.sh

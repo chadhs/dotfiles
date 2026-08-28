@@ -1,11 +1,19 @@
 #!/bin/sh
 # dotfiles deploy
 
+## resolve paths (safe to run from anywhere)
+SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname "${0}")" && pwd)"
+REPO_ROOT="$(CDPATH='' cd -- "${SCRIPT_DIR}/.." && pwd)"
+# deploy manages links from ~/dotfiles (matches doctor.sh and bootstrap);
+# fall back to the in-place repo when running from a checkout elsewhere
+DOTFILES_ROOT="${HOME}/dotfiles"
+[ -d "${DOTFILES_ROOT}" ] || DOTFILES_ROOT="${REPO_ROOT}"
+
 
 ## helpers
 update_repo(){
   cd ~/dotfiles || exit 1
-  git pull -q
+  git pull -q || echo "offline — skipping repo update"
 }
 
 os_setup(){
@@ -20,11 +28,11 @@ os_setup(){
     pkg_install="sudo pkg install -y"
     package_list="editorconfig-core-c emacs-nox11 git tmux vim-console zsh"
   elif [ "$system_type" = "Linux" ]; then
-    if [ -n "$(grep -i "ubuntu" /proc/version)" ] || [ -n "$(grep -i "debian" /proc/version)" ]; then
+    if grep -qi "ubuntu\|debian" /proc/version; then
       system_os="debian"
       pkg_install="sudo apt-get install -y"
       package_list="editorconfig  emacs-nox git tmux vim-nox zsh"
-    elif [ -n "$(grep -i "red hat" /proc/version)" ]; then
+    elif grep -qi "red hat" /proc/version; then
       ### enable epel repo to have access to expanded package library
       sudo yum install -y epel-release
       system_os="redhat"
@@ -37,8 +45,14 @@ os_setup(){
 }
 
 verify_packages(){
+  # intentional word splitting: pkg_install and package_list are space-separated lists
+  # shellcheck disable=SC2086
   $pkg_install $package_list
-  [ "$system_os" = "macos" ] && brew install --cask $cask_package_list
+  if [ "$system_os" = "macos" ]; then
+    # intentional word splitting: cask_package_list is a space-separated list
+    # shellcheck disable=SC2086
+    brew install --cask $cask_package_list
+  fi
 }
 
 # Symlink each skill directory from src into dest. Skip missing globs and hidden names.
@@ -90,94 +104,95 @@ link_agent_skills(){
   fi
 }
 
+# Apply links/copies from scripts/links.conf — the single source of truth
+# shared with scripts/doctor.sh. Add new links there, not here; only bespoke
+# logic lives in symlink_configs below.
+apply_links(){
+  manifest="${DOTFILES_ROOT}/scripts/links.conf"
+  [ -r "${manifest}" ] || { echo "missing link manifest at ${manifest}, exiting..." ; exit 1; }
+  while IFS='|' read -r mode scope target src; do
+    case "${mode}" in ''|\#*) continue ;; esac
+    if [ "${scope}" = "mac" ] && [ "${system_os}" != "macos" ]; then
+      continue
+    fi
+    case "${target}" in
+      /*) t="${target}" ;;
+      *) t="${HOME}/${target}" ;;
+    esac
+    s="${DOTFILES_ROOT}/${src}"
+    mkdir -p "$(dirname "${t}")"
+    case "${mode}" in
+      link)
+        [ ! -e "${t}" ] && ln -s "${s}" "${t}"
+        ;;
+      force)
+        if [ -d "${t}" ] && [ ! -L "${t}" ]; then
+          rm -rf "${t}"
+        fi
+        ln -sfn "${s}" "${t}"
+        ;;
+      forcelink)
+        if [ -L "${t}" ] || [ ! -e "${t}" ]; then
+          ln -sfn "${s}" "${t}"
+        fi
+        ;;
+      copy)
+        [ ! -e "${t}" ] && cp -rp "${s}" "${t}"
+        ;;
+      *)
+        echo "unknown link mode '${mode}' in ${manifest} (line for ${target}), exiting..."
+        exit 1
+        ;;
+    esac
+  done < "${manifest}"
+}
+
 symlink_configs(){
   cd ~ || exit 1
 
-  # mac
+  ## mac bespoke (everything else lives in scripts/links.conf)
   if [ "$system_os" = "macos" ]; then
-    [ ! -d ~/.ssh ] && mkdir ~/.ssh
-    [ ! -d ~/.ssh/config.d ] && mkdir ~/.ssh/config.d
-    [ ! -e ~/.ssh/config ] && ln -s ~/dotfiles/utils/ssh_config ~/.ssh/config
+    mkdir -p ~/.ssh/config.d
     [ ! -e ~/.ssh/config.d/ssh_config ] && touch ~/.ssh/config.d/ssh_config
-    [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig .gitconfig
-    [ ! -e ~/.gitconfig-local ] && cp -rp ~/dotfiles/utils/gitconfig-local ~/.gitconfig-local
-    [ ! -d ~/.gitconfig.d ] && cp -rp ~/dotfiles/utils/gitconfig.d ~/.gitconfig.d
-    mkdir -p ~/.config/git
-    if [ -d ~/.config/git/hooks ] && [ ! -L ~/.config/git/hooks ]; then
-      rm -rf ~/.config/git/hooks
-    fi
-    ln -sfn ~/dotfiles/utils/git-hooks ~/.config/git/hooks
-    mkdir -p ~/.cursor/rules
-    ln -sfn ~/dotfiles/utils/cursor/rules/no-cursor-attribution.mdc ~/.cursor/rules/no-cursor-attribution.mdc
-    [ ! -d ~/.clojure ] && mkdir .clojure
-    [ ! -e ~/.clojure/deps.edn ] && cp -rp ~/dotfiles/utils/deps.edn ~/.clojure/deps.edn
-    [ ! -d ~/.lein ] && mkdir .lein
-    [ ! -e ~/.lein/profiles.clj ] && cp -rp ~/dotfiles/utils/lein_profiles.clj ~/.lein/profiles.clj
-    [ ! -d ~/bin ] && mkdir ~/bin
-    [ ! -e ~/bin/reload-safari.scpt ] && ln -s ~/dotfiles/utils/reload-safari.scpt ~/bin/reload-safari.scpt
-    [ ! -e ~/bin/reload-chrome.scpt ] && ln -s ~/dotfiles/utils/reload-chrome.scpt ~/bin/reload-chrome.scpt
-    [ ! -e ~/bin/macos-reset-routing-table.sh ] && ln -s ~/dotfiles/utils/macos-reset-routing-table.sh ~/bin/macos-reset-routing-table.sh
-    [ ! -d ~/iCloudDrive ] && [ -d ~/Library/Mobile\ Documents/com~apple~CloudDocs ] && ln -s ~/Library/Mobile\ Documents/com~apple~CloudDocs ~/iCloudDrive
-    [ ! -e ~/.ideavimrc ] && ln -s ~/dotfiles/editors/ideavimrc .ideavimrc
-    [ ! -e ~/Library/Application\ Support/espanso/match/common.yml ] && ln -s ~/dotfiles/utils/espanso/common.yml ~/Library/Application\ Support/espanso/match/common.yml
-    [ ! -e ~/Library/Application\ Support/espanso/match/private.yml ] && cp -rp ~/dotfiles/utils/espanso/private.yml ~/Library/Application\ Support/espanso/match/private.yml
-    [ ! -e ~/.config/karabiner/assets/complex_modifications/custom.json ] && ln -s ~/dotfiles/utils/karabiner/custom.json ~/.config/karabiner/assets/complex_modifications/custom.json
-    mkdir -p ~/.config/ghostty
-    [ ! -e ~/.config/ghostty/config ] && ln -s ~/dotfiles/utils/ghostty/config ~/.config/ghostty/config
-    # Finder "Open With" → Ghostty + nvim (replaces occasional MacVim GUI use)
-    ln -sfn ~/dotfiles/utils/Open\ in\ Neovim.app /Applications/Open\ in\ Neovim.app
-    [ ! -e ~/bin/open-in-neovim.sh ] && ln -s ~/dotfiles/utils/open-in-neovim.sh ~/bin/open-in-neovim.sh
+    [ ! -d ~/iCloudDrive ] && [ -d ~/Library/Mobile\ Documents/com~apple~CloudDocs ] && \
+      ln -s ~/Library/Mobile\ Documents/com~apple~CloudDocs ~/iCloudDrive
   fi
 
-
-  # all
-  [ ! -e ~/.profile ] && ln -s ~/dotfiles/shells/profile .profile
+  ## all bespoke
   if [ ! -d ~/.oh-my-zsh ]; then
     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     rm -f ~/.zshrc
   fi
-  [ ! -e ~/.zshrc ] && ln -s ~/dotfiles/shells/zshrc .zshrc
-  # PATH/env in zshenv only — zprofile is login-only and must not source profile.
-  # Force-correct repo-managed symlinks so a pull of the split files can't leave
-  # ~/.zshenv pointing at the empty zprofile stub (breaks Homebrew on PATH).
-  if [ -L ~/.zshenv ] || [ ! -e ~/.zshenv ]; then
-    ln -sfn ~/dotfiles/shells/zshenv ~/.zshenv
-  fi
-  if [ -L ~/.zprofile ] || [ ! -e ~/.zprofile ]; then
-    ln -sfn ~/dotfiles/shells/zprofile ~/.zprofile
-  fi
-  [ ! -e ~/.user-env ] && cp ~/dotfiles/shells/user-env ~/.user-env
-  [ ! -e ~/.oh-my-zsh/themes/digitalnomad.zsh-theme ] && \
-    ln -s ~/dotfiles/shells/digitalnomad.zsh-theme ~/.oh-my-zsh/themes/digitalnomad.zsh-theme
-  [ ! -e ~/.bashrc ] && ln -s ~/dotfiles/shells/bashrc .bashrc
-  [ ! -e ~/.bash_profile ] && ln -s ~/dotfiles/shells/bash_profile .bash_profile
-  [ ! -e ~/.sh_aliases ] && ln -s ~/dotfiles/shells/sh_aliases .sh_aliases
-  [ ! -e ~/.inputrc ] && ln -s ~/dotfiles/shells/inputrc .inputrc
-  [ ! -e ~/.tmux.conf ] && ln -s ~/dotfiles/utils/tmux.conf .tmux.conf
   [ ! -d ~/tmp ] && mkdir ~/tmp
   [ ! -d ~/.emacs.d ] && mkdir ~/.emacs.d
-  [ ! -d ~/.emacs.d/lisp ] && ln -s ~/dotfiles/editors/emacs.d/lisp ~/.emacs.d/lisp
-  [ ! -d ~/.emacs.d/snippets ] && ln -s ~/dotfiles/editors/emacs.d/snippets ~/.emacs.d/snippets
   [ ! -d ~/.emacs.d/views ] && mkdir ~/.emacs.d/views
   [ ! -e ~/.emacs.d/views/agenda.html ] && touch ~/.emacs.d/views/agenda.html
-  [ ! -e ~/.emacs ] && ln -s ~/dotfiles/editors/emacs.el .emacs
-  [ ! -e ~/.emacs.d/emacs-config.org ] && ln -s ~/dotfiles/editors/emacs-config.org ~/.emacs.d/emacs-config.org
-  [ ! -d ~/.config/nvim ] && ln -s ~/dotfiles/editors/nvim ~/.config/nvim
-  [ ! -e ~/.gitconfig ] && ln -s ~/dotfiles/utils/gitconfig_server .gitconfig
-  [ ! -e ~/.editorconfig ] && ln -s ~/dotfiles/editors/editorconfig .editorconfig
-  [ ! -e ~/.eslintrc.json ] && ln -s ~/dotfiles/utils/eslintrc.json ~/.eslintrc.json
-  [ ! -e ~/.prettierrc.json ] && ln -s ~/dotfiles/utils/prettierrc.json ~/.prettierrc.json
-  [ ! -e ~/jsconfig.json ] && ln -s ~/dotfiles/utils/jsconfig.json ~/jsconfig.json
-  [ ! -e ~/.zprint.edn ] && ln -s ~/dotfiles/utils/zprint.edn .zprint.edn
-  [ ! -d ~/.virtualenvs ] && mkdir ~/.virtualenvs
+  # virtualenvwrapper hooks (bootstrap originally linked these; only when the
+  # dir already exists — virgin machines get the dir created without hooks)
+  if [ -d ~/.virtualenvs ]; then
+    ln -sfn "${DOTFILES_ROOT}/utils/virtualenvwrapper-zsh-hooks/postactivate" ~/.virtualenvs/postactivate
+    ln -sfn "${DOTFILES_ROOT}/utils/virtualenvwrapper-zsh-hooks/postdeactivate" ~/.virtualenvs/postdeactivate
+  else
+    mkdir ~/.virtualenvs
+  fi
   link_agent_skills
+
+  ## manifest-driven links/copies
+  apply_links
 }
 
 
 ## work begins here
-update_repo
-os_setup
-verify_packages
-symlink_configs
+if [ "${DOTFILES_LINKS_ONLY:-0}" = "1" ]; then
+  # testing/maintenance mode: linking only, no repo update or package install
+  echo "links-only mode: skipping repo update and package install..."
+  os_setup
+  symlink_configs
+else
+  update_repo
+  os_setup
+  verify_packages
+  symlink_configs
+fi
 echo ""
 echo "setup complete!"
