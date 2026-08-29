@@ -79,6 +79,27 @@ o.bind("SUPER + SHIFT + Z", "Universal redo", unless_terminal(send_shortcut_once
 o.bind("ALT + LEFT", "Move cursor one word left", send_shortcut_once("CTRL", "LEFT"))
 o.bind("ALT + RIGHT", "Move cursor one word right", send_shortcut_once("CTRL", "RIGHT"))
 
+-- Word deletion (mac Option+Backspace -> CTRL+Backspace). In terminals,
+-- replay the raw chord instead: readline's Meta-Backspace is
+-- backward-kill-word, while CTRL+BACKSPACE only deletes one char there.
+o.bind("ALT + BACKSPACE", "Delete previous word", function()
+  if active_window_is_terminal() then
+    send_shortcut_once("ALT", "BACKSPACE")()
+  else
+    send_shortcut_once("CTRL", "BACKSPACE")()
+  end
+end)
+
+-- Delete next word (mac fn+Option+Delete -> CTRL+Delete). In terminals,
+-- replay the raw chord (forward-kill-word is a readline M- binding).
+o.bind("ALT + DELETE", "Delete next word", function()
+  if active_window_is_terminal() then
+    send_shortcut_once("ALT", "DELETE")()
+  else
+    send_shortcut_once("CTRL", "DELETE")()
+  end
+end)
+
 -- Line/document navigation (mac Cmd+Arrow). Unbind Omarchy's window focus on
 -- SUPER+Arrow first; focus moves to SUPER+ALT+Arrow below.
 hl.unbind("SUPER + LEFT")
@@ -98,7 +119,8 @@ o.bind("CTRL + ALT + SHIFT + RIGHT", "Focus on right window", hl.dsp.focus({ dir
 o.bind("CTRL + ALT + SHIFT + UP", "Focus on above window", hl.dsp.focus({ direction = "u" }))
 o.bind("CTRL + ALT + SHIFT + DOWN", "Focus on below window", hl.dsp.focus({ direction = "d" }))
 
--- Moom-style window management (see ~/Work/moom-omarchy-plan.md).
+-- Moom-style window management (see omarchy/docs/moom-omarchy-plan.md in the
+-- dotfiles repo).
 -- Fraction chords resize tiled splits; grid cells place floating windows.
 local function moom(action)
   return "omarchy-moom " .. action
@@ -153,11 +175,11 @@ o.bind("CTRL + ALT + RIGHT", "Moom: next display", moom("display-next"))
 o.bind("SUPER + CTRL + ALT + R", "Moom: revert", moom("revert"))
 
 -- Cmd+Tab-style app switcher: omarchy-altswitch plugin, patched for SUPER
--- chords (see the clone at ~/.config/omarchy/plugins/io.github.pablo-merino.altswitch/).
+-- chords (see the fork at ~/.config/omarchy/plugins/io.github.pablo-merino.altswitch/).
 -- Overlay stays open while SUPER is held; release commits, SUPER+ESC cancels.
--- Replaces our omarchy-appswitch script binds (script kept on disk as a
--- fallback). These chords no longer switch workspaces: use SUPER+1..0,
--- scroll, or gestures.
+-- (An earlier standalone omarchy-appswitch script was retired in favor of the
+-- plugin.) These chords no longer switch workspaces: use SUPER+1..0, scroll,
+-- or gestures.
 dofile(os.getenv("HOME") .. "/.config/omarchy/plugins/io.github.pablo-merino.altswitch/altswitch.lua")
 
 -- Mac-style Cmd+W / Cmd+Q. In terminals fall back to closing the window so

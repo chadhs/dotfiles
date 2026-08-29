@@ -11,7 +11,7 @@ obviously you **want to read** the best part... [emacs-config.org](editors/emacs
 | `editors/` | emacs config ([emacs-config.org](editors/emacs-config.org)), neovim config ([editors/nvim](editors/nvim/README.md)), `ideavimrc`, `editorconfig`, jetbrains plugins |
 | `shells/` | zsh + bash profiles/rc files, `inputrc`, the `digitalnomad` zsh theme |
 | `utils/` | `gitconfig`, `tmux.conf`, ghostty + karabiner + espanso config, `ssh_config`, agent skills, misc tool config and scripts (`project-ruby-exec`, `autogit.sh`, ...) |
-| `omarchy/` | vendored omarchy customizations (hypr keymaps/input, omarchy-shell bar config, moom config, `omarchy-moom`/`omarchy-appswitch` scripts, patched altswitch plugin) — see [omarchy/README.md](omarchy/README.md) |
+| `omarchy/` | owned omarchy customizations (hypr keymaps/input, omarchy-shell bar config, moom config, `omarchy-moom` script, altswitch fork) — see [omarchy/README.md](omarchy/README.md) |
 | `scripts/` | `bootstrap-mac.sh`, `deploy.sh`, `doctor.sh`, `weekly-update.sh`, `macos-defaults.sh`, `links.conf`, npm/gem package lists |
 | `.github/` | CI: shellcheck, `links.conf` lint, and syntax checks run on push/PR |
 

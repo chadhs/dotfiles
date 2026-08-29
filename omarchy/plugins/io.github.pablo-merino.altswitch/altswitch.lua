@@ -1,3 +1,11 @@
+-- OWNED FORK, maintained in the chadhs/dotfiles repo (omarchy/plugins/).
+-- Forked from https://github.com/Pablo-Merino/omarchy-altswitch at base
+-- commit b99a58ca94e7ffcb6785d009a2e88f9e68599642 and locally patched (see
+-- "SUPER-CHORD PATCH" below). Upstream MIT license is preserved — see the
+-- bundled LICENSE. The directory name matches the plugin id in manifest.json
+-- and shell.json; it is load-bearing for omarchy's plugin loader — do not
+-- rename it. See omarchy/README.md for refresh instructions.
+--
 -- Windows-style ALT+TAB for Hyprland: cycle every window on every workspace,
 -- most recently used first. Hold ALT, tap TAB to move down the list, release
 -- ALT to jump to the highlighted window. ALT+SHIFT+TAB moves back up, ESCAPE

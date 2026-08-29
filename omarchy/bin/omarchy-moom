@@ -4,7 +4,7 @@
 # omarchy:args=<action>
 # omarchy:actions=half-left half-right half-top half-bottom narrow-left narrow-right wide-left wide-right center threequarter fill corner-tl corner-tr corner-bl corner-br quarter-tl quarter-tr quarter-bl quarter-br task nudge-left nudge-right nudge-up nudge-down display-prev display-next revert
 # omarchy:examples=omarchy-moom narrow-left | omarchy-moom task | omarchy-moom revert
-# See ~/Work/moom-omarchy-plan.md for the full design.
+# See omarchy/docs/moom-omarchy-plan.md in the dotfiles repo for the full design.
 
 set -euo pipefail
 

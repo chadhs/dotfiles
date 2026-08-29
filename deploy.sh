@@ -109,6 +109,21 @@ link_agent_skills(){
   fi
 }
 
+# On arch, omarchy ships stock user configs at ~/.config/nvim and
+# ~/.config/emacs. The repo owns both (linux-scoped links). The guarded link
+# mode skips existing targets, so move any non-symlink copies aside exactly
+# once — a real backup, never overwritten — letting the links take over.
+backup_omarchy_configs(){
+  [ "$system_os" = "arch" ] || return 0
+  for target in "${HOME}/.config/nvim" "${HOME}/.config/emacs"; do
+    [ -e "$target" ] || continue
+    [ -L "$target" ] && continue  # symlinks are left for doctor.sh to flag
+    backup="${target}.bak-omarchy"
+    [ -e "$backup" ] && backup="${backup}-$(date +%Y%m%d%H%M%S)"
+    mv "$target" "$backup" && echo "backed up ${target} -> ${backup}"
+  done
+}
+
 # On arch/omarchy the login shell should be /usr/bin/zsh so the repo's zsh
 # chain is what sessions get; offer the chsh rather than doing it silently.
 offer_login_shell_change(){
@@ -207,6 +222,7 @@ symlink_configs(){
   link_agent_skills
 
   ## manifest-driven links/copies
+  backup_omarchy_configs
   apply_links
 }
 
