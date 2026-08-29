@@ -2300,9 +2300,9 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 
 #+BEGIN_SRC emacs-lisp
   ;; mac uses Menlo @ 14pt; linux (omarchy) uses omarchy's default font at
-  ;; 12pt — same apparent size as mac retina at this panel's pixel density
+  ;; 10pt — same apparent size as mac retina at this panel's pixel density
   (let ((default-font (if (eq system-type 'darwin) "Menlo" "JetBrainsMono Nerd Font"))
-        (default-height (if (eq system-type 'darwin) 140 120)))
+        (default-height (if (eq system-type 'darwin) 140 100)))
     (set-face-attribute 'default nil :family default-font :height default-height :weight 'normal))
 #+END_SRC
 
