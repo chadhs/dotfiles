@@ -44,11 +44,19 @@ sh deploy.sh
 
 notes on omarchy-managed configs (deliberate split):
 - **omarchy owns**: tmux config (XDG), ghostty, hyprland look'n'feel, `monitors.lua` (machine-generated) — the repo does not manage these on linux.
-- **the repo owns** (linux-scoped in `scripts/links.conf`): git config + hooks, shells (`~/.profile`, zsh chain), nvim, emacs, editorconfig, agent skills, and the vendored omarchy customizations in `omarchy/` (hypr `bindings.lua`/`input.lua`, shell bar config, moom, app-switcher plugin).
+- **the repo owns** (linux-scoped in `scripts/links.conf`): git config + hooks, ssh config, shells (`~/.profile`, zsh chain), nvim, emacs, editorconfig, agent skills, and the owned omarchy customizations in `omarchy/` (hypr `bindings.lua`/`input.lua`, shell bar config, moom, altswitch fork).
 - `~/.bashrc` stays omarchy's on linux; the repo's minimal bashrc is mac-only.
 - tmux auto-attach in zsh only fires for SSH sessions now, so desktop terminals aren't swallowed.
 
-the patched altswitch plugin is vendored (no `.git`), so `omarchy plugin update` no longer manages it — see [omarchy/README.md](omarchy/README.md) for provenance and refresh instructions.
+the altswitch plugin is an owned fork (no `.git`), so `omarchy plugin update` no longer manages it — see [omarchy/README.md](omarchy/README.md) for provenance and refresh instructions.
+
+#### git / ssh / gh auth on omarchy
+
+- **per-project git identity** works as on the mac: `~/.gitconfig` → `~/.gitconfig-local` → `~/.gitconfig.d/*` (`includeIf` per project dir). gitconfig and ssh_config are small per-OS forks (`utils/gitconfig_linux`, `utils/ssh_config_linux`) — keep them in sync with the mac files.
+- **per-project gh tokens** flow through direnv: project `.envrc` files export `GH_TOKEN`/`GITHUB_TOKEN`, and the oh-my-zsh `direnv` plugin (linux zsh branch) loads them per directory. use `direnv exec <repo-root> gh ...` when a token must be guaranteed (see the `git-host-auth` skill).
+- **git over SSH** uses per-account keys via `core.sshCommand` in `~/.gitconfig.d/*` — **copy the keys manually** to `~/.ssh/` on a new machine (machine-local, never in the repo), e.g. `~/.ssh/chad-mac_rsa`.
+- **git over HTTPS** has no credential helper on linux by default; if ever needed, set `helper = !gh auth git-credential` in `~/.gitconfig-local` (it composes with the direnv token flow) — commented recipe in `utils/gitconfig-local`.
+- stock omarchy configs (`~/.config/nvim`, `~/.config/emacs`) are moved to `<target>.bak-omarchy` by `deploy.sh` before the repo links take over.
 
 ### Brewfile location
 the `Brewfile` lives at the **repo root** (not under `scripts/`). that matches Homebrew’s usual layout so `cd ~/dotfiles && brew bundle` works without extra flags, while `scripts/weekly-update.sh` still passes `--file` explicitly.

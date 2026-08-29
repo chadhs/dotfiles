@@ -1,0 +1,16 @@
+# linux fork of utils/ssh_config — keep shared settings in sync with the mac
+# file; the only intended divergence is the colima Include (mac container tool).
+
+ForwardAgent yes
+KeepAlive yes
+ServerAliveInterval 100
+
+Host *
+ControlPath /tmp/%%h-%%p-%%r
+
+# add additional localized configuration to config.d/ssh_config
+# add your identities to config.d/ssh_config using the following format
+## Host *
+## IdentityFile ~/.ssh/id_rsa
+
+Include config.d/*

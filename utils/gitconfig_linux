@@ -1,0 +1,27 @@
+## linux fork of utils/gitconfig — keep shared settings in sync with the mac
+## file; the only intended divergence is the credential helper (osxkeychain
+## does not exist on linux).
+##
+## If HTTPS remotes ever need credentials here, add a helper — this composes
+## with the direnv per-project token flow (.envrc exports GH_TOKEN, and the
+## helper runs in the repo cwd where direnv has already loaded it):
+##   [credential]
+##     helper = !gh auth git-credential
+
+## default to asking the user if not configured below
+[user]
+useconfigonly = true
+[core]
+ignorecase = false
+excludesfile = ~/.gitignore
+hooksPath = ~/.config/git/hooks
+[push]
+default = simple
+[pull]
+rebase = false
+[color]
+ui = auto
+
+## per machine config
+[include]
+  path = ~/.gitconfig-local

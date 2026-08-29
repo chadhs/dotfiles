@@ -216,6 +216,23 @@ if [ "$system_type" = "Linux" ]; then
     fail "zsh not installed (run deploy.sh or: sudo pacman -S zsh)"
   fi
 
+  # git-host auth toolchain: direnv loads per-project gh tokens from .envrc
+  for tool in direnv gh glab; do
+    if command -v "$tool" >/dev/null 2>&1; then
+      pass "tool: ${tool}"
+    else
+      fail "tool missing: ${tool} (run deploy.sh or: sudo pacman -S)"
+    fi
+  done
+
+  # per-account git auth relies on keys in ~/.ssh (provisioned manually,
+  # machine-local — never in the repo)
+  if ls "$HOME"/.ssh/id_* "$HOME"/.ssh/*_rsa >/dev/null 2>&1; then
+    pass "ssh keys present in ~/.ssh"
+  else
+    warn "no ssh keys in ~/.ssh (copy per-account keys manually; gitconfig.d uses core.sshCommand with them)"
+  fi
+
   # authoritative login shell from passwd, not $SHELL (may predate a chsh)
   login_shell="$(getent passwd "$(id -un)" | cut -d: -f7)"
   if [ "$login_shell" = "/usr/bin/zsh" ]; then

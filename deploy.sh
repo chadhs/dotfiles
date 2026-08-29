@@ -32,7 +32,8 @@ os_setup(){
       system_os="arch"
       pkg_install="sudo pacman -S --needed"
       # nvim, emacs, node etc. ship with omarchy; this covers the shared baseline
-      package_list="editorconfig-core-c git tmux zsh"
+      # plus the git-host auth toolchain (direnv loads per-project gh tokens)
+      package_list="editorconfig-core-c git tmux zsh direnv github-cli glab"
     elif grep -qi "ubuntu\|debian" /proc/version; then
       system_os="debian"
       pkg_install="sudo apt-get install -y"
@@ -196,11 +197,13 @@ symlink_configs(){
 
   ## mac bespoke (everything else lives in scripts/links.conf)
   if [ "$system_os" = "macos" ]; then
-    mkdir -p ~/.ssh/config.d
-    [ ! -e ~/.ssh/config.d/ssh_config ] && touch ~/.ssh/config.d/ssh_config
     [ ! -d ~/iCloudDrive ] && [ -d ~/Library/Mobile\ Documents/com~apple~CloudDocs ] && \
       ln -s ~/Library/Mobile\ Documents/com~apple~CloudDocs ~/iCloudDrive
   fi
+
+  ## all platforms: ssh config.d placeholder (both ssh_config forks include config.d/*)
+  mkdir -p ~/.ssh/config.d
+  [ ! -e ~/.ssh/config.d/ssh_config ] && touch ~/.ssh/config.d/ssh_config
 
   ## all bespoke
   if [ ! -d ~/.oh-my-zsh ]; then

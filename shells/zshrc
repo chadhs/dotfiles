@@ -61,8 +61,8 @@ if [ $(uname) = "Darwin" ] && [ $EMACS ]; then
 elif [ $(uname) = "Darwin" ]; then
   plugins=(bundler direnv git jump tmux tmuxinator vi-mode virtualenvwrapper)
 else
-  ## default plugins
-  plugins=(git tmux vi-mode)
+  ## linux plugins (direnv: per-project gh tokens via .envrc)
+  plugins=(direnv git tmux vi-mode)
 fi
 
 # User configuration
