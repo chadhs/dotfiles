@@ -23,9 +23,9 @@
         },
         {
           "id": "omarchy.clock",
-          "format": "dddd HH:mm",
+          "format": "dddd h:mm AP",
           "formatAlt": "d MMMM 'W'ww yyyy",
-          "verticalFormat": "HH\n—\nmm"
+          "verticalFormat": "h\n—\nmm AP"
         },
         {
           "id": "omarchy.keyboard-layout"
