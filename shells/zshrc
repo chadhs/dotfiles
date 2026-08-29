@@ -109,9 +109,10 @@ unset LSCOLORS
 disable r
 source ~/.sh_aliases
 
-## load tmux automagically on ssh sessions only — on the omarchy desktop,
-## Hyprland terminal windows must not be swallowed into tmux
-if [ -n "$SSH_CONNECTION" ] && [ ! $(id -u) = 0 ]; then
+## load tmux automagically on linux ssh sessions only — on the omarchy desktop,
+## Hyprland terminal windows must not be swallowed into tmux, and mac keeps
+## its historical never-auto-attach behavior
+if [ "$(uname)" != "Darwin" ] && [ -n "$SSH_CONNECTION" ] && [ ! $(id -u) = 0 ]; then
   case "$-" in *i*) [ -z $TMUX ] && if tmux has; then tmux attach; else tmux new; fi && exit 0; esac;
 fi
 
