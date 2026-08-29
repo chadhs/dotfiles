@@ -114,7 +114,8 @@ vim.opt.foldopen = { 'block', 'insert', 'jump', 'mark', 'percent', 'quickfix', '
 
 -- Neovide GUI settings. Terminal Neovim keeps the options above unchanged.
 if vim.g.neovide then
-  vim.o.guifont = 'Menlo:h14'
+  -- mac uses Menlo; linux (omarchy) uses omarchy's default font
+  vim.o.guifont = (vim.uv.os_uname().sysname == 'Darwin') and 'Menlo:h14' or 'JetBrainsMono Nerd Font:h14'
   vim.o.mouse = 'a'
 
   vim.g.neovide_remember_window_size = true

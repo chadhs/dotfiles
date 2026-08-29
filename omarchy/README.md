@@ -12,6 +12,7 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 | `hypr/input.lua` | `~/.config/hypr/input.lua` | no tap-to-click, natural scroll, per-device list |
 | `shell.json` | `~/.config/omarchy/shell.json` | transparent bar + altswitch plugin entry |
 | `moom.conf` | `~/.config/omarchy/moom.conf` | `MOOM_MODE=planA` |
+| `env/90-shell.conf` | `~/.config/environment.d/90-shell.conf` | session `SHELL` mirror (ghostty launches `$SHELL`; guards against systemd user-manager staleness after chsh) |
 | `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-window-raise-front` |
 | `plugins/io.github.pablo-merino.altswitch/` | `~/.config/omarchy/plugins/io.github.pablo-merino.altswitch/` | owned fork (see below) |
 | `docs/moom-omarchy-plan.md` | — | design doc for `omarchy-moom` + the Moom chords in `bindings.lua` |
