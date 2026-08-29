@@ -28,7 +28,13 @@ os_setup(){
     pkg_install="sudo pkg install -y"
     package_list="editorconfig-core-c emacs-nox11 git tmux vim-console zsh"
   elif [ "$system_type" = "Linux" ]; then
-    if grep -qi "ubuntu\|debian" /proc/version; then
+    if grep -qi "arch" /etc/os-release 2>/dev/null || command -v pacman >/dev/null 2>&1; then
+      system_os="arch"
+      pkg_install="sudo pacman -S --needed"
+      # nvim, emacs, node etc. ship with omarchy; this covers the shared baseline
+      # plus the git-host auth toolchain (direnv loads per-project gh tokens)
+      package_list="editorconfig-core-c git tmux zsh direnv github-cli glab"
+    elif grep -qi "ubuntu\|debian" /proc/version; then
       system_os="debian"
       pkg_install="sudo apt-get install -y"
       package_list="editorconfig  emacs-nox git tmux vim-nox zsh"
@@ -104,6 +110,64 @@ link_agent_skills(){
   fi
 }
 
+# On arch, omarchy ships stock user configs at several repo-managed paths
+# (editor configs, the vendored omarchy files, bin scripts). Guarded link
+# modes skip existing targets, and force replaces real files outright — so
+# before linking, move any real (non-symlink) target aside exactly once.
+# Driven by the manifest (non-mac-scoped link|force entries) so future links
+# inherit backup behavior automatically; machine-local .bak-omarchy copies
+# are never committed. Symlinks are left for doctor.sh to flag.
+backup_omarchy_configs(){
+  [ "$system_os" = "arch" ] || return 0
+  manifest="${DOTFILES_ROOT}/scripts/links.conf"
+  [ -r "${manifest}" ] || return 0
+  while IFS='|' read -r mode scope target src; do
+    case "${mode}" in ''|\#*) continue ;; esac
+    [ "${scope}" = "mac" ] && continue
+    case "${mode}" in
+      link|force) ;;
+      *) continue ;;
+    esac
+    case "${target}" in
+      /*) t="${target}" ;;
+      *) t="${HOME}/${target}" ;;
+    esac
+    [ -e "${t}" ] || continue
+    [ -L "${t}" ] && continue
+    backup="${t}.bak-omarchy"
+    [ -e "${backup}" ] && backup="${backup}-$(date +%Y%m%d%H%M%S)"
+    mv "${t}" "${backup}" && echo "backed up ${t} -> ${backup}"
+  done < "${manifest}"
+
+  ## supplemental: omarchy's XDG emacs dir is not a manifest target (the repo
+  ## links ~/.emacs and ~/.emacs.d/*), but it must move aside so emacs
+  ## unambiguously reads the repo's init chain
+  t="${HOME}/.config/emacs"
+  if [ -e "${t}" ] && [ ! -L "${t}" ]; then
+    backup="${t}.bak-omarchy"
+    [ -e "${backup}" ] && backup="${backup}-$(date +%Y%m%d%H%M%S)"
+    mv "${t}" "${backup}" && echo "backed up ${t} -> ${backup}"
+  fi
+}
+
+# On arch/omarchy the login shell should be /usr/bin/zsh so the repo's zsh
+# chain is what sessions get; offer the chsh rather than doing it silently.
+offer_login_shell_change(){
+  [ "$system_os" = "arch" ] || return 0
+  login_shell="$(getent passwd "$(id -un)" | cut -d: -f7)"
+  [ "$login_shell" = "/usr/bin/zsh" ] && return 0
+  printf 'login shell is %s — change it to /usr/bin/zsh? [y/N] ' "${login_shell:-unknown}"
+  read -r reply
+  case "$reply" in
+    y|Y|yes)
+      sudo chsh -s /usr/bin/zsh "$(id -un)" && echo "login shell changed to /usr/bin/zsh (re-login to use it)"
+      ;;
+    *)
+      echo "keeping ${login_shell}; run: chsh -s /usr/bin/zsh"
+      ;;
+  esac
+}
+
 # Apply links/copies from scripts/links.conf — the single source of truth
 # shared with scripts/doctor.sh. Add new links there, not here; only bespoke
 # logic lives in symlink_configs below.
@@ -114,6 +178,12 @@ apply_links(){
     case "${mode}" in ''|\#*) continue ;; esac
     if [ "${scope}" = "mac" ] && [ "${system_os}" != "macos" ]; then
       continue
+    fi
+    if [ "${scope}" = "linux" ]; then
+      case "${system_os}" in
+        arch|debian|redhat) ;;
+        *) continue ;;
+      esac
     fi
     case "${target}" in
       /*) t="${target}" ;;
@@ -152,11 +222,13 @@ symlink_configs(){
 
   ## mac bespoke (everything else lives in scripts/links.conf)
   if [ "$system_os" = "macos" ]; then
-    mkdir -p ~/.ssh/config.d
-    [ ! -e ~/.ssh/config.d/ssh_config ] && touch ~/.ssh/config.d/ssh_config
     [ ! -d ~/iCloudDrive ] && [ -d ~/Library/Mobile\ Documents/com~apple~CloudDocs ] && \
       ln -s ~/Library/Mobile\ Documents/com~apple~CloudDocs ~/iCloudDrive
   fi
+
+  ## all platforms: ssh config.d placeholder (both ssh_config forks include config.d/*)
+  mkdir -p ~/.ssh/config.d
+  [ ! -e ~/.ssh/config.d/ssh_config ] && touch ~/.ssh/config.d/ssh_config
 
   ## all bespoke
   if [ ! -d ~/.oh-my-zsh ]; then
@@ -178,6 +250,7 @@ symlink_configs(){
   link_agent_skills
 
   ## manifest-driven links/copies
+  backup_omarchy_configs
   apply_links
 }
 
@@ -193,6 +266,7 @@ else
   os_setup
   verify_packages
   symlink_configs
+  offer_login_shell_change
 fi
 echo ""
 echo "setup complete!"

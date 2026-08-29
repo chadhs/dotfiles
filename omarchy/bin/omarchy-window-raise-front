@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# omarchy:summary=Guarantee a window is not covered: float+raise it if a floating window overlaps it
+# omarchy:args=<address>
+# Used by the omarchy-altswitch commit path so the window you switch to is
+# always frontmost. Hyprland renders all floats above all tiles, so a tiled
+# window overlapped by a float can never be raised while tiled — the only fix
+# is to float it in place first (keeps its geometry), then raise.
+
+set -euo pipefail
+
+addr="${1:-}"
+[[ -n "$addr" ]] || exit 0
+
+win=$(hyprctl clients -j | jq -c --arg a "$addr" '.[] | select(.address == $a)') || exit 0
+[[ -n "$win" ]] || exit 0
+
+raise() {
+  hyprctl dispatch "hl.dsp.window.alter_zorder({ window = \"address:$addr\", mode = \"top\" })" >/dev/null 2>&1 || true
+}
+
+if [[ "$(jq -r .floating <<<"$win")" == "true" ]]; then
+  raise
+  exit 0
+fi
+
+# Tiled: is any floating window on the same workspace actually covering it?
+covered=$(jq -n --argjson w "$win" --argjson clients "$(hyprctl clients -j)" '
+  ($w.at[0]) as $x | ($w.at[1]) as $y
+  | ($w.at[0] + $w.size[0]) as $x2 | ($w.at[1] + $w.size[1]) as $y2
+  | any($clients[];
+      .floating == true and .mapped != false
+      and .workspace.id == $w.workspace.id and .address != $w.address
+      and ((.at[0] + .size[0]) > ($x + 4) and (.at[0]) < ($x2 - 4))
+      and ((.at[1] + .size[1]) > ($y + 4) and (.at[1]) < ($y2 - 4)))')
+
+if [[ "$covered" == "true" ]]; then
+  # Float it in place: capture the tiled geometry first because Hyprland's
+  # float toggle assigns a default centered size instead of keeping it.
+  wx=$(jq -r '.at[0]' <<<"$win");   wy=$(jq -r '.at[1]' <<<"$win")
+  ww=$(jq -r '.size[0]' <<<"$win"); wh=$(jq -r '.size[1]' <<<"$win")
+  hyprctl dispatch "hl.dsp.window.float({ window = \"address:$addr\", action = \"toggle\" })" >/dev/null 2>&1 || true
+  hyprctl dispatch "hl.dsp.window.resize({ window = \"address:$addr\", x = $ww, y = $wh })" >/dev/null 2>&1 || true
+  hyprctl dispatch "hl.dsp.window.move({ window = \"address:$addr\", x = $wx, y = $wy })" >/dev/null 2>&1 || true
+fi
+
+raise

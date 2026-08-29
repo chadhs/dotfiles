@@ -61,8 +61,8 @@ if [ $(uname) = "Darwin" ] && [ $EMACS ]; then
 elif [ $(uname) = "Darwin" ]; then
   plugins=(bundler direnv git jump tmux tmuxinator vi-mode virtualenvwrapper)
 else
-  ## default plugins
-  plugins=(git tmux vi-mode)
+  ## linux plugins (direnv: per-project gh tokens via .envrc)
+  plugins=(direnv git tmux vi-mode)
 fi
 
 # User configuration
@@ -109,8 +109,10 @@ unset LSCOLORS
 disable r
 source ~/.sh_aliases
 
-## update settings and load tmux automagically on servers intelligently
-if [ ! $(uname) = "Darwin" ] && [ ! $(id -u) = 0 ]; then
+## load tmux automagically on linux ssh sessions only — on the omarchy desktop,
+## Hyprland terminal windows must not be swallowed into tmux, and mac keeps
+## its historical never-auto-attach behavior
+if [ "$(uname)" != "Darwin" ] && [ -n "$SSH_CONNECTION" ] && [ ! $(id -u) = 0 ]; then
   case "$-" in *i*) [ -z $TMUX ] && if tmux has; then tmux attach; else tmux new; fi && exit 0; esac;
 fi
 

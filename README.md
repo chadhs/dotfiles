@@ -11,6 +11,7 @@ obviously you **want to read** the best part... [emacs-config.org](editors/emacs
 | `editors/` | emacs config ([emacs-config.org](editors/emacs-config.org)), neovim config ([editors/nvim](editors/nvim/README.md)), `ideavimrc`, `editorconfig`, jetbrains plugins |
 | `shells/` | zsh + bash profiles/rc files, `inputrc`, the `digitalnomad` zsh theme |
 | `utils/` | `gitconfig`, `tmux.conf`, ghostty + karabiner + espanso config, `ssh_config`, agent skills, misc tool config and scripts (`project-ruby-exec`, `autogit.sh`, ...) |
+| `omarchy/` | owned omarchy customizations (hypr keymaps/input, omarchy-shell bar config, moom config, `omarchy-moom` script, altswitch fork) — see [omarchy/README.md](omarchy/README.md) |
 | `scripts/` | `bootstrap-mac.sh`, `deploy.sh`, `doctor.sh`, `weekly-update.sh`, `macos-defaults.sh`, `links.conf`, npm/gem package lists |
 | `.github/` | CI: shellcheck, `links.conf` lint, and syntax checks run on push/PR |
 
@@ -34,6 +35,31 @@ it will:
 
 ### Brewfile location
 the `Brewfile` lives at the **repo root** (not under `scripts/`). that matches Homebrew’s usual layout so `cd ~/dotfiles && brew bundle` works without extra flags, while `scripts/weekly-update.sh` still passes `--file` explicitly.
+
+### setting up an omarchy/arch machine
+assumes [omarchy](https://omarchy.org) is already installed. the deploy step covers packages the omarchy image doesn't include, links the shared configs, and offers to switch the login shell to zsh.
+
+```sh
+git clone https://github.com/chadhs/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+sh deploy.sh
+```
+
+notes on omarchy-managed configs (deliberate split):
+- **omarchy owns**: tmux config (XDG), ghostty, hyprland look'n'feel, `monitors.lua` (machine-generated) — the repo does not manage these on linux.
+- **the repo owns** (linux-scoped in `scripts/links.conf`): git config + hooks, ssh config, shells (`~/.profile`, zsh chain), nvim, emacs, editorconfig, agent skills, and the owned omarchy customizations in `omarchy/` (hypr `bindings.lua`/`input.lua`, shell bar config, moom, altswitch fork).
+- `~/.bashrc` stays omarchy's on linux; the repo's minimal bashrc is mac-only.
+- tmux auto-attach in zsh only fires for SSH sessions now, so desktop terminals aren't swallowed.
+
+the altswitch plugin is an owned fork (no `.git`), so `omarchy plugin update` no longer manages it — see [omarchy/README.md](omarchy/README.md) for provenance and refresh instructions.
+
+#### git / ssh / gh auth on omarchy
+
+- **per-project git identity** works as on the mac: `~/.gitconfig` → `~/.gitconfig-local` → `~/.gitconfig.d/*` (`includeIf` per project dir). gitconfig and ssh_config are small per-OS forks (`utils/gitconfig_linux`, `utils/ssh_config_linux`) — keep them in sync with the mac files.
+- **per-project gh tokens** flow through direnv: project `.envrc` files export `GH_TOKEN`/`GITHUB_TOKEN`, and the oh-my-zsh `direnv` plugin (linux zsh branch) loads them per directory. use `direnv exec <repo-root> gh ...` when a token must be guaranteed (see the `git-host-auth` skill).
+- **git over SSH** uses per-account keys via `core.sshCommand` in `~/.gitconfig.d/*` — **copy the keys manually** to `~/.ssh/` on a new machine (machine-local, never in the repo), e.g. `~/.ssh/chad-mac_rsa`.
+- **git over HTTPS** has no credential helper on linux by default; if ever needed, set `helper = !gh auth git-credential` in `~/.gitconfig-local` (it composes with the direnv token flow) — commented recipe in `utils/gitconfig-local`.
+- before linking, `deploy.sh` moves any real (non-symlink) files at repo-managed targets aside to `<target>.bak-omarchy` (never overwritten, machine-local) — stock omarchy configs (`~/.config/nvim`, `~/.config/emacs`, the owned omarchy files, bin scripts) are preserved and the links take over cleanly.
 
 ### keeping config changes in sync
 the `deploy.sh` script is designed to setup base packages and symlinks; it is also called by the bootstrap script.

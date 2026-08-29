@@ -1,0 +1,251 @@
+#!/bin/bash
+
+# omarchy:summary=Moom-style window management: fraction resize for tiled windows, grid placement for floating ones
+# omarchy:args=<action>
+# omarchy:actions=half-left half-right half-top half-bottom narrow-left narrow-right wide-left wide-right center threequarter fill corner-tl corner-tr corner-bl corner-br quarter-tl quarter-tr quarter-bl quarter-br task nudge-left nudge-right nudge-up nudge-down display-prev display-next revert
+# omarchy:examples=omarchy-moom narrow-left | omarchy-moom task | omarchy-moom revert
+# See omarchy/docs/moom-omarchy-plan.md in the dotfiles repo for the full design.
+
+set -euo pipefail
+
+STATE_DIR="$HOME/.local/state/omarchy/moom"
+NUDGE_STEP="${MOOM_NUDGE:-50}"
+GRID_COLS=12
+GRID_ROWS=8
+
+action="${1:-}"
+[[ -n "$action" ]] || { grep '^# omarchy:actions=' "$0" | sed 's/^# omarchy:actions=//' | tr ' ' '\n' | sed 's/^/  /' >&2; exit 1; }
+
+# Mode: planA (default) = every chord floats the window if needed and places
+# it at the literal grid cell, independent of tiling layout. planB = on tiled
+# windows, directional chords swap toward that side then resize the split.
+CONF="${XDG_CONFIG_HOME:-$HOME/.config}/omarchy/moom.conf"
+[[ -f "$CONF" ]] && source "$CONF"
+MOOM_MODE="${MOOM_MODE:-planA}"
+
+# All dispatches target the window by address, same pattern as
+# omarchy-hyprland-window-pop.
+wcmd() { # $1 = lua table body (window field added automatically)
+  hyprctl dispatch "hl.dsp.window.$2({ window = \"address:$addr\", $1 })" >/dev/null 2>&1
+}
+
+# --- geometry ---------------------------------------------------------------
+
+win=$(hyprctl activewindow -j 2>/dev/null) || exit 0
+[[ "$win" == *"{"* ]] || exit 0
+
+addr=$(jq -r .address <<<"$win")
+is_floating=$(jq -r .floating <<<"$win")
+mon_id=$(jq -r .monitor <<<"$win")
+wx=$(jq -r '.at[0]' <<<"$win");   wy=$(jq -r '.at[1]' <<<"$win")
+ww=$(jq -r '.size[0]' <<<"$win"); wh=$(jq -r '.size[1]' <<<"$win")
+
+mon=$(hyprctl monitors -j | jq -c --argjson id "$mon_id" 'map(select(.id == $id)) | .[0]') || exit 0
+mx=$(jq -r .x <<<"$mon"); my=$(jq -r .y <<<"$mon")
+# Monitor JSON is in physical pixels; window geometry is logical. Convert.
+mw=$(jq -r '(.width / .scale) | floor' <<<"$mon")
+mh=$(jq -r '(.height / .scale) | floor' <<<"$mon")
+rl=$(jq -r '.reserved[0]' <<<"$mon"); rt=$(jq -r '.reserved[1]' <<<"$mon")
+rr=$(jq -r '.reserved[2]' <<<"$mon"); rb=$(jq -r '.reserved[3]' <<<"$mon")
+
+# Uniform outer pad: max of general:gaps_out ("css gap data: L T R B").
+pad=$(hyprctl getoption general:gaps_out 2>/dev/null | head -1 | grep -o '[0-9]\+' | sort -n | tail -1)
+pad="${pad:-10}"
+
+ux=$(( mx + rl + pad )); uy=$(( my + rt + pad ))
+uw=$(( mw - rl - rr - 2 * pad )); uh=$(( mh - rt - rb - 2 * pad ))
+
+# --- helpers ----------------------------------------------------------------
+
+snapshot() {
+  mkdir -p "$STATE_DIR"
+  jq -n --arg addr "$addr" --argjson x "$wx" --argjson y "$wy" \
+        --argjson w "$ww" --argjson h "$wh" \
+        '{address: $addr, at: [$x, $y], size: [$w, $h]}' >"$STATE_DIR/last.json"
+}
+
+apply_geometry() { # x y w h  (exact; float-only)
+  wcmd "x = $3, y = $4" resize
+  wcmd "x = $1, y = $2" move
+}
+
+# $1=num $2=den $3=total -> floor(total * num/den)
+frac() { echo $(( $3 * $1 / $2 )); }
+
+# Cell ranges on the GRID_COLS x GRID_ROWS grid -> echoes "x y w h".
+# Adjacent cells get a pad/2 gutter on their shared edge so placed windows
+# never touch or overlap; outer edges keep the pad from the usable area
+# (which already sits below the bar via the monitor's reserved area).
+cell_rect() { # col1 col2 row1 row2 (1-indexed, inclusive)
+  local c1=$1 c2=$2 r1=$3 r2=$4 g=$(( pad / 2 ))
+  local x=$(( ux + (uw * (c1 - 1) + GRID_COLS - 1) / GRID_COLS ))
+  local x2=$(( ux + (uw * c2 + GRID_COLS - 1) / GRID_COLS ))
+  local y=$(( uy + (uh * (r1 - 1) + GRID_ROWS - 1) / GRID_ROWS ))
+  local y2=$(( uy + (uh * r2 + GRID_ROWS - 1) / GRID_ROWS ))
+  (( c1 > 1 )) && x=$(( x + g ))
+  (( c2 < GRID_COLS )) && x2=$(( x2 - g ))
+  (( r1 > 1 )) && y=$(( y + g ))
+  (( r2 < GRID_ROWS )) && y2=$(( y2 - g ))
+  echo "$x $y $(( x2 - x )) $(( y2 - y ))"
+}
+
+clamp() { echo $(( $1 < $2 ? $2 : ($1 > $3 ? $3 : $1) )); }
+
+# True only when a tiled sibling on the same workspace sits toward $1 (l|r|u|d)
+# — prevents swaps from sliding windows to another monitor/workspace on
+# scrolling layouts or at strip edges.
+can_swap() {
+  local dir=$1 wsx cx cy
+  wsx=$(jq -r '.workspace.id' <<<"$win")
+  cx=$(( wx + ww / 2 )); cy=$(( wy + wh / 2 ))
+  hyprctl clients -j | jq -e --argjson ws "$wsx" --arg addr "$addr" --arg dir "$dir" \
+    --argjson cx "$cx" --argjson cy "$cy" '
+    any(.[]; select(.address != $addr and .workspace.id == $ws and .floating == false)
+      | (.at[0] + .size[0] / 2) as $x
+      | (.at[1] + .size[1] / 2) as $y
+      | if $dir == "l" then $x < $cx
+        elif $dir == "r" then $x > $cx
+        elif $dir == "u" then $y < $cy
+        else $y > $cy end)' >/dev/null
+}
+
+is_fraction() { case "$action" in
+  half-left|half-right|half-top|half-bottom|narrow-*|wide-*|center|threequarter) return 0;;
+  *) return 1;; esac; }
+
+# --- movement actions -------------------------------------------------------
+
+case "$action" in
+  revert)
+    f="$STATE_DIR/last.json"
+    [[ -f "$f" ]] || exit 0
+    if [[ "$(jq -r .address "$f")" != "$addr" ]]; then
+      omarchy-notification-send -g 󰊔 "Nothing to revert for this window" 2>/dev/null || true
+      exit 0
+    fi
+    rx=$(jq -r '.at[0]' "$f");   ry=$(jq -r '.at[1]' "$f")
+    rw=$(jq -r '.size[0]' "$f"); rh=$(jq -r '.size[1]' "$f")
+    wcmd "x = $rw, y = $rh" resize
+    wcmd "x = $rx, y = $ry" move
+    rm -f "$f"
+    exit 0
+    ;;
+
+  nudge-left|nudge-right|nudge-up|nudge-down)
+    [[ "$is_floating" == "true" ]] || exit 0   # tiler owns position
+    snapshot
+    case "$action" in
+      nudge-left)  nx=$(( wx - NUDGE_STEP )); ny=$wy ;;
+      nudge-right) nx=$(( wx + NUDGE_STEP )); ny=$wy ;;
+      nudge-up)    nx=$wx; ny=$(( wy - NUDGE_STEP )) ;;
+      nudge-down)  nx=$wx; ny=$(( wy + NUDGE_STEP )) ;;
+    esac
+    nx=$(clamp "$nx" "$ux" $(( ux + uw - ww )))
+    ny=$(clamp "$ny" "$uy" $(( uy + uh - wh )))
+    wcmd "x = $nx, y = $ny" move
+    exit 0
+    ;;
+
+  display-prev|display-next)
+    mons=$(hyprctl monitors -j)
+    n=$(jq length <<<"$mons")
+    (( n > 1 )) || exit 0
+    mapfile -t ids < <(jq -r 'sort_by(.x, .y) | .[].id' <<<"$mons")
+    idx=0
+    for i in "${!ids[@]}"; do [[ "${ids[$i]}" == "$mon_id" ]] && idx=$i; done
+    if [[ "$action" == "display-next" ]]; then idx=$(( (idx + 1) % n )); else idx=$(( (idx - 1 + n) % n )); fi
+    target=$(jq -r --argjson id "${ids[$idx]}" 'map(select(.id == $id))[0].activeWorkspace.id' <<<"$mons")
+    wcmd "workspace = \"$target\", follow = true" move
+    hyprctl dispatch "hl.dsp.focus({ window = \"address:$addr\" })" >/dev/null 2>&1 || true
+    exit 0
+    ;;
+esac
+
+case "$action" in
+  half-left|half-right|half-top|half-bottom|narrow-*|wide-*|center|threequarter|fill|corner-*|quarter-*|task) ;;
+  *) echo "Unknown action: $action" >&2; exit 1 ;;
+esac
+
+snapshot
+
+# --- Plan B: tiling-aware behavior (directional = swap + split resize) ------
+# Plan A skips all of this: every chord is literal cell placement below.
+if [[ "$MOOM_MODE" == "planB" && "$is_floating" != "true" ]]; then
+  # Fill on a tiled window is a fullscreen toggle (Plan B only).
+  if [[ "$action" == "fill" ]]; then
+    hyprctl dispatch "hl.dsp.window.fullscreen({ window = \"address:$addr\", mode = \"fullscreen\" })" >/dev/null 2>&1
+    exit 0
+  fi
+
+  wf=""; hf=""
+  case "$action" in
+    half-left|half-right)     wf="6/12" ;;
+    narrow-left|narrow-right) wf="5/12" ;;
+    wide-left|wide-right)     wf="7/12" ;;
+    center)                   wf="8/12" ;;
+    threequarter)             wf="9/12" ;;
+    half-top|half-bottom)     hf="4/8" ;;
+  esac
+
+  d=""
+  case "$action" in
+    *-left) d="l" ;; *-right) d="r" ;; half-top) d="u" ;; half-bottom) d="d" ;;
+  esac
+
+  # Directional chords first move the window to that side of the split (mac
+  # semantics). Guarded: never swaps across monitors/workspaces, no-ops at
+  # edges and on solo windows.
+  if [[ -n "$d" ]] && can_swap "$d"; then
+    hyprctl dispatch "hl.dsp.window.swap({ window = \"address:$addr\", direction = \"$d\" })" >/dev/null 2>&1 || true
+    # Swap exchanges geometry via the tree; re-read before resizing.
+    w2=$(hyprctl clients -j | jq -c --arg a "$addr" '.[] | select(.address == $a)')
+    if [[ -n "$w2" ]]; then
+      wx=$(jq -r '.at[0]' <<<"$w2");   wy=$(jq -r '.at[1]' <<<"$w2")
+      ww=$(jq -r '.size[0]' <<<"$w2"); wh=$(jq -r '.size[1]' <<<"$w2")
+    fi
+  fi
+
+  if [[ -n "$wf" ]]; then
+    tw=$(frac "${wf%/*}" "${wf#*/}" "$uw")
+    wcmd "x = $(( tw - ww )), y = 0, relative = true" resize
+  fi
+  if [[ -n "$hf" ]]; then
+    th=$(frac "${hf%/*}" "${hf#*/}" "$uh")
+    wcmd "x = 0, y = $(( th - wh )), relative = true" resize
+  fi
+  [[ -z "$wf$hf" ]] || exit 0
+fi
+
+# --- placement (Plan A always; Plan B for floats and placement keys) --------
+# Float the window first if needed.
+if [[ "$is_floating" != "true" ]]; then
+  wcmd "action = \"toggle\"" float
+fi
+
+case "$action" in
+  corner-tl) apply_geometry "$ux" "$uy" "$ww" "$wh" ;;
+  corner-tr) apply_geometry $(( ux + uw - ww )) "$uy" "$ww" "$wh" ;;
+  corner-bl) apply_geometry "$ux" $(( uy + uh - wh )) "$ww" "$wh" ;;
+  corner-br) apply_geometry $(( ux + uw - ww )) $(( uy + uh - wh )) "$ww" "$wh" ;;
+  *)
+    case "$action" in
+      half-left)      set -- 1 6 1 8 ;;
+      half-right)     set -- 7 12 1 8 ;;
+      half-top)       set -- 1 12 1 4 ;;
+      half-bottom)    set -- 1 12 5 8 ;;
+      narrow-left)    set -- 1 5 1 8 ;;
+      narrow-right)   set -- 8 12 1 8 ;;
+      wide-left)      set -- 1 7 1 8 ;;
+      wide-right)     set -- 6 12 1 8 ;;
+      center)         set -- 3 10 1 8 ;;
+      threequarter)   set -- 1 9 1 8 ;;
+      quarter-tl)     set -- 1 6 1 4 ;;
+      quarter-tr)     set -- 7 12 1 4 ;;
+      quarter-bl)     set -- 1 6 5 8 ;;
+      quarter-br)     set -- 7 12 5 8 ;;
+      task)           set -- 9 12 5 8 ;;
+      fill)           set -- 1 12 1 8 ;;
+    esac
+    apply_geometry $(cell_rect "$@")
+    ;;
+esac

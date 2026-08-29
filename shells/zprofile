@@ -4,5 +4,8 @@
 # PATH and puts /usr/bin before Homebrew. Re-apply profile here so login shells
 # (Terminal, Ghostty) keep brew ruby/nvim/etc. first.
 #
-# Non-login zsh (e.g. some scripted invocations) only gets ~/.zshenv → profile.
-source ~/.profile
+# On linux (omarchy) there is no path_helper reorder and ~/.zshenv already
+# sources ~/.profile, so re-sourcing here would be redundant.
+if [[ $(uname) = "Darwin" ]]; then
+  source ~/.profile
+fi

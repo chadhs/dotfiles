@@ -1,5 +1,14 @@
 # gitconfig-local
 # define git configurations here that are machine specific and not stored in version control
+#
+# credential helpers are per-OS (the shared gitconfigs do not set one on linux):
+#   mac:   active in utils/gitconfig (osxkeychain) — nothing needed here
+#   linux: uncomment below if HTTPS remotes need credentials; composes with
+#          direnv (.envrc exports GH_TOKEN, helper runs in the repo cwd)
+#
+# ## linux credential helper (gh-backed; see git-host-auth skill)
+# [credential]
+#   helper = !gh auth git-credential
 
 ## ## company
 ## [includeIf "gitdir:~/src/company/**"]
