@@ -110,19 +110,44 @@ link_agent_skills(){
   fi
 }
 
-# On arch, omarchy ships stock user configs at ~/.config/nvim and
-# ~/.config/emacs. The repo owns both (linux-scoped links). The guarded link
-# mode skips existing targets, so move any non-symlink copies aside exactly
-# once — a real backup, never overwritten — letting the links take over.
+# On arch, omarchy ships stock user configs at several repo-managed paths
+# (editor configs, the vendored omarchy files, bin scripts). Guarded link
+# modes skip existing targets, and force replaces real files outright — so
+# before linking, move any real (non-symlink) target aside exactly once.
+# Driven by the manifest (non-mac-scoped link|force entries) so future links
+# inherit backup behavior automatically; machine-local .bak-omarchy copies
+# are never committed. Symlinks are left for doctor.sh to flag.
 backup_omarchy_configs(){
   [ "$system_os" = "arch" ] || return 0
-  for target in "${HOME}/.config/nvim" "${HOME}/.config/emacs"; do
-    [ -e "$target" ] || continue
-    [ -L "$target" ] && continue  # symlinks are left for doctor.sh to flag
-    backup="${target}.bak-omarchy"
-    [ -e "$backup" ] && backup="${backup}-$(date +%Y%m%d%H%M%S)"
-    mv "$target" "$backup" && echo "backed up ${target} -> ${backup}"
-  done
+  manifest="${DOTFILES_ROOT}/scripts/links.conf"
+  [ -r "${manifest}" ] || return 0
+  while IFS='|' read -r mode scope target src; do
+    case "${mode}" in ''|\#*) continue ;; esac
+    [ "${scope}" = "mac" ] && continue
+    case "${mode}" in
+      link|force) ;;
+      *) continue ;;
+    esac
+    case "${target}" in
+      /*) t="${target}" ;;
+      *) t="${HOME}/${target}" ;;
+    esac
+    [ -e "${t}" ] || continue
+    [ -L "${t}" ] && continue
+    backup="${t}.bak-omarchy"
+    [ -e "${backup}" ] && backup="${backup}-$(date +%Y%m%d%H%M%S)"
+    mv "${t}" "${backup}" && echo "backed up ${t} -> ${backup}"
+  done < "${manifest}"
+
+  ## supplemental: omarchy's XDG emacs dir is not a manifest target (the repo
+  ## links ~/.emacs and ~/.emacs.d/*), but it must move aside so emacs
+  ## unambiguously reads the repo's init chain
+  t="${HOME}/.config/emacs"
+  if [ -e "${t}" ] && [ ! -L "${t}" ]; then
+    backup="${t}.bak-omarchy"
+    [ -e "${backup}" ] && backup="${backup}-$(date +%Y%m%d%H%M%S)"
+    mv "${t}" "${backup}" && echo "backed up ${t} -> ${backup}"
+  fi
 }
 
 # On arch/omarchy the login shell should be /usr/bin/zsh so the repo's zsh
