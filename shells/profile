@@ -1,4 +1,6 @@
-export PATH="$HOME/bin\
+## machine-specific path/env setup
+if [[ $(uname) = "Darwin" ]]; then
+  export PATH="$HOME/bin\
 :$HOME/.local/bin\
 :/opt/homebrew/bin\
 :/opt/homebrew/sbin\
@@ -25,19 +27,24 @@ export PATH="$HOME/bin\
 :/usr/local/sbin\
 :${PATH}"
 
-## Homebrew Ruby gem bindir for the active brew ruby only.
-# Do not `find` under lib/ruby/gems — that picks up stale 3.x trees and nested
-# gem package bins, which shadow `ruby`/`gem`/`bundle` from Homebrew.
-for ruby_bin in /opt/homebrew/opt/ruby/bin/ruby /usr/local/opt/ruby/bin/ruby; do
-  if [ -x "${ruby_bin}" ]; then
-    gem_user_bin="$("${ruby_bin}" -e 'print Gem.bindir' 2>/dev/null)" || true
-    if [ -n "${gem_user_bin}" ] && [ -d "${gem_user_bin}" ]; then
-      PATH="${gem_user_bin}:${PATH}"
+  ## Homebrew Ruby gem bindir for the active brew ruby only.
+  # Do not `find` under lib/ruby/gems — that picks up stale 3.x trees and nested
+  # gem package bins, which shadow `ruby`/`gem`/`bundle` from Homebrew.
+  for ruby_bin in /opt/homebrew/opt/ruby/bin/ruby /usr/local/opt/ruby/bin/ruby; do
+    if [ -x "${ruby_bin}" ]; then
+      gem_user_bin="$("${ruby_bin}" -e 'print Gem.bindir' 2>/dev/null)" || true
+      if [ -n "${gem_user_bin}" ] && [ -d "${gem_user_bin}" ]; then
+        PATH="${gem_user_bin}:${PATH}"
+      fi
+      break
     fi
-    break
-  fi
-done
-export PATH
+  done
+  export PATH
+else
+  ## linux (omarchy/arch): set OMARCHY_PATH + append mise shims and ~/.local/bin
+  # POSIX-safe shared env sourced by omarchy's own bash/zsh/system entrypoints
+  [[ -r /usr/share/omarchy/default/bash/env-bootstrap ]] && source /usr/share/omarchy/default/bash/env-bootstrap
+fi
 
 umask 0002 # grant write permsion to group
 

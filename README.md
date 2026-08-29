@@ -11,6 +11,7 @@ obviously you **want to read** the best part... [emacs-config.org](editors/emacs
 | `editors/` | emacs config ([emacs-config.org](editors/emacs-config.org)), neovim config ([editors/nvim](editors/nvim/README.md)), `ideavimrc`, `editorconfig`, jetbrains plugins |
 | `shells/` | zsh + bash profiles/rc files, `inputrc`, the `digitalnomad` zsh theme |
 | `utils/` | `gitconfig`, `tmux.conf`, ghostty + karabiner + espanso config, `ssh_config`, agent skills, misc tool config and scripts (`project-ruby-exec`, `autogit.sh`, ...) |
+| `omarchy/` | vendored omarchy customizations (hypr keymaps/input, omarchy-shell bar config, moom config, `omarchy-moom`/`omarchy-appswitch` scripts, patched altswitch plugin) — see [omarchy/README.md](omarchy/README.md) |
 | `scripts/` | `bootstrap-mac.sh`, `deploy.sh`, `doctor.sh`, `weekly-update.sh`, `macos-defaults.sh`, `links.conf`, npm/gem package lists |
 | `.github/` | CI: shellcheck, `links.conf` lint, and syntax checks run on push/PR |
 
@@ -31,6 +32,23 @@ it will:
 - apply macOS defaults (`scripts/macos-defaults.sh`)
 - run `deploy.sh` for symlinks / shell setup
 - optionally switch your login shell to Homebrew zsh
+
+### setting up an omarchy/arch machine
+assumes [omarchy](https://omarchy.org) is already installed. the deploy step covers packages the omarchy image doesn't include, links the shared configs, and offers to switch the login shell to zsh.
+
+```sh
+git clone https://github.com/chadhs/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+sh deploy.sh
+```
+
+notes on omarchy-managed configs (deliberate split):
+- **omarchy owns**: tmux config (XDG), ghostty, hyprland look'n'feel, `monitors.lua` (machine-generated) — the repo does not manage these on linux.
+- **the repo owns** (linux-scoped in `scripts/links.conf`): git config + hooks, shells (`~/.profile`, zsh chain), nvim, emacs, editorconfig, agent skills, and the vendored omarchy customizations in `omarchy/` (hypr `bindings.lua`/`input.lua`, shell bar config, moom, app-switcher plugin).
+- `~/.bashrc` stays omarchy's on linux; the repo's minimal bashrc is mac-only.
+- tmux auto-attach in zsh only fires for SSH sessions now, so desktop terminals aren't swallowed.
+
+the patched altswitch plugin is vendored (no `.git`), so `omarchy plugin update` no longer manages it — see [omarchy/README.md](omarchy/README.md) for provenance and refresh instructions.
 
 ### Brewfile location
 the `Brewfile` lives at the **repo root** (not under `scripts/`). that matches Homebrew’s usual layout so `cd ~/dotfiles && brew bundle` works without extra flags, while `scripts/weekly-update.sh` still passes `--file` explicitly.

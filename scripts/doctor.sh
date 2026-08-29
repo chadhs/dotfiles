@@ -90,6 +90,9 @@ if [ -r "${manifest}" ]; then
     if [ "${scope}" = "mac" ] && [ "${system_type}" != "Darwin" ]; then
       continue
     fi
+    if [ "${scope}" = "linux" ] && [ "${system_type}" != "Linux" ]; then
+      continue
+    fi
     case "${target}" in
       /*) t="${target}" ;;
       *) t="${HOME}/${target}" ;;
@@ -203,6 +206,30 @@ if [ "$system_type" = "Darwin" ]; then
   fi
 else
   warn "mac-only checks skipped (system: ${system_type})"
+fi
+
+## linux (omarchy/arch) checks
+if [ "$system_type" = "Linux" ]; then
+  if command -v zsh >/dev/null 2>&1; then
+    pass "zsh installed"
+  else
+    fail "zsh not installed (run deploy.sh or: sudo pacman -S zsh)"
+  fi
+
+  # authoritative login shell from passwd, not $SHELL (may predate a chsh)
+  login_shell="$(getent passwd "$(id -un)" | cut -d: -f7)"
+  if [ "$login_shell" = "/usr/bin/zsh" ]; then
+    pass "login shell is /usr/bin/zsh"
+  else
+    warn "login shell is ${login_shell:-unknown} (expected /usr/bin/zsh; run deploy.sh or: chsh -s /usr/bin/zsh)"
+  fi
+
+  # omarchy env bootstrap should be present for the shared profile to source
+  if [ -r /usr/share/omarchy/default/bash/env-bootstrap ]; then
+    pass "omarchy env-bootstrap present"
+  else
+    warn "/usr/share/omarchy/default/bash/env-bootstrap missing (is this an omarchy install? profile's linux branch sources it)"
+  fi
 fi
 
 ## summary

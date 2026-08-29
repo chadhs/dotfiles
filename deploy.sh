@@ -28,7 +28,12 @@ os_setup(){
     pkg_install="sudo pkg install -y"
     package_list="editorconfig-core-c emacs-nox11 git tmux vim-console zsh"
   elif [ "$system_type" = "Linux" ]; then
-    if grep -qi "ubuntu\|debian" /proc/version; then
+    if grep -qi "arch" /etc/os-release 2>/dev/null || command -v pacman >/dev/null 2>&1; then
+      system_os="arch"
+      pkg_install="sudo pacman -S --needed"
+      # nvim, emacs, node etc. ship with omarchy; this covers the shared baseline
+      package_list="editorconfig-core-c git tmux zsh"
+    elif grep -qi "ubuntu\|debian" /proc/version; then
       system_os="debian"
       pkg_install="sudo apt-get install -y"
       package_list="editorconfig  emacs-nox git tmux vim-nox zsh"
@@ -104,6 +109,24 @@ link_agent_skills(){
   fi
 }
 
+# On arch/omarchy the login shell should be /usr/bin/zsh so the repo's zsh
+# chain is what sessions get; offer the chsh rather than doing it silently.
+offer_login_shell_change(){
+  [ "$system_os" = "arch" ] || return 0
+  login_shell="$(getent passwd "$(id -un)" | cut -d: -f7)"
+  [ "$login_shell" = "/usr/bin/zsh" ] && return 0
+  printf 'login shell is %s — change it to /usr/bin/zsh? [y/N] ' "${login_shell:-unknown}"
+  read -r reply
+  case "$reply" in
+    y|Y|yes)
+      sudo chsh -s /usr/bin/zsh "$(id -un)" && echo "login shell changed to /usr/bin/zsh (re-login to use it)"
+      ;;
+    *)
+      echo "keeping ${login_shell}; run: chsh -s /usr/bin/zsh"
+      ;;
+  esac
+}
+
 # Apply links/copies from scripts/links.conf — the single source of truth
 # shared with scripts/doctor.sh. Add new links there, not here; only bespoke
 # logic lives in symlink_configs below.
@@ -114,6 +137,12 @@ apply_links(){
     case "${mode}" in ''|\#*) continue ;; esac
     if [ "${scope}" = "mac" ] && [ "${system_os}" != "macos" ]; then
       continue
+    fi
+    if [ "${scope}" = "linux" ]; then
+      case "${system_os}" in
+        arch|debian|redhat) ;;
+        *) continue ;;
+      esac
     fi
     case "${target}" in
       /*) t="${target}" ;;
@@ -193,6 +222,7 @@ else
   os_setup
   verify_packages
   symlink_configs
+  offer_login_shell_change
 fi
 echo ""
 echo "setup complete!"
