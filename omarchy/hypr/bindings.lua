@@ -174,12 +174,37 @@ o.bind("CTRL + ALT + RIGHT", "Moom: next display", moom("display-next"))
 -- Revert last Moom action for the focused window.
 o.bind("SUPER + CTRL + ALT + R", "Moom: revert", moom("revert"))
 
+-- New tab (mac Cmd+T): terminals get CTRL+SHIFT+T (ghostty's new_tab),
+-- GUI apps get CTRL+T (chromium etc.). Relocates Omarchy's toggle
+-- floating/tiling, now on SUPER+ALT+T below.
+hl.unbind("SUPER + T")
+o.bind("SUPER + T", "New tab", function()
+  if active_window_is_terminal() then
+    send_shortcut_once("CTRL + SHIFT", "T")()
+  else
+    send_shortcut_once("CTRL", "T")()
+  end
+end)
+
+-- Tab navigation (mac Cmd+{ / Cmd+}): previous/next tab in chromium,
+-- ghostty, and most GUI apps. Injects the universal ctrl+shift+tab /
+-- ctrl+tab chords, which keep working directly too. Binds must use the
+-- unshifted keysym (bracketleft, not braceleft): Hyprland resolves the
+-- pressed key against a mod-free xkb state, so braceleft never matches.
+hl.unbind("SUPER + SHIFT + BRACELEFT")
+hl.unbind("SUPER + SHIFT + BRACERIGHT")
+o.bind("SUPER + SHIFT + BRACKETLEFT", "Previous tab", send_shortcut_once("CTRL + SHIFT", "TAB"))
+o.bind("SUPER + SHIFT + BRACKETRIGHT", "Next tab", send_shortcut_once("CTRL", "TAB"))
+
+-- Toggle window floating/tiling (relocated from SUPER+T).
+o.bind("SUPER + ALT + T", "Toggle window floating/tiling", hl.dsp.window.float({ action = "toggle" }))
+
 -- Cmd+Tab-style app switcher: omarchy-altswitch plugin, patched for SUPER
 -- chords (see the fork at ~/.config/omarchy/plugins/io.github.pablo-merino.altswitch/).
 -- Overlay stays open while SUPER is held; release commits, SUPER+ESC cancels.
 -- (An earlier standalone omarchy-appswitch script was retired in favor of the
--- plugin.) These chords no longer switch workspaces: use SUPER+1..0, scroll,
--- or gestures.
+-- plugin.) These chords no longer switch workspaces: use SUPER+1..0,
+-- scroll, or gestures.
 dofile(os.getenv("HOME") .. "/.config/omarchy/plugins/io.github.pablo-merino.altswitch/altswitch.lua")
 
 -- Mac-style Cmd+W / Cmd+Q. In terminals fall back to closing the window so
