@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Quit the focused app: close every mapped window sharing its class
+# (mac Cmd+Q semantics). Works universally — no injected chords, so
+# apps that ignore CTRL+Q still quit.
+set -euo pipefail
+
+info=$(hyprctl -j activewindow 2>/dev/null || true)
+class=$(jq -r '.class // .initialClass // empty' <<<"$info")
+[[ -n $class ]] || exit 0
+
+hyprctl -j clients | jq -r --arg class "$class" \
+  '.[] | select(.mapped and (.class == $class or .initialClass == $class)) | .address' |
+while read -r address; do
+  # Hyprland 0.56 evaluates dispatch args as Lua; window selectors use
+  # "address:0x..." (a class selector only closes the focused match).
+  hyprctl dispatch "hl.dsp.window.close({ window = \"address:$address\" })" >/dev/null
+done

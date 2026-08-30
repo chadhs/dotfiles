@@ -207,18 +207,22 @@ o.bind("SUPER + ALT + T", "Toggle window floating/tiling", hl.dsp.window.float({
 -- scroll, or gestures.
 dofile(os.getenv("HOME") .. "/.config/omarchy/plugins/io.github.pablo-merino.altswitch/altswitch.lua")
 
--- Single-window Electron-style apps (no tab bar) ignore injected CTRL+W /
--- CTRL+Q chords, so they get a plain window close instead. Closing the only
--- window quits the app. Defined before the SUPER+W bind that calls it: Lua
--- locals must exist lexically before a closure captures them.
-local function active_window_is_single_window_app()
+-- Multi-tab apps where SUPER+W should close a tab, not the whole window with
+-- all its tabs (mac Cmd+W semantics). Everything else gets a plain window
+-- close, which works universally — including single-window apps like omacalc,
+-- omawrite, claude, and localsend. JetBrains IDEs are deliberately excluded:
+-- on Linux their CTRL+W is "extend selection".
+local function active_window_is_multi_tab_app()
   local window = hl.get_active_window()
   if not window then
     return false
   end
 
   local class = (window.class or ""):lower()
-  for _, pattern in ipairs({ "sidra" }) do
+  for _, pattern in ipairs({
+    "chrom", "brave", "edge", "vivaldi", "opera", "arc",
+    "code", "zed", "nautilus", "dolphin", "thunar", "nemo", "pcmanfm",
+  }) do
     if class:find(pattern, 1, true) then
       return true
     end
@@ -227,42 +231,22 @@ local function active_window_is_single_window_app()
   return false
 end
 
--- Mac-style Cmd+W / Cmd+Q. In terminals fall back to closing the window so
--- injected CTRL+W can't delete a word and CTRL+Q can't hit flow control.
+-- Mac-style Cmd+W: close tab in multi-tab apps, close the window everywhere
+-- else. In terminals always close the window so injected CTRL+W can't delete
+-- a word.
 hl.unbind("SUPER + W")
 o.bind("SUPER + W", "Close tab / window", function()
-  if active_window_is_terminal() or active_window_is_single_window_app() then
-    hl.dispatch(hl.dsp.window.close())
-  else
+  if active_window_is_terminal() or active_window_is_multi_tab_app() then
     send_shortcut_once("CTRL", "W")()
-  end
-end)
-
--- Chromium on Linux has no quit accelerator (mac Cmd+Q is menu-level), so
--- quit it by closing the window; closing the last window quits the app.
-local function active_window_is_chromium()
-  local window = hl.get_active_window()
-  if not window then
-    return false
-  end
-
-  local class = (window.class or ""):lower()
-  for _, pattern in ipairs({ "chrom", "brave", "edge", "vivaldi", "opera", "arc" }) do
-    if class:find(pattern, 1, true) then
-      return true
-    end
-  end
-
-  return false
-end
-
-o.bind("SUPER + Q", "Quit app", function()
-  if active_window_is_terminal() or active_window_is_chromium() or active_window_is_single_window_app() then
-    hl.dispatch(hl.dsp.window.close())
   else
-    send_shortcut_once("CTRL", "Q")()
+    hl.dispatch(hl.dsp.window.close())
   end
 end)
+
+-- Mac-style Cmd+Q: quit the whole app by closing every window of its class.
+-- Universal — no injected chords, so apps that ignore CTRL+Q (omawrite,
+-- claude, omacalc) still quit. On a terminal this closes all terminal windows.
+o.bind("SUPER + Q", "Quit app", "omarchy-quit-app")
 
 -- Mac-style screenshot shortcut. `save` skips the annotation editor so the
 -- capture lands straight in Pictures, like macOS. (An earlier SUPER+SHIFT+
