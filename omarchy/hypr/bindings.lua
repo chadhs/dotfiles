@@ -263,3 +263,13 @@ o.bind("SUPER + Q", "Quit app", function()
     send_shortcut_once("CTRL", "Q")()
   end
 end)
+
+-- Mac-style screenshot shortcut. `save` skips the annotation editor so the
+-- capture lands straight in Pictures, like macOS. (An earlier SUPER+SHIFT+
+-- 3/4/5/W set conflicted with other hotkeys, so only region select survives.)
+-- Screenshot shortcuts (mac-ish chords). All three open the capture menu for
+-- now; mode-specific binds kept tripping over capture quirks (silent exits
+-- with stale slurp pickers, clipboard not landing). Revisit later.
+o.bind("CTRL + SUPER + SHIFT + 3", "Screenshot: capture menu", "omarchy-menu toggle trigger.capture")
+o.bind("CTRL + SUPER + SHIFT + 4", "Screenshot: capture menu", "omarchy-menu toggle trigger.capture")
+o.bind("CTRL + SUPER + SHIFT + 5", "Screenshot: capture menu", "omarchy-menu toggle trigger.capture")
