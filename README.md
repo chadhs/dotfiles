@@ -11,7 +11,7 @@ obviously you **want to read** the best part... [emacs-config.org](editors/emacs
 | `editors/` | emacs config ([emacs-config.org](editors/emacs-config.org)), neovim config ([editors/nvim](editors/nvim/README.md)), `ideavimrc`, `editorconfig`, jetbrains plugins |
 | `shells/` | zsh + bash profiles/rc files, `inputrc`, the `digitalnomad` zsh theme |
 | `utils/` | `gitconfig`, `tmux.conf`, ghostty + karabiner + espanso config, `ssh_config`, agent skills, misc tool config and scripts (`project-ruby-exec`, `autogit.sh`, ...) |
-| `omarchy/` | owned omarchy customizations (hypr keymaps/input, omarchy-shell bar config, moom config, `omarchy-moom` script, altswitch fork) — see [omarchy/README.md](omarchy/README.md) |
+| `omarchy/` | owned omarchy customizations (hypr keymaps/input, omarchy-shell bar config, moom config, ghostty config, `omarchy-moom` script, altswitch fork) — see [omarchy/README.md](omarchy/README.md) |
 | `scripts/` | `bootstrap-mac.sh`, `deploy.sh`, `doctor.sh`, `weekly-update.sh`, `macos-defaults.sh`, `links.conf`, npm/gem package lists |
 | `.github/` | CI: shellcheck, `links.conf` lint, and syntax checks run on push/PR |
 
@@ -46,7 +46,7 @@ sh deploy.sh
 ```
 
 notes on omarchy-managed configs (deliberate split):
-- **omarchy owns**: tmux config (XDG), ghostty, hyprland look'n'feel, `monitors.lua` (machine-generated) — the repo does not manage these on linux.
+- **omarchy owns**: tmux config (XDG), hyprland look'n'feel, `monitors.lua` (machine-generated) — the repo does not manage these on linux. (ghostty is repo-owned on linux too — see the slider caveat in [omarchy/README.md](omarchy/README.md).)
 - **the repo owns** (linux-scoped in `scripts/links.conf`): git config + hooks, ssh config, shells (`~/.profile`, zsh chain), nvim, emacs, editorconfig, agent skills, and the owned omarchy customizations in `omarchy/` (hypr `bindings.lua`/`input.lua`, shell bar config, moom, altswitch fork).
 - `~/.bashrc` stays omarchy's on linux; the repo's minimal bashrc is mac-only.
 - tmux auto-attach in zsh only fires for SSH sessions now, so desktop terminals aren't swallowed.

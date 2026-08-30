@@ -12,6 +12,7 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 | `hypr/input.lua` | `~/.config/hypr/input.lua` | no tap-to-click, natural scroll, per-device list |
 | `shell.json` | `~/.config/omarchy/shell.json` | transparent bar + altswitch plugin entry |
 | `moom.conf` | `~/.config/omarchy/moom.conf` | `MOOM_MODE=planA` |
+| `ghostty/config` | `~/.config/ghostty/config` | linux terminal config (fork of omarchy's, with local font-size/padding tweaks; mac ghostty stays `utils/ghostty/config`) |
 | `env/90-shell.conf` | `~/.config/environment.d/90-shell.conf` | session `SHELL` mirror (ghostty launches `$SHELL`; guards against systemd user-manager staleness after chsh) |
 | `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-window-raise-front` |
 | `plugins/io.github.pablo-merino.altswitch/` | `~/.config/omarchy/plugins/io.github.pablo-merino.altswitch/` | owned fork (see below) |
@@ -23,6 +24,15 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
   wiring, scale). Keep it machine-local.
 - `~/.config/hypr/looknfeel.lua`, `autostart.lua`, `hyprland.lua`,
   `xdph.conf`, `hyprsunset.conf` — stock omarchy; let `omarchy` manage them.
+
+## ghostty config caveat: the text-size slider
+
+`omarchy display text size <px>` edits `~/.config/ghostty/config` with
+`sed -i`, which **replaces the symlink with a regular file** — one slider
+drag silently severs the repo link. Doctor flags it (FAIL: not a symlink);
+heal with `sh deploy.sh`. Terminal font size changes are repo edits now:
+change `font-size` in `omarchy/ghostty/config`, commit, and pull/deploy on
+other machines.
 
 ## altswitch plugin — owned fork
 
