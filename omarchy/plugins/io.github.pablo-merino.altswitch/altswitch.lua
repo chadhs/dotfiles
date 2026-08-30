@@ -24,7 +24,7 @@
 --   * Selection is virtual. Focus moves once, on commit. Focusing on every tap
 --     would drag you across workspaces on the way past.
 
-local altswitch = { windows = {}, index = 1, active = false }
+local altswitch = { windows = {}, index = 1, active = false, sticky = false }
 
 -- Single-quote a string for the shell. Omarchy's config helpers provide this,
 -- but this file also has to work without them.
@@ -62,14 +62,16 @@ local function altswitch_payload()
   end
 
   return string.format(
-    '{"windows":[%s],"index":%d}',
+    '{"windows":[%s],"index":%d,"sticky":%s}',
     table.concat(rows, ","),
-    altswitch.index - 1 -- the plugin indexes from zero
+    altswitch.index - 1, -- the plugin indexes from zero
+    altswitch.sticky and "true" or "false"
   )
 end
 
 local function altswitch_teardown()
   altswitch.active = false
+  altswitch.sticky = false
   altswitch.windows = {}
   altswitch_send("hide")
 end
@@ -136,6 +138,40 @@ local function altswitch_step(delta)
   altswitch_send("show", altswitch_payload())
 end
 
+-- GESTURE PATCH (local customization): open the switcher without a modifier
+-- held, e.g. from the 3-finger swipe-up gesture. There is no key to release,
+-- so nothing commits on its own — the session stays up until a pick (click,
+-- Enter) or a cancel (ESC), plus the panel watchdog as the safety net.
+function _G.__altswitch_open()
+  if altswitch.active then
+    return -- a SUPER+TAB session is already up; leave it alone
+  end
+
+  altswitch.windows = altswitch_snapshot()
+  if #altswitch.windows == 0 then
+    return
+  end
+
+  altswitch.index = 1 -- entry 1 is the focused window
+  altswitch.sticky = true
+  altswitch.active = true
+  altswitch_send("show", altswitch_payload())
+end
+
+-- Commit a specific row, called from the panel via `hyprctl eval` when a row
+-- is clicked. The index arrives as whatever hyprlang hands over, so coerce it.
+function _G.__altswitch_commit_at(index)
+  if not altswitch.active then
+    return
+  end
+
+  index = tonumber(index)
+  if index and altswitch.windows[index] then
+    altswitch.index = index
+  end
+  altswitch_commit()
+end
+
 -- Self-heal hook for the panel. If the ALT release is ever missed, the panel
 -- gives up on its own after a few seconds and calls this, so the two halves
 -- cannot disagree about whether a switch is still in progress.
@@ -154,10 +190,31 @@ hl.bind("SUPER + SHIFT + TAB", function() altswitch_step(-1) end, { description 
 hl.bind("SUPER + ESCAPE", altswitch_teardown, { non_consuming = true, description = "Cancel app switch" })
 hl.bind("ALT + ESCAPE", altswitch_teardown, { non_consuming = true, description = "Cancel app switch" })
 
+-- GESTURE PATCH: keyboard picking for sticky sessions. The binds stay bound
+-- all the time but no-op while no switch is up, and are non_consuming so
+-- everyday typing in apps is untouched. ENTER commits in modifier sessions
+-- too (harmless there: a held SUPER releases right after anyway).
+hl.bind("DOWN", function()
+  if altswitch.active then altswitch_step(1) end
+end, { non_consuming = true, description = "App switcher: next window" })
+hl.bind("UP", function()
+  if altswitch.active then altswitch_step(-1) end
+end, { non_consuming = true, description = "App switcher: previous window" })
+hl.bind("RETURN", function()
+  if altswitch.active then altswitch_commit() end
+end, { non_consuming = true, description = "App switcher: pick highlighted window" })
+hl.bind("ESCAPE", function()
+  if altswitch.active then altswitch_teardown() end
+end, { non_consuming = true, description = "App switcher: cancel" })
+
 -- Committing on ALT release cannot be a keybind. A release bind on a modifier
 -- only fires when that modifier is tapped on its own; pressing TAB in between
 -- cancels it, which is exactly what every switch does. So the raw key stream is
 -- read instead, where the release always shows up.
+--
+-- Sticky sessions are excluded: nothing is held when they open, and a stray
+-- modifier release while the overlay sits up (e.g. tapping SUPER for the menu)
+-- must not silently commit.
 --
 -- 64 is Alt_L, 108 is Alt_R, 133 is Super_L and 134 is Super_R. This runs for
 -- every keystroke on the system, so it stays down to four integer compares and
@@ -165,7 +222,7 @@ hl.bind("ALT + ESCAPE", altswitch_teardown, { non_consuming = true, description 
 local ALT_KEYCODES = { [64] = true, [108] = true, [133] = true, [134] = true }
 
 hl.on("input.keyboard.key", function(keycode, _, state)
-  if state == 0 and altswitch.active and ALT_KEYCODES[keycode] then
+  if state == 0 and altswitch.active and not altswitch.sticky and ALT_KEYCODES[keycode] then
     altswitch_commit()
   end
 end)

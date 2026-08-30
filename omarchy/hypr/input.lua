@@ -68,11 +68,14 @@ hl.device({ name = "asix-electronics-ax68004-2", natural_scroll = true })
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Gestures/
 hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
 
--- 3-finger swipe up opens the Apps menu (same as SUPER + ALT + SPACE).
+-- 3-finger swipe up opens the app switcher overlay (the altswitch plugin's
+-- sticky mode): every open window across workspaces, most recent first. Pick
+-- with hover/click or arrow keys + Enter; ESC cancels. Goes through
+-- `hyprctl eval` so it works regardless of config load order.
 hl.gesture({
   fingers = 3,
   direction = "up",
-  action = function() hl.dispatch(hl.dsp.exec_cmd("omarchy-menu toggle apps")) end,
+  action = function() hl.exec_cmd("hyprctl eval '__altswitch_open()'") end,
 })
 
 -- Enable touchpad gestures for moving focus (helpful on scrolling layout).

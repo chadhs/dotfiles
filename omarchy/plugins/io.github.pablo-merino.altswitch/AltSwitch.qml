@@ -8,10 +8,9 @@
 //   omarchy-shell altswitch select 2
 //   omarchy-shell altswitch hide
 //
-// The panel takes exclusive keyboard focus purely so that keys the switcher
-// does not bind are swallowed instead of leaking into the window underneath.
-// It deliberately handles no keys of its own, so there is exactly one place
-// where a keypress can be interpreted.
+// The panel deliberately takes no keyboard focus: keys flow through the
+// Hyprland binds in altswitch.lua, so there is exactly one place where a
+// keypress can be interpreted.
 
 import Quickshell
 import Quickshell.Io
@@ -27,10 +26,6 @@ Item {
   property bool opened: false
   property var windows: []
   property int selectedIndex: 0
-
-  readonly property int rowHeight: Math.max(Style.space(34), Style.font.body + Style.spacing.controlPaddingY * 2)
-  readonly property int cardWidth: Math.min(Style.space(560), panel.width - Style.gapsOut * 2)
-  readonly property int maxCardHeight: panel.height - Style.gapsOut * 2
 
   function friendlyAppName(appClass) {
     const raw = String(appClass || "").trim()
@@ -64,6 +59,11 @@ Item {
     root.windows = payload.windows || []
     root.selectedIndex = payload.index || 0
     root.opened = root.windows.length > 0
+
+    // Modifier sessions are short-lived (commit on release), so a brief
+    // watchdog suffices. Sticky sessions — opened by the swipe-up gesture with
+    // nothing held — sit around while the user picks, so they get longer.
+    watchdog.interval = payload.sticky ? 30000 : 10000
   }
 
   function select(index) {
@@ -111,36 +111,51 @@ Item {
     }
   }
 
-  PanelWindow {
-    id: panel
+  // One PanelWindow per output (Variants on Quickshell.screens), matching
+  // how omarchy spawns its notification popups. A single-output window is
+  // dead wherever the pointer is not — on multi-monitor layouts (and worse,
+  // overlapping ones) the picker would be visible on one screen while the
+  // cursor's input routed elsewhere, so hover and click did nothing.
+  Variants {
+    model: Quickshell.screens
 
-    visible: root.opened
-    anchors { top: true; bottom: true; left: true; right: true }
-    color: "transparent"
-    WlrLayershell.namespace: "omarchy-altswitch"
-    WlrLayershell.layer: WlrLayer.Overlay
-    // Never grab the keyboard. A grab here can outlive the switch and leave the
-    // desktop with no way to dismiss it; a purely visual surface cannot.
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-    exclusionMode: ExclusionMode.Ignore
+    PanelWindow {
+      id: panel
 
-    Rectangle {
-      anchors.fill: parent
-      color: Color.menu.scrim
-    }
+      required property var modelData
+      screen: modelData
 
-    BorderSurface {
-      id: card
+      readonly property int rowHeight: Math.max(Style.space(34), Style.font.body + Style.spacing.controlPaddingY * 2)
+      readonly property int cardWidth: Math.min(Style.space(560), panel.width - Style.gapsOut * 2)
+      readonly property int maxCardHeight: panel.height - Style.gapsOut * 2
 
-      width: root.cardWidth
-      // BorderSurface exposes its padding as numbers rather than insetting its
-      // children, so the rows below carry the same insets by hand and the card
-      // is measured to match. Filling it outright leaves dead space under the
-      // last row.
-      height: Math.min(
-        root.maxCardHeight,
-        root.windows.length * root.rowHeight + card.contentTopInset + card.contentBottomInset
-      )
+      visible: root.opened
+      anchors { top: true; bottom: true; left: true; right: true }
+      color: "transparent"
+      WlrLayershell.namespace: "omarchy-altswitch"
+      WlrLayershell.layer: WlrLayer.Overlay
+      // Never grab the keyboard. A grab here can outlive the switch and leave
+      // the desktop with no way to dismiss it; a purely visual surface cannot.
+      WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+      exclusionMode: ExclusionMode.Ignore
+
+      Rectangle {
+        anchors.fill: parent
+        color: Color.menu.scrim
+      }
+
+      BorderSurface {
+        id: card
+
+        width: panel.cardWidth
+        // BorderSurface exposes its padding as numbers rather than insetting its
+        // children, so the rows below carry the same insets by hand and the card
+        // is measured to match. Filling it outright leaves dead space under the
+        // last row.
+        height: Math.min(
+          panel.maxCardHeight,
+          root.windows.length * panel.rowHeight + card.contentTopInset + card.contentBottomInset
+        )
       anchors.centerIn: parent
       radius: Style.cornerRadius
       color: Color.menu.background
@@ -166,13 +181,30 @@ Item {
         highlightRangeMode: ListView.ApplyRange
 
         delegate: Rectangle {
+          id: row
+
           required property int index
           required property var modelData
 
           width: list.width
-          height: root.rowHeight
+          height: panel.rowHeight
           radius: Style.cornerRadius
           color: index === root.selectedIndex ? Color.menu.selectedBackground : "transparent"
+
+          // Mouse picking for sticky sessions: hover previews, click commits.
+          // The click reaches the config side via `hyprctl eval`, the same
+          // channel the watchdog uses for __altswitch_cancel(). Row indexes
+          // here are 0-based; __altswitch_commit_at() is 1-based, hence the +1.
+          MouseArea {
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onContainsMouseChanged: if (containsMouse) root.select(row.index)
+            onClicked: {
+              root.select(row.index)
+              Quickshell.execDetached(["hyprctl", "eval", "__altswitch_commit_at(" + (row.index + 1) + ")"])
+            }
+          }
 
           RowLayout {
             anchors.fill: parent
@@ -213,6 +245,7 @@ Item {
           }
         }
       }
+    }
     }
   }
 }

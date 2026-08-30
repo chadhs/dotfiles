@@ -207,11 +207,31 @@ o.bind("SUPER + ALT + T", "Toggle window floating/tiling", hl.dsp.window.float({
 -- scroll, or gestures.
 dofile(os.getenv("HOME") .. "/.config/omarchy/plugins/io.github.pablo-merino.altswitch/altswitch.lua")
 
+-- Single-window Electron-style apps (no tab bar) ignore injected CTRL+W /
+-- CTRL+Q chords, so they get a plain window close instead. Closing the only
+-- window quits the app. Defined before the SUPER+W bind that calls it: Lua
+-- locals must exist lexically before a closure captures them.
+local function active_window_is_single_window_app()
+  local window = hl.get_active_window()
+  if not window then
+    return false
+  end
+
+  local class = (window.class or ""):lower()
+  for _, pattern in ipairs({ "sidra" }) do
+    if class:find(pattern, 1, true) then
+      return true
+    end
+  end
+
+  return false
+end
+
 -- Mac-style Cmd+W / Cmd+Q. In terminals fall back to closing the window so
 -- injected CTRL+W can't delete a word and CTRL+Q can't hit flow control.
 hl.unbind("SUPER + W")
 o.bind("SUPER + W", "Close tab / window", function()
-  if active_window_is_terminal() then
+  if active_window_is_terminal() or active_window_is_single_window_app() then
     hl.dispatch(hl.dsp.window.close())
   else
     send_shortcut_once("CTRL", "W")()
@@ -237,7 +257,7 @@ local function active_window_is_chromium()
 end
 
 o.bind("SUPER + Q", "Quit app", function()
-  if active_window_is_terminal() or active_window_is_chromium() then
+  if active_window_is_terminal() or active_window_is_chromium() or active_window_is_single_window_app() then
     hl.dispatch(hl.dsp.window.close())
   else
     send_shortcut_once("CTRL", "Q")()
