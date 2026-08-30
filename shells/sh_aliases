@@ -61,6 +61,11 @@ if [[ $(uname) = "Darwin" ]]; then
     alias cursor='agent'
 fi
 
+## linux only aliases
+if [[ $(uname) = "Linux" ]]; then
+    alias vim='nvim'
+fi
+
 ## update dot files
 function update-dotfiles(){
     curdir=$(pwd)
