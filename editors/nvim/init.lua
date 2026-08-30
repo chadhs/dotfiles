@@ -63,6 +63,13 @@ require('lazy').setup('plugins', {
       lazy = '💤 ',
     },
   },
+  change_detection = {
+    -- omarchy theme switches rewrite the state file aether's hotreload
+    -- watcher watches, and aether's reload path re-runs lazy's reloader,
+    -- which would pop this notification on every theme change; theme
+    -- reloads are handled silently by plugins/theme.lua + aether
+    notify = false,
+  },
 })
 
 -- vim: ts=2 sts=2 sw=2 et

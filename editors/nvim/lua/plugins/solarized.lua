@@ -1,3 +1,11 @@
+-- On omarchy, the theme adapter (theme.lua, which loads the spec omarchy
+-- regenerates in its state dir) owns the colorscheme and hot-reload; this
+-- file stays mac-only. The state file never exists on darwin, so behavior
+-- there is unchanged.
+if vim.fn.filereadable(vim.fn.expand('~/.local/state/omarchy/current/theme/neovim.lua')) == 1 then
+  return {}
+end
+
 return {
   -- 1) Solarized (one name: "solarized", switches with :set background=light/dark)
 

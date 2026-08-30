@@ -269,18 +269,68 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
     (global-evil-search-highlight-persist t))
 #+END_SRC
 
+*** omarchy theme (linux/omarchy only)
+
+On omarchy the theme system generates =omarchy-colors.el= from the active
+theme palette; load it as the =omarchy= theme instead of solarized. On mac
+the state file never exists and the solarized sections below behave exactly
+as before. The =omarchy-theme.el= deftheme itself is vendored at
+=emacs.d/lisp/omarchy-theme.el=.
+
+#+BEGIN_SRC emacs-lisp
+  (defvar omarchy-theme-dir
+    (expand-file-name "~/.local/state/omarchy/current/theme/"))
+  (defvar omarchy-theme-active
+    (file-exists-p (expand-file-name "omarchy-colors.el" omarchy-theme-dir)))
+
+  (defun omarchy-apply-theme ()
+    "Reload the omarchy theme from the generated state files."
+    (when omarchy-theme-active
+      (load-file (expand-file-name "omarchy-colors.el" omarchy-theme-dir))
+      ;; fully unload so stale face settings don't survive a live reload
+      (dolist (theme '(omarchy omarchy-dark omarchy-light))
+        (disable-theme theme)
+        (put theme 'theme-settings nil)
+        (setq custom-known-themes (delq theme custom-known-themes)))
+      (let ((theme-file (locate-file "omarchy-theme"
+                                     custom-theme-load-path '(".el"))))
+        (load-file theme-file)
+        (enable-theme 'omarchy))))
+
+  (when omarchy-theme-active
+    (add-to-list 'load-path omarchy-theme-dir)
+    (add-to-list 'custom-theme-load-path
+                 (expand-file-name "lisp" user-emacs-directory))
+    (omarchy-apply-theme)
+
+    ;; live reload: watch theme.name (a sibling of theme/ — theme-set does
+    ;; rm -rf + mv on the directory itself, which would kill a dir watch).
+    ;; theme.name is written after the swap completes, so the new
+    ;; omarchy-colors.el is already in place when this fires.
+    (require 'filenotify)
+    (let ((theme-name-file (expand-file-name
+                            "theme.name"
+                            (file-name-directory
+                             (directory-file-name omarchy-theme-dir)))))
+      (when (file-exists-p theme-name-file)
+        (file-notify-add-watch theme-name-file '(change)
+                               (lambda (_event)
+                                 (with-demoted-errors "omarchy theme reload: %S"
+                                   (omarchy-apply-theme)))))))
+#+END_SRC
+
 *** themes
 
 #+BEGIN_SRC emacs-lisp
   (use-package solarized-theme
-    :if (display-graphic-p)
+    :if (and (display-graphic-p) (not omarchy-theme-active))
     :config
     (load-theme 'solarized-dark t t)
     (load-theme 'solarized-light t t)
     )
 
   (use-package ample-theme
-    :if (not (display-graphic-p))
+    :if (and (not (display-graphic-p)) (not omarchy-theme-active))
     :config
     (load-theme 'ample t))
 #+END_SRC
@@ -291,7 +341,7 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
 
 #+BEGIN_SRC emacs-lisp
   (use-package auto-dark
-    :if (display-graphic-p)
+    :if (and (display-graphic-p) (not omarchy-theme-active))
     :diminish auto-dark-mode
     :custom
     (auto-dark-themes '((solarized-dark) (solarized-light)))
