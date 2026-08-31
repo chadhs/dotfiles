@@ -2,7 +2,9 @@
 
 # omarchy:summary=Guarantee a window is not covered: float+raise it if a floating window overlaps it
 # omarchy:args=<address>
-# Used by the omarchy-altswitch commit path so the window you switch to is
+# Used by the omarchy-switcharoo commit path (see
+# plugins/patches/switcharoo-local.patch in the dotfiles repo; formerly the
+# altswitch commit path) so the window you switch to is
 # always frontmost. Hyprland renders all floats above all tiles, so a tiled
 # window overlapped by a float can never be raised while tiled — the only fix
 # is to float it in place first (keeps its geometry), then raise.

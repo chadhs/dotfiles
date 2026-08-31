@@ -1,8 +1,21 @@
 diff --git i/Switcher.qml w/Switcher.qml
-index 42dfeed..0465358 100644
+index 42dfeed..ede1868 100644
 --- i/Switcher.qml
 +++ w/Switcher.qml
-@@ -656,12 +656,18 @@ Item {
+@@ -619,6 +619,12 @@ Item {
+       "eval",
+       "return hl.dispatch(hl.dsp.focus({ window = 'address:" + address + "' }))"
+     ])
++    // LOCAL PATCH (raise-front): Hyprland renders all floats above all tiles,
++    // so plain focus leaves a committed tiled window invisible when a
++    // floating window overlaps it. Raise it to front; if covered, float it
++    // in place first (tiled geometry preserved). Repo-owned helper:
++    // ~/dotfiles/omarchy/bin/omarchy-window-raise-front.
++    Quickshell.execDetached(["omarchy-window-raise-front", address])
+   }
+ 
+   // Public IPC method for callers that want to commit the current selection
+@@ -656,12 +662,18 @@ Item {
      root.positionSelection()
    }
  

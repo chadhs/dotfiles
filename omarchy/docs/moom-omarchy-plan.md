@@ -75,17 +75,15 @@ the highlight, and **releasing SUPER or ALT commits** to the highlighted
 window (ESC cancels; Enter/click also commits). Selection is virtual — focus
 moves once, on commit, so the view does not flit across workspaces mid-cycle.
 
-Local patch to the plugin clone (upstream commits on ALT release only):
-commit-on-release also watches the Super keys
-(`plugins/patches/switcharoo-super-release.patch` — re-apply after
-`omarchy plugin update`).
-
-Known regression vs the retired altswitch fork: switcharoo commits via a
-plain focus dispatch, so a tiled window chosen by the switcher can be covered
-by an overlapping floater. The fork guaranteed frontmost via
-`~/.local/bin/omarchy-window-raise-front` (raises, floating in place if
-needed) — that helper is still repo-owned and can be wired into a future
-switcharoo patch if the quirk bites.
+Local patches to the plugin clone (upstream commits on ALT release only),
+snapshotted at `plugins/patches/switcharoo-local.patch` — re-apply after
+`omarchy plugin update`:
+- Commit-on-release also watches the Super keys
+- Commits run `~/.local/bin/omarchy-window-raise-front` (the repo-owned
+  helper carried over from the altswitch fork): it raises the committed
+  window, and — because Hyprland always renders floats above tiles — if the
+  window is tiled and a floating window actually overlaps it, it is floated
+  in place (tiled geometry preserved) and then raised, so nothing can cover it
 
 These chords no longer switch workspaces; workspaces remain on `SUPER+1..0`,
 `SUPER+CTRL+TAB` (former workspace), bar scroll, and gestures. The earlier

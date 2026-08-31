@@ -80,16 +80,15 @@ under `~/.config/omarchy/plugins/` and `omarchy plugin update` refreshes it.
 That means local patches would be lost on update, so they are snapshotted in
 `plugins/patches/` (see that README for re-apply instructions):
 
-- `switcharoo-super-release.patch`: extends `Switcher.qml`'s release-watch to
-  commit on Super release, not just Alt. Required by the SUPER+TAB /
-  SUPER+SHIFT+TAB bindings in `hypr/bindings.lua`; without it the grid opens
-  but never commits.
+- `switcharoo-local.patch`, two `Switcher.qml` patches:
+  - **super-release**: commit-on-release watches the Super keys, not just
+    Alt. Required by the SUPER+TAB / SUPER+SHIFT+TAB bindings in
+    `hypr/bindings.lua`; without it the grid opens but never commits.
+  - **raise-front**: commits run `omarchy-window-raise-front` so a committed
+    tiled window overlapped by a floater is floated in place and raised
+    (Hyprland renders all floats above all tiles).
 
 The retired altswitch fork previously lived vendored here
 (`omarchy/plugins/io.github.pablo-merino.altswitch/`, with SUPER-chord support
 in `altswitch.lua`); switcharoo superseded it and the vendored copy was
-removed — recover it from git history if ever needed. Its
-`omarchy-window-raise-front` helper remains repo-owned: switcharoo commits via
-a plain focus dispatch, so a tiled window chosen by the switcher can still be
-covered by an overlapping floater (the helper exists to fix exactly that, and
-can be wired into a future switcharoo patch if it bites).
+removed — recover it from git history if ever needed.

@@ -199,9 +199,6 @@ o.bind("SUPER + SHIFT + BRACKETRIGHT", "Next tab", send_shortcut_once("CTRL", "T
 -- Toggle window floating/tiling (relocated from SUPER+T).
 o.bind("SUPER + ALT + T", "Toggle window floating/tiling", hl.dsp.window.float({ action = "toggle" }))
 
--- Toggle window floating/tiling (relocated from SUPER+T).
-o.bind("SUPER + ALT + T", "Toggle window floating/tiling", hl.dsp.window.float({ action = "toggle" }))
-
 -- Multi-tab apps where SUPER+W should close a tab, not the whole window with
 -- all its tabs (mac Cmd+W semantics). Everything else gets a plain window
 -- close, which works universally — including single-window apps like omacalc,
@@ -262,12 +259,11 @@ o.bind("SUPER + SHIFT + code:51", "Switchboard: window overview", "omarchy-shell
 -- Replaces both Omarchy's stock workspace-local ALT+TAB cycling and the
 -- retired altswitch fork (which previously held SUPER+TAB; still in git
 -- history under omarchy/plugins/io.github.pablo-merino.altswitch/).
--- The plugin's release-watch is patched locally to also commit on Super
--- release — without that patch SUPER+TAB would open the grid but never
--- commit when SUPER is released. The patch (Switcher.qml:
--- isReleaseModifier/modifierKeyExpr) is snapshotted at
--- omarchy/plugins/patches/switcharoo-super-release.patch; re-apply it after
--- `omarchy plugin update`. Removal, if ever needed:
+-- The plugin's release-watch and commit path are patched locally (see
+-- omarchy/plugins/patches/switcharoo-local.patch): commit-on-release watches
+-- the Super keys (without it SUPER+TAB would open the grid but never commit
+-- on release), and commits run omarchy-window-raise-front so a committed
+-- tiled window covered by a floater is floated in place and raised. Removal, if ever needed:
 --   1. delete this block
 --   2. omarchy plugin remove io.github.gabrielvincent.switcharoo --yes
 -- The "Switcharoo switcher" description acts as a sentinel: the plugin checks
