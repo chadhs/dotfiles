@@ -43,3 +43,20 @@ The patch source of truth is the `local-patch` branch of the fork at
 the PR branch is `release-modifiers-config` (everything above minus the
 local-only raise-front commit). Both are required by the bindings in
 `omarchy/hypr/bindings.lua` (switcharoo section).
+
+## TODO: when upstream merges the releaseModifiers PR
+
+(https://github.com/gabrielvincent/omarchy-switcharoo/pull/1 — draft as of
+2026-08-31; flip this section into done notes when it lands.)
+
+1. `omarchy plugin update` — upstream code now carries releaseModifiers
+   natively; the live clone needs no patch for it
+2. Shrink `switcharoo-local.patch` to the raise-front hunk only
+   (`git diff upstream/main <raise-front-only-ref>` from the fork), re-apply,
+   `sh scripts/omarchy-post-update.sh` must be 10/10
+3. `omarchy/shell.json` keeps `"releaseModifiers": ["alt", "super"]` — now
+   consumed by upstream code instead of the patch; no change needed
+4. Extend `PATCH_SENTINELS` in `scripts/omarchy-post-update.sh` back to just
+   `omarchy-window-raise-front`
+5. Update this README (patch covers only Switcher.qml again); delete the
+   fork if desired — the dotfiles repo has no other dependency on it
