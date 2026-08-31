@@ -28,7 +28,7 @@ floater after the new window maps), and — because Hyprland always renders
 tiled windows below the floating layer — the app was also invisible behind
 a full-screen floater.
 
-The fix is two repo-owned pieces:
+The fix is three repo-owned pieces:
 
 1. **`focus-new-windows`** (`omarchy/bin/`, run by
    `omarchy/systemd/user/focus-new-windows.service`): listens on Hyprland's
@@ -41,7 +41,14 @@ The fix is two repo-owned pieces:
    through `hyprctl eval 'hl.dsp.focus({ window = "0x..." })'` — the classic
    `hyprctl dispatch focuswindow address:` does not parse in 0.56's Lua
    dispatcher. Debug trail: `$XDG_RUNTIME_DIR/focus-new-windows.log`.
-2. **Float-on-top window rules** (`omarchy/hypr/hyprland.lua`): no setting
+2. **Raise-front on open** (also `focus-new-windows`, added after the
+   switcharoo migration exposed the gap): focus alone cannot lift a tiled
+   window above the floating layer, so after refocusing, the window goes
+   through `omarchy-window-raise-front` — raised, and floated in place
+   (tiled geometry preserved) only when a floater actually covers it.
+   Newly launched apps always surface, tiled or floated. Trade-off: such
+   windows stay floating until re-tiled (SUPER+ALT+T).
+3. **Float-on-top window rules** (`omarchy/hypr/hyprland.lua`): no setting
    can raise a tiled window above floating windows, so apps that must be
    *seen* when a full-screen floater is up are floated via `o.window(...)`
    rules (ChatGPT today; add more with the class from `hyprctl activewindow`).
