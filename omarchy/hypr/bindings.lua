@@ -186,6 +186,14 @@ o.bind("SUPER + T", "New tab", function()
   end
 end)
 
+-- Address/search bar (mac Cmd+L): inject CTRL+L, which Chromium and most
+-- GUI apps handle. No-op in terminals so the injected CTRL+L can't clear
+-- a running shell. Relocates Omarchy's workspace-layout toggle to
+-- SUPER+ALT+L.
+hl.unbind("SUPER + L")
+o.bind("SUPER + L", "Address / search bar", unless_terminal(send_shortcut_once("CTRL", "L")))
+o.bind("SUPER + ALT + L", "Toggle workspace layout", "omarchy-hyprland-workspace-layout-toggle")
+
 -- Tab navigation (mac Cmd+{ / Cmd+}): previous/next tab in chromium,
 -- ghostty, and most GUI apps. Injects the universal ctrl+shift+tab /
 -- ctrl+tab chords, which keep working directly too. Binds must use the
