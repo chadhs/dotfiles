@@ -161,6 +161,17 @@ o.bind("SUPER + CTRL + ALT + Z", "Moom: quarter bottom left", moom("quarter-bl")
 o.bind("SUPER + CTRL + ALT + X", "Moom: quarter bottom right", moom("quarter-br"))
 o.bind("SUPER + CTRL + ALT + T", "Moom: task list cell", moom("task"))
 
+-- Cede Omarchy's move-into-group chords to Moom nudges. Grouping itself is
+-- untouched: SUPER+G toggles, SUPER+ALT+G moves out, SUPER+ALT+TAB cycles,
+-- SUPER+CTRL+Arrows moves grouped focus. The last free arrow chord
+-- (SUPER+CTRL+SHIFT+Arrows) stays unspent as the fallback if move-into-group
+-- is ever missed:
+--   o.bind("SUPER + CTRL + SHIFT + LEFT", "Move window to group on left", hl.dsp.window.move({ into_group = "l" }))
+hl.unbind("SUPER + ALT + LEFT")
+hl.unbind("SUPER + ALT + RIGHT")
+hl.unbind("SUPER + ALT + UP")
+hl.unbind("SUPER + ALT + DOWN")
+
 -- Nudges (floating only, confined to display).
 o.bind("SUPER + ALT + LEFT", "Moom: nudge left", moom("nudge-left"), { repeating = true })
 o.bind("SUPER + ALT + RIGHT", "Moom: nudge right", moom("nudge-right"), { repeating = true })
@@ -252,9 +263,6 @@ end)
 -- claude, omacalc) still quit. On a terminal this closes all terminal windows.
 o.bind("SUPER + Q", "Quit app", "omarchy-quit-app")
 
--- Mac-style screenshot shortcut. `save` skips the annotation editor so the
--- capture lands straight in Pictures, like macOS. (An earlier SUPER+SHIFT+
--- 3/4/5/W set conflicted with other hotkeys, so only region select survives.)
 -- Screenshot shortcuts (mac-ish chords). All three open the capture menu for
 -- now; mode-specific binds kept tripping over capture quirks (silent exits
 -- with stale slurp pickers, clipboard not landing). Revisit later.

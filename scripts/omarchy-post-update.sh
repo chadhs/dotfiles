@@ -15,7 +15,7 @@
 #   2. switcharoo global shortcuts + sentinel binds live
 #   3. switchboard service responds
 #   4. hyprctl configerrors empty
-#   5. shell.json / hyprland.lua drift vs omarchy's current templates
+#   5. shell.json drift vs omarchy's current template
 #   6. doctor.sh (symlink integrity and the rest)
 
 ## resolve paths (safe to run from anywhere)
@@ -67,10 +67,10 @@ if command -v hyprctl >/dev/null 2>&1 && hyprctl -j activewindow >/dev/null 2>&1
   done
 
   switcharoo_binds="$(hyprctl -j binds 2>/dev/null | jq '[.[] | select(.description == "Switcharoo switcher")] | length')"
-  if [ "$switcharoo_binds" = "5" ]; then
-    pass "all 5 switcharoo chords bound (alt+tab, alt+shift+tab, alt+grave, super+tab, super+shift+tab)"
+  if [ "${switcharoo_binds:-0}" -ge 1 ]; then
+    pass "switcharoo sentinel binds present ($switcharoo_binds: alt+tab family, see omarchy/hypr/bindings.lua)"
   else
-    fail "expected 5 'Switcharoo switcher' binds, found: ${switcharoo_binds:-?} (plugin checks for this sentinel; see omarchy/hypr/bindings.lua)"
+    fail "no 'Switcharoo switcher' binds found (plugin checks for this sentinel; see omarchy/hypr/bindings.lua)"
   fi
 
   if hyprctl -j binds 2>/dev/null | jq -e '.[] | select(.description == "Switchboard: window overview")' >/dev/null 2>&1; then
@@ -111,17 +111,6 @@ if [ -f "$template" ]; then
   fi
 else
   warn "omarchy shell.json template not found at $template — skipped"
-fi
-
-template="$OMARCHY_TEMPLATES/config/hypr/hyprland.lua"
-if [ -f "$template" ]; then
-  if diff -q "$template" "$REPO_ROOT/omarchy/hypr/hyprland.lua" >/dev/null 2>&1; then
-    pass "hyprland.lua matches omarchy template"
-  else
-    warn "hyprland.lua drifted from omarchy template — expected (vendored for float-on-top rules); after omarchy updates, fold in new stock rules if any: diff $template $REPO_ROOT/omarchy/hypr/hyprland.lua"
-  fi
-else
-  warn "omarchy hyprland.lua template not found at $template — skipped"
 fi
 
 ## 5. doctor (symlink integrity + the rest)

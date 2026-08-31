@@ -1,8 +1,9 @@
 # Moom → Omarchy Recreation Plan
 
 Migration of macOS Moom window-management muscle memory to Omarchy (Hyprland).
-Implemented as **Plan B** (tiling-embracing hybrid); **Plan A** (1:1 literal
-recreation) is preserved here as an escape hatch.
+Implemented as **Plan A** mode (1:1 literal recreation) — `MOOM_MODE=planA` in
+`~/.config/omarchy/moom.conf` is the active default; **Plan B** (tiling-embracing
+hybrid) remains available as an opt-in alternative.
 
 ## Decoded Moom config (source of truth)
 
@@ -28,15 +29,15 @@ All fractions are cells on Moom's 12×8 grid. Column ranges are 1-indexed.
 | Move to Display R/L, loop | `^⌥→/←` | next/prev monitor, wraps |
 | Revert | `^⌥⌘R` | undo last Moom action |
 
-## Plan B — implemented as `planB` mode (tiling-embracing hybrid)
+## Mode handling — one chord set, two behaviors
 
-One chord set, context-aware behavior. Mode is set by `MOOM_MODE` in
-`~/.config/omarchy/moom.conf` (`planA` default, `planB` optional).
+Mode is set by `MOOM_MODE` in `~/.config/omarchy/moom.conf` (`planA` default,
+`planB` optional).
 
 **Plan A mode (active)**: every Moom chord floats the window if needed and
 places it at the literal grid cell — identical behavior regardless of tiling
 layout, no swaps, no split resizes. `fill` = fill the screen area (Moom-style,
-not Hyprland fullscreen). New windows still tile and auto-arrange; SUPER+T
+not Hyprland fullscreen). New windows still tile and auto-arrange; SUPER+ALT+T
 re-tiles any placed window; all tiling keys remain available. Flipping
 `MOOM_MODE=planB` restores the tiling-aware chords.
 
@@ -126,14 +127,14 @@ nudge-right nudge-up nudge-down display-prev display-next revert`
 - Tiled fraction resizes are clamped by dwindle when a neighbor hits min size
 - Fraction chords resize width/height, not side — dwindle decides orientation
 
-## Plan A — escape hatch (1:1 Moom recreation)
+## Plan A — implemented (1:1 Moom recreation)
 
-Not implemented, but reachable by editing only `~/.config/hypr/bindings.lua`:
-the engine already supports literal cell placement for every grid above, so
-going "full Moom" means rebinding each chord to the fixed action name
-(e.g. `omarchy-moom corner-tl` regardless of window state) and optionally
-marking managed windows floating. No script changes needed.
+Implemented as `MOOM_MODE=planA` (the `moom.conf` default): every chord binds
+to the fixed action name (e.g. `omarchy-moom corner-tl` regardless of window
+state) and the engine floats managed windows as needed. No manual rebinding
+required — flipping `MOOM_MODE` in `~/.config/omarchy/moom.conf` switches
+behavior.
 
-If Omarchy's tiling ever chafes: set `omarchy_default_bindings = false` in
-`~/.config/hypr/hyprland.lua`, bind the full Moom table, and float everything —
+If Omarchy's tiling ever chafes further: set `omarchy_default_bindings = false`
+in `~/.config/hypr/hyprland.lua`, bind the full Moom table, and float everything —
 the full decode table above is the spec.

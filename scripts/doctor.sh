@@ -266,6 +266,26 @@ if [ "$system_type" = "Linux" ]; then
   else
     warn "/usr/share/omarchy/default/bash/env-bootstrap missing (is this an omarchy install? profile's linux branch sources it)"
   fi
+
+  # No chord may carry two handlers (omarchy default + repo rebind both firing,
+  # e.g. SUPER+ALT+Arrows was both move-into-group and a Moom nudge). The
+  # release flag is part of the chord: push-to-talk legitimately binds start
+  # on press and stop on release of the same key. Binds that report an empty
+  # key (omarchy's lua-layer workspace binds on this Hyprland) can't be
+  # checked here.
+  if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1 && hyprctl -j binds >/dev/null 2>&1; then
+    dupes="$(hyprctl -j binds 2>/dev/null | jq -r '
+      [ .[] | select(.key != "")
+        | "\(.submap):\(.modmask):\(.release):\(.key)" ]
+      | group_by(.) | map(select(length > 1) | .[0]) | .[]')"
+    if [ -n "$dupes" ]; then
+      fail "duplicate chord binds in hyprland (multiple handlers fire): $(echo "$dupes" | tr '\n' ' ')"
+    else
+      pass "no duplicate chord binds"
+    fi
+  else
+    warn "hyprctl/jq not reachable — skipping duplicate-chord check"
+  fi
 fi
 
 ## summary

@@ -36,8 +36,8 @@ keybind = shift+enter=csi:13;2u
 keybind = alt+shift+enter=csi:13;4u
 keybind = super+control+shift+alt+arrow_down=resize_split:down,100
 keybind = super+control+shift+alt+arrow_up=resize_split:up,100
-keybind = super+control+shift+alt+arrow_left=resize_split:left,100
-keybind = super+control+shift+alt+arrow_right=resize_split:right,100
+# No left/right variants: Hyprland claims super+ctrl+shift+alt+Left/Right
+# globally (Moom wide-left/wide-right panels), so those keys never reach here.
 
 # Slowdown mouse scrolling
 mouse-scroll-multiplier = 0.95

@@ -10,12 +10,13 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 | --- | --- | --- |
 | `hypr/bindings.lua` | `~/.config/hypr/bindings.lua` | mac-style text nav, Moom chords, switcher wiring |
 | `hypr/input.lua` | `~/.config/hypr/input.lua` | no tap-to-click, natural scroll, per-device list |
-| `hypr/hyprland.lua` | `~/.config/hypr/hyprland.lua` | vendored for the float-on-top window rules (see "focus on open" below) |
+| `hypr/looknfeel.lua` | `~/.config/hypr/looknfeel.lua` | rounding/border tweaks + float-on-top window rules (see "focus on open" below) |
+| `hypr/monitors.lua` | `~/.config/hypr/monitors.lua` | versioned for the 1.6 scale this machine wants (omarchy's default is `"auto"`) |
 | `shell.json` | `~/.config/omarchy/shell.json` | opaque bar + switchboard/switcharoo plugin entries |
 | `moom.conf` | `~/.config/omarchy/moom.conf` | `MOOM_MODE=planA` |
 | `ghostty/config` | `~/.config/ghostty/config` | linux terminal config (fork of omarchy's, with local font-size/padding tweaks; mac ghostty stays `utils/ghostty/config`) |
 | `env/90-shell.conf` | `~/.config/environment.d/90-shell.conf` | session `SHELL` mirror (ghostty launches `$SHELL`; guards against systemd user-manager staleness after chsh) |
-| `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-window-raise-front`, `focus-new-windows` |
+| `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-quit-app`, `omarchy-agent-tools-update`, `omarchy-window-raise-front`, `focus-new-windows` |
 | `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units, enabled by `deploy.sh` on arch |
 | `plugins/patches/` | — | local patches for plugin-manager-managed plugins (see below) |
 | `docs/moom-omarchy-plan.md` | — | design doc for `omarchy-moom` + the Moom chords in `bindings.lua` |
@@ -48,27 +49,30 @@ The fix is three repo-owned pieces:
    (tiled geometry preserved) only when a floater actually covers it.
    Newly launched apps always surface, tiled or floated. Trade-off: such
    windows stay floating until re-tiled (SUPER+ALT+T).
-3. **Float-on-top window rules** (`omarchy/hypr/hyprland.lua`): no setting
+3. **Float-on-top window rules** (`omarchy/hypr/looknfeel.lua`): no setting
    can raise a tiled window above floating windows, so apps that must be
    *seen* when a full-screen floater is up are floated via `o.window(...)`
    rules (ChatGPT today; add more with the class from `hyprctl activewindow`).
 
-`hyprland.lua` was vendored for this (previously "stock omarchy"). It is
-tiny and stable, but it is the file omarchy's update migrations may rewrite
-— if an `omarchy update` changes Hyprland's config template, diff
-`~/.config/hypr/hyprland.lua.bak-omarchy` against the repo copy and fold in
-what's new. The unit is enabled by `deploy.sh` (`systemctl --user enable
---now`); an `autostart.lua` hook was rejected deliberately — that file
-stays stock omarchy.
+`hyprland.lua` used to be vendored to carry those rules, which was fragile —
+it is omarchy's config *entrypoint* template, so an upstream change to its
+require list would silently never load. The rules now live in
+`looknfeel.lua` (safe to own: stock is comments/examples, real defaults load
+from `default/hypr/` regardless) and `hyprland.lua` is stock omarchy again —
+if it ever needs reverting to stock after an update:
+`omarchy refresh config hypr/hyprland.lua`. The unit is enabled by `deploy.sh`
+(`systemctl --user enable --now`); an `autostart.lua` hook was rejected
+deliberately — that file stays stock omarchy.
 
 ## Deliberately NOT included
 
-- `~/.config/hypr/monitors.lua` — omarchy generates this per machine (display
-  wiring, scale). Keep it machine-local.
-- `~/.config/hypr/looknfeel.lua`, `autostart.lua`, `xdph.conf`,
-  `hyprsunset.conf` — stock omarchy; let `omarchy` manage them.
-  (`hyprland.lua` used to be on this list; it was vendored for the
-  float-on-top rules above.)
+- `~/.config/hypr/autostart.lua`, `xdph.conf`, `hyprsunset.conf` — stock
+  omarchy; let `omarchy` manage them.
+- `monitors.lua` and `looknfeel.lua` used to be on this list (omarchy
+  generates monitors per machine; looknfeel was stock). Both are repo-owned
+  now: `monitors.lua` for the 1.6 scale (a rebuild silently reset it to
+  `"auto"` — one machine, so versioned; fork it per machine if a second
+  appears), `looknfeel.lua` as the safe home for the float-on-top rules.
 
 ## ghostty config caveat: the text-size slider
 
