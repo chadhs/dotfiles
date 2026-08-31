@@ -250,6 +250,9 @@ o.bind("CTRL + SUPER + SHIFT + 3", "Screenshot: capture menu", "omarchy-menu tog
 o.bind("CTRL + SUPER + SHIFT + 4", "Screenshot: capture menu", "omarchy-menu toggle trigger.capture")
 o.bind("CTRL + SUPER + SHIFT + 5", "Screenshot: capture menu", "omarchy-menu toggle trigger.capture")
 
+-- Clipboard history (same command as the default SUPER+CTRL+V bind).
+o.bind("SUPER + ALT + C", "Clipboard manager", "omarchy-shell shell toggle omarchy.clipboard")
+
 -- Switchboard: full-screen live window overview (also on 3-finger swipe up,
 -- see input.lua). Bound by keycode (SUPER+SHIFT+backslash) per the plugin's
 -- recommendation; unbound in stock Omarchy.
