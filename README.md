@@ -12,7 +12,7 @@ obviously you **want to read** the best part... [emacs-config.org](editors/emacs
 | `shells/` | zsh + bash profiles/rc files, `inputrc`, the `digitalnomad` zsh theme |
 | `utils/` | `gitconfig`, `tmux.conf`, ghostty + karabiner + espanso config, `ssh_config`, agent skills, misc tool config and scripts (`project-ruby-exec`, `autogit.sh`, ...) |
 | `omarchy/` | owned omarchy customizations (hypr keymaps/input, omarchy-shell bar config, moom config, ghostty config, `omarchy-moom` script, plugin patches) — see [omarchy/README.md](omarchy/README.md) |
-| `scripts/` | `bootstrap-mac.sh`, `deploy.sh`, `doctor.sh`, `weekly-update.sh`, `macos-defaults.sh`, `links.conf`, npm/gem package lists |
+| `scripts/` | `bootstrap-mac.sh`, `deploy.sh`, `doctor.sh`, `weekly-update.sh`, `omarchy-post-update.sh`, `macos-defaults.sh`, `links.conf`, npm/gem package lists |
 | `.github/` | CI: shellcheck, `links.conf` lint, and syntax checks run on push/PR |
 
 ## scripts
@@ -84,6 +84,9 @@ for ad-hoc brew/cask/mas updates from a shell, use the aliases: `brewup`, `casku
 `sh scripts/doctor.sh` verifies this machine still matches what `deploy.sh` sets up: symlinks intact and pointing at the repo, copy-once baseline files present (warns on drift from the repo version), git identity configured, toolchain present, Brewfile packages installed, and agent skills linked. FAILs mean broken setup (usually re-run `deploy.sh`); WARNs are informational. safe to run anytime, from any cwd.
 
 the same lint/syntax checks (shellcheck, `links.conf` validation) also run remotely on every push/PR via [`.github/workflows/ci.yml`](.github/workflows/ci.yml).
+
+### after omarchy / plugin updates
+`sh scripts/omarchy-post-update.sh` runs after any `omarchy update` or `omarchy plugin update`: it re-applies the local switcharoo patch if the plugin update wiped it (restarting omarchy-shell), verifies the switcher chords/shortcuts and switchboard service are live, checks `hyprctl configerrors`, flags `shell.json`/`hyprland.lua` drift against omarchy's current templates, and finishes with a doctor pass. exits non-zero on FAILs; safe to re-run. see [omarchy/plugins/patches/README.md](omarchy/plugins/patches/README.md) for the patch itself.
 
 ### manual steps after bootstrap
 things that can't be automated from the shell, in rough order:

@@ -2,7 +2,10 @@
 
 Local patches applied to plugin-manager-managed plugins under
 `~/.config/omarchy/plugins/` (gitignored, so `omarchy plugin update` can
-clobber them). Re-apply after updates:
+clobber them). After any `omarchy plugin update` or `omarchy update`, run
+`sh scripts/omarchy-post-update.sh` — it re-applies this patch
+automatically when the clone is clean and verifies the rest of the setup.
+To apply by hand:
 
 ```sh
 git -C ~/.config/omarchy/plugins/io.github.gabrielvincent.switcharoo apply \
