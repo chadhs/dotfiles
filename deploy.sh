@@ -252,6 +252,26 @@ symlink_configs(){
   ## manifest-driven links/copies
   backup_omarchy_configs
   apply_links
+  enable_user_units
+}
+
+# Enable dotfiles-shipped systemd user units (arch/omarchy only). Units
+# source from omarchy/systemd/user/ and link into ~/.config/systemd/user/
+# via scripts/links.conf. Idempotent; safe over SSH (units gate themselves
+# on a live graphical session via ConditionEnvironment).
+enable_user_units(){
+  [ "$system_os" = "arch" ] || return 0
+  command -v systemctl >/dev/null 2>&1 || return 0
+  for unit in "${DOTFILES_ROOT}"/omarchy/systemd/user/*.service; do
+    [ -e "$unit" ] || continue
+    name="$(basename "$unit")"
+    systemctl --user daemon-reload 2>/dev/null
+    if systemctl --user enable --now "$name" 2>/dev/null; then
+      echo "user unit enabled: $name"
+    else
+      echo "could not enable user unit: $name (enable manually: systemctl --user enable --now $name)"
+    fi
+  done
 }
 
 

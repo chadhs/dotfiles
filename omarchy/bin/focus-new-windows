@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+# Refocus every newly opened window so a freshly launched app always gets
+# keyboard focus, regardless of whether a floating window currently has it.
+#
+# Why: on Hyprland 0.56, when the focused window is floating, focus bounces
+# back to it after a new (tiled) window maps. Listening for openwindow events
+# and re-focusing after a short delay wins that race deterministically.
+#
+# Deployed to ~/.local/bin/ via deploy.sh; started by the
+# focus-new-windows.service user unit (omarchy/systemd/user/).
+#
+# Skipped windows: pinned overlays (PiP, webcam overlay) and anything that
+# opens on a non-active workspace (no focus-stealing across workspaces).
+#
+# Debug trail: $XDG_RUNTIME_DIR/focus-new-windows.log (tmpfs, cleared on boot).
+
+SOCKET="${XDG_RUNTIME_DIR}/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.socket2.sock"
+[[ -S $SOCKET ]] || SOCKET="/tmp/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.socket2.sock"
+
+# Only one instance.
+exec 9>"${XDG_RUNTIME_DIR}/focus-new-windows.lock"
+flock -n 9 || exit 0
+
+[[ -S $SOCKET ]] || exit 1
+
+LOG="${XDG_RUNTIME_DIR}/focus-new-windows.log"
+log() { echo "$(date +%T.%3N) $*" >>"$LOG"; }
+
+socat -U - "UNIX-CONNECT:$SOCKET" | while IFS= read -r event; do
+  [[ $event == "openwindow>>"* ]] || continue
+  addr=${event#openwindow>>}
+  addr=${addr%%,*}
+  # Event addresses have no 0x prefix; hyprctl expects one.
+  [[ $addr == 0x* ]] || addr="0x$addr"
+  log "event $event"
+
+  # Let Hyprland settle its initial focus pass before re-asserting ours.
+  sleep 0.15
+
+  hyprctl -j clients 2>/dev/null | jq -r --arg addr "$addr" '
+    .[] | select(.address == $addr) | "\(.workspace.id) \(.pinned)"' |
+  while read -r ws pinned; do
+    [[ -n $ws ]] || continue
+    [[ $pinned == true ]] && { log "skip $addr (pinned)"; continue; }
+
+    active=$(hyprctl -j activeworkspace 2>/dev/null | jq -r '.id')
+    [[ $ws == "$active" ]] || { log "skip $addr (ws $ws != active $active)"; continue; }
+
+    hyprctl eval "hl.dsp.focus({ window = \"$addr\" })" >/dev/null 2>&1
+    log "focused $addr -> active now: $(hyprctl activewindow -j | jq -r '.address')"
+  done
+done

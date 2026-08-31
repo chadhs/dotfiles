@@ -1,0 +1,28 @@
+[Unit]
+Description=Refocus newly opened windows (focus-new-windows)
+# Give every newly opened window keyboard focus. On Hyprland, when the
+# focused window is floating, focus bounces back to it after a new (tiled)
+# window maps; this daemon listens for openwindow events and re-asserts
+# focus on the new window ~0.15s later, winning that race deterministically.
+#
+# Wait for the compositor: the script needs WAYLAND_DISPLAY and
+# HYPRLAND_INSTANCE_SIGNATURE, which uwsm imports into the user manager
+# before it reaches graphical-session.target.
+After=graphical-session.target
+# The event socket dies with the compositor, so follow the session rather
+# than linger against a socket that is gone.
+PartOf=graphical-session.target
+# After= is ordering only — an `omarchy update` over SSH has a live user
+# manager and no graphical session; skip the start instead of coming up
+# with no socket to watch. The unit stays enabled and starts for real at
+# graphical login.
+ConditionEnvironment=WAYLAND_DISPLAY
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/focus-new-windows
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=graphical-session.target
