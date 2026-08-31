@@ -12,6 +12,7 @@
 #
 # Checks:
 #   1. switcharoo patch applied (auto-apply if missing)
+#   1b. patch sentinels present in the applied Switcher.qml (notifies on failure)
 #   2. switcharoo global shortcuts + sentinel binds live
 #   3. switchboard service responds
 #   4. hyprctl configerrors empty
@@ -30,11 +31,18 @@ fail(){ printf 'FAIL  %s\n' "$1"; fail_count=$((fail_count+1)); }
 SWITCHAROO_CLONE="${HOME}/.config/omarchy/plugins/io.github.gabrielvincent.switcharoo"
 PATCH_FILE="${REPO_ROOT}/omarchy/plugins/patches/switcharoo-local.patch"
 
+## 0. tool prerequisites (guarded so partial installs degrade to WARN, not crash)
+HAVE_GIT=0; HAVE_JQ=0
+command -v git >/dev/null 2>&1 && HAVE_GIT=1
+command -v jq >/dev/null 2>&1 && HAVE_JQ=1
+
 ## 1. switcharoo patch
 if [ ! -d "$SWITCHAROO_CLONE" ]; then
   fail "switcharoo clone missing: $SWITCHAROO_CLONE (omarchy plugin add gabrielvincent/omarchy-switcharoo first)"
 elif [ ! -f "$PATCH_FILE" ]; then
   fail "patch snapshot missing: $PATCH_FILE"
+elif [ "$HAVE_GIT" != "1" ]; then
+  fail "git not found — cannot verify or re-apply the switcharoo patch"
 else
   local_diff="$(git -C "$SWITCHAROO_CLONE" diff 2>/dev/null)"
   if [ -z "$local_diff" ]; then
@@ -56,8 +64,32 @@ else
   fi
 fi
 
+## 1b. patch sentinels present in the applied QML (loud failure)
+# A pass above proves the diff matched or applied — not that the plugin code
+# actually carries the change (a stale snapshot can apply cleanly and still
+# be wrong). Assert the patch's distinctive strings in the clone; extend
+# PATCH_SENTINELS when switcharoo-local.patch gains hunks.
+PATCH_SENTINELS="omarchy-window-raise-front"
+if [ -d "$SWITCHAROO_CLONE" ] && [ -f "$SWITCHAROO_CLONE/Switcher.qml" ]; then
+  missing_sentinels=""
+  for sentinel in $PATCH_SENTINELS; do
+    grep -q "$sentinel" "$SWITCHAROO_CLONE/Switcher.qml" 2>/dev/null ||
+      missing_sentinels="$missing_sentinels $sentinel"
+  done
+  if [ -z "$missing_sentinels" ]; then
+    pass "patch sentinels present in Switcher.qml"
+  else
+    fail "patch sentinels missing from Switcher.qml:$missing_sentinels (stale or half-applied patch; re-port: see omarchy/plugins/patches/README.md)"
+    if command -v omarchy-notification-send >/dev/null 2>&1; then
+      omarchy-notification-send -u critical -g 󰀦 "Switcharoo patch broken" \
+        "Sentinels missing:$missing_sentinels — re-port the patch (~/dotfiles/omarchy/plugins/patches/README.md)" \
+        >/dev/null 2>&1 || true
+    fi
+  fi
+fi
+
 ## 2. switcharoo global shortcuts + sentinel binds
-if command -v hyprctl >/dev/null 2>&1 && hyprctl -j activewindow >/dev/null 2>&1; then
+if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1 && hyprctl -j activewindow >/dev/null 2>&1; then
   shortcuts="$(hyprctl globalshortcuts 2>/dev/null)"
   for sc in next previous; do
     case "$shortcuts" in
@@ -86,11 +118,13 @@ if command -v hyprctl >/dev/null 2>&1 && hyprctl -j activewindow >/dev/null 2>&1
     fail "hyprctl configerrors: $errors"
   fi
 else
-  warn "hyprctl not reachable — skipping live-bind checks (run inside the Hyprland session)"
+  warn "hyprctl/jq not reachable — skipping live-bind checks (run inside the Hyprland session)"
 fi
 
 ## 3. switchboard service responds
-if command -v omarchy-shell >/dev/null 2>&1 && omarchy-shell switchboard status 2>/dev/null | jq -e '.open != null' >/dev/null 2>&1; then
+if [ "$HAVE_JQ" != "1" ]; then
+  warn "jq not found — skipping switchboard service check"
+elif command -v omarchy-shell >/dev/null 2>&1 && omarchy-shell switchboard status 2>/dev/null | jq -e '.open != null' >/dev/null 2>&1; then
   pass "switchboard service responds"
 else
   warn "switchboard service did not respond (omarchy-shell switchboard status)"
@@ -100,7 +134,11 @@ fi
 OMARCHY_TEMPLATES="${OMARCHY_PATH:-/usr/share/omarchy}"
 
 template="$OMARCHY_TEMPLATES/config/omarchy/shell.json"
-if [ -f "$template" ]; then
+if [ "$HAVE_JQ" != "1" ]; then
+  warn "jq not found — skipping shell.json drift check"
+elif [ ! -f "$template" ]; then
+  warn "omarchy shell.json template not found at $template — skipped"
+else
   missing_keys="$(for k in $(jq -r 'keys[]' "$template" 2>/dev/null); do
     jq -e --arg k "$k" 'has($k)' "$REPO_ROOT/omarchy/shell.json" >/dev/null 2>&1 || echo "$k"
   done)"
@@ -109,8 +147,6 @@ if [ -f "$template" ]; then
   else
     pass "shell.json: no top-level keys missing from omarchy template"
   fi
-else
-  warn "omarchy shell.json template not found at $template — skipped"
 fi
 
 ## 5. doctor (symlink integrity + the rest)
