@@ -67,7 +67,8 @@
       "id": "io.github.thebenwalther.switchboard"
     },
     {
-      "id": "io.github.gabrielvincent.switcharoo"
+      "id": "io.github.gabrielvincent.switcharoo",
+      "releaseModifiers": ["alt", "super"]
     }
   ]
 }

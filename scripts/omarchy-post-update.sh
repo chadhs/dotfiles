@@ -69,7 +69,7 @@ fi
 # actually carries the change (a stale snapshot can apply cleanly and still
 # be wrong). Assert the patch's distinctive strings in the clone; extend
 # PATCH_SENTINELS when switcharoo-local.patch gains hunks.
-PATCH_SENTINELS="omarchy-window-raise-front"
+PATCH_SENTINELS="omarchy-window-raise-front releaseModifiers"
 if [ -d "$SWITCHAROO_CLONE" ] && [ -f "$SWITCHAROO_CLONE/Switcher.qml" ]; then
   missing_sentinels=""
   for sentinel in $PATCH_SENTINELS; do

@@ -1,7 +1,29 @@
-diff --git i/Switcher.qml w/Switcher.qml
-index 42dfeed..ede1868 100644
---- i/Switcher.qml
-+++ w/Switcher.qml
+diff --git a/README.md b/README.md
+index 516035e..5179268 100644
+--- a/README.md
++++ b/README.md
+@@ -82,6 +82,7 @@ Third-party plugin settings live on the plugin entry in `~/.config/omarchy/shell
+ {
+   "id": "io.github.gabrielvincent.switcharoo",
+   "commitOnModifierRelease": true,
++  "releaseModifiers": ["alt"],
+   "switchMode": "clients",
+   "showWorkspace": false,
+   "showSpecialWorkspaceBadge": true,
+@@ -109,7 +110,8 @@ Supported settings:
+ | `showSpecialWorkspaceBadge` | `true` | Show the `special` badge on special workspace cards in workspace mode. |
+ | `dimBackdrop` | `false` | Dim the desktop behind the switcher. |
+ | `wrapNavigation` | `true` | Wrap at grid edges. |
+-| `commitOnModifierRelease` | `true` | Focus selection when Alt is released. |
++| `commitOnModifierRelease` | `true` | Focus the selection when a release modifier is released (see `releaseModifiers`). |
++| `releaseModifiers` | `["alt"]` | Modifier(s) whose release commits the selection: any of `alt`, `meta`, `super`. Accepts a string or array; `release_modifiers` is accepted as an alias. |
+ 
+ A summon payload can temporarily override any setting. For example:
+ 
+diff --git a/Switcher.qml b/Switcher.qml
+index 42dfeed..37d0666 100644
+--- a/Switcher.qml
++++ b/Switcher.qml
 @@ -619,6 +619,12 @@ Item {
        "eval",
        "return hl.dispatch(hl.dsp.focus({ window = 'address:" + address + "' }))"
@@ -15,24 +37,120 @@ index 42dfeed..ede1868 100644
    }
  
    // Public IPC method for callers that want to commit the current selection
-@@ -656,12 +662,18 @@ Item {
+@@ -656,12 +662,43 @@ Item {
      root.positionSelection()
    }
  
-+  // LOCAL PATCH (super-chords): also watch the Super keys so commit-on-release
-+  // works for SUPER+TAB / SUPER+SHIFT+TAB bindings (mac Cmd+Tab muscle memory),
-+  // mirroring the local altswitch fork's approach. Re-apply after
-+  // `omarchy plugin update`.
++  // Release-modifier support (runtimeConfig.releaseModifiers): modifiers
++  // whose release commits the selection. Qt reports the Super key as Key_Meta
++  // on some platforms, so "super" matches both Key_Meta and the explicit
++  // Super keys; "meta" stays separate for platforms that distinguish them.
++  readonly property var _releaseModifierQtKeys: ({
++    'alt': [Qt.Key_Alt],
++    'meta': [Qt.Key_Meta],
++    'super': [Qt.Key_Meta, Qt.Key_Super_L, Qt.Key_Super_R],
++  })
++
++  readonly property var _releaseModifierKeysyms: ({
++    'alt': ["Alt_L", "Alt_R"],
++    'meta': ["Meta_L", "Meta_R"],
++    'super': ["Super_L", "Super_R"],
++  })
++
    function isReleaseModifier(key) {
 -    return key === Qt.Key_Alt
-+    return key === Qt.Key_Alt || key === Qt.Key_Meta
-+        || key === Qt.Key_Super_L || key === Qt.Key_Super_R
++    var names = root.runtimeConfig.releaseModifiers || ["alt"]
++    for (var i = 0; i < names.length; i++) {
++      var keys = root._releaseModifierQtKeys[String(names[i])]
++      if (keys && keys.indexOf(key) !== -1) return true
++    }
++    return false
    }
  
    function modifierKeyExpr() {
 -    return 'hl.is_key_down("Alt_L") or hl.is_key_down("Alt_R")'
-+    return 'hl.is_key_down("Alt_L") or hl.is_key_down("Alt_R") '
-+         + 'or hl.is_key_down("Super_L") or hl.is_key_down("Super_R")'
++    var names = root.runtimeConfig.releaseModifiers || ["alt"]
++    var exprs = []
++    for (var i = 0; i < names.length; i++) {
++      var keysyms = root._releaseModifierKeysyms[String(names[i])]
++      if (!keysyms) continue
++      for (var j = 0; j < keysyms.length; j++)
++        exprs.push('hl.is_key_down("' + keysyms[j] + '")')
++    }
++    if (exprs.length === 0)
++      exprs = ['hl.is_key_down("Alt_L")', 'hl.is_key_down("Alt_R")']
++    return exprs.join(" or ")
    }
  
    function loadMinimizedState(raw) {
+diff --git a/WindowModel.js b/WindowModel.js
+index 158eedf..d6ead81 100644
+--- a/WindowModel.js
++++ b/WindowModel.js
+@@ -23,6 +23,22 @@ function normalizeWorkspacePatterns(value) {
+     return patterns;
+ }
+ 
++var KNOWN_RELEASE_MODIFIERS = ["alt", "meta", "super"];
++
++function normalizeReleaseModifiers(value) {
++    if (!Array.isArray(value))
++        value = value === undefined || value === null ? [] : [value];
++
++    var modifiers = [];
++    for (var i = 0; i < value.length; i++) {
++        var name = String(value[i] || "").trim().toLowerCase();
++        if (KNOWN_RELEASE_MODIFIERS.indexOf(name) !== -1 &&
++            modifiers.indexOf(name) === -1)
++            modifiers.push(name);
++    }
++    return modifiers.length > 0 ? modifiers : ["alt"];
++}
++
+ function normalizedConfig(entry, payload) {
+     var stored = entry && typeof entry === "object" ? entry : {};
+     var request = payload && typeof payload === "object" ? payload : {};
+@@ -84,6 +100,9 @@ function normalizedConfig(entry, payload) {
+                 "activateOnModifierRelease",
+                 true,
+             ) === true,
++        releaseModifiers: normalizeReleaseModifiers(
++            pick("releaseModifiers", "release_modifiers", ["alt"]),
++        ),
+         showWorkspace:
+             pick("showWorkspace", "showWorkspaceNumbers", false) !== false,
+         showSpecialWorkspaceBadge:
+diff --git a/tests/tst_WindowModel.qml b/tests/tst_WindowModel.qml
+index 6201449..dc1e485 100644
+--- a/tests/tst_WindowModel.qml
++++ b/tests/tst_WindowModel.qml
+@@ -64,6 +64,29 @@ TestCase {
+     verify(!WindowModel.normalizedConfig({ showSpecialWorkspaceBadge: false }, {}).showSpecialWorkspaceBadge)
+   }
+ 
++  function test_releaseModifiersConfig() {
++    var defaults = WindowModel.normalizedConfig({}, {})
++    compare(defaults.releaseModifiers.length, 1)
++    compare(defaults.releaseModifiers[0], "alt")
++
++    var alias = WindowModel.normalizedConfig({ release_modifiers: "super" }, {})
++    compare(alias.releaseModifiers.length, 1)
++    compare(alias.releaseModifiers[0], "super")
++
++    var filtered = WindowModel.normalizedConfig({ releaseModifiers: ["ALT", "bogus", "super"] }, {})
++    compare(filtered.releaseModifiers.length, 2)
++    compare(filtered.releaseModifiers[0], "alt")
++    compare(filtered.releaseModifiers[1], "super")
++
++    compare(WindowModel.normalizedConfig({ releaseModifiers: [] }, {}).releaseModifiers[0], "alt")
++    compare(WindowModel.normalizedConfig({ releaseModifiers: ["bogus"] }, {}).releaseModifiers[0], "alt")
++
++    var payload = WindowModel.normalizedConfig({ releaseModifiers: ["alt"] }, { releaseModifiers: ["super", "meta"] })
++    compare(payload.releaseModifiers.length, 2)
++    compare(payload.releaseModifiers[0], "super")
++    compare(payload.releaseModifiers[1], "meta")
++  }
++
+   function test_terminalCommandParsing() {
+     compare(WindowModel.terminalCommandFromExec("xdg-terminal-exec --app-id=TUI.tile -e lazydocker"), "lazydocker")
+     compare(WindowModel.terminalCommandFromExec("omarchy-launch-webapp https://example.com"), "")

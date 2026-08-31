@@ -22,17 +22,24 @@ git -C ~/.config/omarchy/plugins/io.github.gabrielvincent.switcharoo diff \
 
 ## switcharoo-local.patch
 
-Local patches to `Switcher.qml` (both marked `LOCAL PATCH` in the source):
+Local delta against upstream `main`, applied across `Switcher.qml`,
+`WindowModel.js`, the plugin README, and its tests:
 
-1. **super-release** — extends `isReleaseModifier` / `modifierKeyExpr` to
-   watch the Super keys alongside Alt, so SUPER+TAB / SUPER+SHIFT+TAB
-   bindings commit on modifier release (mac Cmd+Tab semantics) the same way
-   ALT+TAB does.
-2. **raise-front** — after the focus dispatch in `activateSelected()`, runs
-   the repo-owned `omarchy-window-raise-front <address>` helper so a committed
-   tiled window overlapped by a floater is floated in place and raised
-   (Hyprland renders all floats above all tiles; plain focus would leave it
-   invisible).
+1. **release-modifiers config** (`Switcher.qml` + `WindowModel.js`) — adds a
+   `releaseModifiers` setting (default `["alt"]`, alias `release_modifiers`)
+   so commit-on-release watches configurable modifiers instead of hardcoded
+   Alt. `shell.json` sets `["alt", "super"]` for the mac Cmd+Tab
+   SUPER+TAB bindings. This is also the pending upstream PR — when it
+   merges, this part of the patch is dropped and the config alone carries
+   the behavior.
+2. **raise-front** (`Switcher.qml`, marked `LOCAL PATCH`) — after the focus
+   dispatch in `activateSelected()`, runs the repo-owned
+   `omarchy-window-raise-front <address>` helper so a committed tiled window
+   overlapped by a floater is floated in place and raised (Hyprland renders
+   all floats above all tiles; plain focus would leave it invisible).
 
-Both are required by the bindings in `omarchy/hypr/bindings.lua`
-(switcharoo section).
+The patch source of truth is the `local-patch` branch of the fork at
+`~/src/chadhs/omarchy-switcharoo` (`git diff upstream/main local-patch`);
+the PR branch is `release-modifiers-config` (everything above minus the
+local-only raise-front commit). Both are required by the bindings in
+`omarchy/hypr/bindings.lua` (switcharoo section).
