@@ -56,7 +56,15 @@ else
       fail "switcharoo patch no longer applies — upstream refactored Switcher.qml; re-port by hand (see omarchy/plugins/patches/README.md)"
     fi
   else
-    if [ "$(git -C "$SWITCHAROO_CLONE" diff)" = "$(cat "$PATCH_FILE")" ]; then
+    # Prefix-normalized compare: the snapshot may be generated as a tree diff
+    # (a/, b/) while the clone's worktree diff honors diff.mnemonicPrefix
+    # (i/, w/) — content is what matters.
+    normalize_diff() {
+      sed -e 's|^diff --git [aiw]/\([^ ]*\) [biw]/|diff --git \1 |' \
+          -e 's|^--- [aiw]/|--- |' \
+          -e 's|^\+\+\+ [biw]/|+++ |'
+    }
+    if [ "$(git -C "$SWITCHAROO_CLONE" diff | normalize_diff)" = "$(normalize_diff < "$PATCH_FILE")" ]; then
       pass "switcharoo patch in place"
     else
       warn "switcharoo clone differs from snapshot — if these are intended re-ports, regenerate: git -C ~/.config/omarchy/plugins/io.github.gabrielvincent.switcharoo diff > ~/dotfiles/omarchy/plugins/patches/switcharoo-local.patch"
