@@ -302,14 +302,12 @@ hl.unbind("SUPER + SHIFT + TAB")
 o.bind("SUPER + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:next"), { repeating = true })
 o.bind("SUPER + SHIFT + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:previous"), { repeating = true })
 
--- Mouse chords (mac-style). Window drag moves to SUPER+ALT+click; SUPER+click
--- passes through to chromium-class windows so Chromium opens links in a new
--- background tab (mac Cmd+click; t3code is Electron/Chromium too). Outside
--- those classes SUPER+click is unbound, so the button reaches the client as
--- usual (e.g. VS Code go-to-definition). Relocates Omarchy's SUPER+left-click
--- window drag; SUPER+right-click resize is untouched.
+-- Mouse chords (mac-style). Window drag lives on SUPER+ALT+click —
+-- intentionally not on SUPER+click, so muscle-memory Super+clicks can't
+-- drag windows around. Chromium ignores Meta+click on Linux/Wayland
+-- (only Ctrl+click opens background tabs; middle-click also works), and
+-- Hyprland can't inject mouse buttons, so Super+click is deliberately
+-- left unbound: the button reaches the client as usual (e.g. VS Code
+-- go-to-definition). SUPER+right-click resize is untouched.
 hl.unbind("SUPER + mouse:272")
 o.bind("SUPER + ALT + mouse:272", "Move window", hl.dsp.window.drag(), { mouse = true })
-o.bind("SUPER + mouse:272", "Open link in new tab (browsers)",
-  hl.dsp.pass({ window = "class:^(chromium|Chromium|t3code|brave|Brave-browser|edge|microsoft-edge|vivaldi-stable|opera|Arc)$" }),
-  { mouse = true })
