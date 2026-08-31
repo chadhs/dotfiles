@@ -235,8 +235,9 @@ if [ "$system_type" = "Linux" ]; then
     fail "zsh not installed (run deploy.sh or: sudo pacman -S zsh)"
   fi
 
-  # git-host auth toolchain: direnv loads per-project gh tokens from .envrc
-  for tool in direnv gh glab; do
+  # git-host auth toolchain: direnv loads per-project gh tokens from .envrc;
+  # editorconfig-core-c is the one repo package omarchy-base doesn't carry
+  for tool in direnv gh glab editorconfig; do
     if command -v "$tool" >/dev/null 2>&1; then
       pass "tool: ${tool}"
     else

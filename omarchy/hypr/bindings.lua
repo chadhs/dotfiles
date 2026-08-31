@@ -42,21 +42,27 @@ local function send_shortcut_once(mods, key)
   end
 end
 
--- Lean on the terminal tag from default/hypr/apps/terminals.lua so there's one
--- definition of what counts as a terminal. Dynamic tags carry a trailing "*".
-local function active_window_is_terminal()
+-- Read a window rule tag off the active window (e.g. "terminal" from
+-- default/hypr/apps/terminals.lua, "multi-tab" from omarchy/hypr/looknfeel.lua)
+-- so there's one definition per app class, not per binding. Windowrule tags
+-- arrive with a trailing "*"; strip before comparing.
+local function window_has_tag(name)
   local window = hl.get_active_window()
   if not window then
     return false
   end
 
   for _, tag in ipairs(window.tags or {}) do
-    if tag:gsub("%*$", "") == "terminal" then
+    if tag:gsub("%*$", "") == name then
       return true
     end
   end
 
   return false
+end
+
+local function active_window_is_terminal()
+  return window_has_tag("terminal")
 end
 
 local function unless_terminal(send)
@@ -222,36 +228,13 @@ o.bind("SUPER + SHIFT + BRACKETRIGHT", "Next tab", send_shortcut_once("CTRL", "T
 -- Toggle window floating/tiling (relocated from SUPER+T).
 o.bind("SUPER + ALT + T", "Toggle window floating/tiling", hl.dsp.window.float({ action = "toggle" }))
 
--- Multi-tab apps where SUPER+W should close a tab, not the whole window with
--- all its tabs (mac Cmd+W semantics). Everything else gets a plain window
--- close, which works universally — including single-window apps like omacalc,
--- omawrite, claude, and localsend. JetBrains IDEs are deliberately excluded:
--- on Linux their CTRL+W is "extend selection".
-local function active_window_is_multi_tab_app()
-  local window = hl.get_active_window()
-  if not window then
-    return false
-  end
-
-  local class = (window.class or ""):lower()
-  for _, pattern in ipairs({
-    "chrom", "brave", "edge", "vivaldi", "opera", "arc",
-    "code", "zed", "nautilus", "dolphin", "thunar", "nemo", "pcmanfm",
-  }) do
-    if class:find(pattern, 1, true) then
-      return true
-    end
-  end
-
-  return false
-end
-
 -- Mac-style Cmd+W: close tab in multi-tab apps, close the window everywhere
--- else. In terminals always close the window so injected CTRL+W can't delete
--- a word.
+-- else. Tag membership is defined in omarchy/hypr/looknfeel.lua (chromium via
+-- omarchy's upstream tag + an explicit local tail). In terminals always close
+-- the window so injected CTRL+W can't delete a word.
 hl.unbind("SUPER + W")
 o.bind("SUPER + W", "Close tab / window", function()
-  if active_window_is_terminal() or active_window_is_multi_tab_app() then
+  if active_window_is_terminal() or window_has_tag("multi-tab") then
     send_shortcut_once("CTRL", "W")()
   else
     hl.dispatch(hl.dsp.window.close())

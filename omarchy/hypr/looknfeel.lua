@@ -24,6 +24,20 @@ o.window("^(chatgpt)$", { float = true })
 o.window("^(chatgpt)$", { center = true })
 o.window("^(chatgpt)$", { size = { "(monitor_w*0.75)", "(monitor_h*0.85)" } })
 
+-- Multi-tab apps: SUPER+W closes a tab, not the whole window (mac Cmd+W);
+-- see the SUPER+W bind in bindings.lua. The chromium family arrives free via
+-- omarchy's upstream tag (default/hypr/apps/browser.lua), which upstream
+-- keeps current for new variants; everything else is explicit and
+-- greppable. Chromium PWAs deliberately get no tag — a single-purpose
+-- window closes whole, like macOS. JetBrains excluded: CTRL+W is "extend
+-- selection" there. Windowrule regexes full-match the class (verified: the
+-- upstream browser tag does not match PWA classes), so each alternative
+-- carries its real-world casing and desktop-app_id prefix — e.g. nautilus
+-- is org.gnome.Nautilus on this machine.
+o.window({ tag = "chromium-based-browser" }, { tag = "+multi-tab" })
+o.window("((dev\\.zed\\.)?[Zz]ed|code-oss|codium|t3code|(org\\.gnome\\.)?[Nn]autilus|(org\\.kde\\.)?[Dd]olphin|[Tt]hunar|[Nn]emo|[Pp]cmanfm|[Oo]pera|[Aa]rc)",
+  { tag = "+multi-tab" })
+
 -- https://wiki.hypr.land/Configuring/Basics/Variables/#general
 -- hl.config({
 --   general = {

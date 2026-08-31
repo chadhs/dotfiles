@@ -31,9 +31,11 @@ os_setup(){
     if grep -qi "arch" /etc/os-release 2>/dev/null || command -v pacman >/dev/null 2>&1; then
       system_os="arch"
       pkg_install="sudo pacman -S --needed"
-      # nvim, emacs, node etc. ship with omarchy; this covers the shared baseline
-      # plus the git-host auth toolchain (direnv loads per-project gh tokens)
-      package_list="editorconfig-core-c git tmux zsh direnv github-cli glab"
+      # git, tmux, zsh etc. ship with omarchy (omarchy-base.packages is the
+      # real base manifest — verified there); this list is only the repo's
+      # delta plus the git-host auth toolchain (direnv loads per-project
+      # gh tokens)
+      package_list="editorconfig-core-c zsh direnv github-cli glab"
     elif grep -qi "ubuntu\|debian" /proc/version; then
       system_os="debian"
       pkg_install="sudo apt-get install -y"
