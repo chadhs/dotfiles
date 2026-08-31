@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Update the fast-moving AI dev agent tools on demand, CLI and desktop:
+# mise-managed CLIs plus their pacman/AUR desktop apps. Run in a terminal
+# (yay prompts for sudo).
+set -euo pipefail
+
+mise up claude codex opencode
+
+exec yay -S --needed t3code-nightly-bin claude-desktop openai-codex-desktop cursor-bin
