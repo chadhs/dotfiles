@@ -1,0 +1,25 @@
+diff --git i/Switcher.qml w/Switcher.qml
+index 42dfeed..0465358 100644
+--- i/Switcher.qml
++++ w/Switcher.qml
+@@ -656,12 +656,18 @@ Item {
+     root.positionSelection()
+   }
+ 
++  // LOCAL PATCH (super-chords): also watch the Super keys so commit-on-release
++  // works for SUPER+TAB / SUPER+SHIFT+TAB bindings (mac Cmd+Tab muscle memory),
++  // mirroring the local altswitch fork's approach. Re-apply after
++  // `omarchy plugin update`.
+   function isReleaseModifier(key) {
+-    return key === Qt.Key_Alt
++    return key === Qt.Key_Alt || key === Qt.Key_Meta
++        || key === Qt.Key_Super_L || key === Qt.Key_Super_R
+   }
+ 
+   function modifierKeyExpr() {
+-    return 'hl.is_key_down("Alt_L") or hl.is_key_down("Alt_R")'
++    return 'hl.is_key_down("Alt_L") or hl.is_key_down("Alt_R") '
++         + 'or hl.is_key_down("Super_L") or hl.is_key_down("Super_R")'
+   }
+ 
+   function loadMinimizedState(raw) {

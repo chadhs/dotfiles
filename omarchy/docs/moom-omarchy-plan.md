@@ -65,26 +65,27 @@ so chords never fling windows to another monitor/workspace (a real quirk on
 scrolling layouts, where the strip swap crosses monitors at the ends). A solo
 tiled window (no split) no-ops: nothing to swap, nothing to resize.
 
-## Cmd+Tab app switcher (omarchy-altswitch plugin)
+## Cmd+Tab app switcher (omarchy-switcharoo plugin)
 
-`SUPER+TAB` / `SUPER+SHIFT+TAB` run the **omarchy-altswitch** plugin
-(community, installed at
-`~/.config/omarchy/plugins/io.github.pablo-merino.altswitch/`, user-level):
-a visual overlay lists every window on every workspace in most-recently-used
-order while SUPER is held; TAB / SHIFT+TAB move the highlight, and **releasing
-SUPER commits** to the highlighted window (SUPER+ESC or ALT+ESC cancels).
-Selection is virtual — focus moves once, on commit, so the view does not flit
-across workspaces mid-cycle — and the list is snapshotted when the cycle
-starts, so it cannot reorder underneath you.
+`SUPER+TAB` / `SUPER+SHIFT+TAB` (and `ALT+TAB` / `ALT+SHIFT+TAB` / `ALT+```)
+run the **omarchy-switcharoo** plugin (community, installed via
+`omarchy plugin add`): a visual MRU grid lists every window on every
+workspace; TAB / SHIFT+TAB (or holding the modifier and tapping again) move
+the highlight, and **releasing SUPER or ALT commits** to the highlighted
+window (ESC cancels; Enter/click also commits). Selection is virtual — focus
+moves once, on commit, so the view does not flit across workspaces mid-cycle.
 
-Local patches to the clone (upstream binds/commits on ALT only):
-- Commit-on-release also watches Super_L (133) / Super_R (134)
-- Chords are SUPER+TAB / SUPER+SHIFT+TAB (stock ALT+TAB left untouched)
-- Commit guarantees the chosen window is frontmost via
-  `~/.local/bin/omarchy-window-raise-front`: it raises the window, and —
-  because Hyprland always renders floats above tiles — if the window is tiled
-  and a floating window actually overlaps it, it is floated in place (tiled
-  geometry preserved) and then raised, so nothing can cover it
+Local patch to the plugin clone (upstream commits on ALT release only):
+commit-on-release also watches the Super keys
+(`plugins/patches/switcharoo-super-release.patch` — re-apply after
+`omarchy plugin update`).
+
+Known regression vs the retired altswitch fork: switcharoo commits via a
+plain focus dispatch, so a tiled window chosen by the switcher can be covered
+by an overlapping floater. The fork guaranteed frontmost via
+`~/.local/bin/omarchy-window-raise-front` (raises, floating in place if
+needed) — that helper is still repo-owned and can be wired into a future
+switcharoo patch if the quirk bites.
 
 These chords no longer switch workspaces; workspaces remain on `SUPER+1..0`,
 `SUPER+CTRL+TAB` (former workspace), bar scroll, and gestures. The earlier

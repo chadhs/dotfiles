@@ -64,10 +64,10 @@
   },
   "plugins": [
     {
-      "id": "io.github.pablo-merino.altswitch"
+      "id": "io.github.thebenwalther.switchboard"
     },
     {
-      "id": "io.github.thebenwalther.switchboard"
+      "id": "io.github.gabrielvincent.switcharoo"
     }
   ]
 }

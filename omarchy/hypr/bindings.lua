@@ -199,13 +199,8 @@ o.bind("SUPER + SHIFT + BRACKETRIGHT", "Next tab", send_shortcut_once("CTRL", "T
 -- Toggle window floating/tiling (relocated from SUPER+T).
 o.bind("SUPER + ALT + T", "Toggle window floating/tiling", hl.dsp.window.float({ action = "toggle" }))
 
--- Cmd+Tab-style app switcher: omarchy-altswitch plugin, patched for SUPER
--- chords (see the fork at ~/.config/omarchy/plugins/io.github.pablo-merino.altswitch/).
--- Overlay stays open while SUPER is held; release commits, SUPER+ESC cancels.
--- (An earlier standalone omarchy-appswitch script was retired in favor of the
--- plugin.) These chords no longer switch workspaces: use SUPER+1..0,
--- scroll, or gestures.
-dofile(os.getenv("HOME") .. "/.config/omarchy/plugins/io.github.pablo-merino.altswitch/altswitch.lua")
+-- Toggle window floating/tiling (relocated from SUPER+T).
+o.bind("SUPER + ALT + T", "Toggle window floating/tiling", hl.dsp.window.float({ action = "toggle" }))
 
 -- Multi-tab apps where SUPER+W should close a tab, not the whole window with
 -- all its tabs (mac Cmd+W semantics). Everything else gets a plain window
@@ -262,3 +257,36 @@ o.bind("CTRL + SUPER + SHIFT + 5", "Screenshot: capture menu", "omarchy-menu tog
 -- see input.lua). Bound by keycode (SUPER+SHIFT+backslash) per the plugin's
 -- recommendation; unbound in stock Omarchy.
 o.bind("SUPER + SHIFT + code:51", "Switchboard: window overview", "omarchy-shell -q switchboard toggle")
+
+-- Switcharoo: MRU grid window switcher (io.github.gabrielvincent.switcharoo).
+-- Replaces both Omarchy's stock workspace-local ALT+TAB cycling and the
+-- retired altswitch fork (which previously held SUPER+TAB; still in git
+-- history under omarchy/plugins/io.github.pablo-merino.altswitch/).
+-- The plugin's release-watch is patched locally to also commit on Super
+-- release — without that patch SUPER+TAB would open the grid but never
+-- commit when SUPER is released. The patch (Switcher.qml:
+-- isReleaseModifier/modifierKeyExpr) is snapshotted at
+-- omarchy/plugins/patches/switcharoo-super-release.patch; re-apply it after
+-- `omarchy plugin update`. Removal, if ever needed:
+--   1. delete this block
+--   2. omarchy plugin remove io.github.gabrielvincent.switcharoo --yes
+-- The "Switcharoo switcher" description acts as a sentinel: the plugin checks
+-- for it in `hyprctl binds` to detect that the binding is installed.
+hl.unbind("ALT + TAB")
+o.bind("ALT + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:next"), { repeating = true })
+
+hl.unbind("ALT + SHIFT + TAB")
+o.bind("ALT + SHIFT + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:previous"), { repeating = true })
+
+hl.unbind("ALT + GRAVE")
+o.bind("ALT + GRAVE", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:previous"), { repeating = true })
+
+hl.layer_rule({ match = { namespace = "omarchy-switcharoo" }, no_anim = true })
+
+-- SUPER+TAB / SUPER+SHIFT+TAB (mac Cmd+Tab muscle memory) share ALT+TAB's
+-- global shortcuts. These chords no longer switch workspaces: use SUPER+1..0,
+-- scroll, or gestures.
+hl.unbind("SUPER + TAB")
+hl.unbind("SUPER + SHIFT + TAB")
+o.bind("SUPER + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:next"), { repeating = true })
+o.bind("SUPER + SHIFT + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:previous"), { repeating = true })

@@ -11,7 +11,7 @@ obviously you **want to read** the best part... [emacs-config.org](editors/emacs
 | `editors/` | emacs config ([emacs-config.org](editors/emacs-config.org)), neovim config ([editors/nvim](editors/nvim/README.md)), `ideavimrc`, `editorconfig`, jetbrains plugins |
 | `shells/` | zsh + bash profiles/rc files, `inputrc`, the `digitalnomad` zsh theme |
 | `utils/` | `gitconfig`, `tmux.conf`, ghostty + karabiner + espanso config, `ssh_config`, agent skills, misc tool config and scripts (`project-ruby-exec`, `autogit.sh`, ...) |
-| `omarchy/` | owned omarchy customizations (hypr keymaps/input, omarchy-shell bar config, moom config, ghostty config, `omarchy-moom` script, altswitch fork) — see [omarchy/README.md](omarchy/README.md) |
+| `omarchy/` | owned omarchy customizations (hypr keymaps/input, omarchy-shell bar config, moom config, ghostty config, `omarchy-moom` script, plugin patches) — see [omarchy/README.md](omarchy/README.md) |
 | `scripts/` | `bootstrap-mac.sh`, `deploy.sh`, `doctor.sh`, `weekly-update.sh`, `macos-defaults.sh`, `links.conf`, npm/gem package lists |
 | `.github/` | CI: shellcheck, `links.conf` lint, and syntax checks run on push/PR |
 
@@ -47,11 +47,11 @@ sh deploy.sh
 
 notes on omarchy-managed configs (deliberate split):
 - **omarchy owns**: tmux config (XDG), hyprland look'n'feel, `monitors.lua` (machine-generated) — the repo does not manage these on linux. (ghostty is repo-owned on linux too — see the slider caveat in [omarchy/README.md](omarchy/README.md).)
-- **the repo owns** (linux-scoped in `scripts/links.conf`): git config + hooks, ssh config, shells (`~/.profile`, zsh chain), nvim, emacs, editorconfig, agent skills, and the owned omarchy customizations in `omarchy/` (hypr `bindings.lua`/`input.lua`, shell bar config, moom, altswitch fork).
+- **the repo owns** (linux-scoped in `scripts/links.conf`): git config + hooks, ssh config, shells (`~/.profile`, zsh chain), nvim, emacs, editorconfig, agent skills, and the owned omarchy customizations in `omarchy/` (hypr `bindings.lua`/`input.lua`, shell bar config, moom).
 - `~/.bashrc` stays omarchy's on linux; the repo's minimal bashrc is mac-only.
 - tmux auto-attach in zsh only fires for SSH sessions now, so desktop terminals aren't swallowed.
 
-the altswitch plugin is an owned fork (no `.git`), so `omarchy plugin update` no longer manages it — see [omarchy/README.md](omarchy/README.md) for provenance and refresh instructions.
+the window switcher (switcharoo) and window overview (switchboard) are plugin-manager plugins; switcharoo carries a local patch snapshotted in `omarchy/plugins/patches/` — re-apply it after `omarchy plugin update` — see [omarchy/README.md](omarchy/README.md).
 
 #### git / ssh / gh auth on omarchy
 
