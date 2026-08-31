@@ -125,7 +125,17 @@ else
 fi
 
 ## agent skills
-check_link "$HOME/.claude/skills" "$HOME/.claude/skills" "$HOME/.agents/skills"
+# ~/.claude/skills may be a real dir holding deliberate local overrides (it
+# links into ~/.agents/skills via deploy.sh when unmodified). That divergence
+# is a choice, not broken setup — WARN, don't FAIL. The managed per-skill
+# links inside ~/.agents/skills are checked individually below.
+if [ -L "$HOME/.claude/skills" ]; then
+  check_link ".claude/skills" "$HOME/.claude/skills" "$HOME/.agents/skills"
+elif [ -d "$HOME/.claude/skills" ]; then
+  warn ".claude/skills: real dir (deliberate local override, not the repo link into .agents/skills)"
+else
+  fail ".claude/skills: missing (run deploy.sh)"
+fi
 if [ -d "$HOME/.agents/skills" ]; then
   for skill in "$DOTFILES"/utils/agents/skills/*; do
     [ -d "$skill" ] || continue
