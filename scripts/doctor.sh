@@ -64,18 +64,17 @@ if [ "${REPO_ROOT}" != "${DOTFILES}" ]; then
 fi
 
 ## git identity (gitconfig sets useconfigonly)
-# a global identity is ideal; per-directory identities via ~/.gitconfig-local
-# includeIf -> ~/.gitconfig.d are a valid setup (commits outside those paths
-# then fail loudly by design)
+# What matters is that an identity resolves where commits actually happen.
+# A global user.* counts, and so does the includeIf gitdir setup
+# (~/.gitconfig-local -> ~/.gitconfig.d), so probe the dotfiles repo itself
+# rather than only the traditional global config (which also misses the XDG
+# ~/.config/git/config path).
 if command -v git >/dev/null 2>&1; then
-  git_name="$(git config --global --get user.name || true)"
-  git_email="$(git config --global --get user.email || true)"
-  if [ -n "$git_name" ] && [ -n "$git_email" ]; then
-    pass "git identity: ${git_name} <${git_email}>"
-  elif ls "$HOME"/.gitconfig.d/* >/dev/null 2>&1; then
-    warn "no global git identity; using per-directory identities from $HOME/.gitconfig.d (commits outside those paths will fail)"
+  if git -C "$DOTFILES" config user.name >/dev/null 2>&1 &&
+     git -C "$DOTFILES" config user.email >/dev/null 2>&1; then
+    pass "git identity resolves in $DOTFILES ($(git -C "$DOTFILES" config user.email))"
   else
-    fail "git user.name / user.email not set (add them to ~/.gitconfig-local or ~/.gitconfig.d)"
+    fail "git user.name / user.email do not resolve in $DOTFILES (set them globally in ~/.config/git/config or ~/.gitconfig-local, or add includeIf gitdir blocks covering the path)"
   fi
 else
   fail "git not installed"
@@ -246,11 +245,31 @@ if [ "$system_type" = "Linux" ]; then
   done
 
   # per-account git auth relies on keys in ~/.ssh (provisioned manually,
-  # machine-local — never in the repo)
-  if ls "$HOME"/.ssh/id_* "$HOME"/.ssh/*_rsa >/dev/null 2>&1; then
-    pass "ssh keys present in ~/.ssh"
+  # machine-local — never in the repo). The keys that matter are the ones the
+  # per-identity ~/.gitconfig.d sshCommand entries point at (e.g.
+  # chadhs-omtower); a conventional id_* private key is the fallback. No
+  # `ls glob1 glob2` tricks: one unmatched glob makes ls exit non-zero even
+  # when other matches exist (the old check false-alarmed on ed25519-only
+  # setups).
+  referenced_keys="$(grep -h -o 'ssh -i [^"]*' "$HOME"/.gitconfig.d/* 2>/dev/null | sed 's|^ssh -i ||' | sort -u)"
+  if [ -n "$referenced_keys" ]; then
+    missing_keys=""
+    # shellcheck disable=SC2086  # one path per line, no spaces expected
+    for key in $referenced_keys; do
+      case "$key" in
+        \~*) key="$HOME${key#\~}" ;;
+      esac
+      [ -f "$key" ] || missing_keys="$missing_keys $key"
+    done
+    if [ -z "$missing_keys" ]; then
+      pass "ssh keys referenced by gitconfig.d present in ~/.ssh"
+    else
+      fail "gitconfig.d references missing ssh keys:$missing_keys (copy the per-account keys to ~/.ssh)"
+    fi
+  elif [ -n "$(find "$HOME/.ssh" -maxdepth 1 -type f -name 'id_*' ! -name '*.pub' 2>/dev/null)" ]; then
+    pass "ssh keys present in ~/.ssh (id_* convention)"
   else
-    warn "no ssh keys in ~/.ssh (copy per-account keys manually; gitconfig.d uses core.sshCommand with them)"
+    warn "no ssh keys in ~/.ssh and none referenced by gitconfig.d (copy per-account keys manually)"
   fi
 
   # authoritative login shell from passwd, not $SHELL (may predate a chsh)
