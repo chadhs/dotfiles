@@ -194,6 +194,10 @@ hl.unbind("SUPER + L")
 o.bind("SUPER + L", "Address / search bar", unless_terminal(send_shortcut_once("CTRL", "L")))
 o.bind("SUPER + ALT + L", "Toggle workspace layout", "omarchy-hyprland-workspace-layout-toggle")
 
+-- New window (mac Cmd+N): terminals get nothing (CTRL+N is meaningless
+-- there), GUI apps get CTRL+N (chromium new window, new doc elsewhere).
+o.bind("SUPER + N", "New window", unless_terminal(send_shortcut_once("CTRL", "N")))
+
 -- Tab navigation (mac Cmd+{ / Cmd+}): previous/next tab in chromium,
 -- ghostty, and most GUI apps. Injects the universal ctrl+shift+tab /
 -- ctrl+tab chords, which keep working directly too. Binds must use the
@@ -297,3 +301,15 @@ hl.unbind("SUPER + TAB")
 hl.unbind("SUPER + SHIFT + TAB")
 o.bind("SUPER + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:next"), { repeating = true })
 o.bind("SUPER + SHIFT + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:previous"), { repeating = true })
+
+-- Mouse chords (mac-style). Window drag moves to SUPER+ALT+click; SUPER+click
+-- passes through to chromium-class windows so Chromium opens links in a new
+-- background tab (mac Cmd+click; t3code is Electron/Chromium too). Outside
+-- those classes SUPER+click is unbound, so the button reaches the client as
+-- usual (e.g. VS Code go-to-definition). Relocates Omarchy's SUPER+left-click
+-- window drag; SUPER+right-click resize is untouched.
+hl.unbind("SUPER + mouse:272")
+o.bind("SUPER + ALT + mouse:272", "Move window", hl.dsp.window.drag(), { mouse = true })
+o.bind("SUPER + mouse:272", "Open link in new tab (browsers)",
+  hl.dsp.pass({ window = "class:^(chromium|Chromium|t3code|brave|Brave-browser|edge|microsoft-edge|vivaldi-stable|opera|Arc)$" }),
+  { mouse = true })
