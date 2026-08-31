@@ -1,31 +1,29 @@
--- Omarchy theme cache warmer: installs every colorscheme omarchy themes may
--- reference without applying any of them, so the first hot-reload after a
+-- Omarchy theme cache warmer: pre-installs every colorscheme the omarchy
+-- themes on this machine may reference, so the first hot-reload after a
 -- theme switch renders correctly instead of falling back to tokyonight.
+--
+-- The list is generated dynamically from each theme's own neovim.lua in
+-- ~/.config/omarchy/themes (custom) and /usr/share/omarchy/themes (stock),
+-- so newly installed or updated themes are picked up with no edits here.
+-- Specs are stripped down to repo/name/branch: warming must not carry any
+-- theme's opts or config, and it must not force anything eager.
+--
+-- Themes without a neovim.lua are aether-template-based (every theme built
+-- from a colors.toml, including repos installed via omarchy-theme-add) and
+-- all resolve to the single hardcoded aether spec below. It must keep its
+-- explicit name and branch: lazy merges specs by url and lets an explicit
+-- name rename the merged plugin, so a bare "bjarneo/aether.nvim" builds the
+-- cache into lazy/aether.nvim while every aether-themed install renames it
+-- to lazy/aether at runtime -- a directory the package never shipped. That
+-- mismatch cost a network clone on first launch and a tokyonight fallback
+-- until nvim was restarted.
 -- Mac-safe: no omarchy state file means no extra plugins get installed.
 if vim.fn.filereadable(vim.fn.expand("~/.local/state/omarchy/current/theme/neovim.lua")) == 0 then
-  return {}
+	return {}
 end
 
-return {
-	-- Load all theme plugins but don't apply them
-	-- This ensures all colorschemes are available for hot-reloading
-	--
-	-- Omarchy 4 generates most theme specs from default/themed/neovim.lua.tpl on
-	-- top of aether, so the single-theme plugins below (ethereal, vantablack,
-	-- white, monokai-pro, miasma) are only reached by Omarchy 3.8, which ships a
-	-- neovim.lua per theme. Keep them until 3.8 is out of support.
-	{
-		"ribru17/bamboo.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	-- Name and branch must match Omarchy 4's generated theme spec
-	-- (default/themed/neovim.lua.tpl). lazy merges specs by url and lets an
-	-- explicit name rename the merged plugin, so a bare "bjarneo/aether.nvim"
-	-- here builds the cache into lazy/aether.nvim while every aether-themed
-	-- Omarchy 4 install renames it to lazy/aether at runtime -- a directory the
-	-- package never shipped. That cost a network clone on first launch, and the
-	-- theme fell back to tokyonight until nvim was restarted.
+local warmed = {
+	-- Covers every theme that has no neovim.lua of its own (see above).
 	{
 		"bjarneo/aether.nvim",
 		branch = "v3",
@@ -33,96 +31,38 @@ return {
 		lazy = true,
 		priority = 1000,
 	},
-	{
-		"bjarneo/ethereal.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"bjarneo/hackerman.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"bjarneo/vantablack.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"bjarneo/white.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"catppuccin/nvim",
-		name = "catppuccin",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"neanias/everforest-nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"kepano/flexoki-neovim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"ellisonleao/gruvbox.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"rebelot/kanagawa.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"tahayvr/matteblack.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"gthelding/monokai-pro.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"EdenEast/nightfox.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"rose-pine/neovim",
-		name = "rose-pine",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"ficcdaf/ashen.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"folke/tokyonight.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"OldJobobo/miasma.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"OldJobobo/retro-82.nvim",
-		lazy = true,
-		priority = 1000,
-	},
-	{
-		"omacom-io/lumon.nvim",
-		lazy = true,
-		priority = 1000,
-	},
 }
+
+local function warm(file)
+	local ok, themes = pcall(dofile, file)
+	if not ok or type(themes) ~= "table" then
+		return
+	end
+
+	for _, spec in ipairs(themes) do
+		local repo = type(spec) == "table" and type(spec[1]) == "string" and spec[1] or nil
+		-- The distro entry is never a plugin; it only carries opts to read.
+		if repo and repo ~= "LazyVim/LazyVim" then
+			warmed[spec.name or repo] = {
+				repo,
+				name = spec.name,
+				branch = spec.branch,
+				lazy = true,
+				priority = 1000,
+			}
+		end
+	end
+end
+
+local theme_dirs = {
+	vim.fn.expand("~/.config/omarchy/themes"),
+	(vim.env.OMARCHY_PATH or "/usr/share/omarchy") .. "/themes",
+}
+
+for _, dir in ipairs(theme_dirs) do
+	for _, file in ipairs(vim.fn.glob(dir .. "/*/neovim.lua", false, true)) do
+		warm(file)
+	end
+end
+
+return vim.tbl_values(warmed)
