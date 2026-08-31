@@ -6,4 +6,4 @@ set -euo pipefail
 
 mise up claude codex opencode
 
-exec yay -S --needed t3code-nightly-bin claude-desktop openai-codex-desktop cursor-bin
+exec yay -S --needed t3code-nightly-bin claude-desktop openai-codex-desktop cursor-bin cursor-cli
