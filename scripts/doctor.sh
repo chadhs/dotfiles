@@ -1,10 +1,12 @@
 #!/bin/sh
 # dotfiles doctor — verify this machine matches what deploy.sh sets up.
 #
-# Emits PASS/WARN/FAIL per check and a summary; exits non-zero when FAILs exist.
-# - FAIL: broken/missing/unmanaged symlinks, missing git identity, missing tools
-# - WARN: copy-once drift (baseline files are copy-once by design), missing
-#   optional apps, Brewfile drift, mac-only checks skipped on other platforms
+# Emits PASS/INFO/WARN/FAIL per check and a summary; exits non-zero when FAILs exist.
+# - FAIL: broken/missing/unmanaged symlinks, unresolved git identity, missing tools
+# - WARN: should be looked at eventually (missing optional apps, Brewfile drift,
+#   drifted login shell, missing ssh keys, unreachable session checks)
+# - INFO: expected state, nothing to act on (copy-once baseline drift, another
+#   OS's checks skipped)
 # Safe to run from anywhere; safe to re-run; changes nothing.
 
 ## resolve paths (safe to run from anywhere)
@@ -14,8 +16,9 @@ DOTFILES="${HOME}/dotfiles"
 
 system_type="$(uname)"
 
-pass_count=0; warn_count=0; fail_count=0
+pass_count=0; info_count=0; warn_count=0; fail_count=0
 pass(){ printf 'PASS  %s\n' "$1"; pass_count=$((pass_count+1)); }
+info(){ printf 'INFO  %s\n' "$1"; info_count=$((info_count+1)); }
 warn(){ printf 'WARN  %s\n' "$1"; warn_count=$((warn_count+1)); }
 fail(){ printf 'FAIL  %s\n' "$1"; fail_count=$((fail_count+1)); }
 
@@ -41,7 +44,8 @@ check_link(){
 }
 
 # check_copy <label> <repo-baseline> <local-copy>
-# copy-once baseline files: WARN (not FAIL) when the local copy has drifted.
+# copy-once baseline files: local edits are expected to win over time, so
+# drift is INFO (expected state) — only a missing local copy is actionable.
 check_copy(){
   label="$1"; src="$2"; dst="$3"
   if [ ! -e "$dst" ]; then
@@ -51,7 +55,7 @@ check_copy(){
   elif diff -q "$src" "$dst" >/dev/null 2>&1; then
     pass "$label"
   else
-    warn "${label}: local copy drifted from repo baseline (copy-once by design; review with: diff -u \"$src\" \"$dst\")"
+    info "${label}: local copy drifted from repo baseline (copy-once by design; review with: diff -u \"$src\" \"$dst\")"
   fi
 }
 
@@ -223,7 +227,7 @@ if [ "$system_type" = "Darwin" ]; then
     warn "no IdentityFile/IdentityAgent in $HOME/.ssh/config.d/ and no keys in ssh-agent"
   fi
 else
-  warn "mac-only checks skipped (system: ${system_type})"
+  info "mac-only checks skipped (system: ${system_type})"
 fi
 
 ## linux (omarchy/arch) checks
@@ -304,13 +308,15 @@ if [ "$system_type" = "Linux" ]; then
       pass "no duplicate chord binds"
     fi
   else
-    warn "hyprctl/jq not reachable — skipping duplicate-chord check"
+    info "hyprctl/jq not reachable — skipping duplicate-chord check"
   fi
+else
+  info "linux-only checks skipped (system: ${system_type})"
 fi
 
 ## summary
 echo ""
-printf 'doctor: %d passed, %d warnings, %d failures\n' "$pass_count" "$warn_count" "$fail_count"
+printf 'doctor: %d passed, %d info, %d warnings, %d failures\n' "$pass_count" "$info_count" "$warn_count" "$fail_count"
 if [ "$fail_count" -gt 0 ]; then
   echo "fix the failures above (usually: run deploy.sh), then re-run doctor."
   exit 1

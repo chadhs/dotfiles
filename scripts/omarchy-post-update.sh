@@ -2,8 +2,8 @@
 # omarchy post-update — health check to run after `omarchy update` and/or
 # `omarchy plugin update`.
 #
-# Emits PASS/WARN/FAIL per check like doctor.sh; exits non-zero when FAILs
-# exist. Safe to re-run.
+# Emits PASS/INFO/WARN/FAIL per check like doctor.sh (INFO = expected state,
+# WARN = look at eventually); exits non-zero when FAILs exist. Safe to re-run.
 #
 # The one auto-fix: if the switcharoo plugin clone is clean (its local QML
 # patches were wiped by a plugin update), re-apply the snapshot from
@@ -23,8 +23,9 @@
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)"
 REPO_ROOT="$(CDPATH='' cd -- "${SCRIPT_DIR}/.." && pwd)"
 
-pass_count=0; warn_count=0; fail_count=0
+pass_count=0; info_count=0; warn_count=0; fail_count=0
 pass(){ printf 'PASS  %s\n' "$1"; pass_count=$((pass_count+1)); }
+info(){ printf 'INFO  %s\n' "$1"; info_count=$((info_count+1)); }
 warn(){ printf 'WARN  %s\n' "$1"; warn_count=$((warn_count+1)); }
 fail(){ printf 'FAIL  %s\n' "$1"; fail_count=$((fail_count+1)); }
 
@@ -126,12 +127,12 @@ if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1 && hyprct
     fail "hyprctl configerrors: $errors"
   fi
 else
-  warn "hyprctl/jq not reachable — skipping live-bind checks (run inside the Hyprland session)"
+  info "hyprctl/jq not reachable — skipping live-bind checks (run inside the Hyprland session)"
 fi
 
 ## 3. switchboard service responds
 if [ "$HAVE_JQ" != "1" ]; then
-  warn "jq not found — skipping switchboard service check"
+  info "jq not found — skipping switchboard service check"
 elif command -v omarchy-shell >/dev/null 2>&1 && omarchy-shell switchboard status 2>/dev/null | jq -e '.open != null' >/dev/null 2>&1; then
   pass "switchboard service responds"
 else
@@ -143,7 +144,7 @@ OMARCHY_TEMPLATES="${OMARCHY_PATH:-/usr/share/omarchy}"
 
 template="$OMARCHY_TEMPLATES/config/omarchy/shell.json"
 if [ "$HAVE_JQ" != "1" ]; then
-  warn "jq not found — skipping shell.json drift check"
+  info "jq not found — skipping shell.json drift check"
 elif [ ! -f "$template" ]; then
   warn "omarchy shell.json template not found at $template — skipped"
 else
@@ -164,5 +165,5 @@ else
   fail "doctor.sh reported FAILs — run it directly for details: sh $SCRIPT_DIR/doctor.sh"
 fi
 
-echo "omarchy-post-update: $pass_count passed, $warn_count warnings, $fail_count failures"
+echo "omarchy-post-update: $pass_count passed, $info_count info, $warn_count warnings, $fail_count failures"
 [ "$fail_count" -eq 0 ] || exit 1
