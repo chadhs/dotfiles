@@ -257,3 +257,8 @@ o.bind("SUPER + Q", "Quit app", "omarchy-quit-app")
 o.bind("CTRL + SUPER + SHIFT + 3", "Screenshot: capture menu", "omarchy-menu toggle trigger.capture")
 o.bind("CTRL + SUPER + SHIFT + 4", "Screenshot: capture menu", "omarchy-menu toggle trigger.capture")
 o.bind("CTRL + SUPER + SHIFT + 5", "Screenshot: capture menu", "omarchy-menu toggle trigger.capture")
+
+-- Switchboard: full-screen live window overview (also on 3-finger swipe up,
+-- see input.lua). Bound by keycode (SUPER+SHIFT+backslash) per the plugin's
+-- recommendation; unbound in stock Omarchy.
+o.bind("SUPER + SHIFT + code:51", "Switchboard: window overview", "omarchy-shell -q switchboard toggle")

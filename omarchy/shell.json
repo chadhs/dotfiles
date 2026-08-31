@@ -65,6 +65,9 @@
   "plugins": [
     {
       "id": "io.github.pablo-merino.altswitch"
+    },
+    {
+      "id": "io.github.thebenwalther.switchboard"
     }
   ]
 }

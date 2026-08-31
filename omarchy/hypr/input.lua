@@ -68,14 +68,14 @@ hl.device({ name = "asix-electronics-ax68004-2", natural_scroll = true })
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Gestures/
 hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
 
--- 3-finger swipe up opens the app switcher overlay (the altswitch plugin's
--- sticky mode): every open window across workspaces, most recent first. Pick
--- with hover/click or arrow keys + Enter; ESC cancels. Goes through
--- `hyprctl eval` so it works regardless of config load order.
+-- 3-finger swipe up opens Switchboard: a full-screen live overview of every
+-- window on every workspace (macOS Mission Control style). Filter by typing,
+-- digits 1-9 jump, Esc dismisses. Keyboard access is SUPER+SHIFT+backslash
+-- (see bindings.lua).
 hl.gesture({
   fingers = 3,
   direction = "up",
-  action = function() hl.exec_cmd("hyprctl eval '__altswitch_open()'") end,
+  action = function() hl.exec_cmd("omarchy-shell -q switchboard toggle") end,
 })
 
 -- Enable touchpad gestures for moving focus (helpful on scrolling layout).
