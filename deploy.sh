@@ -77,7 +77,11 @@ link_skills_from(){
 }
 
 # Merge repo + machine-local skill dirs into ~/.agents/skills as per-skill symlinks.
-# Local names override shared names. ~/.claude/skills points at the merge dir.
+# Local names override shared names. ~/.claude/skills layout is platform-dependent:
+# - real dir (omarchy owns it, per-skill links into /usr/share/omarchy/...):
+#   merge our skills into it per-skill alongside omarchy's, never clobbering
+#   package-managed names
+# - symlink or missing: point it at the merge dir (mac and plain linux)
 link_agent_skills(){
   shared="$HOME/dotfiles/utils/agents/skills"
   local_dir="$HOME/.agents/skills-local"
@@ -105,7 +109,37 @@ link_agent_skills(){
     rm -f "$entry"
   done
 
-  if [ -L "$HOME/.claude/skills" ] || [ ! -e "$HOME/.claude/skills" ]; then
+  if [ -d "$HOME/.claude/skills" ] && [ ! -L "$HOME/.claude/skills" ]; then
+    # omarchy-managed real dir: add our skills per-skill, leave package-managed
+    # names (e.g. omarchy's own skills) untouched. Only links pointing into our
+    # dotfiles trees are ours to manage.
+    for entry in "$dest"/*; do
+      [ -L "$entry" ] || continue
+      name="$(basename "$entry")"
+      case "$name" in
+        .*) continue ;;
+      esac
+      target="$HOME/.claude/skills/$name"
+      source="$(readlink -f "$entry")"
+      if [ -L "$target" ]; then
+        case "$(readlink "$target")" in
+          "$HOME/dotfiles/"*|"$HOME/.agents/"*) ln -sfn "$source" "$target" ;;
+          # omarchy-managed or foreign: leave alone
+        esac
+      elif [ ! -e "$target" ]; then
+        ln -s "$source" "$target"
+      fi
+    done
+    # Prune our stale links (skill removed or renamed upstream of the merge dir).
+    for target in "$HOME/.claude/skills"/*; do
+      [ -L "$target" ] || continue
+      name="$(basename "$target")"
+      [ -e "$dest/$name" ] && continue
+      case "$(readlink "$target")" in
+        "$HOME/dotfiles/"*|"$HOME/.agents/"*) rm -f "$target" ;;
+      esac
+    done
+  elif [ -L "$HOME/.claude/skills" ] || [ ! -e "$HOME/.claude/skills" ]; then
     ln -sfn "$dest" "$HOME/.claude/skills"
   fi
 }

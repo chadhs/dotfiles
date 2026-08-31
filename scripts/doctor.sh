@@ -125,16 +125,25 @@ else
 fi
 
 ## agent skills
-# ~/.claude/skills may be a real dir holding deliberate local overrides (it
-# links into ~/.agents/skills via deploy.sh when unmodified). That divergence
-# is a choice, not broken setup — WARN, don't FAIL. The managed per-skill
-# links inside ~/.agents/skills are checked individually below.
-if [ -L "$HOME/.claude/skills" ]; then
-  check_link ".claude/skills" "$HOME/.claude/skills" "$HOME/.agents/skills"
-elif [ -d "$HOME/.claude/skills" ]; then
-  warn ".claude/skills: real dir (deliberate local override, not the repo link into .agents/skills)"
+# ~/.claude/skills layout is platform-dependent:
+# - real dir: omarchy owns it (per-skill links into /usr/share/omarchy/...);
+#   deploy.sh merges our skills into it per-skill alongside omarchy's. If a
+#   name is held by an omarchy-managed skill, ours is shadowed — WARN.
+# - symlink: plain platforms — must point at the ~/.agents/skills merge dir.
+if [ -d "$HOME/.claude/skills" ] && [ ! -L "$HOME/.claude/skills" ]; then
+  for skill in "$DOTFILES"/utils/agents/skills/*; do
+    [ -d "$skill" ] || continue
+    name="$(basename "$skill")"
+    if [ -e "$HOME/.claude/skills/$name" ] && [ ! -L "$HOME/.claude/skills/$name" ]; then
+      warn "claude skill ${name}: shadowed by a real dir in .claude/skills"
+    elif [ -L "$HOME/.claude/skills/$name" ] && [ "$(readlink "$HOME/.claude/skills/$name")" != "$skill" ]; then
+      warn "claude skill ${name}: shadowed by an omarchy-managed (or foreign) skill"
+    else
+      check_link "claude skill ${name}" "$HOME/.claude/skills/$name" "$skill"
+    fi
+  done
 else
-  fail ".claude/skills: missing (run deploy.sh)"
+  check_link ".claude/skills" "$HOME/.claude/skills" "$HOME/.agents/skills"
 fi
 if [ -d "$HOME/.agents/skills" ]; then
   for skill in "$DOTFILES"/utils/agents/skills/*; do
