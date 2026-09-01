@@ -216,6 +216,79 @@ o.bind("SUPER + ALT + RIGHT", "Moom: nudge right", moom("nudge-right"), { repeat
 o.bind("SUPER + ALT + UP", "Moom: nudge up", moom("nudge-up"), { repeating = true })
 o.bind("SUPER + ALT + DOWN", "Moom: nudge down", moom("nudge-down"), { repeating = true })
 
+-- Reset all tiled windows on the active workspace to even dwindle splits.
+-- No built-in reset dispatcher exists; dwindle's `splitratio 1 exact`
+-- layout message re-centers the split containing the focused window, so
+-- focusing each tiled window in turn evens out every internal split.
+local function reset_tiled_sizes()
+  local active = hl.get_active_workspace()
+  if not active then
+    return
+  end
+
+  local tiled = {}
+  for _, w in ipairs(hl.get_windows({ floating = false })) do
+    if w.workspace and w.workspace.id == active.id then
+      table.insert(tiled, w)
+    end
+  end
+
+  local orig = hl.get_active_window()
+  for _, w in ipairs(tiled) do
+    hl.dispatch(hl.dsp.focus({ window = "address:" .. w.address }))
+    hl.dispatch(hl.dsp.layout("splitratio 1 exact"))
+  end
+  if orig then
+    hl.dispatch(hl.dsp.focus({ window = "address:" .. orig.address }))
+  end
+end
+
+-- Resize mode (submap). Every arrow chord in the global map is spent, so
+-- resizing lives in a mode: SUPER+ALT+R enters, arrows resize (arrow = what
+-- the window does: wider/narrower/taller/shorter), SHIFT fine / CTRL coarse,
+-- 0 resets splits, ESCAPE or RETURN exits. The mode is bannered with the
+-- Omarchy shell OSD (theme-styled; duration 0 = stays open until closed by
+-- the exit binds). Stock Omarchy's SUPER+MINUS/EQUAL resize family is
+-- untouched and still works without entering the mode.
+local function show_resize_osd()
+  -- Single-quoted shell arg: no quotes in the JSON, safe as-is.
+  hl.exec_cmd("omarchy-shell -q osd show '{\"icon\":\"keyboard\",\"message\":\"Resize: ←→↑↓ Reset: 0\",\"duration\":\"0\"}'")
+end
+
+local function exit_resize_mode()
+  hl.exec_cmd("omarchy-shell -q osd close")
+  hl.dispatch(hl.dsp.submap("reset"))
+end
+
+-- A reload while in the mode leaves a stale open-ended banner; sweep it up.
+hl.exec_cmd("omarchy-shell -q osd close")
+
+o.bind("SUPER + ALT + R", "Resize mode", function()
+  hl.dispatch(hl.dsp.submap("resize"))
+  show_resize_osd()
+end)
+
+-- Global reset, reachable without entering the mode.
+o.bind("SUPER + ALT + 0", "Reset tiled window sizes", reset_tiled_sizes)
+
+hl.define_submap("resize", function()
+  local function resize_binds(step, prefix)
+    o.bind(prefix .. "RIGHT", "Expand width", hl.dsp.window.resize({ x = step, y = 0, relative = true }), { repeating = true })
+    o.bind(prefix .. "LEFT", "Shrink width", hl.dsp.window.resize({ x = -step, y = 0, relative = true }), { repeating = true })
+    o.bind(prefix .. "DOWN", "Expand height", hl.dsp.window.resize({ x = 0, y = step, relative = true }), { repeating = true })
+    o.bind(prefix .. "UP", "Shrink height", hl.dsp.window.resize({ x = 0, y = -step, relative = true }), { repeating = true })
+  end
+
+  resize_binds(100, "")
+  resize_binds(25, "SHIFT + ")
+  resize_binds(300, "CTRL + ")
+
+  o.bind("0", "Reset tiled window sizes", reset_tiled_sizes)
+
+  o.bind("ESCAPE", "Exit resize mode", exit_resize_mode)
+  o.bind("RETURN", "Exit resize mode", exit_resize_mode)
+end)
+
 -- Send focused window to prev/next monitor (wraps around).
 o.bind("CTRL + ALT + LEFT", "Moom: previous display", moom("display-prev"))
 o.bind("CTRL + ALT + RIGHT", "Moom: next display", moom("display-next"))
