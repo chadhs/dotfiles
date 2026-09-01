@@ -320,6 +320,18 @@ o.bind("SUPER + ALT + L", "Toggle workspace layout", "omarchy-hyprland-workspace
 -- there), GUI apps get CTRL+N (chromium new window, new doc elsewhere).
 o.bind("SUPER + N", "New window", unless_terminal(send_shortcut_once("CTRL", "N")))
 
+-- Find (mac Cmd+F): inject CTRL+F. No-op in terminals so the injected
+-- CTRL+F can't become readline forward-char. Exclusive fullscreen moves
+-- to SUPER+CTRL+SHIFT+F; maximize stays on SUPER+ALT+F, tiled/client
+-- fullscreen on SUPER+CTRL+F.
+hl.unbind("SUPER + F")
+o.bind("SUPER + F", "Find", unless_terminal(send_shortcut_once("CTRL", "F")))
+o.bind("SUPER + CTRL + SHIFT + F", "Full screen", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
+
+-- Reload (mac Cmd+R): inject CTRL+R. No-op in terminals so the injected
+-- CTRL+R can't become reverse-i-search.
+o.bind("SUPER + R", "Reload", unless_terminal(send_shortcut_once("CTRL", "R")))
+
 -- Tab navigation (mac Cmd+{ / Cmd+}): previous/next tab in chromium,
 -- ghostty, and most GUI apps. Injects the universal ctrl+shift+tab /
 -- ctrl+tab chords, which keep working directly too. Binds must use the
