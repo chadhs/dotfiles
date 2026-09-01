@@ -93,6 +93,10 @@ o.bind("SUPER + SHIFT + Z", "Universal redo", unless_terminal(send_shortcut_once
 o.bind("ALT + LEFT", "Move cursor one word left", send_shortcut_once("CTRL", "LEFT"))
 o.bind("ALT + RIGHT", "Move cursor one word right", send_shortcut_once("CTRL", "RIGHT"))
 
+-- Word selection (mac Option+Shift+Arrow -> CTRL+SHIFT+Arrow).
+o.bind("ALT + SHIFT + LEFT", "Select one word left", send_shortcut_once("CTRL + SHIFT", "LEFT"))
+o.bind("ALT + SHIFT + RIGHT", "Select one word right", send_shortcut_once("CTRL + SHIFT", "RIGHT"))
+
 -- Word deletion (mac Option+Backspace -> CTRL+Backspace). In terminals,
 -- replay the raw chord instead: readline's Meta-Backspace is
 -- backward-kill-word, while CTRL+BACKSPACE only deletes one char there.
@@ -125,6 +129,18 @@ o.bind("SUPER + LEFT", "Cursor to line start", send_shortcut_once("", "HOME"))
 o.bind("SUPER + RIGHT", "Cursor to line end", send_shortcut_once("", "END"))
 o.bind("SUPER + UP", "Cursor to document start", send_shortcut_once("CTRL", "HOME"))
 o.bind("SUPER + DOWN", "Cursor to document end", send_shortcut_once("CTRL", "END"))
+
+-- Selection (mac Cmd+Shift+Arrow). Unbind Omarchy's window swap on
+-- SUPER+SHIFT+Arrow first; swap moves to SUPER+CTRL+SHIFT+Arrow below.
+hl.unbind("SUPER + SHIFT + LEFT")
+hl.unbind("SUPER + SHIFT + RIGHT")
+hl.unbind("SUPER + SHIFT + UP")
+hl.unbind("SUPER + SHIFT + DOWN")
+
+o.bind("SUPER + SHIFT + LEFT", "Select to line start", send_shortcut_once("SHIFT", "HOME"))
+o.bind("SUPER + SHIFT + RIGHT", "Select to line end", send_shortcut_once("SHIFT", "END"))
+o.bind("SUPER + SHIFT + UP", "Select to document start", send_shortcut_once("CTRL + SHIFT", "HOME"))
+o.bind("SUPER + SHIFT + DOWN", "Select to document end", send_shortcut_once("CTRL + SHIFT", "END"))
 
 -- Window focus (relocated twice over: was SUPER+Arrow, then SUPER+ALT+Arrow —
 -- SUPER+Arrow is now text nav and SUPER+ALT+Arrow is the Moom nudge below).
@@ -175,12 +191,20 @@ o.bind("SUPER + CTRL + ALT + Z", "Moom: quarter bottom left", moom("quarter-bl")
 o.bind("SUPER + CTRL + ALT + X", "Moom: quarter bottom right", moom("quarter-br"))
 o.bind("SUPER + CTRL + ALT + T", "Moom: task list cell", moom("task"))
 
+-- Window swap (relocated twice over: was SUPER+SHIFT+Arrow, now
+-- SUPER+CTRL+SHIFT+Arrow — SUPER+SHIFT+Arrow is text selection and the last
+-- free arrow chord is spent here). Move-into-group (ceded to Moom nudges in
+-- stock Omarchy) is currently unbound; if ever missed its fallback chord is
+-- SUPER+CTRL+SHIFT+ALT+UP/DOWN (still free):
+--   o.bind("SUPER + CTRL + SHIFT + ALT + UP", "Move window into group above", hl.dsp.window.move({ into_group = "u" }))
+o.bind("SUPER + CTRL + SHIFT + LEFT", "Swap window to the left", hl.dsp.window.swap({ direction = "l" }))
+o.bind("SUPER + CTRL + SHIFT + RIGHT", "Swap window to the right", hl.dsp.window.swap({ direction = "r" }))
+o.bind("SUPER + CTRL + SHIFT + UP", "Swap window up", hl.dsp.window.swap({ direction = "u" }))
+o.bind("SUPER + CTRL + SHIFT + DOWN", "Swap window down", hl.dsp.window.swap({ direction = "d" }))
+
 -- Cede Omarchy's move-into-group chords to Moom nudges. Grouping itself is
 -- untouched: SUPER+G toggles, SUPER+ALT+G moves out, SUPER+ALT+TAB cycles,
--- SUPER+CTRL+Arrows moves grouped focus. The last free arrow chord
--- (SUPER+CTRL+SHIFT+Arrows) stays unspent as the fallback if move-into-group
--- is ever missed:
---   o.bind("SUPER + CTRL + SHIFT + LEFT", "Move window to group on left", hl.dsp.window.move({ into_group = "l" }))
+-- SUPER+CTRL+Arrows moves grouped focus.
 hl.unbind("SUPER + ALT + LEFT")
 hl.unbind("SUPER + ALT + RIGHT")
 hl.unbind("SUPER + ALT + UP")
