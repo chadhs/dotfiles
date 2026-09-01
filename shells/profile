@@ -40,7 +40,7 @@ if [[ $(uname) = "Darwin" ]]; then
     fi
   done
   export PATH
-else
+elif [[ $(uname) = "Linux" ]]; then
   ## linux (omarchy/arch): set OMARCHY_PATH + append mise shims and ~/.local/bin
   # POSIX-safe shared env sourced by omarchy's own bash/zsh/system entrypoints
   [[ -r /usr/share/omarchy/default/bash/env-bootstrap ]] && source /usr/share/omarchy/default/bash/env-bootstrap
@@ -65,6 +65,12 @@ if [[ $(uname) = "Darwin" ]]; then
   [[ -s "/opt/homebrew/opt/nvm/nvm.sh" ]] && source /opt/homebrew/opt/nvm/nvm.sh --no-use
   ### ruby
   export OVERMIND_SHELL=/bin/zsh
+fi
+
+## omarchy only path updates
+if [[ $(uname) = "Linux" ]]; then
+  ## rustup
+  [[ -f "$HOME/.cargo/env" ]] && . "$HOME/.cargo/env"
 fi
 
 ### additional user ENVs
