@@ -1,9 +1,9 @@
 #!/bin/sh
-# Strip Cursor attribution trailers, then run the repo-local hook if present.
+# Strip AI-tool attribution trailers, then run the repo-local hook if present.
 # Installed as the global commit-msg hook via core.hooksPath.
 
 msg_file=$1
-tmp="${msg_file}.cursor-strip"
+tmp="${msg_file}.attribution-strip"
 
 awk '
   BEGIN { skip_blank = 0 }
@@ -12,6 +12,10 @@ awk '
   /^Made-with:[[:space:]]*Cursor[[:space:]]*$/ { skip_blank = 1; next }
   /^Made with \[Cursor\]/ { skip_blank = 1; next }
   /^Made with Cursor[[:space:]]*$/ { skip_blank = 1; next }
+  /^[Cc]o-[Aa]uthored-[Bb]y:[[:space:]]*Claude[^<]*</ { skip_blank = 1; next }
+  /^[Cc]o-[Aa]uthored-[Bb]y:.*@anthropic\.com/ { skip_blank = 1; next }
+  /^Claude-Session:/ { skip_blank = 1; next }
+  /Generated with \[Claude Code\]/ { skip_blank = 1; next }
   /^[[:space:]]*$/ {
     if (skip_blank) next
     print
