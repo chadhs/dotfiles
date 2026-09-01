@@ -120,6 +120,12 @@ if command -v hyprctl >/dev/null 2>&1 && command -v jq >/dev/null 2>&1 && hyprct
     warn "switchboard binding missing (super+shift+backslash; see omarchy/hypr/bindings.lua)"
   fi
 
+  if hyprctl -j binds 2>/dev/null | jq -e '.[] | select(.description == "Vicinae")' >/dev/null 2>&1; then
+    pass "vicinae SUPER+SPACE bind present"
+  else
+    warn "vicinae SUPER+SPACE bind missing (see omarchy/hypr/bindings.lua)"
+  fi
+
   errors="$(hyprctl configerrors 2>/dev/null)"
   if [ -z "$errors" ]; then
     pass "hyprctl configerrors clean"

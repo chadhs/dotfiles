@@ -47,7 +47,7 @@ sh deploy.sh
 
 notes on omarchy-managed configs (deliberate split):
 - **omarchy owns**: tmux config (XDG), hyprland look'n'feel, `monitors.lua` (machine-generated) — the repo does not manage these on linux. (ghostty is repo-owned on linux too — see the slider caveat in [omarchy/README.md](omarchy/README.md).)
-- **the repo owns** (linux-scoped in `scripts/links.conf`): git config + hooks, ssh config, shells (`~/.profile`, zsh chain), nvim, emacs, editorconfig, agent skills, and the owned omarchy customizations in `omarchy/` (hypr `bindings.lua`/`input.lua`, shell bar config, moom).
+- **the repo owns** (linux-scoped in `scripts/links.conf`): git config + hooks, ssh config, shells (`~/.profile`, zsh chain), nvim, emacs, editorconfig, agent skills, and the owned omarchy customizations in `omarchy/` (hypr `bindings.lua`/`input.lua`, shell bar config, moom, Vicinae). SUPER+SPACE is Vicinae (apps, web-search fallbacks, Search Files); SUPER+ALT+SPACE is the Omarchy menu. AUR apps (`vicinae-bin` and the agent desktop tools) are listed in [`omarchy/aur.packages`](omarchy/aur.packages) and installed by `deploy.sh`; see [omarchy/README.md](omarchy/README.md).
 - `~/.bashrc` stays omarchy's on linux; the repo's minimal bashrc is mac-only.
 - tmux auto-attach in zsh only fires for SSH sessions now, so desktop terminals aren't swallowed.
 

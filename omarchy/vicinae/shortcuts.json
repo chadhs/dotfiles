@@ -1,0 +1,37 @@
+[
+  {
+    "id": "sct-google",
+    "name": "Search Google",
+    "icon": "https://www.google.com/favicon.ico",
+    "url": "https://www.google.com/search?q={query}",
+    "app": "default"
+  },
+  {
+    "id": "sct-duckduckgo",
+    "name": "Search DuckDuckGo",
+    "icon": "https://duckduckgo.com/favicon.ico",
+    "url": "https://duckduckgo.com/?q={query}",
+    "app": "default"
+  },
+  {
+    "id": "sct-wikipedia",
+    "name": "Search Wikipedia",
+    "icon": "https://en.wikipedia.org/favicon.ico",
+    "url": "https://en.wikipedia.org/wiki/Special:Search?search={query}",
+    "app": "default"
+  },
+  {
+    "id": "sct-youtube",
+    "name": "Search YouTube",
+    "icon": "https://www.youtube.com/favicon.ico",
+    "url": "https://www.youtube.com/results?search_query={query}",
+    "app": "default"
+  },
+  {
+    "id": "sct-github",
+    "name": "Search GitHub",
+    "icon": "https://github.com/favicon.ico",
+    "url": "https://github.com/search?q={query}",
+    "app": "default"
+  }
+]

@@ -15,13 +15,21 @@
 -- Add a new binding.
 -- o.bind("SUPER + SHIFT + R", "SSH", "alacritty -e ssh your-server")
 
--- Change an existing binding by unbinding it first, then binding the key again.
--- This example changes SUPER+SPACE from the launcher to the Omarchy root menu.
--- hl.unbind("SUPER + SPACE")
--- o.bind("SUPER + SPACE", "Omarchy menu", "omarchy-menu toggle root")
-
 -- Disable a default binding without replacing it.
 -- hl.unbind("SUPER + SHIFT + B")
+
+-- Vicinae: Alfred-style app/file/web search. SUPER+SPACE was the Omarchy
+-- root menu; SUPER+ALT+SPACE was the apps-only menu. The bar's Omarchy
+-- menu button and SUPER+ESCAPE (system menu) are unchanged. Plain
+-- `vicinae toggle` talks to the running server — do not wrap with
+-- `{ launch = ... }` (that starts a second uwsm instance).
+hl.unbind("SUPER + SPACE")
+o.bind("SUPER + SPACE", "Vicinae", "vicinae toggle")
+
+hl.unbind("SUPER + ALT + SPACE")
+o.bind("SUPER + ALT + SPACE", "Omarchy menu", "omarchy-menu toggle")
+
+hl.layer_rule({ match = { namespace = "vicinae" }, no_anim = true })
 
 -- Logitech MX Keys examples:
 -- o.bind("SUPER + SHIFT + S", nil, "omarchy-capture-screenshot")

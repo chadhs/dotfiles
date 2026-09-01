@@ -1,9 +1,25 @@
 #!/usr/bin/env bash
 # Update the fast-moving AI dev agent tools on demand, CLI and desktop:
-# mise-managed CLIs plus their pacman/AUR desktop apps. Run in a terminal
-# (yay prompts for sudo).
+# mise-managed CLIs plus the AUR list in omarchy/aur.packages. Run in a
+# terminal (yay prompts for sudo).
 set -euo pipefail
+
+DOTFILES="${HOME}/dotfiles"
+LIST="${DOTFILES}/scripts/list-aur-packages.sh"
+if [ ! -x "$LIST" ]; then
+  LIST="$(CDPATH='' cd -- "$(dirname "$(readlink -f "$0")")/../.." && pwd)/scripts/list-aur-packages.sh"
+fi
+if [ ! -x "$LIST" ]; then
+  echo "omarchy-agent-tools-update: cannot find scripts/list-aur-packages.sh" >&2
+  exit 1
+fi
 
 mise up claude codex opencode
 
-exec yay -S --needed t3code-nightly-bin claude-desktop openai-codex-desktop cursor-bin cursor-cli
+mapfile -t pkgs < <("$LIST")
+if ((${#pkgs[@]} == 0)); then
+  echo "omarchy-agent-tools-update: omarchy/aur.packages is empty" >&2
+  exit 1
+fi
+
+exec yay -S --needed "${pkgs[@]}"

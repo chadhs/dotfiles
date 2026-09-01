@@ -291,6 +291,67 @@ if [ "$system_type" = "Linux" ]; then
     warn "/usr/share/omarchy/default/bash/env-bootstrap missing (is this an omarchy install? profile's linux branch sources it)"
   fi
 
+  # AUR packages from omarchy/aur.packages (deploy.sh installs them).
+  aur_list="${DOTFILES}/scripts/list-aur-packages.sh"
+  if [ -x "$aur_list" ]; then
+    while IFS= read -r pkg || [ -n "$pkg" ]; do
+      [ -n "$pkg" ] || continue
+      if pacman -Q "$pkg" >/dev/null 2>&1; then
+        pass "aur: ${pkg}"
+      else
+        fail "aur package missing: ${pkg} (run deploy.sh)"
+      fi
+    done <<EOF
+$("$aur_list")
+EOF
+  else
+    fail "scripts/list-aur-packages.sh missing (cannot check omarchy/aur.packages)"
+  fi
+
+  # mise CLIs deploy.sh pins when mise is present (same trio as
+  # omarchy-agent-tools-update).
+  for tool in claude codex opencode; do
+    if command -v "$tool" >/dev/null 2>&1; then
+      pass "tool: ${tool}"
+    else
+      fail "tool missing: ${tool} (run deploy.sh — mise use -g ${tool}@latest)"
+    fi
+  done
+
+  # Packaged Vicinae unit: deploy.sh enables it once vicinae-bin is installed.
+  if pacman -Q vicinae-bin >/dev/null 2>&1; then
+    if systemctl --user is-enabled vicinae.service >/dev/null 2>&1; then
+      pass "vicinae.service enabled"
+    else
+      fail "vicinae.service not enabled (run deploy.sh or: systemctl --user enable --now vicinae.service)"
+    fi
+    # Copy-once can leave an empty live file if Vicinae created it first.
+    repo_sc="${DOTFILES}/omarchy/vicinae/shortcuts.json"
+    live_sc="${HOME}/.local/share/vicinae/shortcuts/shortcuts.json"
+    if [ -f "$repo_sc" ] && [ -f "$live_sc" ] && command -v python3 >/dev/null 2>&1; then
+      missing="$(python3 - "$repo_sc" "$live_sc" <<'PY'
+import json, sys
+repo, live = sys.argv[1], sys.argv[2]
+try:
+    with open(repo, encoding="utf-8") as f:
+        want = [s["id"] for s in json.load(f) if isinstance(s, dict) and s.get("id")]
+    with open(live, encoding="utf-8") as f:
+        data = json.load(f)
+    have = {s.get("id") for s in data if isinstance(s, dict)} if isinstance(data, list) else set()
+except (OSError, json.JSONDecodeError, TypeError):
+    print("unreadable")
+    raise SystemExit(0)
+print(" ".join(i for i in want if i not in have))
+PY
+)"
+      if [ -n "$missing" ]; then
+        fail "vicinae shortcuts missing: ${missing} (run deploy.sh — it seeds missing ids)"
+      else
+        pass "vicinae shortcuts present"
+      fi
+    fi
+  fi
+
   # No chord may carry two handlers (omarchy default + repo rebind both firing,
   # e.g. SUPER+ALT+Arrows was both move-into-group and a Moom nudge). The
   # release flag is part of the chord: push-to-talk legitimately binds start

@@ -61,6 +61,27 @@ verify_packages(){
     # shellcheck disable=SC2086
     brew install --cask $cask_package_list
   fi
+  if [ "$system_os" = "arch" ]; then
+    aur_list="${DOTFILES_ROOT}/scripts/list-aur-packages.sh"
+    if [ -x "$aur_list" ]; then
+      aur_pkgs=""
+      while IFS= read -r pkg || [ -n "$pkg" ]; do
+        [ -n "$pkg" ] || continue
+        aur_pkgs="$aur_pkgs $pkg"
+      done <<EOF
+$("$aur_list")
+EOF
+      if [ -n "$aur_pkgs" ]; then
+        echo "installing AUR packages from omarchy/aur.packages..."
+        # shellcheck disable=SC2086
+        omarchy pkg aur add $aur_pkgs
+      fi
+    fi
+    if command -v mise >/dev/null 2>&1; then
+      echo "pinning mise CLIs: claude, codex, opencode..."
+      mise use -g claude@latest codex@latest opencode@latest
+    fi
+  fi
 }
 
 # Symlink each skill directory from src into dest. Skip missing globs and hidden names.
@@ -288,26 +309,78 @@ symlink_configs(){
   ## manifest-driven links/copies
   backup_omarchy_configs
   apply_links
+  seed_vicinae_shortcuts
   enable_user_units
 }
 
-# Enable dotfiles-shipped systemd user units (arch/omarchy only). Units
-# source from omarchy/systemd/user/ and link into ~/.config/systemd/user/
-# via scripts/links.conf. Idempotent; safe over SSH (units gate themselves
-# on a live graphical session via ConditionEnvironment).
+# shortcuts.json is copy-once (Vicinae writes visit counts). If Vicinae created
+# an empty file before the first deploy, copy skips and web-search fallbacks
+# point at missing ids. Merge any repo ids the live file does not have.
+seed_vicinae_shortcuts(){
+  repo="${DOTFILES_ROOT}/omarchy/vicinae/shortcuts.json"
+  live="${HOME}/.local/share/vicinae/shortcuts/shortcuts.json"
+  [ -f "${repo}" ] || return 0
+  command -v python3 >/dev/null 2>&1 || return 0
+  added="$(python3 - "${repo}" "${live}" <<'PY'
+import json, os, sys
+repo, live = sys.argv[1], sys.argv[2]
+with open(repo, encoding="utf-8") as f:
+    baseline = json.load(f)
+if not os.path.exists(live):
+    raise SystemExit(0)
+try:
+    with open(live, encoding="utf-8") as f:
+        current = json.load(f)
+except (OSError, json.JSONDecodeError):
+    raise SystemExit(0)
+if not isinstance(current, list):
+    raise SystemExit(0)
+have = {s.get("id") for s in current if isinstance(s, dict)}
+added = 0
+for s in baseline:
+    if isinstance(s, dict) and s.get("id") and s["id"] not in have:
+        current.append(s)
+        added += 1
+if added:
+    with open(live, "w", encoding="utf-8") as f:
+        json.dump(current, f, indent=2)
+        f.write("\n")
+    print(added)
+PY
+)"
+  [ -n "${added}" ] || return 0
+  echo "seeded ${added} vicinae shortcut(s) into ${live}"
+  if command -v systemctl >/dev/null 2>&1; then
+    systemctl --user try-restart vicinae.service 2>/dev/null || true
+  fi
+}
+
+# Enable systemd user units (arch/omarchy only). Two sources:
+#   1. units we ship in omarchy/systemd/user/ (linked via scripts/links.conf)
+#   2. packaged units we depend on but do not vendor (vicinae.service from
+#      vicinae-bin). Skip quietly when the package is not installed yet.
+# Idempotent; safe over SSH (our shipped units gate themselves on a live
+# graphical session via ConditionEnvironment).
 enable_user_units(){
   [ "$system_os" = "arch" ] || return 0
   command -v systemctl >/dev/null 2>&1 || return 0
+  systemctl --user daemon-reload 2>/dev/null
   for unit in "${DOTFILES_ROOT}"/omarchy/systemd/user/*.service; do
     [ -e "$unit" ] || continue
     name="$(basename "$unit")"
-    systemctl --user daemon-reload 2>/dev/null
     if systemctl --user enable --now "$name" 2>/dev/null; then
       echo "user unit enabled: $name"
     else
       echo "could not enable user unit: $name (enable manually: systemctl --user enable --now $name)"
     fi
   done
+  if [ -f /usr/lib/systemd/user/vicinae.service ]; then
+    if systemctl --user enable --now vicinae.service 2>/dev/null; then
+      echo "user unit enabled: vicinae.service"
+    else
+      echo "could not enable user unit: vicinae.service (enable manually: systemctl --user enable --now vicinae.service)"
+    fi
+  fi
 }
 
 

@@ -1,0 +1,10 @@
+# AUR packages deploy.sh installs on a new arch/omarchy machine.
+# One name per line. Blank lines and # comments (full-line or trailing) are ignored.
+# omarchy-agent-tools-update reads the same list (yay --needed).
+
+vicinae-bin
+t3code-nightly-bin
+claude-desktop
+openai-codex-desktop
+cursor-bin
+cursor-cli
