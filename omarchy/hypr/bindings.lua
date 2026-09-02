@@ -271,23 +271,80 @@ end)
 -- Global reset, reachable without entering the mode.
 o.bind("SUPER + ALT + 0", "Reset tiled window sizes", reset_tiled_sizes)
 
-hl.define_submap("resize", function()
-  local function resize_binds(step, prefix)
-    o.bind(prefix .. "RIGHT", "Expand width", hl.dsp.window.resize({ x = step, y = 0, relative = true }), { repeating = true })
-    o.bind(prefix .. "LEFT", "Shrink width", hl.dsp.window.resize({ x = -step, y = 0, relative = true }), { repeating = true })
-    o.bind(prefix .. "DOWN", "Expand height", hl.dsp.window.resize({ x = 0, y = step, relative = true }), { repeating = true })
-    o.bind(prefix .. "UP", "Shrink height", hl.dsp.window.resize({ x = 0, y = -step, relative = true }), { repeating = true })
+-- Resize bind specs: tiers x directions, built into one list that is the
+-- single source of truth. The expected bind count derives from the list, so
+-- the self-heal check below can never drift from the actual binds.
+local resize_bind_list = {}
+for _, tier in ipairs({
+  { prefix = "", step = 100 },
+  { prefix = "SHIFT + ", step = 25 },
+  { prefix = "CTRL + ", step = 300 },
+}) do
+  for _, dir in ipairs({
+    { key = "RIGHT", dx = 1, dy = 0, desc = "Expand width" },
+    { key = "LEFT", dx = -1, dy = 0, desc = "Shrink width" },
+    { key = "DOWN", dx = 0, dy = 1, desc = "Expand height" },
+    { key = "UP", dx = 0, dy = -1, desc = "Shrink height" },
+  }) do
+    table.insert(resize_bind_list, {
+      keys = tier.prefix .. dir.key,
+      desc = dir.desc,
+      repeating = true,
+      dispatcher = hl.dsp.window.resize({ x = dir.dx * tier.step, y = dir.dy * tier.step, relative = true }),
+    })
+  end
+end
+for _, mode_bind in ipairs({
+  { keys = "0", desc = "Reset tiled window sizes", dispatcher = reset_tiled_sizes },
+  { keys = "ESCAPE", desc = "Exit resize mode", dispatcher = exit_resize_mode },
+  { keys = "RETURN", desc = "Exit resize mode", dispatcher = exit_resize_mode },
+}) do
+  table.insert(resize_bind_list, mode_bind)
+end
+
+-- Registered handles double as the self-heal ground truth: hl.bind only
+-- returns a handle when the bind actually landed, so #handles is how many
+-- binds exist, and a failed config load shows up as a shortfall.
+local resize_bind_handles = {}
+
+local function register_resize_binds()
+  resize_bind_handles = {}
+  for _, spec in ipairs(resize_bind_list) do
+    local handle = hl.bind(spec.keys, spec.dispatcher, { description = spec.desc, repeating = spec.repeating })
+    if handle then
+      table.insert(resize_bind_handles, handle)
+    end
+  end
+end
+
+hl.define_submap("resize", register_resize_binds)
+
+-- Startup self-heal: a fresh session start has (rarely) registered only part
+-- of this submap — hl.define_submap swallows a failed/timed-out pcall with no
+-- journal trace. A few seconds after each config load (outside the login
+-- storm), verify the handle count; on a shortfall, remove whatever landed and
+-- re-register in-place (removal first, so repaired binds can't double-fire).
+-- Falls back to prompting for hyprctl reload only if the repair still falls
+-- short. Silent when healthy.
+hl.timer(function()
+  local expected = #resize_bind_list
+  if #resize_bind_handles == expected then
+    return
   end
 
-  resize_binds(100, "")
-  resize_binds(25, "SHIFT + ")
-  resize_binds(300, "CTRL + ")
+  for _, handle in ipairs(resize_bind_handles) do
+    pcall(handle.remove, handle)
+  end
+  -- Re-enter the submap context: hl.bind tags binds with the current submap,
+  -- which is empty inside a timer callback.
+  hl.define_submap("resize", register_resize_binds)
 
-  o.bind("0", "Reset tiled window sizes", reset_tiled_sizes)
-
-  o.bind("ESCAPE", "Exit resize mode", exit_resize_mode)
-  o.bind("RETURN", "Exit resize mode", exit_resize_mode)
-end)
+  if #resize_bind_handles == expected then
+    hl.exec_cmd("omarchy-shell -q osd show '{\"icon\":\"keyboard\",\"message\":\"Repaired resize mode binds\",\"duration\":\"2500\"}'")
+  else
+    hl.exec_cmd("omarchy-shell -q osd show '{\"icon\":\"keyboard\",\"message\":\"Resize binds still short — run hyprctl reload\",\"duration\":\"5000\"}'")
+  end
+end, { timeout = 4000, type = "oneshot" })
 
 -- Send focused window to prev/next monitor (wraps around).
 o.bind("CTRL + ALT + LEFT", "Moom: previous display", moom("display-prev"))
