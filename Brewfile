@@ -47,10 +47,12 @@ cask "corretto@21"
 cask "daisydisk"
 cask "emacs-app"
 cask "espanso"
+cask "finetune"
 cask "focusatwill"
 cask "ghostty"
 cask "karabiner-elements"
 cask "keepingyouawake"
+cask "markdown-preview"
 cask "moom"
 cask "neovide-app"
 cask "popclip"
@@ -64,6 +66,8 @@ cask "whichspace"
 
 # archived but not forgotten
 # cask "bartender"
+# cask "marked-app"
+# cask "soundsource"
 # cask "deckset"
 # cask "docker"
 # cask "fantastical"
@@ -79,6 +83,7 @@ mas "Soulver 3", id: 1508732804
 
 # archived but not forgotten (id → name)
 # mas "Amphetamine", id: 937984704
+# mas "Marked", id: 6747497179
 # mas "Calcbot", id: 931657367
 # mas "Deliveries", id: 924726344
 # mas "MindNode", id: 1289197285

@@ -20,7 +20,7 @@ This is intentionally **not** a full Emacs reimplementation. Org agenda depth, m
 | `,wc` / `,wm` window close/main | same | |
 | `,jl` avy line | EasyMotion `,jl` | also `,jw` / `,jc` |
 | `,cl` comment lines | built-in `gcc`/`gc` | also `,cb` / `,cp` |
-| `,Mp` Marked preview | same (macOS) | bookmarks stay on `,ml` / `,ms` / `,md` |
+| `,Mp` Markdown Preview | same (macOS) | bookmarks stay on `,ml` / `,ms` / `,md` |
 | `,ev` / `,sv` | edit / reload nvim options+keymaps | Emacs uses `,ee` / `,se` for emacs |
 | `,jd` lsp definition | same | also default `grd` |
 | `,fu` lsp references | same | also default `grr` |

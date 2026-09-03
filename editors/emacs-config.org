@@ -1457,7 +1457,7 @@ Tree-sitter JS/TS/TSX modes with project-local ESLint/Prettier, plus =web-mode= 
       "Mi" 'markdown-insert-image
       "Mh" 'markdown-insert-hr
       "Mf" 'markdown-insert-footnote
-      "Mp" 'cs-marked-preview-file
+      "Mp" 'cs-md-preview-file
       "il" 'markdown-insert-wiki-link          ; (i)sert (l)ink
       "ol" 'markdown-follow-thing-at-point     ; (o)pen (l)ink
       "es" 'markdown-edit-code-block           ; (e)dit (s)pecial
@@ -2178,14 +2178,14 @@ Explain: Electric return functionality
     (dired (file-name-directory (buffer-file-name (current-buffer)))))
 #+END_SRC
 
-*** preview file with marked
+*** preview file with markdown preview
 
 #+BEGIN_SRC emacs-lisp
-  (defun cs-marked-preview-file ()
-    "use Marked 2 to preview the current file"
+  (defun cs-md-preview-file ()
+    "use the md-preview CLI to preview the current file"
     (interactive)
     (shell-command
-     (format "open -a 'Marked 2.app' %s"
+     (format "md-preview %s"
              (shell-quote-argument (buffer-file-name)))))
 #+END_SRC
 

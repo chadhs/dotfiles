@@ -135,15 +135,15 @@ vim.keymap.set('n', '<leader><Right>', '<cmd>vertical resize -5<CR>', { desc = '
 vim.keymap.set('n', '<leader>cd', '<cmd>cd %:p:h<CR><cmd>pwd<CR>', { desc = "cd to current file's directory" })
 vim.keymap.set('n', '<leader>cS', '<cmd>cd ~/src<CR><cmd>pwd<CR>', { desc = 'cd to ~/src' })
 
--- Preview current file in Marked 2 (macOS only) — Emacs markdown ,Mp
+-- Preview current file in Markdown Preview (macOS only) — Emacs markdown ,Mp
 vim.keymap.set('n', '<leader>Mp', function()
   if vim.fn.has 'mac' == 0 and vim.fn.has 'macunix' == 0 then
-    vim.notify('Marked 2 preview is only available on macOS', vim.log.levels.WARN)
+    vim.notify('Markdown Preview is only available on macOS', vim.log.levels.WARN)
     return
   end
   local path = vim.fn.expand '%:p'
-  vim.fn.jobstart({ 'open', '-a', 'Marked 2.app', path }, { detach = true })
-end, { desc = 'Preview in Marked 2' })
+  vim.fn.jobstart({ 'md-preview', path }, { detach = true })
+end, { desc = 'Preview in Markdown Preview' })
 
 -- Display-line motion (Emacs visual-line-mode / evil-next-visual-line).
 -- gj/gk walk screen lines, so j/k move through wraps instead of skipping them.
