@@ -10,7 +10,7 @@ obviously you **want to read** the best part... [emacs-config.org](editors/emacs
 | --- | --- |
 | `editors/` | emacs config ([emacs-config.org](editors/emacs-config.org)), neovim config ([editors/nvim](editors/nvim/README.md)), `ideavimrc`, `editorconfig`, jetbrains plugins |
 | `shells/` | zsh + bash profiles/rc files, `inputrc`, the `digitalnomad` zsh theme |
-| `utils/` | `gitconfig`, `tmux.conf`, ghostty + karabiner + espanso config, `ssh_config`, agent skills, misc tool config and scripts (`project-ruby-exec`, `autogit.sh`, ...) |
+| `utils/` | `gitconfig`, `tmux.conf`, ghostty + karabiner + espanso config, `ssh_config`, [agent skills](utils/agents/README.md), [T3 Code](utils/t3-code/README.md), misc tool config and scripts (`project-ruby-exec`, `autogit.sh`, ...) |
 | `omarchy/` | owned omarchy customizations (hypr keymaps/input, omarchy-shell bar config, moom config, ghostty config, `omarchy-moom` script, plugin patches) — see [omarchy/README.md](omarchy/README.md) |
 | `scripts/` | `bootstrap-mac.sh`, `doctor.sh`, `weekly-update.sh`, `omarchy-post-update.sh`, `macos-defaults.sh`, `links.conf`, npm/gem package lists (`deploy.sh` lives at the repo root, like the `Brewfile`) |
 | `.github/` | CI: shellcheck, `links.conf` lint, and syntax checks run on push/PR |
@@ -68,10 +68,12 @@ the `deploy.sh` script is designed to setup base packages and symlinks; it is al
 
 all managed symlinks and copy-once baseline files are defined in **`scripts/links.conf`** — the single source of truth shared by `deploy.sh` (applies them) and `scripts/doctor.sh` (verifies them). to manage a new config file, add a line there rather than editing the scripts. run with `DOTFILES_LINKS_ONLY=1 sh deploy.sh` to apply links without the repo update or package installs.
 
-### agent skills
-shared skills live in `utils/agents/skills/`. after `deploy.sh`, Claude and Cursor load them via `~/.agents/skills` (Claude also via `~/.claude/skills`).
+### agent coding setup
+shared skills live in `utils/agents/skills/`. after `deploy.sh`, Claude and Cursor load them via `~/.agents/skills` (Claude also via `~/.claude/skills`). see [utils/agents/README.md](utils/agents/README.md).
 
 machine-only skills (e.g. company-specific) go in `~/.agents/skills-local/`. re-run `deploy.sh` after adding one so it is linked into the merge dir. a local skill with the same name as a shared skill wins on that machine. deploy also drops skill names from the merge dir that no longer exist in shared or local.
+
+T3 Code (OpenRouter via OpenCode, plus themes) is documented in [utils/t3-code/README.md](utils/t3-code/README.md). on omarchy, `deploy.sh` installs it from [`omarchy/aur.packages`](omarchy/aur.packages).
 
 ### keeping your mac packages up to date
 `scripts/weekly-update.sh` is the single full maintenance entry point: brew upgrade, Brewfile reconcile, Mac App Store apps, and global npm/gem packages.

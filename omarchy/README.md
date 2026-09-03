@@ -19,7 +19,7 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 | `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-quit-app`, `omarchy-agent-tools-update`, `omarchy-window-raise-front`, `focus-new-windows` |
 | `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units, enabled by `deploy.sh` on arch |
 | `vicinae/` | `~/.config/vicinae/settings.json`, copy-once `~/.local/share/vicinae/shortcuts/shortcuts.json` | launcher config + `{query}` web-search shortcuts (see below) |
-| `aur.packages` | — | AUR list `deploy.sh` installs (vicinae-bin + agent desktop apps); `omarchy-agent-tools-update` reads the same file |
+| `aur.packages` | — | AUR list `deploy.sh` installs (vicinae-bin + agent desktop apps); `omarchy-agent-tools-update` reads the same file. T3 Code OpenRouter setup: [utils/t3-code/README.md](../utils/t3-code/README.md) |
 | `plugins/patches/` | — | local patches for plugin-manager-managed plugins (see below) |
 | `docs/moom-omarchy-plan.md` | — | design doc for `omarchy-moom` + the Moom chords in `bindings.lua` |
 
