@@ -31,6 +31,11 @@ o.bind("SUPER + ALT + SPACE", "Omarchy menu", "omarchy-menu toggle")
 
 hl.layer_rule({ match = { namespace = "vicinae" }, no_anim = true })
 
+-- Voxtype push-to-talk: F9 is too easy to hit accidentally.
+hl.unbind("F9")
+o.bind("SUPER + F9", "Start dictation (push-to-talk)", "voxtype record start")
+o.bind("SUPER + F9", "Stop dictation (push-to-talk)", "voxtype record stop", { release = true })
+
 -- Logitech MX Keys examples:
 -- o.bind("SUPER + SHIFT + S", nil, "omarchy-capture-screenshot")
 -- o.bind("SUPER + H", nil, "voxtype record toggle")
