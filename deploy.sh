@@ -3,7 +3,8 @@
 
 ## resolve paths (safe to run from anywhere)
 SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname "${0}")" && pwd)"
-REPO_ROOT="$(CDPATH='' cd -- "${SCRIPT_DIR}/.." && pwd)"
+# deploy.sh sits at the repo root, so SCRIPT_DIR is already REPO_ROOT.
+REPO_ROOT="$(CDPATH='' cd -- "${SCRIPT_DIR}" && pwd)"
 # deploy manages links from ~/dotfiles (matches doctor.sh and bootstrap);
 # fall back to the in-place repo when running from a checkout elsewhere
 DOTFILES_ROOT="${HOME}/dotfiles"
@@ -12,7 +13,7 @@ DOTFILES_ROOT="${HOME}/dotfiles"
 
 ## helpers
 update_repo(){
-  cd ~/dotfiles || exit 1
+  cd "${DOTFILES_ROOT}" || exit 1
   git pull -q || echo "offline — skipping repo update"
 }
 
@@ -106,7 +107,7 @@ link_skills_from(){
 #   package-managed names
 # - symlink or missing: point it at the merge dir (mac and plain linux)
 link_agent_skills(){
-  shared="$HOME/dotfiles/utils/agents/skills"
+  shared="${DOTFILES_ROOT}/utils/agents/skills"
   local_dir="$HOME/.agents/skills-local"
   dest="$HOME/.agents/skills"
 
