@@ -16,14 +16,18 @@ hl.env("GDK_SCALE", tostring(omarchy_gdk_scale))
 -- Portrait/rotated secondary monitor (transform: 1 = 90°, 3 = 270°).
 -- hl.monitor({ output = "DP-2", mode = "preferred", position = "auto", scale = 1, transform = 1 })
 
--- Separate Monitor Settings (specifically to set color profile)
+-- Per-output ICC. How to make and swap profiles:
+-- omarchy/docs/display-profiles.md
 hl.monitor({
   output = "DP-1",
   mode = "preferred",
   position = "0x0",
   scale = omarchy_monitor_scale,
+  -- 180
+  -- icc = "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_1_#1_2026-09-04_10-44_180cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_1_#1_2026-09-04_10-44_180cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
+  -- 150
   icc =
-  "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_1_#1_2026-09-04_10-44_180cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_1_#1_2026-09-04_10-44_180cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
+  "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_1_#1_2026-09-04_14-40_150cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_1_#1_2026-09-04_14-40_150cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
 })
 
 hl.monitor({
@@ -31,6 +35,9 @@ hl.monitor({
   mode = "preferred",
   position = "auto-right",
   scale = omarchy_monitor_scale,
+  -- 180
+  -- icc = "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_2_#2_2026-09-04_11-25_180cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_2_#2_2026-09-04_11-25_180cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
+  -- 150
   icc =
-  "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_2_#2_2026-09-04_11-25_180cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_2_#2_2026-09-04_11-25_180cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
+  "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_2_#2_2026-09-04_15-18_150cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_2_#2_2026-09-04_15-18_150cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
 })

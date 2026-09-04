@@ -11,7 +11,7 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 | `hypr/bindings.lua` | `~/.config/hypr/bindings.lua` | mac-style text nav, Moom chords, switcher wiring, Vicinae on SUPER+SPACE |
 | `hypr/input.lua` | `~/.config/hypr/input.lua` | no tap-to-click, natural scroll, per-device list |
 | `hypr/looknfeel.lua` | `~/.config/hypr/looknfeel.lua` | rounding/border tweaks + float-on-top window rules (see "focus on open" below) |
-| `hypr/monitors.lua` | `~/.config/hypr/monitors.lua` | versioned for the 1.6 scale this machine wants (omarchy's default is `"auto"`) |
+| `hypr/monitors.lua` | `~/.config/hypr/monitors.lua` | 1.6 scale (omarchy default is `"auto"`) plus per-output `icc =` paths. Profiles: [docs/display-profiles.md](docs/display-profiles.md) |
 | `shell.json` | `~/.config/omarchy/shell.json` | opaque bar + switchboard/switcharoo plugin entries |
 | `moom.conf` | `~/.config/omarchy/moom.conf` | `MOOM_MODE=planA` |
 | `ghostty/config` | `~/.config/ghostty/config` | linux terminal config (fork of omarchy's, with local font-size/padding tweaks; mac ghostty stays `utils/ghostty/config`) |
@@ -22,6 +22,7 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 | `aur.packages` | — | AUR list `deploy.sh` installs (vicinae-bin + agent desktop apps); `omarchy-agent-tools-update` reads the same file. T3 Code OpenRouter setup: [utils/t3-code/README.md](../utils/t3-code/README.md) |
 | `plugins/patches/` | — | local patches for plugin-manager-managed plugins (see below) |
 | `docs/moom-omarchy-plan.md` | — | design doc for `omarchy-moom` + the Moom chords in `bindings.lua` |
+| `docs/display-profiles.md` | — | DisplayCAL / SpyderX ICC workflow and how Hyprland loads them |
 
 ## focus on open: `focus-new-windows` + float-on-top rules
 
@@ -66,6 +67,15 @@ if it ever needs reverting to stock after an update:
 (`systemctl --user enable --now`); an `autostart.lua` hook was rejected
 deliberately — that file stays stock omarchy.
 
+## Color profiles
+
+Each monitor gets an ICC from DisplayCAL (SpyderX). Hyprland loads it with
+`icc =` on the `hl.monitor` blocks in `hypr/monitors.lua`. The `.icc` files
+live under `~/.local/share/DisplayCAL/storage/`, not in this repo.
+
+How to measure a new pair, what to do when DisplayCAL hangs after the
+patches, and how to `profcheck` the result: [docs/display-profiles.md](docs/display-profiles.md).
+
 ## Vicinae (SUPER+SPACE)
 
 Omarchy's native menu searches apps and nested commands. It does not do
@@ -106,6 +116,9 @@ with `DOTFILES_LINKS_ONLY=1 sh deploy.sh`. Prefer editing
 
 - `~/.config/hypr/autostart.lua`, `xdph.conf`, `hyprsunset.conf` — stock
   omarchy; let `omarchy` manage them.
+- `~/.config/hypr/displaycal.lua` — local window rules so DisplayCAL prompts
+  stay off the measurement patch. Required from `hyprland.lua`. See
+  [docs/display-profiles.md](docs/display-profiles.md).
 - `monitors.lua` and `looknfeel.lua` used to be on this list (omarchy
   generates monitors per machine; looknfeel was stock). Both are repo-owned
   now: `monitors.lua` for the 1.6 scale (a rebuild silently reset it to
