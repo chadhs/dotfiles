@@ -1,0 +1,116 @@
+#!/usr/bin/env bash
+set -u -o pipefail
+
+TP_VENDOR="05ac"
+TP_PRODUCT="0265"
+HUB_VENDOR="2109"
+HUB_PRODUCT="2817"
+HUB_FALLBACK="1-8.1.1.2"
+KVM_PREFIX="usb 1-8"
+
+usage() {
+	cat <<'EOF'
+trackpad-check - diagnose the USB Magic Trackpad behind the KVM
+
+usage:
+  trackpad-check            status check (read-only)
+  trackpad-check --kick     force the trackpad's hub to re-scan its ports
+                            (sudo; other devices on that hub will blip)
+EOF
+}
+
+find_usb_device() {
+	local vendor="$1" product="$2" dir
+	for dir in /sys/bus/usb/devices/*; do
+		[[ -r "$dir/idVendor" && -r "$dir/idProduct" ]] || continue
+		if [[ "$(cat "$dir/idVendor")" == "$vendor" && "$(cat "$dir/idProduct")" == "$product" ]]; then
+			basename "$dir"
+			return 0
+		fi
+	done
+	return 1
+}
+
+status() {
+	local tp devnum input_ok="no" hypr="unknown" bat_dir cap state found_bat=0 log
+
+	tp="$(find_usb_device "$TP_VENDOR" "$TP_PRODUCT" || true)"
+
+	echo "Magic Trackpad status"
+	echo "---------------------"
+
+	if [[ -n "$tp" ]]; then
+		devnum="$(cat "/sys/bus/usb/devices/$tp/devnum" 2>/dev/null || echo '?')"
+		echo "kernel (sysfs):   present at $tp (device $devnum)"
+	else
+		echo "kernel (sysfs):   ABSENT"
+	fi
+
+	grep -qi "Magic Trackpad" /proc/bus/input/devices && input_ok="yes"
+	echo "input devices:    $input_ok"
+
+	if [[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]] && command -v hyprctl >/dev/null 2>&1; then
+		if hyprctl devices 2>/dev/null | grep -qiE "magic|trackpad"; then
+			hypr="yes"
+		else
+			hypr="no"
+		fi
+	fi
+	echo "hyprland:         $hypr"
+
+	for bat_dir in /sys/class/power_supply/hid-*-battery-*; do
+		[[ -d "$bat_dir" ]] || continue
+		cap="$(cat "$bat_dir/capacity" 2>/dev/null || echo '?')"
+		state="$(cat "$bat_dir/status" 2>/dev/null || echo '?')"
+		echo "battery:          ${cap}% (${state})"
+		found_bat=1
+	done
+	(( found_bat )) || echo "battery:          unknown"
+
+	echo
+	echo "kernel USB events for the KVM tree (last 15 min):"
+	log="$(journalctl -k --since '-15 min' --no-pager 2>/dev/null | grep -F "$KVM_PREFIX" | tail -15 || true)"
+	if [[ -n "$log" ]]; then
+		echo "$log"
+	else
+		echo "(none)"
+	fi
+
+	echo
+	if [[ -z "$tp" ]]; then
+		echo "verdict: the kernel does not see the trackpad at all."
+		echo "  - reseat the magnetic connector first (prime suspect)"
+		echo "  - still absent? run: trackpad-check --kick"
+	elif [[ "$input_ok" == "no" ]]; then
+		echo "verdict: kernel sees it but no input node - HID/driver issue."
+		echo "  - reseat the magnetic connector, or run: trackpad-check --kick"
+	elif [[ "$hypr" == "no" ]]; then
+		echo "verdict: compositor lost it - try: hyprctl reload"
+	else
+		echo "verdict: all good"
+	fi
+}
+
+kick() {
+	local hub
+	hub="$(find_usb_device "$HUB_VENDOR" "$HUB_PRODUCT" || true)"
+	if [[ -z "$hub" ]]; then
+		hub="$HUB_FALLBACK"
+	fi
+	if [[ ! -d "/sys/bus/usb/devices/$hub" ]]; then
+		echo "error: hub $hub not found in sysfs - is the KVM tree connected?"
+		exit 1
+	fi
+	echo "kicking hub $hub (Yeti, wireless receiver, audio and trackpad will blip)..."
+	sudo sh -c "echo 0 > '/sys/bus/usb/devices/$hub/authorized'; sleep 2; echo 1 > '/sys/bus/usb/devices/$hub/authorized'"
+	sleep 3
+	echo
+	status
+}
+
+case "${1:-}" in
+	"") status ;;
+	--kick) kick ;;
+	-h | --help | help) usage ;;
+	*) usage >&2; exit 1 ;;
+esac
