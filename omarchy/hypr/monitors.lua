@@ -8,13 +8,29 @@ local omarchy_gdk_scale = 2
 local omarchy_monitor_scale = 1.6
 
 hl.env("GDK_SCALE", tostring(omarchy_gdk_scale))
-hl.monitor({ output = "", mode = "preferred", position = "auto", scale = omarchy_monitor_scale })
--- TEST at 1440p
--- hl.env("GDK_SCALE", tostring(1))
--- hl.monitor({ output = "", mode = "2560x1440@60", position = "auto", scale = omarchy_monitor_scale })
+-- hl.monitor({ output = "", mode = "preferred", position = "auto", scale = omarchy_monitor_scale })
 
 -- Configure a specific monitor.
 -- hl.monitor({ output = "DP-2", mode = "2560x1440@144", position = "0x0", scale = 1 })
 
 -- Portrait/rotated secondary monitor (transform: 1 = 90°, 3 = 270°).
 -- hl.monitor({ output = "DP-2", mode = "preferred", position = "auto", scale = 1, transform = 1 })
+
+-- Separate Monitor Settings (specifically to set color profile)
+hl.monitor({
+  output = "DP-1",
+  mode = "preferred",
+  position = "0x0",
+  scale = omarchy_monitor_scale,
+  icc =
+  "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_1_#1_2026-09-04_10-44_180cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_1_#1_2026-09-04_10-44_180cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
+})
+
+hl.monitor({
+  output = "DP-2",
+  mode = "preferred",
+  position = "auto-right",
+  scale = omarchy_monitor_scale,
+  icc =
+  "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_2_#2_2026-09-04_11-25_180cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_2_#2_2026-09-04_11-25_180cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
+})

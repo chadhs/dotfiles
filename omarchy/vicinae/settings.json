@@ -15,6 +15,9 @@
       "toggle": ""
    },
    "theme": {
+      "light": {
+         "name": "solarized-light"
+      },
       "dark": {
          "name": "solarized-dark"
       }
