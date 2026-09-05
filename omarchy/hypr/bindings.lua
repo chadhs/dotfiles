@@ -432,6 +432,11 @@ o.bind("CTRL + SUPER + SHIFT + 3", "Screenshot: capture menu", "omarchy-menu tog
 o.bind("CTRL + SUPER + SHIFT + 4", "Screenshot: capture menu", "omarchy-menu toggle trigger.capture")
 o.bind("CTRL + SUPER + SHIFT + 5", "Screenshot: capture menu", "omarchy-menu toggle trigger.capture")
 
+-- 1Password Quick Access: popup whose search box is focused on open.
+-- Replaces monitor scaling down (never used; scaling up remains on SUPER+/).
+hl.unbind("SUPER + ALT + SLASH") -- was: Monitor scaling down
+o.bind("SUPER + ALT + SLASH", "1Password Quick Access", "1password --quick-access")
+
 -- Clipboard history (same command as the default SUPER+CTRL+V bind).
 o.bind("SUPER + ALT + C", "Clipboard manager", "omarchy-shell shell toggle omarchy.clipboard")
 
