@@ -24,10 +24,10 @@ hl.monitor({
   position = "0x0",
   scale = omarchy_monitor_scale,
   -- 180
-  -- icc = "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_1_#1_2026-09-04_10-44_180cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_1_#1_2026-09-04_10-44_180cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
-  -- 150
   icc =
-  "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_1_#1_2026-09-04_14-40_150cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_1_#1_2026-09-04_14-40_150cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
+  "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_1_#1_2026-09-04_10-44_180cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_1_#1_2026-09-04_10-44_180cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
+  -- 150
+  -- icc = "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_1_#1_2026-09-04_14-40_150cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_1_#1_2026-09-04_14-40_150cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
 })
 
 hl.monitor({
@@ -36,8 +36,8 @@ hl.monitor({
   position = "auto-right",
   scale = omarchy_monitor_scale,
   -- 180
-  -- icc = "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_2_#2_2026-09-04_11-25_180cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_2_#2_2026-09-04_11-25_180cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
-  -- 150
   icc =
-  "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_2_#2_2026-09-04_15-18_150cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_2_#2_2026-09-04_15-18_150cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
+  "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_2_#2_2026-09-04_11-25_180cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_2_#2_2026-09-04_11-25_180cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
+  -- 150
+  -- icc = "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_2_#2_2026-09-04_15-18_150cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_2_#2_2026-09-04_15-18_150cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
 })
