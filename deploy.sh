@@ -375,6 +375,18 @@ enable_user_units(){
       echo "could not enable user unit: $name (enable manually: systemctl --user enable --now $name)"
     fi
   done
+  # .path/.timer units trigger shipped services (e.g. opencode-go record
+  # refresh); they carry [Install] themselves and must be enabled directly
+  for unit in "${DOTFILES_ROOT}"/omarchy/systemd/user/*.path \
+              "${DOTFILES_ROOT}"/omarchy/systemd/user/*.timer; do
+    [ -e "$unit" ] || continue
+    name="$(basename "$unit")"
+    if systemctl --user enable --now "$name" 2>/dev/null; then
+      echo "user unit enabled: $name"
+    else
+      echo "could not enable user unit: $name (enable manually: systemctl --user enable --now $name)"
+    fi
+  done
   if [ -f /usr/lib/systemd/user/vicinae.service ]; then
     if systemctl --user enable --now vicinae.service 2>/dev/null; then
       echo "user unit enabled: vicinae.service"

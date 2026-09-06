@@ -1,0 +1,13 @@
+[Unit]
+Description=Regenerate the OpenCode Go record when the agents panel refreshes the packaged agents
+# The packaged updater rewrites every record file on each panel refresh
+# (open, manual, or its own timer). Watching those writes gives the OpenCode
+# Go tab the same instant refresh behavior without extra API polling.
+
+[Path]
+PathModified=%h/.local/state/omarchy/agents/usage/claude.json
+PathModified=%h/.local/state/omarchy/agents/usage/codex.json
+Unit=omarchy-opencode-go-record.service
+
+[Install]
+WantedBy=default.target

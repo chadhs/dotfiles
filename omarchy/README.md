@@ -16,8 +16,8 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 | `moom.conf` | `~/.config/omarchy/moom.conf` | `MOOM_MODE=planA` |
 | `ghostty/config` | `~/.config/ghostty/config` | linux terminal config (fork of omarchy's, with local font-size/padding tweaks; mac ghostty stays `utils/ghostty/config`) |
 | `env/90-shell.conf` | `~/.config/environment.d/90-shell.conf` | session `SHELL` mirror (ghostty launches `$SHELL`; guards against systemd user-manager staleness after chsh) |
-| `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-quit-app`, `omarchy-agent-tools-update`, `omarchy-window-raise-front`, `focus-new-windows`, `trackpad-check` |
-| `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units, enabled by `deploy.sh` on arch |
+| `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-quit-app`, `omarchy-agent-tools-update`, `omarchy-agent-usage-opencode-go`, `omarchy-opencode-go-record`, `omarchy-window-raise-front`, `focus-new-windows`, `trackpad-check` |
+| `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units (`focus-new-windows.service`, `omarchy-opencode-go-record.{service,path,timer}`), enabled by `deploy.sh` on arch |
 | `vicinae/` | `~/.config/vicinae/settings.json`, copy-once `~/.local/share/vicinae/shortcuts/shortcuts.json` | launcher config + `{query}` web-search shortcuts (see below) |
 | `aur.packages` | — | AUR list `deploy.sh` installs (vicinae-bin + agent desktop apps); `omarchy-agent-tools-update` reads the same file. T3 Code OpenRouter setup: [utils/t3-code/README.md](../utils/t3-code/README.md) |
 | `plugins/patches/` | — | local patches for plugin-manager-managed plugins (see below) |
@@ -66,6 +66,41 @@ if it ever needs reverting to stock after an update:
 `omarchy refresh config hypr/hyprland.lua`. The unit is enabled by `deploy.sh`
 (`systemctl --user enable --now`); an `autostart.lua` hook was rejected
 deliberately — that file stays stock omarchy.
+
+## OpenCode Go tab in the agents panel
+
+The stock `omarchy.agents` bar panel only ships collectors for Claude, Codex
+and Fireworks, and its claude/codex collectors fold in opencode sessions only
+when they ran on an `anthropic`/`openai` provider — so usage on the
+`opencode-go` provider (GLM etc.) never showed up. `omarchy/systemd/user/`
+plus `omarchy/bin/` add a fourth tab for it:
+
+- `omarchy-agent-usage-opencode-go` (collector): local token stats from
+  opencode's SQLite db (assistant messages with `providerID = "opencode-go"`)
+  plus rolling 5h/weekly/monthly limit meters from the official
+  `https://opencode.ai/zen/go/v1/usage` endpoint, Bearer-authed with the key
+  opencode already stores in `~/.local/share/opencode/auth.json`. Falls back
+  to a cached copy on 429/network blips.
+- `omarchy-opencode-go-record` (wrapper): runs the collector and atomically
+  writes `~/.local/state/omarchy/agents/usage/opencode-go.json` — the record
+  file the panel watches. Needed because the packaged
+  `omarchy-agent-usage-update` only runs collectors in `/usr/share/omarchy/bin/`.
+- `omarchy-opencode-go-record.path`: watches `claude.json` + `codex.json` in
+  the usage dir. The packaged updater rewrites every record on each panel
+  refresh (open the panel, press `r`, or its own 15-min timer), so the Go tab
+  regenerates at exactly the same moments as the packaged agents — lockstep
+  freshness with zero extra endpoint traffic. Writes go to `opencode-go.json`,
+  so there is no trigger loop.
+- `omarchy-opencode-go-record.timer`: 15-min fallback in case the watched
+  records stop changing.
+- `omarchy-opencode-go-record.service`: the oneshot both triggers run.
+
+The collector is vendored from upstream omarchy PR #7157 (still open at time
+of writing). Once a released `omarchy update` ships its own
+`omarchy-agent-usage-opencode-go`: delete the two `omarchy/bin/` scripts and
+the three units here, drop the `links.conf` entries, and
+`systemctl --user disable --now` the path + timer units — the packaged
+updater will then regenerate the record itself on every panel refresh.
 
 ## Color profiles
 

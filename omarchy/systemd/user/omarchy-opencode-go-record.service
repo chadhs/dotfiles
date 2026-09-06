@@ -1,0 +1,7 @@
+[Unit]
+Description=Write the OpenCode Go agents-panel usage record
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/omarchy-opencode-go-record
+Nice=10
