@@ -20,6 +20,7 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 | `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units (`focus-new-windows.service`, `omarchy-opencode-go-record.{service,path,timer}`, `omarchy-cursor-record.{service,path,timer}`), enabled by `deploy.sh` on arch |
 | `vicinae/` | `~/.config/vicinae/settings.json`, copy-once `~/.local/share/vicinae/shortcuts/shortcuts.json` | launcher config + `{query}` web-search shortcuts (see below) |
 | `aur.packages` | — | AUR list `deploy.sh` installs (vicinae-bin + agent desktop apps); `omarchy-agent-tools-update` reads the same file. T3 Code OpenRouter setup: [utils/t3-code/README.md](../utils/t3-code/README.md) |
+| `applications/nixfred.blip.desktop` | `~/.local/share/applications/nixfred.blip.desktop` | Blip Messages launcher for Omarchy and Vicinae; requires the Blip plugin |
 | `plugins/patches/` | — | local patches for plugin-manager-managed plugins (see below) |
 | `docs/moom-omarchy-plan.md` | — | design doc for `omarchy-moom` + the Moom chords in `bindings.lua` |
 | `docs/display-profiles.md` | — | DisplayCAL / SpyderX ICC workflow and how Hyprland loads them |
@@ -221,6 +222,53 @@ drag silently severs the repo link. Doctor flags it (FAIL: not a symlink);
 heal with `sh deploy.sh`. Terminal font size changes are repo edits now:
 change `font-size` in `omarchy/ghostty/config`, commit, and pull/deploy on
 other machines.
+
+## Blip messaging
+
+The bar layout includes `nixfred.blip` after the tray. **Blip Messages** in
+Omarchy’s app launcher or Vicinae opens or focuses its full window through:
+
+```sh
+qs -p /usr/share/omarchy/shell ipc call nixfred.blip app
+```
+
+The launcher is repo-owned; the plugin itself stays under the Omarchy plugin
+manager. Install [Blip](https://github.com/nixfred/blip) separately and run its
+bundled setup wizard against your Mac. The initial setup used revision
+`438f5c06769b2982d7b90b54cb8a00adba6135ba`, version 2.3.3. Keep SIP, Gatekeeper,
+and FileVault enabled. Blip requires Full Disk Access and Messages Automation
+for SSH on the Mac; the dedicated restricted key does not narrow those grants
+for other unrestricted SSH logins.
+
+The Mac address, bridge settings, keys, and caches stay machine-local. The
+wizard saves the address in `~/.config/blip/bridge.conf`; a `blip_mac` shell
+variable is only shorthand for setup and maintenance. Keep Mac-specific SSH
+Host blocks in `~/.ssh/config.d/`, which both OS configs already include.
+If the wizard appends a block to the linked `~/.ssh/config`, move just that
+new block into a local include before committing dotfiles.
+
+Use a command-scoped setup agent so it does not change the terminal’s Git
+identity environment:
+
+```sh
+ssh-agent bash -c '
+  ssh-add "$HOME/.ssh/id_ed25519" &&
+  exec "$HOME/.config/omarchy/plugins/nixfred.blip/scripts/blip-setup" "$1"
+' blip-setup you@your-mac
+```
+
+For manual release updates, select a published tag, rerun that wizard to
+update the Mac bridge too, and run `omarchy restart shell`. Omarchy 4.0.2’s
+`omarchy plugin update nixfred.blip` follows default-branch HEAD and can
+advance even a detached checkout; it is not a release-only updater.
+
+To pause the client, use `omarchy plugin disable nixfred.blip` and restart
+the shell. Full removal also needs key revocation and permission cleanup on
+the Mac; removing the widget alone does not remove access. Preserve retained
+sent attachments in `~/.blip/sent` and `~/Pictures/.blip-outbox` until any
+needed originals are saved. If permanently removing Blip from dotfiles,
+remove its bar entry, launcher, and `links.conf` mapping together so a later
+deploy does not recreate the shortcut.
 
 ## switcharoo plugin — local patch snapshot
 

@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Blip Messages
+GenericName=Messaging
+Comment=Open the full Blip messaging window
+Exec=/usr/bin/qs -p /usr/share/omarchy/shell ipc call nixfred.blip app
+TryExec=/usr/bin/qs
+Icon=mail-message-new
+Terminal=false
+StartupNotify=false
+Categories=Network;InstantMessaging;
+Keywords=Blip;iMessage;Messages;SMS;RCS;Chat;

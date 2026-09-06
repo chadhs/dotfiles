@@ -2,4 +2,4 @@
 name = "Chad Stovern"
 email = "chad@stovern.me"
 [core]
-sshCommand = "ssh -i ~/.ssh/chad-mac_rsa"
+sshCommand = "ssh -o IdentitiesOnly=yes -i ~/.ssh/chad-mac_rsa"
