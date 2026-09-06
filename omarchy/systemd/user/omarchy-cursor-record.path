@@ -1,0 +1,14 @@
+[Unit]
+Description=Regenerate the Cursor record when the agents panel refreshes the packaged agents
+# Same lockstep trick as omarchy-opencode-go-record.path: the packaged
+# updater rewrites every record file on each panel refresh, so watching
+# those writes gives the Cursor tab the same instant refresh behavior
+# without extra endpoint polling.
+
+[Path]
+PathModified=%h/.local/state/omarchy/agents/usage/claude.json
+PathModified=%h/.local/state/omarchy/agents/usage/codex.json
+Unit=omarchy-cursor-record.service
+
+[Install]
+WantedBy=default.target

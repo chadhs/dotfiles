@@ -1,0 +1,7 @@
+[Unit]
+Description=Write the Cursor agents-panel usage record
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/omarchy-cursor-record
+Nice=10

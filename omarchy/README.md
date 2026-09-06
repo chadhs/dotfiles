@@ -16,8 +16,8 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 | `moom.conf` | `~/.config/omarchy/moom.conf` | `MOOM_MODE=planA` |
 | `ghostty/config` | `~/.config/ghostty/config` | linux terminal config (fork of omarchy's, with local font-size/padding tweaks; mac ghostty stays `utils/ghostty/config`) |
 | `env/90-shell.conf` | `~/.config/environment.d/90-shell.conf` | session `SHELL` mirror (ghostty launches `$SHELL`; guards against systemd user-manager staleness after chsh) |
-| `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-quit-app`, `omarchy-agent-tools-update`, `omarchy-agent-usage-opencode-go`, `omarchy-opencode-go-record`, `omarchy-window-raise-front`, `focus-new-windows`, `trackpad-check` |
-| `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units (`focus-new-windows.service`, `omarchy-opencode-go-record.{service,path,timer}`), enabled by `deploy.sh` on arch |
+| `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-quit-app`, `omarchy-agent-tools-update`, `omarchy-agent-usage-opencode-go`, `omarchy-opencode-go-record`, `omarchy-agent-usage-cursor`, `omarchy-cursor-record`, `omarchy-window-raise-front`, `focus-new-windows`, `trackpad-check` |
+| `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units (`focus-new-windows.service`, `omarchy-opencode-go-record.{service,path,timer}`, `omarchy-cursor-record.{service,path,timer}`), enabled by `deploy.sh` on arch |
 | `vicinae/` | `~/.config/vicinae/settings.json`, copy-once `~/.local/share/vicinae/shortcuts/shortcuts.json` | launcher config + `{query}` web-search shortcuts (see below) |
 | `aur.packages` | — | AUR list `deploy.sh` installs (vicinae-bin + agent desktop apps); `omarchy-agent-tools-update` reads the same file. T3 Code OpenRouter setup: [utils/t3-code/README.md](../utils/t3-code/README.md) |
 | `plugins/patches/` | — | local patches for plugin-manager-managed plugins (see below) |
@@ -101,6 +101,35 @@ of writing). Once a released `omarchy update` ships its own
 the three units here, drop the `links.conf` entries, and
 `systemctl --user disable --now` the path + timer units. The packaged
 updater will then regenerate the record itself on every panel refresh.
+
+## Cursor tab in the agents panel
+
+Same shape as the OpenCode Go tab, different data plumbing. Cursor publishes
+no per-user usage API (Admin/Analytics are Enterprise-only), but its web
+dashboard reads live numbers, so the collector authenticates as the
+dashboard does: the WorkOS session token `cursor-agent login` already stored
+in `~/.config/cursor/auth.json`, sent as
+`WorkosCursorSessionToken=<sub>::<jwt>` (sub comes from decoding the token
+itself). `$CURSOR_SESSION_TOKEN` overrides, and the editor's
+`~/.config/Cursor/User/globalStorage/state.vscdb` (`cursorAuth/accessToken`)
+is the fallback. Only cursor.com sees the token.
+
+- `omarchy-agent-usage-cursor` (collector): limits from `GET
+  /api/usage-summary` (Cursor-models pool, other-models pool, total, cycle
+  end) and token stats from the dashboard event log (`POST
+  /api/dashboard/get-filtered-usage-events`, paginate, cap 5 pages). Note
+  event `inputTokens` includes cache traffic; the collector subtracts cache
+  before recording so the panel's per-model sum stays honest.
+- `omarchy-cursor-record` (wrapper): runs the collector, writes
+  `~/.local/state/omarchy/agents/usage/cursor.json` atomically.
+- `omarchy-cursor-record.path` / `.timer` / `.service`: identical lockstep
+  pattern to the opencode-go units, plus a 15-min fallback timer.
+
+These are undocumented dashboard endpoints (reverse-engineered by the
+community, see gist `dmwyatt/1e9359b1862e7cbfe1e754fe4c8db764`); POSTs need
+an `Origin: https://cursor.com` header or they 403. If Cursor changes its
+dashboard protocol the tab goes stale with a "Cursor limits stale" note and
+the cached meters; re-run `omarchy-cursor-record` by hand to re-check.
 
 ## Showing and hiding agents in the panel
 

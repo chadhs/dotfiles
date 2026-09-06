@@ -1,0 +1,10 @@
+[Unit]
+Description=Fallback regeneration of the Cursor record
+
+[Timer]
+OnBootSec=3min
+OnUnitActiveSec=15min
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target

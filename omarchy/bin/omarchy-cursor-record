@@ -1,0 +1,22 @@
+#!/bin/bash
+# Runs the user-side Cursor collector and writes its record into the agents
+# panel's usage directory (same atomic pattern as omarchy-agent-usage-update).
+# Passes any args through to the collector.
+
+set -euo pipefail
+
+usage_dir="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/agents/usage"
+mkdir -p "$usage_dir"
+
+record=$(omarchy-agent-usage-cursor "$@")
+jq -e . >/dev/null 2>&1 <<<"$record" || {
+  echo "omarchy-cursor-record: collector printed invalid JSON" >&2
+  exit 1
+}
+
+tmp=$(mktemp "$usage_dir/.cursor.XXXXXX")
+trap 'rm -f "$tmp"' EXIT
+printf '%s\n' "$record" >"$tmp"
+chmod 600 "$tmp"
+mv "$tmp" "$usage_dir/cursor.json"
+trap - EXIT

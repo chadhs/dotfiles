@@ -1,0 +1,420 @@
+#!/usr/bin/python3
+# omarchy:summary=Print the Cursor usage record as JSON
+# omarchy:args=[--force] [--limits-only]
+# omarchy:hidden=true
+"""Collect Cursor usage into one display-ready JSON record.
+
+Cursor has no official per-user usage API (Admin/Analytics are Enterprise
+features), so this collector authenticates the way the cursor.com dashboard
+does: the WorkOS session token the Cursor app and cursor-agent CLI already
+store on disk. The session cookie is <sub>::<jwt>, with sub derived from the
+access token's own JWT claims.
+
+Limits come from GET /api/usage-summary (Cursor-models pool, other-models
+pool, total, and the billing-cycle end). Local stats come from the
+dashboard's event log: POST /api/dashboard/get-filtered-usage-events, one
+page of which covers months of events, bucketed by local day, model, and
+conversation. The agents panel only ever reads the JSON this prints.
+"""
+
+from __future__ import annotations
+
+import argparse
+import base64
+import json
+import os
+import sqlite3
+import sys
+import time
+import urllib.error
+import urllib.request
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from typing import Any
+
+AGENT_ID = "cursor"
+AGENT_NAME = "Cursor"
+USAGE_BASE = "https://cursor.com"
+USER_AGENT = "omarchy-agent-usage-cursor/1.0"
+EVENT_PAGES_MAX = 5
+EVENT_PAGE_SIZE = 1000
+
+TIER_LABELS = {
+    "free": "Free",
+    "pro": "Pro",
+    "pro-plus": "Pro Plus",
+    "ultra": "Ultra",
+    "enterprise": "Enterprise",
+}
+
+
+# ---------------------------------------------------------------------- auth
+
+def config_home() -> Path:
+  return Path(os.environ.get("XDG_CONFIG_HOME") or (Path.home() / ".config"))
+
+
+def data_home() -> Path:
+  return Path(os.environ.get("XDG_DATA_HOME") or (Path.home() / ".local" / "share"))
+
+
+def cli_auth_path() -> Path:
+  return config_home() / "cursor" / "auth.json"
+
+
+def editor_db_path() -> Path:
+  return config_home() / "Cursor" / "User" / "globalStorage" / "state.vscdb"
+
+
+def jwt_sub(token: str) -> str:
+  """The WorkOS session cookie wants <sub>::<jwt>; sub rides in the JWT."""
+  parts = token.split(".")
+  if len(parts) < 2:
+    return ""
+  try:
+    payload = json.loads(base64.urlsafe_b64decode(parts[1] + "=" * (-len(parts[1]) % 4)))
+    return str(payload.get("sub") or "")
+  except Exception:
+    return ""
+
+
+def session_cookie() -> str:
+  """WorkosCursorSessionToken value: sub::jwt, URL-safe for a Cookie header.
+
+  Precedence: $CURSOR_SESSION_TOKEN (a pre-formed sub::jwt, or a bare access
+  token), the cursor-agent CLI's auth.json, then the editor's state.vscdb.
+  """
+  env = os.environ.get("CURSOR_SESSION_TOKEN") or ""
+  if env:
+    if "%3A%3A" in env or "::" in env:
+      return "WorkosCursorSessionToken=" + env.replace("::", "%3A%3A")
+    sub = jwt_sub(env)
+    if sub:
+      return f"WorkosCursorSessionToken={sub}%3A%3A{env}"
+    return ""
+
+  token = ""
+  try:
+    token = str(json.loads(cli_auth_path().read_text()).get("accessToken") or "")
+  except Exception:
+    pass
+  if not token:
+    try:
+      conn = sqlite3.connect(editor_db_path().resolve().as_uri() + "?mode=ro", uri=True, timeout=2)
+      row = conn.execute(
+        "SELECT value FROM ItemTable WHERE key = 'cursorAuth/accessToken'"
+      ).fetchone()
+      conn.close()
+      if row and isinstance(row[0], str):
+        # vscdb stores the token as a JSON-encoded string
+        try:
+          token = str(json.loads(row[0]))
+        except json.JSONDecodeError:
+          token = row[0]
+    except Exception:
+      token = ""
+  if not token:
+    return ""
+  sub = jwt_sub(token)
+  if not sub:
+    return ""
+  return f"WorkosCursorSessionToken={sub}%3A%3A{token}"
+
+
+# ----------------------------------------------------------------- transport
+
+def http_json(method: str, path: str, cookie: str, body: dict[str, Any] | None = None) -> tuple[int, Any]:
+  request = urllib.request.Request(USAGE_BASE + path, method=method)
+  request.add_header("Cookie", cookie)
+  request.add_header("Accept", "application/json")
+  request.add_header("User-Agent", USER_AGENT)
+  if body is not None:
+    request.add_header("Content-Type", "application/json")
+    request.add_header("Origin", "https://cursor.com")
+    request.data = json.dumps(body).encode()
+  try:
+    with urllib.request.urlopen(request, timeout=20) as response:
+      return response.status, json.load(response)
+  except urllib.error.HTTPError as error:
+    return error.code, error.read().decode()[:300]
+
+
+# -------------------------------------------------------------------- record
+
+def today_and_recent() -> tuple[str, list[str]]:
+  now = datetime.now()
+  today = now.strftime("%Y-%m-%d")
+  recent_dates = [(now - timedelta(days=offset)).strftime("%Y-%m-%d") for offset in range(6, -1, -1)]
+  return today, recent_dates
+
+
+def empty_stats() -> dict[str, Any]:
+  return {
+    "todaySessions": 0,
+    "todayTotalTokens": 0,
+    "todayTokensByModel": {},
+    "recentDays": [],
+    "totalPrompts": 0,
+    "totalSessions": 0,
+    "activeDays": 0,
+    "activeDates": [],
+    "modelUsage": {},
+  }
+
+
+def base_record(**overrides: Any) -> dict[str, Any]:
+  record: dict[str, Any] = {
+    "schemaVersion": 1,
+    "id": AGENT_ID,
+    "name": AGENT_NAME,
+    "updatedAt": datetime.now(timezone.utc).isoformat(),
+    "ready": False,
+    "hasLocalStats": False,
+    "tierLabel": "",
+    "usageStatusText": "",
+    "authHelpText": "",
+    "limits": [],
+  }
+  record.update(overrides)
+  return record
+
+
+def local_day(timestamp_ms: str) -> str:
+  try:
+    created = int(timestamp_ms) / 1000
+  except (TypeError, ValueError):
+    return datetime.now().strftime("%Y-%m-%d")
+  if created <= 0:
+    return datetime.now().strftime("%Y-%m-%d")
+  return datetime.fromtimestamp(created).strftime("%Y-%m-%d")
+
+
+def event_tokens(usage: Any) -> tuple[int, int, int, int]:
+  """(uncached input, output, cache read, cache write) for one event.
+
+  Cursor reports inputTokens inclusive of cache traffic; subtract the cache
+  figures so the panel's input+output+cache sum is the real total.
+  """
+  if not isinstance(usage, dict):
+    return 0, 0, 0, 0
+  raw_input = number(usage.get("inputTokens"))
+  cache_read = number(usage.get("cacheReadTokens"))
+  cache_write = number(usage.get("cacheWriteTokens"))
+  output = number(usage.get("outputTokens"))
+  return max(0, raw_input - cache_read - cache_write), output, cache_read, cache_write
+
+
+def number(value: Any) -> int:
+  try:
+    return int(float(value or 0))
+  except (TypeError, ValueError):
+    return 0
+
+
+def local_stats_from_events(events: list[Any], conversation_key: str) -> dict[str, Any]:
+  today, recent_dates = today_and_recent()
+  recent = {day: 0 for day in recent_dates}
+  today_by_model: dict[str, int] = {}
+  model_usage: dict[str, dict[str, int]] = {}
+  active_dates: set[str] = set()
+  today_sessions: set[str] = set()
+  total_sessions: set[str] = set()
+  today_prompts = 0
+  total_prompts = 0
+  today_total = 0
+
+  for entry in events:
+    if not isinstance(entry, dict):
+      continue
+    day = local_day(str(entry.get("timestamp") or ""))
+    model = str(entry.get("model") or "unknown")
+    event_input, output, cache_read, cache_write = event_tokens(entry.get("tokenUsage"))
+    total = event_input + output + cache_read + cache_write
+    conversation = str(entry.get(conversation_key) or "")
+    if conversation in ("", "null"):
+      conversation = ""
+
+    active_dates.add(day)
+    total_prompts += 1
+    if conversation:
+      total_sessions.add(conversation)
+
+    if day in recent:
+      recent[day] += total
+    if day == today:
+      today_total += total
+      today_prompts += 1
+      today_by_model[model] = today_by_model.get(model, 0) + total
+      if conversation:
+        today_sessions.add(conversation)
+
+    bucket = model_usage.setdefault(model, {
+      "inputTokens": 0, "outputTokens": 0,
+      "cacheReadInputTokens": 0, "cacheCreationInputTokens": 0,
+    })
+    bucket["inputTokens"] += event_input
+    bucket["outputTokens"] += output
+    bucket["cacheReadInputTokens"] += cache_read
+    bucket["cacheCreationInputTokens"] += cache_write
+
+  return {
+    "recentDays": [{"date": day, "messageCount": recent[day]} for day in recent_dates],
+    "todayTokensByModel": today_by_model,
+    "todayTotalTokens": today_total,
+    "todaySessions": len(today_sessions),
+    "todayPrompts": today_prompts,
+    "totalSessions": len(total_sessions),
+    "totalPrompts": total_prompts,
+    "activeDays": len(active_dates),
+    "activeDates": sorted(active_dates),
+    "modelUsage": model_usage,
+  }
+
+
+def tier_label(membership_type: Any) -> str:
+  text = str(membership_type or "").strip().lower()
+  return TIER_LABELS.get(text, text.replace("-", " ").capitalize())
+
+
+def normalize_percent(value: Any) -> float:
+  try:
+    percent = float(value)
+  except (TypeError, ValueError):
+    return 0.0
+  return max(0.0, min(100.0, percent)) / 100.0
+
+
+def limits_from_summary(summary: dict[str, Any]) -> list[dict[str, Any]]:
+  individual = summary.get("individualUsage") if isinstance(summary, dict) else None
+  plan = individual.get("plan") if isinstance(individual, dict) else None
+  if not isinstance(plan, dict):
+    return []
+  resets_at = str(summary.get("billingCycleEnd") or "")
+  windows: list[dict[str, Any]] = []
+  for label, key in (
+    ("Cursor models (Auto)", "autoPercentUsed"),
+    ("Other models (API)", "apiPercentUsed"),
+    ("Total included", "totalPercentUsed"),
+  ):
+    if plan.get(key) is None:
+      continue
+    windows.append({
+      "label": label,
+      "percent": normalize_percent(plan.get(key)),
+      "resetsAt": resets_at,
+    })
+  return windows
+
+
+# ---------------------------------------------------------------- cache root
+
+def cache_root() -> Path:
+  root = Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache")) / "omarchy" / "agent-usage"
+  try:
+    root.mkdir(parents=True, exist_ok=True)
+  except OSError:
+    pass
+  return root
+
+
+def read_limits_cache() -> list[Any]:
+  try:
+    cached = json.loads((cache_root() / "cursor-limits.json").read_text())
+  except Exception:
+    return []
+  return cached if isinstance(cached, list) else []
+
+
+def write_limits_cache(limits: list[Any]) -> None:
+  try:
+    (cache_root() / "cursor-limits.json").write_text(json.dumps(limits))
+  except OSError:
+    pass
+
+
+# ---------------------------------------------------------------------- main
+
+def collect(cookie: str, limits_only: bool) -> dict[str, Any]:
+  record = base_record()
+  if not cookie:
+    record["authHelpText"] = "No Cursor session on disk; sign in with cursor-agent login (or the Cursor app)."
+    record["usageStatusText"] = "Cursor limits unavailable"
+    return record
+
+  try:
+    status, summary = http_json("GET", "/api/usage-summary", cookie)
+  except Exception:
+    status, summary = 0, None
+  if status == 401 or status == 403:
+    record["authHelpText"] = "Cursor rejected the session; sign in again with cursor-agent login."
+    record["usageStatusText"] = "Cursor limits unavailable"
+    return record
+  if status != 200 or not isinstance(summary, dict):
+    cached = read_limits_cache()
+    if cached:
+      record["limits"] = cached
+      record["usageStatusText"] = "Cursor limits stale"
+      record["retryAdvised"] = True
+    else:
+      record["usageStatusText"] = "Cursor limits unavailable"
+      record["retryAdvised"] = True
+    return record
+
+  record["limits"] = limits_from_summary(summary)
+  record["tierLabel"] = tier_label(summary.get("membershipType"))
+  if record["limits"]:
+    write_limits_cache(record["limits"])
+  else:
+    record["usageStatusText"] = "Cursor limits unavailable"
+  record["ready"] = bool(record["limits"])
+
+  if limits_only:
+    return record
+
+  try:
+    status, events_payload = http_json("POST", "/api/dashboard/get-filtered-usage-events", cookie,
+                                       {"page": 1, "pageSize": EVENT_PAGE_SIZE})
+  except Exception:
+    status, events_payload = 0, None
+  if status == 200 and isinstance(events_payload, dict):
+    events: list[Any] = events_payload.get("usageEventsDisplay") or []
+    try:
+      total = int(events_payload.get("totalUsageEventsCount") or 0)
+    except (TypeError, ValueError):
+      total = len(events)
+    page = 2
+    # New usage lands on the newest pages, so walk forward while the log is
+    # longer than what has been fetched, capped to keep the run bounded.
+    while len(events) < total and page <= EVENT_PAGES_MAX:
+      status, more = http_json("POST", "/api/dashboard/get-filtered-usage-events", cookie,
+                               {"page": page, "pageSize": EVENT_PAGE_SIZE})
+      if status != 200 or not isinstance(more, dict):
+        break
+      batch = more.get("usageEventsDisplay") or []
+      if not batch:
+        break
+      events.extend(batch)
+      page += 1
+    stats = empty_stats()
+    stats.update(local_stats_from_events(events, "conversationId"))
+    record.update(stats)
+    record["hasLocalStats"] = True
+    record["ready"] = record["ready"] or bool(record["totalPrompts"])
+  elif status in (401, 403):
+    record["authHelpText"] = "Cursor rejected the session for usage events; sign in again with cursor-agent login."
+  return record
+
+
+def main() -> int:
+  parser = argparse.ArgumentParser(description="Print the Cursor usage record as JSON")
+  parser.add_argument("--force", action="store_true", help="ignored; kept for collector parity")
+  parser.add_argument("--limits-only", action="store_true")
+  args = parser.parse_args()
+
+  cookie = session_cookie()
+  print(json.dumps(collect(cookie, args.limits_only), separators=(",", ":")))
+  return 0
+
+
+if __name__ == "__main__":
+  raise SystemExit(main())
