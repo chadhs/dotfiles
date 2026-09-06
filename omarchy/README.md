@@ -99,8 +99,32 @@ The collector is vendored from upstream omarchy PR #7157 (still open at time
 of writing). Once a released `omarchy update` ships its own
 `omarchy-agent-usage-opencode-go`: delete the two `omarchy/bin/` scripts and
 the three units here, drop the `links.conf` entries, and
-`systemctl --user disable --now` the path + timer units — the packaged
+`systemctl --user disable --now` the path + timer units. The packaged
 updater will then regenerate the record itself on every panel refresh.
+
+## Showing and hiding agents in the panel
+
+The `omarchy.agents` panel takes per-agent `providers` settings under its bar
+entry. `enabled` defaults to true for every agent that has a record, and a
+disabled agent drops its tab and stops its collector from running on refresh:
+
+```sh
+omarchy bar set omarchy.agents providers '{"claude": {"enabled": false}}' --json
+```
+
+Bring an agent back the same way with `"enabled": true`. The setting lives in
+`omarchy/shell.json`, and the live file symlinks here, so `omarchy bar set`
+edits the repo copy directly; no deploy step needed. The shell hot-reloads
+the change.
+
+Two things to know. `set` writes the key literally rather than walking a
+dotted path, so pass the whole `providers` object with every agent you are
+overriding, not just the one changing. And numbers need `--json` or they
+land in `shell.json` as strings.
+
+Claude is disabled in the committed `shell.json` right now since it is not in
+use. That does not break the opencode-go lockstep trigger: the `.path` unit
+also watches `codex.json`, and the 15-min timer covers everything else.
 
 ## Color profiles
 
