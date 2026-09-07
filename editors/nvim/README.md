@@ -33,6 +33,10 @@ perspectives are thinner or deferred in favor of tmux + Neovim-native tools.
 
 ## Layout
 
+Theme selection uses Solarized with OS light/dark switching. See
+[editor theme notes](../THEMES.md) for troubleshooting and restoring Omarchy
+palette following.
+
 | Path | Purpose |
 | --- | --- |
 | `init.lua` | entry point: leader, requires, lazy.nvim bootstrap + `setup('plugins')` |

@@ -1,22 +1,5 @@
--- On omarchy, the theme adapter (theme.lua, which loads the spec omarchy
--- regenerates in its state dir) owns the colorscheme and hot-reload; this
--- file stays mac-only. The state file never exists on darwin, so behavior
--- there is unchanged.
-if vim.fn.filereadable(vim.fn.expand('~/.local/state/omarchy/current/theme/neovim.lua')) == 1 then
-  return {}
-end
-
 return {
-  -- 1) Solarized (one name: "solarized", switches with :set background=light/dark)
-
-  -- -- option 1 for solarized
-  --  {
-  --    "ishan9299/nvim-solarized-lua",
-  --    lazy = false,
-  --    priority = 1000, -- load before UI plugins so they get correct colors
-  --  },
-
-  -- -- option 2 for solarized
+  -- Solarized uses the OS light/dark preference on every platform.
   {
     'maxmx03/solarized.nvim',
     lazy = false,
@@ -29,7 +12,7 @@ return {
     end,
   },
 
-  -- 2) Cross-platform auto light/dark switching
+  -- Cross-platform auto light/dark switching
   {
     'f-person/auto-dark-mode.nvim',
     lazy = false,
