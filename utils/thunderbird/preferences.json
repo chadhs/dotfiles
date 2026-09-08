@@ -1,12 +1,13 @@
 {
   "mail.pane_config.dynamic": 2,
   "mail.threadpane.listview": 0,
-  "mail.threadpane.cardsview.rowcount": 3,
+  "mail.threadpane.cardsview.rowcount": 2,
   "mail.uidensity": 1,
   "mail.dark-reader.enabled": false,
   "mailnews.message_display.disable_remote_image": true,
   "mailnews.start_page.enabled": false,
   "mail.shell.checkDefaultClient": false,
   "mail.identity.default.archive_granularity": 0,
-  "mail.identity.default.archive_keep_folder_structure": false
+  "mail.identity.default.archive_keep_folder_structure": false,
+  "toolkit.legacyUserProfileCustomizations.stylesheets": true
 }

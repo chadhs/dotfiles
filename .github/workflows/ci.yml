@@ -27,6 +27,7 @@ jobs:
           python3 utils/thunderbird/build-theme.py --output "$RUNNER_TEMP/solarized-omarchy.xpi"
           python3 -m json.tool utils/thunderbird/preferences.json > /dev/null
           python3 -m json.tool utils/thunderbird/tbkeys-settings.json > /dev/null
+          python3 -B -m unittest discover -s utils/thunderbird -p "test_*.py"
       - name: syntax check (sh scripts)
         run: |
           sh -n deploy.sh

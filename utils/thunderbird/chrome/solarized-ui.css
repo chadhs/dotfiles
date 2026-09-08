@@ -1,0 +1,153 @@
+/* Thunderbird 153 UI refinements. Message documents are deliberately excluded. */
+@-moz-document url("chrome://messenger/content/messenger.xhtml"),
+               url("about:3pane"), url("about:message") {
+  :root {
+    --solarized-bg: light-dark(#fdf6e3, #002b36);
+    --solarized-surface: light-dark(#eee8d5, #073642);
+    --solarized-text: light-dark(#586e75, #93a1a1);
+    --solarized-strong: light-dark(#073642, #eee8d5);
+    --solarized-muted: light-dark(#657b83, #839496);
+    --solarized-line: light-dark(#ddd7c5, #16414b);
+    --solarized-selected: light-dark(#e1e7da, #124450);
+    --solarized-blue: #268bd2;
+    --solarized-warning-bg: light-dark(#f3e8c6, #303b32);
+    --solarized-warning-text: light-dark(#65531c, #d9c58a);
+
+    --layout-background-0: var(--solarized-bg) !important;
+    --layout-background-1: var(--solarized-surface) !important;
+    --layout-background-2: var(--solarized-surface) !important;
+    --layout-border-0: var(--solarized-line) !important;
+    --layout-color-0: var(--solarized-text) !important;
+    --layout-color-1: var(--solarized-muted) !important;
+    --tree-pane-background: var(--solarized-bg) !important;
+    --tree-view-bg: var(--solarized-bg) !important;
+    --tree-view-color: var(--solarized-text) !important;
+    --unread-color: var(--solarized-strong) !important;
+    --sidebar-background: var(--solarized-bg) !important;
+    --sidebar-color: var(--solarized-text) !important;
+    --sidebar-border: var(--solarized-line) !important;
+    --toolbar-color: var(--solarized-text) !important;
+    --button-text-color: var(--solarized-text) !important;
+    --button-background-color: var(--solarized-surface) !important;
+    --button-border-color: var(--solarized-line) !important;
+  }
+
+  #threadTree {
+    background: var(--solarized-bg) !important;
+    color: var(--solarized-text) !important;
+    scrollbar-color: var(--solarized-line) var(--solarized-bg);
+  }
+
+  /* Keep the native row height: Thunderbird's virtual list calculates it. */
+  #threadTree .card-layout {
+    --tree-card-background: var(--solarized-bg) !important;
+  }
+
+  #threadTree .card-layout > td > .card-container {
+    border-color: transparent !important;
+    border-block-end-color: var(--solarized-line) !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    color: var(--solarized-text) !important;
+  }
+
+  #threadTree .card-layout:hover {
+    --tree-card-background: var(--solarized-surface) !important;
+  }
+
+  #threadTree .card-layout.selected {
+    --tree-card-background: var(--solarized-selected) !important;
+  }
+
+  #threadTree .card-layout.selected > td > .card-container {
+    border-inline-start-color: var(--solarized-blue) !important;
+  }
+
+  #threadTree .card-layout.current > td > .card-container {
+    outline: 1px solid var(--solarized-blue) !important;
+    outline-offset: -1px !important;
+  }
+
+  #threadTree .card-container .sender {
+    color: var(--solarized-text) !important;
+    font-weight: 500 !important;
+  }
+
+  #threadTree .card-layout[data-properties~="unread"] .sender,
+  #threadTree .card-layout[data-properties~="unread"] .subject {
+    color: var(--solarized-strong) !important;
+    font-weight: 600 !important;
+  }
+
+  #threadTree .card-layout[data-properties~="unread"] {
+    --read-status-fill: #859900 !important;
+    --read-status-stroke: #859900 !important;
+  }
+
+  #threadTree .card-container .date {
+    color: var(--solarized-muted) !important;
+    opacity: 1 !important;
+    font-size: 0.85rem !important;
+  }
+
+  #folderPane,
+  #folderPaneHeaderBar,
+  #threadPaneHeaderBar,
+  #messageHeader {
+    color: var(--solarized-text) !important;
+    background-color: var(--solarized-bg) !important;
+  }
+
+  #folderTree li > .container {
+    border-radius: 3px !important;
+  }
+
+  #folderPaneWriteMessage {
+    padding-inline: 8px !important;
+    font-size: 0.9rem !important;
+  }
+
+  #messageHeader .message-header-container {
+    padding: 8px 12px !important;
+    row-gap: 3px !important;
+  }
+
+  #messageHeader .message-header-extra-container {
+    row-gap: 3px !important;
+  }
+
+  #messageHeader .header-buttons-container toolbarbutton {
+    border-color: transparent !important;
+    background: transparent !important;
+  }
+
+  #messageHeader .header-buttons-container toolbarbutton:hover {
+    background: var(--solarized-surface) !important;
+  }
+
+  /* Restyle only this informational warning; security errors retain their colors. */
+  notification-message[value="remoteContent"] {
+    --message-bar-background-color: var(--solarized-warning-bg) !important;
+    --message-bar-text-color: var(--solarized-warning-text) !important;
+    --message-bar-icon-color: var(--solarized-warning-text) !important;
+    --message-bar-container-min-height: 28px !important;
+    --message-bar-container-padding-block: 3px !important;
+    --message-bar-text-container-padding-block: 3px !important;
+    --message-bar-content-gap: 3px 10px !important;
+    --close-icon-size: 20px !important;
+    background: var(--solarized-warning-bg) !important;
+    color: var(--solarized-warning-text) !important;
+    border: 1px solid color-mix(in srgb, #b58900 35%, transparent) !important;
+    border-radius: 3px !important;
+    font-size: 0.875rem !important;
+    line-height: 1.35 !important;
+    margin: 4px 8px 6px !important;
+  }
+
+  notification-message[value="remoteContent"] .notification-button {
+    color: var(--solarized-warning-text) !important;
+    background: transparent !important;
+    border: 1px solid color-mix(in srgb, #b58900 35%, transparent) !important;
+    padding: 2px 8px !important;
+  }
+}

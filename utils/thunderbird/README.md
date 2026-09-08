@@ -2,7 +2,8 @@
 
 Solarized Light and Dark that follow system appearance, a three-pane reading
 layout, and keyboard folder filing. The theme is a standard static theme with
-both palettes in one manifest. It needs no background process or custom CSS.
+both palettes in one manifest. A small UI-only CSS layer finishes the message
+list, compact header, and remote-content notice. No background process is needed.
 
 `deploy.sh` installs Thunderbird on Arch and deploys the Omarchy keybindings.
 Account setup, theme installation, and extension configuration are explicit
@@ -74,13 +75,42 @@ uses `#fdf6e3` and `#657b83`; the dark palette uses `#002b36` and `#839496`.
 Both use Solarized blue accents. Omarchy's scheduled or manual appearance
 changes also change Thunderbird's palette.
 
-Standard theme properties do not cover every Thunderbird element. Some
-controls retain the application's native light/dark styling. The theme does
-not recolor sender HTML.
+### Install the UI refinements
+
+Find the active **Profile Folder** under **Help → Troubleshooting Information**.
+Close Thunderbird, then run the following with that profile's path:
+
+```sh
+python3 utils/thunderbird/install-style.py --profile "$HOME/.thunderbird/xxxxxxxx.default-release"
+```
+
+The installer checks that Thunderbird is closed and backs up the affected
+files inside the profile's `solarized-style-backups` directory. It preserves
+existing CSS and adds an import of `chrome/solarized-ui.css` to `userChrome.css`
+and `userContent.css`. The stylesheet targets only Thunderbird's main window,
+`about:3pane`, and `about:message`; sender message documents are excluded.
+
+It also selects two-line cards, sets initial folder/reader pane widths to
+230/540 pixels, and uses Thunderbird's built-in icon-only message-header
+controls. Pane widths remain adjustable by dragging the splitters. The
+Quick Move control remains with the icon-only message actions so its keyboard
+picker has a visible anchor. The duplicate top-toolbar control is removed
+through Thunderbird's native toolbar configuration. Keyboard shortcuts remain
+available.
+
+The remote-content notice uses muted amber while retaining its text,
+Preferences menu, and close control. Other warnings and errors keep their
+native severity colors. Sender HTML colors and remote-image blocking remain
+unchanged.
+
+Run the installer explicitly after changing the stylesheet; it copies the
+new CSS and reapplies these layout defaults. Normal dotfiles deployment does
+not modify the profile. CSS selectors may need attention after major
+Thunderbird updates because [userChrome customizations are unsupported](https://support.mozilla.org/en-US/kb/userchromecss-js-usercontent-unsupported).
 
 ## Reading preferences
 
-Use vertical layout, Cards View with three lines per card, default density,
+Use vertical layout, Cards View with two lines per card, default density,
 and the reading pane. Hide the Today pane using its toggle.
 
 [`preferences.json`](preferences.json) records the exact portable preferences
@@ -170,8 +200,13 @@ Thunderbird.
 
 ## Undo
 
-Enable **System theme — auto** in Add-ons and Themes to restore default
-appearance. Remove the Thunderbird shortcut block from Hyprland bindings to
+Remove only `@import url("solarized-ui.css");` from the profile's
+`chrome/userChrome.css` and `chrome/userContent.css`, then restart Thunderbird
+to remove the UI refinements. Keep any unrelated CSS. If no custom styles
+remain, reset `toolkit.legacyUserProfileCustomizations.stylesheets` to false.
+
+Enable **System theme — auto** in Add-ons and Themes to restore the default
+color theme. Remove the Thunderbird shortcut block from Hyprland bindings to
 remove the Super mappings, then reload and check for config errors. Restore
 reading preferences through Thunderbird's settings. Avoid replacing a whole
 older `prefs.js` after accounts or preferences have changed.

@@ -73,7 +73,8 @@ Folder Move with the settings documented in
 [utils/thunderbird](../utils/thunderbird/README.md).
 
 That directory owns the adaptive Solarized theme manifest, its packaging
-script, and the portable preference reference. Follow its one-time setup
+script, the UI refinement stylesheet and installer, and the portable preference
+reference. Follow its one-time setup
 steps for the theme, extensions, iCloud folder discovery, and validation.
 Mail profiles and credentials remain machine-local; deployment does not
 rewrite them.
