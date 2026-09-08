@@ -62,9 +62,30 @@ if [[ $(uname) = "Darwin" ]]; then
     alias codeup='brew upgrade opencode codex chatgpt claude claude-code cursor t3-code@nightly'
 fi
 
-## linux only aliases
+## linux only aliases and functions
 if [[ $(uname) = "Linux" ]]; then
     alias vim='nvim'
+    alias pbcopy='wl-copy'
+    alias pbpaste='wl-paste'
+
+    # Accept the macOS -fli shortcut with procps-ng.
+    pgrep() {
+        if [[ "${1:-}" = "-fli" ]]; then
+            shift
+            command pgrep -afi "$@"
+        else
+            command pgrep "$@"
+        fi
+    }
+
+    pkill() {
+        if [[ "${1:-}" = "-fli" ]]; then
+            shift
+            command pkill -efi "$@"
+        else
+            command pkill "$@"
+        fi
+    }
 fi
 
 ## update dot files
