@@ -1,0 +1,21 @@
+[Unit]
+Description=Select Solarized Light at 10am and Solarized Dark at 7pm
+# Session timers start after login, not before the early timers.target.
+DefaultDependencies=no
+Conflicts=shutdown.target
+Before=shutdown.target
+Requisite=graphical-session.target
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Timer]
+OnCalendar=*-*-* 10:00:00
+OnCalendar=*-*-* 19:00:00
+OnActiveSec=5s
+Persistent=true
+AccuracySec=1s
+RandomizedDelaySec=0
+WakeSystem=false
+
+[Install]
+WantedBy=graphical-session.target

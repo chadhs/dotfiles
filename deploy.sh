@@ -368,6 +368,8 @@ enable_user_units(){
   systemctl --user daemon-reload 2>/dev/null
   for unit in "${DOTFILES_ROOT}"/omarchy/systemd/user/*.service; do
     [ -e "$unit" ] || continue
+    # Static services are activated by their timer/path, not enabled directly.
+    grep -Eq '^[[:space:]]*\[Install\][[:space:]]*$' "$unit" || continue
     name="$(basename "$unit")"
     if systemctl --user enable --now "$name" 2>/dev/null; then
       echo "user unit enabled: $name"

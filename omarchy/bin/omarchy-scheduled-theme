@@ -1,0 +1,37 @@
+#!/bin/bash
+# Apply the scheduled Solarized theme and its matching Ripples background.
+set -euo pipefail
+
+fail() {
+  printf 'omarchy-scheduled-theme: %s\n' "$*" >&2
+  exit 1
+}
+
+hour=$(date +%H)
+if (( 10#$hour >= 10 && 10#$hour < 19 )); then
+  theme=solarized-light
+else
+  theme=solarized-dark
+fi
+
+# Check assets before changing the theme or background.
+theme_dir=$(omarchy theme dir "$theme") || fail "Cannot locate theme: $theme"
+[[ -d $theme_dir ]] || fail "Theme is not installed: $theme ($theme_dir)"
+background="$theme_dir/backgrounds/1-ripples.png"
+[[ -r $background && -f $background ]] || fail "Ripples background is missing or unreadable: $background"
+
+current_theme=$(omarchy theme current) || fail 'Cannot read the current theme'
+current_theme=${current_theme,,}
+current_theme=${current_theme// /-}
+theme_changed=0
+if [[ $current_theme != "$theme" ]]; then
+  OMARCHY_THEME_SKIP_BACKGROUND=1 omarchy theme set "$theme" || fail "Could not apply theme: $theme"
+  theme_changed=1
+fi
+
+# Omarchy may point at a staged copy, so compare content rather than paths.
+current_background="$HOME/.local/state/omarchy/current/background"
+if (( theme_changed )) || ! cmp -s -- "$current_background" "$background"; then
+  omarchy theme bg set "$background" || fail "Could not apply background: $background"
+  printf 'omarchy-scheduled-theme: selected %s with Ripples\n' "$theme"
+fi
