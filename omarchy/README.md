@@ -64,6 +64,20 @@ systemctl --user disable --now omarchy-scheduled-theme.timer
 systemctl --user enable --now omarchy-scheduled-theme.timer
 ```
 
+## Thunderbird
+
+`deploy.sh` installs Thunderbird from the Arch repository. The Thunderbird
+block in `hypr/bindings.lua` adds Super+E for archive and Ctrl+Super+M for the
+folder picker, scoped to Thunderbird. These require tbkeys-lite and Quick
+Folder Move with the settings documented in
+[utils/thunderbird](../utils/thunderbird/README.md).
+
+That directory owns the adaptive Solarized theme manifest, its packaging
+script, and the portable preference reference. Follow its one-time setup
+steps for the theme, extensions, iCloud folder discovery, and validation.
+Mail profiles and credentials remain machine-local; deployment does not
+rewrite them.
+
 ## focus on open: `focus-new-windows` + float-on-top rules
 
 The problem: launching an app while a floating window has focus meant the

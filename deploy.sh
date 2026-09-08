@@ -36,7 +36,7 @@ os_setup(){
       # real base manifest — verified there); this list is only the repo's
       # delta plus the git-host auth toolchain (direnv loads per-project
       # gh tokens)
-      package_list="editorconfig-core-c zsh direnv github-cli glab"
+      package_list="editorconfig-core-c zsh direnv github-cli glab thunderbird"
     elif grep -qi "ubuntu\|debian" /proc/version; then
       system_os="debian"
       pkg_install="sudo apt-get install -y"

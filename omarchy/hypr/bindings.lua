@@ -486,3 +486,21 @@ o.bind("SUPER + SHIFT + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-swit
 -- go-to-definition). SUPER+right-click resize is untouched.
 hl.unbind("SUPER + mouse:272")
 o.bind("SUPER + ALT + mouse:272", "Move window", hl.dsp.window.drag(), { mouse = true })
+
+-- Thunderbird mail commands.
+-- Thunderbird receives command chords, never plain letters in editable fields.
+local function thunderbird_shortcut(mods, key)
+  return function()
+    local window = hl.get_active_window()
+    if not window or window.class ~= "org.mozilla.Thunderbird" then
+      return
+    end
+    hl.dispatch(hl.dsp.send_key_state({ mods = mods, key = key, state = "down" }))
+    hl.timer(function()
+      hl.dispatch(hl.dsp.send_key_state({ mods = mods, key = key, state = "up" }))
+    end, { timeout = 50, type = "oneshot" })
+  end
+end
+
+o.bind("SUPER + E", "Thunderbird: archive", thunderbird_shortcut("CTRL + ALT + SHIFT", "E"))
+o.bind("SUPER + CTRL + M", "Thunderbird: move to folder", thunderbird_shortcut("CTRL + SHIFT", "N"))

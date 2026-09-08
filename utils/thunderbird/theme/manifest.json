@@ -1,0 +1,100 @@
+{
+  "manifest_version": 2,
+  "name": "Solarized for Omarchy",
+  "description": "Solarized Light and Dark, following the system appearance.",
+  "version": "1.0.0",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "solarized@chadhs.local",
+      "strict_min_version": "128.0"
+    }
+  },
+  "theme": {
+    "colors": {
+      "frame": "#fdf6e3",
+      "frame_inactive": "#fdf6e3",
+      "tab_background_text": "#657b83",
+      "tab_background_separator": "#eee8d5",
+      "tab_selected": "#eee8d5",
+      "tab_text": "#586e75",
+      "tab_line": "#268bd2",
+      "tab_loading": "#268bd2",
+      "toolbar": "#fdf6e3",
+      "toolbar_text": "#657b83",
+      "toolbar_field": "#eee8d5",
+      "toolbar_field_text": "#586e75",
+      "toolbar_field_border": "#eee8d5",
+      "toolbar_field_focus": "#fdf6e3",
+      "toolbar_field_text_focus": "#586e75",
+      "toolbar_field_border_focus": "#268bd2",
+      "toolbar_field_highlight": "#eee8d5",
+      "toolbar_field_highlight_text": "#586e75",
+      "toolbar_top_separator": "#eee8d5",
+      "toolbar_bottom_separator": "#eee8d5",
+      "toolbar_vertical_separator": "#eee8d5",
+      "icons": "#657b83",
+      "icons_attention": "#268bd2",
+      "button_background_hover": "#eee8d5",
+      "button_background_active": "#eee8d5",
+      "popup": "#fdf6e3",
+      "popup_text": "#657b83",
+      "popup_border": "#eee8d5",
+      "popup_highlight": "#eee8d5",
+      "popup_highlight_text": "#586e75",
+      "sidebar": "#fdf6e3",
+      "sidebar_text": "#657b83",
+      "sidebar_border": "#eee8d5",
+      "sidebar_highlight": "#eee8d5",
+      "sidebar_highlight_text": "#586e75",
+      "sidebar_highlight_border": "#268bd2"
+    },
+    "properties": {
+      "color_scheme": "light",
+      "content_color_scheme": "light"
+    }
+  },
+  "dark_theme": {
+    "colors": {
+      "frame": "#002b36",
+      "frame_inactive": "#002b36",
+      "tab_background_text": "#839496",
+      "tab_background_separator": "#073642",
+      "tab_selected": "#073642",
+      "tab_text": "#93a1a1",
+      "tab_line": "#268bd2",
+      "tab_loading": "#268bd2",
+      "toolbar": "#002b36",
+      "toolbar_text": "#839496",
+      "toolbar_field": "#073642",
+      "toolbar_field_text": "#93a1a1",
+      "toolbar_field_border": "#073642",
+      "toolbar_field_focus": "#002b36",
+      "toolbar_field_text_focus": "#93a1a1",
+      "toolbar_field_border_focus": "#268bd2",
+      "toolbar_field_highlight": "#073642",
+      "toolbar_field_highlight_text": "#93a1a1",
+      "toolbar_top_separator": "#073642",
+      "toolbar_bottom_separator": "#073642",
+      "toolbar_vertical_separator": "#073642",
+      "icons": "#839496",
+      "icons_attention": "#268bd2",
+      "button_background_hover": "#073642",
+      "button_background_active": "#073642",
+      "popup": "#002b36",
+      "popup_text": "#839496",
+      "popup_border": "#073642",
+      "popup_highlight": "#073642",
+      "popup_highlight_text": "#93a1a1",
+      "sidebar": "#002b36",
+      "sidebar_text": "#839496",
+      "sidebar_border": "#073642",
+      "sidebar_highlight": "#073642",
+      "sidebar_highlight_text": "#93a1a1",
+      "sidebar_highlight_border": "#268bd2"
+    },
+    "properties": {
+      "color_scheme": "dark",
+      "content_color_scheme": "dark"
+    }
+  }
+}
