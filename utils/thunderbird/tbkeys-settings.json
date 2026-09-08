@@ -1,4 +1,4 @@
 {
-  "mainkeys": "{\"ctrl+alt+shift+e\":\"cmd:cmd_archive\"}",
+  "mainkeys": "{\"ctrl+alt+shift+e\":\"cmd:cmd_archive\",\"backspace\":\"cmd:cmd_delete\"}",
   "composekeys": "{}"
 }

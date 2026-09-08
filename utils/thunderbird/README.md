@@ -110,13 +110,17 @@ installing; let Thunderbird manage their updates.
 In tbkeys-lite's preferences, replace **Main key bindings** with:
 
 ```json
-{"ctrl+alt+shift+e":"cmd:cmd_archive"}
+{"ctrl+alt+shift+e":"cmd:cmd_archive","backspace":"cmd:cmd_delete"}
 ```
 
 Set **Compose key bindings** to `{}` and save. Reopen the preferences to check
 that the values persisted. This replaces tbkeys-lite's default Gmail-style
 bindings while retaining Thunderbird's native keys. The exact two stored
 values are also recorded in [`tbkeys-settings.json`](tbkeys-settings.json).
+
+Backspace invokes Thunderbird's normal Delete command in the message list.
+The add-on ignores unmodified Backspace in text-entry controls, and empty
+compose bindings preserve normal editing in drafts.
 
 Keep Quick Folder Move's move command on `Ctrl+Shift+N`. Its picker shows
 recent folders initially; type to filter, press Enter to move, or Escape to
@@ -131,6 +135,7 @@ run `hyprctl reload` and `hyprctl configerrors`.
 | Action | Shortcut |
 | --- | --- |
 | Archive selected messages | Super+E |
+| Delete selected messages | Backspace |
 | Open the folder picker | Ctrl+Super+M |
 | Confirm / cancel folder choice | Enter / Escape |
 | Star or unstar | s |
