@@ -145,6 +145,16 @@ vim.keymap.set('n', '<leader>Mp', function()
   vim.fn.jobstart({ 'md-preview', path }, { detach = true })
 end, { desc = 'Preview in Markdown Preview' })
 
+-- Preview current file in Org Preview (macOS) / org-preview (Linux) — Emacs org-mode ,oP
+vim.keymap.set('n', '<leader>oP', function()
+  local path = vim.fn.expand '%:p'
+  if vim.fn.has 'mac' == 1 or vim.fn.has 'macunix' == 1 then
+    vim.fn.jobstart({ 'open', '-a', 'Org Preview', path }, { detach = true })
+  else
+    vim.fn.jobstart({ 'org-preview', path }, { detach = true })
+  end
+end, { desc = 'Preview in Org Preview' })
+
 -- Display-line motion (Emacs visual-line-mode / evil-next-visual-line).
 -- gj/gk walk screen lines, so j/k move through wraps instead of skipping them.
 vim.keymap.set({ 'n', 'x', 'o' }, 'j', 'gj', { silent = true, desc = 'Down (display line)' })

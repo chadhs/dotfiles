@@ -1526,6 +1526,7 @@ Agenda, capture templates, Mac Mail links, HTML agenda export, and related Org t
       "ri"  'ielm                                          ; (r)epl (i)nitialize
       "il"  'org-insert-link                               ; (i)sert (l)ink
       "ol"  'org-open-at-point                             ; (o)pen (l)ink
+      "oP"  'cs-org-preview-file                           ; preview in Org Preview app
       "jb"  'org-mark-ring-goto                            ; (j)ump (b)ack
       "dl"  'org-toggle-link-display                       ; (d)isplay (l)ink toggle
       "di"  'org-toggle-inline-images                      ; (d)isplay (i)nline images
@@ -2137,6 +2138,19 @@ Explain: Electric return functionality
     (shell-command
      (format "md-preview %s"
              (shell-quote-argument (buffer-file-name)))))
+#+END_SRC
+
+*** preview file with Org Preview
+
+#+BEGIN_SRC emacs-lisp
+  (defun cs-org-preview-file ()
+    "preview the current file in Org Preview (org-preview CLI on Linux)"
+    (interactive)
+    (if (eq system-type 'darwin)
+        (start-process "org-preview" nil "open" "-a" "Org Preview" (buffer-file-name))
+      (shell-command
+       (format "org-preview %s"
+               (shell-quote-argument (buffer-file-name))))))
 #+END_SRC
 
 *** use localized javascript linter
