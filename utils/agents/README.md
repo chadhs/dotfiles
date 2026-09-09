@@ -17,14 +17,36 @@ that no longer exist in shared or local.
 
 `scripts/doctor.sh` checks these links.
 
+### i-have-adhd
+
+[`i-have-adhd`](skills/i-have-adhd/SKILL.md) is vendored from
+[ayghri/i-have-adhd](https://github.com/ayghri/i-have-adhd/tree/24d22f783e57cb73c957848b588c6f651b6f9cd8/skills/i-have-adhd)
+at commit `24d22f783e57cb73c957848b588c6f651b6f9cd8`, with its MIT license.
+Local changes make it the default in every session: the description
+requires automatic use, the manual-only frontmatter flag is removed,
+and Codex's `allow_implicit_invocation` policy is enabled.
+An added precedence rule gives `i-have-adhd` priority for response
+structure and `unslop` priority for wording when both apply.
+
+Say `stop adhd mode` or `normal mode` to disable it for the current
+session. New sessions start with it enabled again. The bundled Gemini
+command is an upstream reference; Gemini is not configured by this repo.
+
 ## who loads what
 
 | tool | user-scope skills |
 | --- | --- |
-| Cursor | `~/.agents/skills` |
+| Codex, Cursor, and their T3 threads | `~/.agents/skills` |
 | Claude Code, and T3 Claude threads | `~/.claude/skills` |
-| OpenCode, and T3 OpenCode threads | OpenCode's own config (not `~/.claude/skills`) |
+| OpenCode, and T3 OpenCode threads | `~/.agents/skills`, `~/.claude/skills`, and `~/.config/opencode/skills` |
+| GitHub Copilot | `~/.agents/skills` and `~/.copilot/skills` |
 | Cursor Agent Skills under `~/.cursor/skills-cursor/` | Cursor only. T3 Claude threads never see them |
+
+OpenCode's provider config is separate, but its
+[skill discovery](https://opencode.ai/docs/skills/) includes the shared
+directories. [Cursor](https://cursor.com/docs/skills) and
+[Copilot](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)
+also discover `~/.agents/skills` directly.
 
 `~/.claude/skills` layout is platform-dependent (same logic in
 `deploy.sh` and `doctor.sh`):

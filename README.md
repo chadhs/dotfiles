@@ -70,7 +70,7 @@ the `deploy.sh` script is designed to setup base packages and symlinks; it is al
 all managed symlinks and copy-once baseline files are defined in **`scripts/links.conf`** — the single source of truth shared by `deploy.sh` (applies them) and `scripts/doctor.sh` (verifies them). to manage a new config file, add a line there rather than editing the scripts. run with `DOTFILES_LINKS_ONLY=1 sh deploy.sh` to apply links without the repo update or package installs.
 
 ### agent coding setup
-shared skills live in `utils/agents/skills/`. after `deploy.sh`, Claude and Cursor load them via `~/.agents/skills` (Claude also via `~/.claude/skills`). see [utils/agents/README.md](utils/agents/README.md).
+shared skills live in `utils/agents/skills/`. after `deploy.sh`, Codex, Cursor, OpenCode, and Copilot discover them in `~/.agents/skills`; Claude uses `~/.claude/skills`. T3 threads use their underlying agent's skills. see [utils/agents/README.md](utils/agents/README.md).
 
 machine-only skills (e.g. company-specific) go in `~/.agents/skills-local/`. re-run `deploy.sh` after adding one so it is linked into the merge dir. a local skill with the same name as a shared skill wins on that machine. deploy also drops skill names from the merge dir that no longer exist in shared or local.
 
