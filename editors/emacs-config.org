@@ -1052,6 +1052,45 @@ Honor editorconfig files configuration for whitespace and indentation settings w
   (setq ispell-program-name "aspell")
 #+END_SRC
 
+*** distraction-free writing mode
+
+#+BEGIN_SRC emacs-lisp
+  ;;; increase text size while writing, restore on exit
+  (defun cs-writeroom-text-scale (arg)
+    (text-scale-set (if (= arg 1) 2 0)))
+
+  ;;; hide git diff indicators while writing, restore on exit
+  (defvar-local cs-writeroom--diff-hl-was-on nil)
+  (defun cs-writeroom-diff-hl (arg)
+    (if (= arg 1)
+        (when (bound-and-true-p diff-hl-mode)
+          (diff-hl-mode -1)
+          (setq cs-writeroom--diff-hl-was-on t))
+      (when cs-writeroom--diff-hl-was-on
+        (diff-hl-mode 1)
+        (setq cs-writeroom--diff-hl-was-on nil))))
+
+  (use-package writeroom-mode
+    :init
+    (setq writeroom-width 80            ; exact, uniform line-length in visible chars
+          writeroom-maximize-window nil) ; center in current window only
+    :config
+    ;; VFC's text-scale margin compensation double-counts the scale factor with
+    ;; Emacs 29+ remap widths, making the column window-proportional instead of
+    ;; fixed-width; disable it so writeroom-width is the exact line-length.
+    (setq visual-fill-column-adjust-for-text-scale nil)
+    ;; don't fullscreen the frame on toggle
+    (setq writeroom-global-effects
+          (remq 'writeroom-set-fullscreen writeroom-global-effects))
+    ;; bump text size while writing
+    (add-to-list 'writeroom-local-effects #'cs-writeroom-text-scale)
+    ;; hide git diff indicators while writing
+    (add-to-list 'writeroom-local-effects #'cs-writeroom-diff-hl)
+    ;; re-center margins when text size is adjusted interactively
+    (advice-add 'text-scale-adjust :after #'visual-fill-column-adjust)
+    (evil-leader/set-key "fw" #'writeroom-mode)) ; (f)ocused (w)riting
+#+END_SRC
+
 *** string manipulation
 #+BEGIN_SRC emacs-lisp
   (use-package string-inflection

@@ -22,4 +22,4 @@ if ((${#pkgs[@]} == 0)); then
   exit 1
 fi
 
-exec yay -S --needed "${pkgs[@]}"
+exec yay -S --needed --noconfirm "${pkgs[@]}"
