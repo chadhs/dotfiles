@@ -62,7 +62,7 @@ elif [ $(uname) = "Darwin" ]; then
   plugins=(bundler direnv git jump tmux tmuxinator vi-mode virtualenvwrapper)
 else
   ## linux plugins (direnv: per-project gh tokens via .envrc)
-  plugins=(direnv git tmux vi-mode)
+  plugins=(direnv git jump tmux vi-mode)
 fi
 
 # User configuration

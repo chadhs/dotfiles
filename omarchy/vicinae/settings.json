@@ -36,5 +36,23 @@
       "shortcuts:sct-youtube",
       "shortcuts:sct-github",
       "files:search"
-   ]
+   ],
+   "providers": {
+      "applications": {
+         "entrypoints": {
+            "XIVLauncher": {
+               "alias": "ffxiv"
+            },
+            "com.mitchellh.ghostty": {
+               "alias": "terminal"
+            },
+            "org.mozilla.Thunderbird": {
+               "alias": "Mail"
+            },
+            "sidra": {
+               "alias": "Apple Music"
+            }
+         }
+      }
+   }
 }
