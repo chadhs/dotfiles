@@ -16,7 +16,7 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 | `moom.conf` | `~/.config/omarchy/moom.conf` | `MOOM_MODE=planA` |
 | `ghostty/config` | `~/.config/ghostty/config` | linux terminal config (fork of omarchy's, with local font-size/padding tweaks; mac ghostty stays `utils/ghostty/config`) |
 | `env/90-shell.conf` | `~/.config/environment.d/90-shell.conf` | session `SHELL` mirror (ghostty launches `$SHELL`; guards against systemd user-manager staleness after chsh) |
-| `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-quit-app`, `omarchy-agent-tools-update`, `omarchy-agent-usage-opencode-go`, `omarchy-opencode-go-record`, `omarchy-agent-usage-cursor`, `omarchy-cursor-record`, `omarchy-window-raise-front`, `focus-new-windows`, `trackpad-check`, `omarchy-scheduled-theme` |
+| `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-quit-app`, `omarchy-agent-tools-update`, `omarchy-agent-usage-opencode-go`, `omarchy-opencode-go-record`, `omarchy-agent-usage-cursor`, `omarchy-cursor-record`, `omarchy-window-raise-front`, `focus-new-windows`, `trackpad-check`, `omarchy-scheduled-theme`, `omarchy-theme-toggle` |
 | `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units (`focus-new-windows.service`, `omarchy-opencode-go-record.{service,path,timer}`, `omarchy-cursor-record.{service,path,timer}`, `omarchy-scheduled-theme.{service,timer}`), enabled by `deploy.sh` on arch |
 | `vicinae/` | `~/.config/vicinae/settings.json`, copy-once `~/.local/share/vicinae/shortcuts/shortcuts.json` | launcher config + `{query}` web-search shortcuts (see below) |
 | `aur.packages` | — | AUR list `deploy.sh` installs (vicinae-bin + agent desktop apps); `omarchy-agent-tools-update` reads the same file. T3 Code OpenRouter setup: [utils/t3-code/README.md](../utils/t3-code/README.md) |
@@ -62,6 +62,28 @@ systemctl --user disable --now omarchy-scheduled-theme.timer
 
 # Re-enable the schedule during a desktop session.
 systemctl --user enable --now omarchy-scheduled-theme.timer
+```
+
+## Manual light/dark toggle
+
+Rainy day and you want Dark at 2pm? Run `omarchy-theme-toggle` from a terminal
+or SUPER+SPACE → "Toggle Light/Dark Theme" in Vicinae. Light switches to Dark
+and vice versa; a stray non-Solarized theme goes Dark first, so a second
+toggle lands back on Solarized. Like the scheduled script it applies the
+theme's Ripples background, checks assets before touching anything, and the
+result lasts until the next scheduled run — no need to disable the timer.
+
+One repo file (`omarchy/bin/omarchy-theme-toggle`) is linked twice by
+`links.conf`: to `~/.local/bin/` for terminal use and into
+`~/.local/share/vicinae/scripts/` so Vicinae indexes it as a script command.
+The `@vicinae.*` directives are comments, so the same file serves both entry
+points; `vicinae script check` validates them. After changing the directives,
+reload with the "Reload Script Directories" command in Vicinae. Vicinae's
+silent mode needs layer-shell, which the launcher already uses.
+
+```sh
+# Validate the Vicinae directives after editing.
+vicinae script check omarchy/bin/omarchy-theme-toggle
 ```
 
 ## Thunderbird
