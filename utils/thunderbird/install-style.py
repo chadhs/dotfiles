@@ -66,7 +66,10 @@ def install(profile):
     text = prefs.read_text(encoding="utf-8")
     updates = {
         "toolkit.legacyUserProfileCustomizations.stylesheets": True,
-        "mail.threadpane.cardsview.rowcount": 2,
+        "mail.threadpane.cardsview.rowcount": 3,
+        "mail.dark-reader.enabled": True,
+        "mail.dark-reader.show-toggle": True,
+        "mailnews.database.global.indexer.enabled": True,
         "mail.pane_config.dynamic": 2,
         "mail.threadpane.listview": 0,
     }

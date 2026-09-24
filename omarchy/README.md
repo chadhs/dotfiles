@@ -93,6 +93,8 @@ block in `hypr/bindings.lua` adds Super+E for archive and Ctrl+Super+M for the
 folder picker, scoped to Thunderbird. These require tbkeys-lite and Quick
 Folder Move with the settings documented in
 [utils/thunderbird](../utils/thunderbird/README.md).
+Thunderbird is in the multi-tab Super+W set, which forwards Ctrl+W and follows
+Thunderbird's native tab and last-tab behavior.
 
 That directory owns the adaptive Solarized theme manifest, its packaging
 script, the UI refinement stylesheet and installer, and the portable preference

@@ -33,9 +33,10 @@ o.window("^(chatgpt)$", { size = { "(monitor_w*0.75)", "(monitor_h*0.85)" } })
 -- selection" there. Windowrule regexes full-match the class (verified: the
 -- upstream browser tag does not match PWA classes), so each alternative
 -- carries its real-world casing and desktop-app_id prefix — e.g. nautilus
--- is org.gnome.Nautilus on this machine.
+-- is org.gnome.Nautilus on this machine. Thunderbird also uses CTRL+W for
+-- message tabs; its last-tab behavior remains Thunderbird's own.
 o.window({ tag = "chromium-based-browser" }, { tag = "+multi-tab" })
-o.window("((dev\\.zed\\.)?[Zz]ed|code-oss|codium|t3code|(org\\.gnome\\.)?[Nn]autilus|(org\\.kde\\.)?[Dd]olphin|[Tt]hunar|[Nn]emo|[Pp]cmanfm|[Oo]pera|[Aa]rc)",
+o.window("((dev\\.zed\\.)?[Zz]ed|code-oss|codium|t3code|(org\\.gnome\\.)?[Nn]autilus|(org\\.kde\\.)?[Dd]olphin|[Tt]hunar|[Nn]emo|[Pp]cmanfm|[Oo]pera|[Aa]rc|(org\\.mozilla\\.)?[Tt]hunderbird)",
   { tag = "+multi-tab" })
 
 -- https://wiki.hypr.land/Configuring/Basics/Variables/#general

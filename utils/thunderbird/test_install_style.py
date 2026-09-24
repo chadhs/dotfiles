@@ -20,11 +20,15 @@ class InstallStyleTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.profile = Path(self.temp.name)
-        (self.profile / "prefs.js").write_text(
+        self.original_prefs = (
             'user_pref("mail.accountmanager.accounts", "personal");\n'
             'user_pref("mail.dark-reader.enabled", false);\n'
-            'user_pref("mail.threadpane.cardsview.rowcount", 3);\n'
+            'user_pref("mail.dark-reader.show-toggle", false);\n'
+            'user_pref("mailnews.database.global.indexer.enabled", false);\n'
+            'user_pref("mailnews.message_display.disable_remote_image", true);\n'
+            'user_pref("mail.threadpane.cardsview.rowcount", 2);\n'
         )
+        (self.profile / "prefs.js").write_text(self.original_prefs)
         (self.profile / "chrome").mkdir()
         self.original_css = '@charset "UTF-8";\n/* custom */\n.keep { color: red; }\n'
         (self.profile / "chrome/userChrome.css").write_text(self.original_css)
@@ -47,8 +51,11 @@ class InstallStyleTests(unittest.TestCase):
         self.install()
         prefs = (self.profile / "prefs.js").read_text()
         self.assertIn('"mail.accountmanager.accounts", "personal"', prefs)
-        self.assertIn('"mail.dark-reader.enabled", false', prefs)
-        self.assertIn('"mail.threadpane.cardsview.rowcount", 2', prefs)
+        self.assertIn('"mail.dark-reader.enabled", true', prefs)
+        self.assertIn('"mail.dark-reader.show-toggle", true', prefs)
+        self.assertIn('"mailnews.database.global.indexer.enabled", true', prefs)
+        self.assertIn('"mailnews.message_display.disable_remote_image", true', prefs)
+        self.assertIn('"mail.threadpane.cardsview.rowcount", 3', prefs)
         css = (self.profile / "chrome/userChrome.css").read_text()
         self.assertTrue(css.startswith('@charset "UTF-8";'))
         self.assertIn('.keep { color: red; }', css)
@@ -59,13 +66,18 @@ class InstallStyleTests(unittest.TestCase):
         self.assertEqual(state["about:message"], self.state["about:message"])
         backups = list((self.profile / "solarized-style-backups").glob("*/chrome/userChrome.css"))
         self.assertEqual(backups[0].read_text(), self.original_css)
+        prefs_backup = list((self.profile / "solarized-style-backups").glob("*/prefs.js"))
+        self.assertEqual(prefs_backup[0].read_text(), self.original_prefs)
 
     def test_repeat_install_does_not_duplicate_imports_or_preferences(self):
         self.install()
         self.install()
         for name in ["userChrome.css", "userContent.css"]:
             self.assertEqual((self.profile / "chrome" / name).read_text().count('@import url("solarized-ui.css");'), 1)
-        self.assertEqual((self.profile / "prefs.js").read_text().count('user_pref("mail.threadpane.cardsview.rowcount"'), 1)
+        prefs = (self.profile / "prefs.js").read_text()
+        for key in ["mail.threadpane.cardsview.rowcount", "mail.dark-reader.enabled",
+                    "mail.dark-reader.show-toggle", "mailnews.database.global.indexer.enabled"]:
+            self.assertEqual(prefs.count(f'user_pref("{key}"'), 1)
 
     def test_refuses_running_thunderbird_without_writing(self):
         before = (self.profile / "prefs.js").read_bytes()

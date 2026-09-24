@@ -1,4 +1,4 @@
-/* Thunderbird 153 UI refinements. Message documents are deliberately excluded. */
+/* Thunderbird UI refinements. Message documents are deliberately excluded. */
 @-moz-document url("chrome://messenger/content/messenger.xhtml"),
                url("about:3pane"), url("about:message") {
   :root {
@@ -88,6 +88,10 @@
     color: var(--solarized-muted) !important;
     opacity: 1 !important;
     font-size: 0.85rem !important;
+  }
+
+  #threadTree .card-container .custom-excerpt {
+    color: var(--solarized-muted) !important;
   }
 
   #folderPane,
