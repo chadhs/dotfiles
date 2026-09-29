@@ -61,7 +61,7 @@ class InstallStyleTests(unittest.TestCase):
         self.assertIn('.keep { color: red; }', css)
         state = json.loads((self.profile / "xulstore.json").read_text())
         main = state["chrome://messenger/content/messenger.xhtml"]
-        self.assertEqual(json.loads(main["unifiedToolbar"]["state"]), {"mail": ["search-bar", "ext-another-addon"], "calendar": ["spacer"]})
+        self.assertEqual(json.loads(main["unifiedToolbar"]["state"]), {"mail": ["search-bar", "ext-another-addon", "ext-quickmove@mozilla.kewis.ch"], "calendar": ["spacer"]})
         self.assertTrue(json.loads(main["messageHeader"]["layout"])["customOption"])
         self.assertEqual(state["about:message"], self.state["about:message"])
         backups = list((self.profile / "solarized-style-backups").glob("*/chrome/userChrome.css"))
@@ -85,6 +85,37 @@ class InstallStyleTests(unittest.TestCase):
             self.install(running=True)
         self.assertEqual((self.profile / "prefs.js").read_bytes(), before)
         self.assertFalse((self.profile / "solarized-style-backups").exists())
+
+    def test_restores_missing_quick_move_anchor_without_duplicates(self):
+        main = self.state["chrome://messenger/content/messenger.xhtml"]
+        main["unifiedToolbar"]["state"] = json.dumps({
+            "mail": ["search-bar", "ext-another-addon"],
+            "calendar": ["spacer"],
+        })
+        (self.profile / "xulstore.json").write_text(json.dumps(self.state))
+        self.install()
+        self.install()
+        state = json.loads((self.profile / "xulstore.json").read_text())
+        toolbar = state["chrome://messenger/content/messenger.xhtml"]["unifiedToolbar"]
+        self.assertEqual(json.loads(toolbar["state"]), {
+            "mail": ["search-bar", "ext-another-addon", "ext-quickmove@mozilla.kewis.ch"],
+            "calendar": ["spacer"],
+        })
+
+    def test_default_toolbar_keeps_other_extension_buttons(self):
+        main = self.state["chrome://messenger/content/messenger.xhtml"]
+        main["unifiedToolbar"] = {"allowedExtSpaces": json.dumps({
+            "another-addon": ["mail"], "calendar-addon": ["calendar"],
+            "quickmove@mozilla.kewis.ch": ["mail"],
+        })}
+        (self.profile / "xulstore.json").write_text(json.dumps(self.state))
+        self.install()
+        state = json.loads((self.profile / "xulstore.json").read_text())
+        toolbar = state["chrome://messenger/content/messenger.xhtml"]["unifiedToolbar"]
+        self.assertEqual(json.loads(toolbar["state"])["mail"], [
+            "spacer", "search-bar", "spacer", "ext-another-addon",
+            "ext-quickmove@mozilla.kewis.ch",
+        ])
 
     def test_invalid_layout_is_rejected_before_writing(self):
         (self.profile / "xulstore.json").write_text("invalid JSON")

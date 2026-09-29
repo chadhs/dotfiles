@@ -37,8 +37,8 @@ def install(profile):
         toolbar_state["mail"] = ["spacer", "search-bar", "spacer"] + [
             "ext-" + addon for addon, allowed in spaces.items() if "mail" in allowed
         ]
-    toolbar_state["mail"] = [item for item in toolbar_state["mail"]
-                             if item != "ext-quickmove@mozilla.kewis.ch"]
+    if "ext-quickmove@mozilla.kewis.ch" not in toolbar_state["mail"]:
+        toolbar_state["mail"].append("ext-quickmove@mozilla.kewis.ch")
     backup = profile / "solarized-style-backups" / datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f")
     backup.mkdir(parents=True)
     files = ["prefs.js", "xulstore.json", "chrome/userChrome.css",

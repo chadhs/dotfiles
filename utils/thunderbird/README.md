@@ -94,11 +94,10 @@ It also selects three-line cards, enables dark message rendering and global
 search/indexing, sets initial folder/reader pane widths to
 230/540 pixels, and uses Thunderbird's built-in icon-only message-header
 controls. Pane widths remain adjustable by dragging the splitters. The
-Quick Move control remains with the icon-only message actions so its keyboard
-picker has a visible anchor. The duplicate top-toolbar control is removed
-through Thunderbird's native toolbar configuration. Keyboard shortcuts remain
-available. Conversations replaces the native header, so Quick Folder Move
-can open its picker in a separate window there.
+Quick Move control remains with the icon-only message actions, and the
+installer keeps its main-toolbar button visible as a popover anchor.
+Conversations replaces the native message header, so the main-toolbar button
+lets the keyboard picker open without creating a separate tiled window.
 
 The remote-content notice uses muted amber while retaining its text,
 Preferences menu, and close control. Other warnings and errors keep their
@@ -211,6 +210,41 @@ Keep Quick Folder Move's move command on `Ctrl+Shift+N`. Its picker shows
 recent folders initially; type to filter, press Enter to move, or Escape to
 cancel.
 
+If the picker opens in a separate window, right-click the main toolbar,
+choose **Customize**, and add **Quick Folder Move** to the Mail toolbar.
+Keep that button visible when using Conversations. The style installer also
+restores it without duplicating it or removing other toolbar buttons.
+
+### Keep typing inside the folder picker
+
+On Thunderbird 155.0, the toolbar popover can display a text caret while
+keyboard focus remains on the main window. Typing then invokes mail shortcuts
+instead of filtering folders. A similar problem is reported in
+[Quick Folder Move issue 270](https://github.com/kewisch/quickmove-extension/issues/270).
+
+Build the local focus helper:
+
+```sh
+python3 utils/thunderbird/build-picker-focus.py
+```
+
+Install `utils/thunderbird/build/quickmove-focus.xpi` through **Add-ons and
+Themes → Tools for all add-ons → Install Add-on From File**. Its name is
+**Quick Folder Move Focus Fix**, ID `quickmove-focus@chadhs.local`. It uses an
+experiment API, so Thunderbird requests full access. Its tracked source is in
+`picker-focus/`; it only focuses Quick Folder Move's popup browser after the
+popover opens. It does not change key bindings or read or move messages.
+
+The helper is limited to Thunderbird 155.x, where it was tested. Recheck the
+upstream behavior and helper compatibility before upgrading to another major
+version. Normal dotfiles deployment does not install or update this add-on;
+rebuild and reinstall it after source changes.
+
+Verify Ctrl+Super+M, typing `paper`, Backspace, arrow navigation, and Escape.
+Typing should update the filter without changing the selected message. With
+local sample mail, also verify Enter moves only the selected sample. Normal
+mail shortcuts should still work after the popup closes.
+
 The Thunderbird block in [`omarchy/hypr/bindings.lua`](../../omarchy/hypr/bindings.lua)
 translates Super+E to the archive command chord and Ctrl+Super+M to the folder
 picker chord. It runs only for the installed Thunderbird window class and
@@ -275,6 +309,8 @@ use Thunderbird tags only when cross-client color matching is unnecessary.
 - Test the two Super shortcuts with the physical keyboard, including
   multiple selection, cancelling the picker, and typing in a draft or search
   field. Check `f`, `n`, arrows, Shift+F6, and Super+W on a message tab.
+  The folder picker should be a popover anchored to Quick Move on the main
+  toolbar while Conversations is active, without creating a tiled window.
   Other applications should be unaffected. Use local sample mail for destructive
   archive/delete checks.
 - Confirm archive, flags, moves, and sent copies agree with webmail. A
@@ -297,6 +333,8 @@ Repository checks:
 
 ```sh
 python3 -B -m unittest discover -s utils/thunderbird -p 'test_*.py'
+python3 utils/thunderbird/build-picker-focus.py
+node --test utils/thunderbird/test_picker_focus.cjs
 python3 -m json.tool utils/thunderbird/preferences.json >/dev/null
 python3 -m json.tool utils/thunderbird/tbkeys-settings.json >/dev/null
 git diff --check
@@ -313,6 +351,10 @@ Generated XPIs are ignored. Third-party add-on binaries remain managed by
 Thunderbird.
 
 ## Undo
+
+Disable **Quick Folder Move Focus Fix** in Add-ons and Themes to remove its
+popup-focus handling. Retest typing on local sample mail before relying on
+the picker without the helper.
 
 To undo previews and conversations, disable Message Excerpts and Conversations
 in Add-ons and Themes. Restore `mail.threadpane.cardsview.rowcount = 2` and
