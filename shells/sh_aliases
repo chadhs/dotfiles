@@ -59,8 +59,6 @@ if [[ $(uname) = "Darwin" ]]; then
     alias ssh='TERM=xterm-256color /usr/bin/ssh'
     ### ai tools
     alias cursor='agent'
-    ### org preview app (linux installs the real org-preview CLI)
-    alias markup-preview='open -a "Markup Preview"'
     alias codeup='brew upgrade opencode codex chatgpt claude claude-code cursor t3-code@nightly'
 fi
 
