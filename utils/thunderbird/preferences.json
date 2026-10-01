@@ -1,9 +1,11 @@
 {
   "mail.pane_config.dynamic": 2,
   "mail.threadpane.listview": 0,
-  "mail.threadpane.cardsview.rowcount": 2,
+  "mail.threadpane.cardsview.rowcount": 3,
   "mail.uidensity": 1,
-  "mail.dark-reader.enabled": false,
+  "mail.dark-reader.enabled": true,
+  "mail.dark-reader.show-toggle": true,
+  "mailnews.database.global.indexer.enabled": true,
   "mailnews.message_display.disable_remote_image": true,
   "mailnews.start_page.enabled": false,
   "mail.shell.checkDefaultClient": false,

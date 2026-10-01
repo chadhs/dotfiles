@@ -1,0 +1,7 @@
+[Unit]
+Description=Write the Codex agents-panel usage record
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/omarchy-codex-limit-patch
+Nice=10

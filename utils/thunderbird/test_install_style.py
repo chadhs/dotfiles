@@ -20,11 +20,15 @@ class InstallStyleTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.profile = Path(self.temp.name)
-        (self.profile / "prefs.js").write_text(
+        self.original_prefs = (
             'user_pref("mail.accountmanager.accounts", "personal");\n'
             'user_pref("mail.dark-reader.enabled", false);\n'
-            'user_pref("mail.threadpane.cardsview.rowcount", 3);\n'
+            'user_pref("mail.dark-reader.show-toggle", false);\n'
+            'user_pref("mailnews.database.global.indexer.enabled", false);\n'
+            'user_pref("mailnews.message_display.disable_remote_image", true);\n'
+            'user_pref("mail.threadpane.cardsview.rowcount", 2);\n'
         )
+        (self.profile / "prefs.js").write_text(self.original_prefs)
         (self.profile / "chrome").mkdir()
         self.original_css = '@charset "UTF-8";\n/* custom */\n.keep { color: red; }\n'
         (self.profile / "chrome/userChrome.css").write_text(self.original_css)
@@ -47,25 +51,33 @@ class InstallStyleTests(unittest.TestCase):
         self.install()
         prefs = (self.profile / "prefs.js").read_text()
         self.assertIn('"mail.accountmanager.accounts", "personal"', prefs)
-        self.assertIn('"mail.dark-reader.enabled", false', prefs)
-        self.assertIn('"mail.threadpane.cardsview.rowcount", 2', prefs)
+        self.assertIn('"mail.dark-reader.enabled", true', prefs)
+        self.assertIn('"mail.dark-reader.show-toggle", true', prefs)
+        self.assertIn('"mailnews.database.global.indexer.enabled", true', prefs)
+        self.assertIn('"mailnews.message_display.disable_remote_image", true', prefs)
+        self.assertIn('"mail.threadpane.cardsview.rowcount", 3', prefs)
         css = (self.profile / "chrome/userChrome.css").read_text()
         self.assertTrue(css.startswith('@charset "UTF-8";'))
         self.assertIn('.keep { color: red; }', css)
         state = json.loads((self.profile / "xulstore.json").read_text())
         main = state["chrome://messenger/content/messenger.xhtml"]
-        self.assertEqual(json.loads(main["unifiedToolbar"]["state"]), {"mail": ["search-bar", "ext-another-addon"], "calendar": ["spacer"]})
+        self.assertEqual(json.loads(main["unifiedToolbar"]["state"]), {"mail": ["search-bar", "ext-another-addon", "ext-quickmove@mozilla.kewis.ch"], "calendar": ["spacer"]})
         self.assertTrue(json.loads(main["messageHeader"]["layout"])["customOption"])
         self.assertEqual(state["about:message"], self.state["about:message"])
         backups = list((self.profile / "solarized-style-backups").glob("*/chrome/userChrome.css"))
         self.assertEqual(backups[0].read_text(), self.original_css)
+        prefs_backup = list((self.profile / "solarized-style-backups").glob("*/prefs.js"))
+        self.assertEqual(prefs_backup[0].read_text(), self.original_prefs)
 
     def test_repeat_install_does_not_duplicate_imports_or_preferences(self):
         self.install()
         self.install()
         for name in ["userChrome.css", "userContent.css"]:
             self.assertEqual((self.profile / "chrome" / name).read_text().count('@import url("solarized-ui.css");'), 1)
-        self.assertEqual((self.profile / "prefs.js").read_text().count('user_pref("mail.threadpane.cardsview.rowcount"'), 1)
+        prefs = (self.profile / "prefs.js").read_text()
+        for key in ["mail.threadpane.cardsview.rowcount", "mail.dark-reader.enabled",
+                    "mail.dark-reader.show-toggle", "mailnews.database.global.indexer.enabled"]:
+            self.assertEqual(prefs.count(f'user_pref("{key}"'), 1)
 
     def test_refuses_running_thunderbird_without_writing(self):
         before = (self.profile / "prefs.js").read_bytes()
@@ -73,6 +85,37 @@ class InstallStyleTests(unittest.TestCase):
             self.install(running=True)
         self.assertEqual((self.profile / "prefs.js").read_bytes(), before)
         self.assertFalse((self.profile / "solarized-style-backups").exists())
+
+    def test_restores_missing_quick_move_anchor_without_duplicates(self):
+        main = self.state["chrome://messenger/content/messenger.xhtml"]
+        main["unifiedToolbar"]["state"] = json.dumps({
+            "mail": ["search-bar", "ext-another-addon"],
+            "calendar": ["spacer"],
+        })
+        (self.profile / "xulstore.json").write_text(json.dumps(self.state))
+        self.install()
+        self.install()
+        state = json.loads((self.profile / "xulstore.json").read_text())
+        toolbar = state["chrome://messenger/content/messenger.xhtml"]["unifiedToolbar"]
+        self.assertEqual(json.loads(toolbar["state"]), {
+            "mail": ["search-bar", "ext-another-addon", "ext-quickmove@mozilla.kewis.ch"],
+            "calendar": ["spacer"],
+        })
+
+    def test_default_toolbar_keeps_other_extension_buttons(self):
+        main = self.state["chrome://messenger/content/messenger.xhtml"]
+        main["unifiedToolbar"] = {"allowedExtSpaces": json.dumps({
+            "another-addon": ["mail"], "calendar-addon": ["calendar"],
+            "quickmove@mozilla.kewis.ch": ["mail"],
+        })}
+        (self.profile / "xulstore.json").write_text(json.dumps(self.state))
+        self.install()
+        state = json.loads((self.profile / "xulstore.json").read_text())
+        toolbar = state["chrome://messenger/content/messenger.xhtml"]["unifiedToolbar"]
+        self.assertEqual(json.loads(toolbar["state"])["mail"], [
+            "spacer", "search-bar", "spacer", "ext-another-addon",
+            "ext-quickmove@mozilla.kewis.ch",
+        ])
 
     def test_invalid_layout_is_rejected_before_writing(self):
         (self.profile / "xulstore.json").write_text("invalid JSON")

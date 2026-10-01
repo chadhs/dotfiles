@@ -1,0 +1,46 @@
+#!/bin/bash
+# Manually toggle between Solarized Light and Solarized Dark, applying each
+# theme's Ripples background. Callable from a terminal or run as a Vicinae
+# script command (SUPER+SPACE -> "Toggle Light/Dark Theme"); the Vicinae
+# directives are comments, so the same file serves both entry points.
+# @vicinae.schemaVersion 1
+# @vicinae.title Toggle Light/Dark Theme
+# @vicinae.mode silent
+# @vicinae.keywords ["theme","dark","light","solarized"]
+# @vicinae.description "Switch between Solarized Light and Solarized Dark with the Ripples background. Lasts until the next scheduled run."
+set -euo pipefail
+
+fail() {
+  printf 'omarchy-theme-toggle: %s\n' "$*" >&2
+  exit 1
+}
+
+current_theme=$(omarchy theme current) || fail 'Cannot read the current theme'
+current_theme=${current_theme,,}
+current_theme=${current_theme// /-}
+
+# Light -> dark, dark -> light. Anything else (a stray theme) goes dark per
+# the documented behavior, so a second toggle lands back on Solarized.
+if [[ $current_theme == solarized-light ]]; then
+  theme=solarized-dark
+elif [[ $current_theme == solarized-dark ]]; then
+  theme=solarized-light
+else
+  theme=solarized-dark
+fi
+
+# Check assets before changing the theme or background.
+theme_dir=$(omarchy theme dir "$theme") || fail "Cannot locate theme: $theme"
+[[ -d $theme_dir ]] || fail "Theme is not installed: $theme ($theme_dir)"
+background="$theme_dir/backgrounds/1-ripples.png"
+[[ -r $background && -f $background ]] || fail "Ripples background is missing or unreadable: $background"
+
+OMARCHY_THEME_SKIP_BACKGROUND=1 omarchy theme set "$theme" || fail "Could not apply theme: $theme"
+
+# Omarchy may point at a staged copy, so compare content rather than paths.
+current_background="$HOME/.local/state/omarchy/current/background"
+if ! cmp -s -- "$current_background" "$background"; then
+  omarchy theme bg set "$background" || fail "Could not apply background: $background"
+fi
+
+printf 'Switched to %s\n' "${theme/solarized-/Solarized }"

@@ -311,6 +311,7 @@ end
 -- returns a handle when the bind actually landed, so #handles is how many
 -- binds exist, and a failed config load shows up as a shortfall.
 local resize_bind_handles = {}
+local resize_bind_expected = #resize_bind_list
 
 local function register_resize_binds()
   resize_bind_handles = {}
@@ -324,16 +325,24 @@ end
 
 hl.define_submap("resize", register_resize_binds)
 
--- Startup self-heal: a fresh session start has (rarely) registered only part
--- of this submap — hl.define_submap swallows a failed/timed-out pcall with no
--- journal trace. A few seconds after each config load (outside the login
--- storm), verify the handle count; on a shortfall, remove whatever landed and
--- re-register in-place (removal first, so repaired binds can't double-fire).
--- Falls back to prompting for hyprctl reload only if the repair still falls
--- short. Silent when healthy.
-hl.timer(function()
-  local expected = #resize_bind_list
-  if #resize_bind_handles == expected then
+-- Self-heal watchdog: a session start or reload can register only part of
+-- this submap — hl.define_submap swallows a failed/timed-out pcall with no
+-- journal trace. First seen live 2026-09-14: 10 of 15 binds landed at login
+-- and a oneshot check wasn't enough. So this is a repeating timer: first
+-- check a few seconds after each config load (outside the login storm),
+-- then keep checking while short. On a shortfall, remove whatever landed
+-- and re-register in-place (removal first, so repaired binds can't
+-- double-fire); if a repair attempt also falls short, keep retrying and
+-- re-nag about hyprctl reload every 60s. Once healthy (from the start or
+-- after a repair), the watchdog stands down: binds only ever drop during a
+-- config load, and that reload recreates this timer, so there's nothing
+-- left to watch.
+local resize_watchdog_nagged = false
+local resize_watchdog
+
+resize_watchdog = hl.timer(function()
+  if #resize_bind_handles == resize_bind_expected then
+    resize_watchdog:set_enabled(false)
     return
   end
 
@@ -344,12 +353,21 @@ hl.timer(function()
   -- which is empty inside a timer callback.
   hl.define_submap("resize", register_resize_binds)
 
-  if #resize_bind_handles == expected then
+  if #resize_bind_handles == resize_bind_expected then
+    resize_watchdog_nagged = false
+    resize_watchdog:set_enabled(false)
     hl.exec_cmd("omarchy-shell -q osd show '{\"icon\":\"keyboard\",\"message\":\"Repaired resize mode binds\",\"duration\":\"2500\"}'")
   else
+    hl.timer(function()
+      resize_watchdog_nagged = false
+    end, { timeout = 60000, type = "oneshot" })
+    if resize_watchdog_nagged then
+      return
+    end
+    resize_watchdog_nagged = true
     hl.exec_cmd("omarchy-shell -q osd show '{\"icon\":\"keyboard\",\"message\":\"Resize binds still short — run hyprctl reload\",\"duration\":\"5000\"}'")
   end
-end, { timeout = 4000, type = "oneshot" })
+end, { timeout = 4000, type = "repeat" })
 
 -- Send focused window to prev/next monitor (wraps around).
 o.bind("CTRL + ALT + LEFT", "Moom: previous display", moom("display-prev"))

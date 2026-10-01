@@ -16,8 +16,8 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 | `moom.conf` | `~/.config/omarchy/moom.conf` | `MOOM_MODE=planA` |
 | `ghostty/config` | `~/.config/ghostty/config` | linux terminal config (fork of omarchy's, with local font-size/padding tweaks; mac ghostty stays `utils/ghostty/config`) |
 | `env/90-shell.conf` | `~/.config/environment.d/90-shell.conf` | session `SHELL` mirror (ghostty launches `$SHELL`; guards against systemd user-manager staleness after chsh) |
-| `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-quit-app`, `omarchy-agent-tools-update`, `omarchy-agent-usage-opencode-go`, `omarchy-opencode-go-record`, `omarchy-agent-usage-cursor`, `omarchy-cursor-record`, `omarchy-window-raise-front`, `focus-new-windows`, `trackpad-check`, `omarchy-scheduled-theme` |
-| `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units (`focus-new-windows.service`, `omarchy-opencode-go-record.{service,path,timer}`, `omarchy-cursor-record.{service,path,timer}`, `omarchy-scheduled-theme.{service,timer}`), enabled by `deploy.sh` on arch |
+| `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-quit-app`, `omarchy-agent-tools-update`, `omarchy-agent-usage-opencode-go`, `omarchy-opencode-go-record`, `omarchy-agent-usage-cursor`, `omarchy-cursor-record`, `omarchy-codex-limit-probe`, `omarchy-codex-limit-patch`, `omarchy-window-raise-front`, `focus-new-windows`, `trackpad-check`, `omarchy-scheduled-theme`, `omarchy-theme-toggle` |
+| `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units (`focus-new-windows.service`, `omarchy-opencode-go-record.{service,path,timer}`, `omarchy-cursor-record.{service,path,timer}`, `omarchy-codex-record.{service,path}`, `omarchy-scheduled-theme.{service,timer}`), enabled by `deploy.sh` on arch |
 | `vicinae/` | `~/.config/vicinae/settings.json`, copy-once `~/.local/share/vicinae/shortcuts/shortcuts.json` | launcher config + `{query}` web-search shortcuts (see below) |
 | `aur.packages` | — | AUR list `deploy.sh` installs (vicinae-bin + agent desktop apps); `omarchy-agent-tools-update` reads the same file. T3 Code OpenRouter setup: [utils/t3-code/README.md](../utils/t3-code/README.md) |
 | `applications/nixfred.blip.desktop` | `~/.local/share/applications/nixfred.blip.desktop` | Blip Messages launcher for Omarchy and Vicinae; requires the Blip plugin |
@@ -64,6 +64,28 @@ systemctl --user disable --now omarchy-scheduled-theme.timer
 systemctl --user enable --now omarchy-scheduled-theme.timer
 ```
 
+## Manual light/dark toggle
+
+Rainy day and you want Dark at 2pm? Run `omarchy-theme-toggle` from a terminal
+or SUPER+SPACE → "Toggle Light/Dark Theme" in Vicinae. Light switches to Dark
+and vice versa; a stray non-Solarized theme goes Dark first, so a second
+toggle lands back on Solarized. Like the scheduled script it applies the
+theme's Ripples background, checks assets before touching anything, and the
+result lasts until the next scheduled run — no need to disable the timer.
+
+One repo file (`omarchy/bin/omarchy-theme-toggle`) is linked twice by
+`links.conf`: to `~/.local/bin/` for terminal use and into
+`~/.local/share/vicinae/scripts/` so Vicinae indexes it as a script command.
+The `@vicinae.*` directives are comments, so the same file serves both entry
+points; `vicinae script check` validates them. After changing the directives,
+reload with the "Reload Script Directories" command in Vicinae. Vicinae's
+silent mode needs layer-shell, which the launcher already uses.
+
+```sh
+# Validate the Vicinae directives after editing.
+vicinae script check omarchy/bin/omarchy-theme-toggle
+```
+
 ## Thunderbird
 
 `deploy.sh` installs Thunderbird from the Arch repository. The Thunderbird
@@ -71,6 +93,8 @@ block in `hypr/bindings.lua` adds Super+E for archive and Ctrl+Super+M for the
 folder picker, scoped to Thunderbird. These require tbkeys-lite and Quick
 Folder Move with the settings documented in
 [utils/thunderbird](../utils/thunderbird/README.md).
+Thunderbird is in the multi-tab Super+W set, which forwards Ctrl+W and follows
+Thunderbird's native tab and last-tab behavior.
 
 That directory owns the adaptive Solarized theme manifest, its packaging
 script, the UI refinement stylesheet and installer, and the portable preference
@@ -185,6 +209,32 @@ community, see gist `dmwyatt/1e9359b1862e7cbfe1e754fe4c8db764`); POSTs need
 an `Origin: https://cursor.com` header or they 403. If Cursor changes its
 dashboard protocol the tab goes stale with a "Cursor limits stale" note and
 the cached meters; re-run `omarchy-cursor-record` by hand to re-check.
+
+## Codex tab in the agents panel
+
+The packaged codex collector gives `codex app-server` 4s to answer
+`account/read`; codex 0.157 sometimes needs longer, so the record
+intermittently ships with "Codex limits unavailable". Same lockstep shape as
+the other tabs, but it patches the packaged record instead of replacing a
+missing one:
+
+- `omarchy-codex-limit-probe` (probe): asks the codex app-server only for
+  `account/rateLimits/read` with a 45s leash (skipping the flaky
+  `account/read` round trip; the rateLimits payload carries planType and
+  every window) and prints the fields the packaged collector would have set.
+- `omarchy-codex-limit-patch` (patcher): runs when the packaged record lacks
+  limits and auth is ChatGPT (API-key auth has no rate limits), re-probes
+  up to 3 times under a lock, and splices the result into
+  `~/.local/state/omarchy/agents/usage/codex.json` atomically.
+- `omarchy-codex-record.path` / `.service`: the .path unit watches
+  `claude.json` + `codex.json` in the usage dir and triggers the patcher
+  whenever the packaged updater rewrites either, so the Codex tab recovers
+  at the same moments the packaged agents refresh. No fallback timer: the
+  path covers every packaged rewrite, and the patcher is a no-op once the
+  record has limits.
+
+If the tab still shows "Codex limits unavailable" after a refresh, re-run
+`omarchy-codex-limit-patch` by hand.
 
 ## Showing and hiding agents in the panel
 

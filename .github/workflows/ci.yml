@@ -25,9 +25,11 @@ jobs:
       - name: Thunderbird theme and preference JSON
         run: |
           python3 utils/thunderbird/build-theme.py --output "$RUNNER_TEMP/solarized-omarchy.xpi"
+          python3 utils/thunderbird/build-picker-focus.py --output "$RUNNER_TEMP/quickmove-focus.xpi"
           python3 -m json.tool utils/thunderbird/preferences.json > /dev/null
           python3 -m json.tool utils/thunderbird/tbkeys-settings.json > /dev/null
           python3 -B -m unittest discover -s utils/thunderbird -p "test_*.py"
+          node --test utils/thunderbird/test_picker_focus.cjs
       - name: syntax check (sh scripts)
         run: |
           sh -n deploy.sh

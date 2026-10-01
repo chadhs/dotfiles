@@ -48,9 +48,12 @@
           "id": "omarchy.dropbox"
         },
         {
-          "id": "omarchy.agents",
+          "id": "chadhs.agents",
           "providers": {
             "claude": {
+              "enabled": false
+            },
+            "cursor": {
               "enabled": false
             }
           }

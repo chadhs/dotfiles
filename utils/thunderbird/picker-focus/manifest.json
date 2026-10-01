@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+  "name": "Quick Folder Move Focus Fix",
+  "version": "1.0.0",
+  "description": "Keep typing in the Quick Folder Move popover instead of triggering mail shortcuts.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "quickmove-focus@chadhs.local",
+      "strict_min_version": "155.0",
+      "strict_max_version": "155.*"
+    }
+  },
+  "background": { "scripts": ["background.js"] },
+  "experiment_apis": {
+    "folderPickerFocus": {
+      "schema": "schema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "paths": [["folderPickerFocus"]],
+        "script": "api.js"
+      }
+    }
+  }
+}
