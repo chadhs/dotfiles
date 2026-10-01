@@ -20,7 +20,7 @@ hl.env("GDK_SCALE", tostring(omarchy_gdk_scale))
 -- omarchy/docs/display-profiles.md
 hl.monitor({
   output = "DP-1",
-  mode = "preferred",
+  mode = "3840x2160@60",
   position = "0x0",
   scale = omarchy_monitor_scale,
   -- 180
@@ -32,7 +32,7 @@ hl.monitor({
 
 hl.monitor({
   output = "DP-2",
-  mode = "preferred",
+  mode = "3840x2160@60",
   position = "auto-right",
   scale = omarchy_monitor_scale,
   -- 180
