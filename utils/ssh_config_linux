@@ -14,10 +14,3 @@ ControlPath /tmp/%%h-%%p-%%r
 ## IdentityFile ~/.ssh/id_rsa
 
 Include config.d/*
-
-# blip-setup: multiplexed sessions so Blip's polling costs ~50 ms, not a handshake
-Host 192.168.110.106
-  ControlMaster auto
-  ControlPath ~/.ssh/cm-%r@%h:%p
-  ControlPersist 10m
-  ServerAliveInterval 30
