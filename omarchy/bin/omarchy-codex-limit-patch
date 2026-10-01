@@ -1,0 +1,29 @@
+#!/bin/bash
+# Patient Codex limits patcher for the agents panel.
+# The packaged collector gives codex app-server 4s to answer account/read;
+# codex 0.157 sometimes needs longer, so the record intermittently ships with
+# "Codex limits unavailable". This re-probes account/rateLimits/read with a
+# long leash (its payload carries planType and every window) and splices the
+# missing fields into the record atomically. Run by omarchy-codex-record.path
+# whenever the packaged updater touches codex.json, and safe to run by hand.
+
+usage_dir="${XDG_STATE_HOME:-$HOME/.local/state}/omarchy/agents/usage"
+record="$usage_dir/codex.json"
+probe="$HOME/.local/bin/omarchy-codex-limit-probe"
+lock="/tmp/omarchy-codex-limit-patch.lock"
+
+[[ -f $record && -f $probe ]] || exit 0
+jq -e '.limits | length > 0' "$record" >/dev/null 2>&1 && exit 0
+# API-key auth has no rate limits; nothing to patch.
+[[ $(jq -r '.auth_mode // empty' ~/.codex/auth.json 2>/dev/null) == "chatgpt" ]] || exit 0
+
+exec 9>"$lock"
+flock -n 9 || exit 0  # another patcher is on it
+
+for attempt in 1 2 3; do
+  out=$(python3 "$probe" 2>/dev/null) || { sleep $((attempt * 4)); continue; }
+  jq -e '.limits | length > 0' <<<"$out" >/dev/null 2>&1 || { sleep $((attempt * 4)); continue; }
+  tmp=$(mktemp "$usage_dir/.codex.XXXXXX")
+  jq -s '.[0] * .[1]' "$record" <(printf '%s\n' "$out") >"$tmp" && chmod 644 "$tmp" && mv "$tmp" "$record"
+  exit 0
+done

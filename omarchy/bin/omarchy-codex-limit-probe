@@ -1,0 +1,127 @@
+#!/usr/bin/python3
+"""Patient one-shot Codex limits probe for the agents panel record.
+
+Prints a JSON object with the fields the packaged codex collector would have
+set — tierLabel, limits, usageStatusText, authHelpText — by asking the
+codex app-server for account/rateLimits/read only, with a generous timeout.
+The rateLimits payload carries planType and every window, so the flaky
+account/read round trip (which shells out to the OpenAI backend) is skipped.
+
+Exits nonzero when codex does not answer within the leash.
+"""
+
+import json
+import os
+import select
+import shutil
+import subprocess
+import sys
+import time
+from datetime import datetime, timezone
+from pathlib import Path
+
+INITIALIZE_TIMEOUT = 10.0
+LIMITS_TIMEOUT = 45.0
+
+ENV = os.environ.copy()
+extra = [
+    Path.home() / ".local/bin",
+    Path.home() / ".npm-global/bin",
+    Path.home() / ".local/share/mise/shims",
+]
+ENV["PATH"] = os.pathsep.join([os.environ.get("PATH", ""), *[str(p) for p in extra]])
+
+
+def rpc_request(proc, request_id, method, params=None, timeout=8.0):
+    payload = {"id": request_id, "method": method, "params": params or {}}
+    proc.stdin.write(json.dumps(payload) + "\n")
+    proc.stdin.flush()
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        ready, _, _ = select.select([proc.stdout], [], [], 0.25)
+        if not ready:
+            continue
+        line = proc.stdout.readline()
+        if not line:
+            break
+        try:
+            message = json.loads(line)
+        except Exception:
+            continue
+        if message.get("id") == request_id:
+            return message
+    raise TimeoutError(method)
+
+
+def limit_window(window):
+    if not isinstance(window, dict):
+        return None
+    try:
+        used = window.get("usedPercent")
+        if used is None:
+            return None
+        mins = int(window.get("windowDurationMins") or 0)
+        if mins == 10080:
+            label = "Weekly (7-day)"
+        elif mins and mins % 60 == 0:
+            label = f"{mins // 60}h window"
+        elif mins:
+            label = f"{mins}m window"
+        else:
+            label = "Limit"
+        reset = window.get("resetsAt")
+        return {
+            "label": label,
+            "percent": float(used) / 100.0,
+            "resetsAt": datetime.fromtimestamp(int(reset), timezone.utc).isoformat() if reset else "",
+        }
+    except Exception:
+        return None
+
+
+def main():
+    codex = shutil.which("codex", path=ENV["PATH"])
+    if not codex:
+        sys.exit(1)
+    try:
+        proc = subprocess.Popen(
+            [codex, "-s", "read-only", "-a", "on-request", "app-server"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            text=True,
+            env=ENV,
+        )
+    except Exception:
+        sys.exit(1)
+    try:
+        rpc_request(proc, 1, "initialize", {"clientInfo": {"name": "omarchy-agent-usage", "version": "1"}}, timeout=INITIALIZE_TIMEOUT)
+        proc.stdin.write(json.dumps({"method": "initialized", "params": {}}) + "\n")
+        proc.stdin.flush()
+        limits_msg = rpc_request(proc, 2, "account/rateLimits/read", timeout=LIMITS_TIMEOUT)
+        limits = (limits_msg.get("result") or {}).get("rateLimits") or {}
+        windows = [w for w in (limit_window(limits.get("primary")), limit_window(limits.get("secondary"))) if w]
+        if not windows:
+            sys.exit(1)
+        plan = limits.get("planType") or ""
+        print(json.dumps({
+            "tierLabel": str(plan) if plan else "",
+            "limits": windows,
+            "usageStatusText": "",
+            "authHelpText": "",
+        }, separators=(",", ":")))
+    except Exception:
+        sys.exit(1)
+    finally:
+        try:
+            proc.terminate()
+            proc.wait(timeout=1)
+        except Exception:
+            try:
+                proc.kill()
+            except Exception:
+                pass
+
+
+if __name__ == "__main__":
+    main()
