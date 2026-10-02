@@ -37,6 +37,16 @@ Local delta against upstream `main`, applied across `Switcher.qml`,
    `omarchy-window-raise-front <address>` helper so a committed tiled window
    overlapped by a floater is floated in place and raised (Hyprland renders
    all floats above all tiles; plain focus would leave it invisible).
+3. **config-fallback** (`Switcher.qml`, marked `LOCAL PATCH`) — the current
+   omarchy shell's `PluginShellApi` no longer exposes `shellConfig`, so the
+   plugin silently ignored every `shell.json` setting and fell back to
+   defaults. Symptom as of 2026-10-01: SUPER+TAB committed ~100 ms after
+   opening (release-watch saw Alt only, `false` while Super was held), so
+   the grid flashed and never let you hold-tab; ALT+TAB still worked since
+   it matches the default. `shellEntry()` now falls back to reading
+   `~/.config/omarchy/shell.json` directly (2 s cache, `FileView`-based, so
+   tab autorepeat does not reparse the file). Drop this once the shell
+   exposes per-plugin entry config again.
 
 The patch source of truth is the `local-patch` branch of the fork at
 `~/src/chadhs/omarchy-switcharoo` (`git diff upstream/main local-patch`);
