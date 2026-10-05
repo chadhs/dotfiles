@@ -18,8 +18,9 @@ hl.env("GDK_SCALE", tostring(omarchy_gdk_scale))
 
 -- Per-output ICC. How to make and swap profiles:
 -- omarchy/docs/display-profiles.md
+-- Monitor 1: physical left, RTX 5080 DP-3.
 hl.monitor({
-  output = "DP-1",
+  output = "DP-3",
   mode = "3840x2160@60",
   position = "0x0",
   scale = omarchy_monitor_scale,
@@ -30,10 +31,11 @@ hl.monitor({
   -- icc = "/home/chadhs/.local/share/DisplayCAL/storage/Monitor_1_#1_2026-09-04_14-40_150cdm²_D6500_2.2_F-S_XYZLUT+MTX/Monitor_1_#1_2026-09-04_14-40_150cdm²_D6500_2.2_F-S_XYZLUT+MTX.icc",
 })
 
+-- Monitor 2: physical right, RTX 5080 DP-2.
 hl.monitor({
   output = "DP-2",
   mode = "3840x2160@60",
-  position = "auto-right",
+  position = "2400x0",
   scale = omarchy_monitor_scale,
   -- 180
   icc =
