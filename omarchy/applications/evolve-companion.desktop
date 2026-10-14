@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Evolve Companion
+Comment=Sign in, keep the AoC: Evolve content current and play Ashes of Creation
+Exec=/home/chadhs/Games/EvolveCompanion-linux-amd64
+Icon=/home/chadhs/.config/EvolveCompanion/icon.png
+Terminal=false
+Categories=Game;
+StartupNotify=false
