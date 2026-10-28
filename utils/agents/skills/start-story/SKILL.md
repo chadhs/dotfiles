@@ -23,6 +23,9 @@ Example: repo `~/src/chadhs/dotfiles` → `~/src/chadhs/worktrees/ABC-1234/dotfi
 
 Pattern: `~/src/<owner>/<repo>` → `~/src/<owner>/worktrees/<label>/<repo>`.
 
+After creating the worktree, if `codegraph` is installed and the worktree has no
+`.codegraph/` directory, run `codegraph init --yes` there before any code work.
+
 ## Commits and PRs
 
 1. Ask before staging, committing, or opening a PR/MR unless the user already asked for that.

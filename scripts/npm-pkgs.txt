@@ -1,6 +1,7 @@
 # global npm packages maintained by scripts/weekly-update.sh
 # unpinned by design — latest stable wins (see "lang version philosophy" in README)
 
+@colbymchenry/codegraph
 eslint
 js-yaml
 jsonlint
