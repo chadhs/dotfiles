@@ -383,6 +383,8 @@ enable_user_units(){
               "${DOTFILES_ROOT}"/omarchy/systemd/user/*.timer; do
     [ -e "$unit" ] || continue
     name="$(basename "$unit")"
+    # Theme scheduling is opt-in; preserve the user's manual theme choice.
+    [ "$name" = "omarchy-scheduled-theme.timer" ] && continue
     if systemctl --user enable --now "$name" 2>/dev/null; then
       echo "user unit enabled: $name"
     else

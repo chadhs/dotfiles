@@ -7,7 +7,7 @@
 # @vicinae.title Toggle Light/Dark Theme
 # @vicinae.mode silent
 # @vicinae.keywords ["theme","dark","light","solarized"]
-# @vicinae.description "Switch between Solarized Light and Solarized Dark with the Ripples background. Lasts until the next scheduled run."
+# @vicinae.description "Switch between Solarized Light and Solarized Dark with the Ripples background."
 set -euo pipefail
 
 fail() {

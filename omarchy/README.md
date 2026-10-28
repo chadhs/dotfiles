@@ -17,7 +17,7 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 | `ghostty/config` | `~/.config/ghostty/config` | linux terminal config (fork of omarchy's, with local font-size/padding tweaks; mac ghostty stays `utils/ghostty/config`) |
 | `env/90-shell.conf` | `~/.config/environment.d/90-shell.conf` | session `SHELL` mirror (ghostty launches `$SHELL`; guards against systemd user-manager staleness after chsh) |
 | `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-quit-app`, `omarchy-agent-tools-update`, `omarchy-agent-usage-opencode-go`, `omarchy-opencode-go-record`, `omarchy-agent-usage-cursor`, `omarchy-cursor-record`, `omarchy-codex-limit-probe`, `omarchy-codex-limit-patch`, `omarchy-window-raise-front`, `focus-new-windows`, `trackpad-check`, `omarchy-scheduled-theme`, `omarchy-theme-toggle` |
-| `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units (`focus-new-windows.service`, `omarchy-opencode-go-record.{service,path,timer}`, `omarchy-cursor-record.{service,path,timer}`, `omarchy-codex-record.{service,path}`, `omarchy-scheduled-theme.{service,timer}`), enabled by `deploy.sh` on arch |
+| `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units (`focus-new-windows.service`, `omarchy-opencode-go-record.{service,path,timer}`, `omarchy-cursor-record.{service,path,timer}`, `omarchy-codex-record.{service,path}`, `omarchy-scheduled-theme.{service,timer}`), enabled by `deploy.sh` on arch except the optional theme timer |
 | `vicinae/` | `~/.config/vicinae/settings.json`, copy-once `~/.local/share/vicinae/shortcuts/shortcuts.json` | launcher config + `{query}` web-search shortcuts (see below) |
 | `aur.packages` | — | AUR list `deploy.sh` installs (vicinae-bin + agent desktop apps); `omarchy-agent-tools-update` reads the same file. T3 Code OpenRouter setup: [utils/t3-code/README.md](../utils/t3-code/README.md) |
 | `applications/nixfred.blip.desktop` | `~/.local/share/applications/nixfred.blip.desktop` | Blip Messages launcher for Omarchy and Vicinae; requires the Blip plugin |
@@ -27,16 +27,22 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 
 ## Scheduled Solarized themes
 
-`omarchy-scheduled-theme.timer` selects Solarized Light at 10am and Solarized
-Dark at 7pm using the system timezone, including daylight saving changes.
-Each scheduled run selects that theme's Ripples background. An already-active
-theme is not reloaded; if only the background differs, only the background is
-changed. Manual theme and background choices stay until the next scheduled run.
+Solarized Dark is the default. Automatic switching is disabled; use the manual
+Vicinae toggle below when you want Light. Omarchy saves the selected theme
+across logins.
 
-The timer starts with the graphical session and checks the appearance after
-five seconds. Persistent calendar triggers catch up after a missed switch at
-login or resume, choosing the theme for the current time. They do not wake the
-computer. There is no periodic enforcement between these runs.
+When explicitly enabled, `omarchy-scheduled-theme.timer` selects Solarized
+Light at 10am and Solarized Dark at 7pm using the system timezone, including
+daylight saving changes. Each scheduled run selects that theme's Ripples
+background. An already-active theme is not reloaded; if only the background
+differs, only the background is changed. Manual theme and background choices
+stay until the next scheduled run.
+
+The timer starts with the graphical session, or when enabled with `--now`, and
+checks the appearance after five seconds. Persistent calendar triggers catch
+up after a missed switch at login or resume, choosing the theme for the current
+time. They do not wake the computer. There is no periodic enforcement between
+these runs.
 
 Install `solarized-light` and `solarized-dark` separately through Omarchy. Each
 must include `backgrounds/1-ripples.png`. The script checks the selected theme
@@ -44,10 +50,11 @@ and image before making changes and logs an error if either is missing. Theme
 assets, current-theme state, and systemd timer timestamps remain outside this
 repo. The desktop session supplies Omarchy's PATH and graphical environment.
 
-`deploy.sh` links the script and units, reloads systemd, and enables the timer
-on Arch. The oneshot service is static and is activated only by the timer or
-an explicit manual start. Deploying the dotfiles enables the timer again if
-it was previously disabled.
+The scheduled-theme script and both units remain installed so the schedule can
+be enabled again. `deploy.sh` links them and reloads systemd on Arch, but leaves
+the timer's enabled state alone. Redeploying the dotfiles does not re-enable
+a disabled schedule. The oneshot service is static and is activated only by
+the timer or an explicit manual start.
 
 ```sh
 # Inspect the next scheduled switch and recent results.
@@ -60,18 +67,22 @@ systemctl --user start omarchy-scheduled-theme.service
 # Stop scheduled changes and prevent activation at the next login.
 systemctl --user disable --now omarchy-scheduled-theme.timer
 
-# Re-enable the schedule during a desktop session.
-systemctl --user enable --now omarchy-scheduled-theme.timer
+# Re-enable the schedule; apply the current time's theme after five seconds.
+systemctl --user enable --now \
+  "$HOME/dotfiles/omarchy/systemd/user/omarchy-scheduled-theme.timer"
 ```
+
+The full unit path lets systemd recreate its link if disabling the timer
+removed it.
 
 ## Manual light/dark toggle
 
-Rainy day and you want Dark at 2pm? Run `omarchy-theme-toggle` from a terminal
-or SUPER+SPACE → "Toggle Light/Dark Theme" in Vicinae. Light switches to Dark
-and vice versa; a stray non-Solarized theme goes Dark first, so a second
-toggle lands back on Solarized. Like the scheduled script it applies the
-theme's Ripples background, checks assets before touching anything, and the
-result lasts until the next scheduled run — no need to disable the timer.
+Run `omarchy-theme-toggle` from a terminal or SUPER+SPACE → "Toggle Light/Dark Theme"
+in Vicinae. Light switches to Dark and vice versa. Other themes switch to
+Solarized Dark first. Like the scheduled script it applies the theme's Ripples
+background, checks assets before touching anything, and the
+result persists across logins until you change it again. If you explicitly
+enable the optional schedule, the next scheduled run overrides manual choices.
 
 One repo file (`omarchy/bin/omarchy-theme-toggle`) is linked twice by
 `links.conf`: to `~/.local/bin/` for terminal use and into
