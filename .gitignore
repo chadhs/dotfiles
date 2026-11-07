@@ -1,3 +1,11 @@
 lazy-lock.json
 cache/
 .envrc
+
+# Local backups and editor recovery files
+*.bak
+*.bak.*
+*.bak-*
+*.orig
+*.rej
+*~
