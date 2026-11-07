@@ -308,6 +308,15 @@ EOF
     fail "scripts/list-aur-packages.sh missing (cannot check omarchy/aur.packages)"
   fi
 
+  # Omarchy 4.5 migrated T3 Code to its official self-updating AppImage.
+  t3_app="$HOME/.local/share/t3code/T3-Code.AppImage"
+  t3_desktop="$HOME/.local/share/applications/t3code.desktop"
+  if [ -x "$t3_app" ] && [ -f "$t3_desktop" ] && grep -Fq "$t3_app" "$t3_desktop"; then
+    pass "T3 Code: executable AppImage and matching launcher"
+  else
+    fail "T3 Code AppImage or launcher missing/mismatched (install: omarchy install ai t3-code nightly --no-launch)"
+  fi
+
   # mise CLIs deploy.sh pins when mise is present (same trio as
   # omarchy-agent-tools-update).
   for tool in claude codex opencode; do

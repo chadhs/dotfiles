@@ -29,7 +29,6 @@
       }
    },
    "favorites": [
-      "applications:evolve-companion",
       "applications:battlenet"
    ],
    "fallbacks": [
@@ -48,9 +47,6 @@
             },
             "com.mitchellh.ghostty": {
                "alias": "terminal"
-            },
-            "evolve-companion": {
-               "alias": "Ashes of Creation"
             },
             "org.mozilla.Thunderbird": {
                "alias": "Mail"

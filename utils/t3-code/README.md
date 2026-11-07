@@ -11,10 +11,20 @@ picker. do not add a custom Claude provider for this.
 
 upstream: [OpenRouter + OpenCode](https://openrouter.ai/docs/cookbook/coding-agents/opencode-integration).
 
-on omarchy, `t3code-nightly-bin` is in [`omarchy/aur.packages`](../../omarchy/aur.packages)
-and `deploy.sh` installs it. themes live in this folder. the OpenRouter
-key stays in OpenCode's auth store (and optionally T3 env vars), never in
-this repo or `links.conf`.
+Omarchy 4.5 installs the official self-updating AppImage at
+`~/.local/share/t3code/T3-Code.AppImage`, with its launcher at
+`~/.local/share/applications/t3code.desktop`. This replaces the old AUR
+package; [Omarchy's migration](https://github.com/omacom/omarchy/pull/15907)
+preserves the installed channel and T3 data.
+
+On a fresh Arch/Omarchy setup, `deploy.sh` runs
+`omarchy install ai t3-code nightly --no-launch` only when the executable
+AppImage is absent. Existing installs retain their current channel. Updates
+and channel switching belong to T3 itself, not the AUR update script.
+`doctor.sh` verifies the executable AppImage and matching launcher.
+
+Themes live in this folder. The OpenRouter key stays in OpenCode's auth
+store (and optionally T3 env vars), never in this repo or `links.conf`.
 
 ## openrouter via opencode
 

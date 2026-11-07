@@ -98,7 +98,7 @@ results also live there. Restore only the affected subsystem; do not overwrite
 subsequent unrelated work or roll back the entire repo. Restore retired unit
 files and links before re-enabling units if a collector rollback is required.
 
-Two pre-existing doctor failures are outside this cleanup: the undeployed
-`evolve-companion-obs.desktop` entry and the expected but absent
-`t3code-nightly-bin` package. Do not install or overwrite either merely to
-make the audit green.
+The two original doctor failures were resolved on 2026-11-07: T3 now checks
+Omarchy's self-updating AppImage instead of requiring the retired AUR package,
+and Evolve Companion plus its OBS launcher were intentionally removed.
+Project Arise, its OBS-enabled launcher, and the game/fullscreen setup remain.

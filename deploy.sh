@@ -78,6 +78,11 @@ EOF
         omarchy pkg aur add $aur_pkgs
       fi
     fi
+    # Omarchy 4.5 installs a self-updating AppImage, not an AUR package.
+    # Preserve an existing install and its selected update channel.
+    if [ ! -x "$HOME/.local/share/t3code/T3-Code.AppImage" ]; then
+      omarchy install ai t3-code nightly --no-launch || return 1
+    fi
     if command -v mise >/dev/null 2>&1; then
       echo "pinning mise CLIs: claude, codex, opencode..."
       mise use -g claude@latest codex@latest opencode@latest
@@ -414,7 +419,7 @@ if [ "${DOTFILES_LINKS_ONLY:-0}" = "1" ]; then
 else
   update_repo
   os_setup
-  verify_packages
+  verify_packages || exit 1
   symlink_configs || exit 1
   offer_login_shell_change
 fi
