@@ -317,6 +317,13 @@ EOF
     fail "T3 Code AppImage or launcher missing/mismatched (install: omarchy install ai t3-code nightly --no-launch)"
   fi
 
+  # Registered desktop bindings alone do not prove Thunderbird can handle them.
+  if python3 "$DOTFILES/utils/thunderbird/check-shortcuts.py"; then
+    pass "Thunderbird shortcut dependencies checked"
+  else
+    fail "Thunderbird shortcut dependencies need attention (see utils/thunderbird/README.md)"
+  fi
+
   # mise CLIs deploy.sh pins when mise is present (same trio as
   # omarchy-agent-tools-update).
   for tool in claude codex opencode; do
