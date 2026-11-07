@@ -90,7 +90,7 @@ The layer is always visible to Vulkan apps; the env var turns capture on.
 | FFXIV | XIVLauncher | Settings → Game → Additional Game Arguments: `OBS_VKCAPTURE=1 %command%` |
 | Battle.net (WoW etc.) | Omarchy entry `battlenet.desktop` | Exec: `env OBS_VKCAPTURE=1 omarchy-launch-battlenet` |
 | Battle.net (WC3 CertFix) | Omarchy entry `battlenet-wc3fix.desktop` | Exec: `env OBS_VKCAPTURE=1 ~/.local/bin/omarchy-launch-battlenet-wc3fix` |
-| Ashes of Creation | Omarchy entry `evolve-companion.desktop` | Exec: `env OBS_VKCAPTURE=1 /home/chadhs/Games/EvolveCompanion-linux-amd64` |
+| Ashes of Creation | Omarchy entry `evolve-companion-obs.desktop` | Exec: `env OBS_VKCAPTURE=1 /home/chadhs/Games/EvolveCompanion-linux-amd64` |
 
 Critical details:
 
@@ -106,6 +106,15 @@ Critical details:
   options never reach `AOCClient-Win64-Shipping.exe`. The env var must live on the
   **companion's desktop entry Exec line** (done above) so Proton's child inherits it.
   Observe on Steam app 4124950, Proton Experimental, no EAC (`eac_deployment_id="none"`).
+- **AoC launcher repair, 2026-10-18:** use **Evolve Companion (OBS)** in the application menu.
+  This separate desktop ID keeps the capture flag when Evolve regenerates its own
+  `evolve-companion.desktop`. The earlier committed entry was missing the flag; both
+  entries were corrected during repair, but Evolve owns and may rewrite its original
+  entry. Deploy only `evolve-companion-obs.desktop`; never symlink the Evolve-owned
+  entry into dotfiles, because its rewrite could then modify the repository file.
+  Fully quit the game and companion before using the OBS shortcut, because an
+  already-running companion keeps its original environment.
+  Capture confirmed working by the user after relaunch on 2026-10-18.
 
 ## Audio
 

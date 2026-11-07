@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Evolve Companion (OBS)
+Comment=Launch Evolve Companion with OBS game capture enabled
+Exec=env OBS_VKCAPTURE=1 /home/chadhs/Games/EvolveCompanion-linux-amd64
+Icon=/home/chadhs/.config/EvolveCompanion/icon.png
+Terminal=false
+Categories=Game;
+StartupNotify=false
