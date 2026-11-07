@@ -262,9 +262,9 @@ to Local Folders Trash, and moving through the searchable picker. Typing,
 Backspace, arrows, Enter, and Escape were exercised in the picker; Backspace
 also edited quick-filter and draft text normally. No message was sent. Test
 folders, messages, draft, and temporary local identity were removed afterward.
-The official add-ons and helper remained active after restart. The remaining
-acceptance check is the user's physical Super+E, Ctrl+Super+M, and Backspace
-chords. Startup selection of the newest message is a separate follow-up.
+The official add-ons and helper remained active after restart. The user confirmed that physical Super+E, Ctrl+Super+M, and Backspace all
+work, including typing and Backspace in the folder picker. Shortcut repair is
+complete. Startup selection of the newest message remains a separate follow-up.
 
 Profile backups, disposable profiles, and test artifacts stay outside Git in
 `~/.local/state/omarchy/backups/thunderbird-shortcuts-20261107-113254/`.
