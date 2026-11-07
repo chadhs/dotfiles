@@ -89,7 +89,6 @@ The layer is always visible to Vulkan apps; the env var turns capture on.
 | Guild Wars 2, Soulframe | Lutris | Configure → System options → Command prefix: `obs-gamecapture` |
 | FFXIV | XIVLauncher | Settings → Game → Additional Game Arguments: `OBS_VKCAPTURE=1 %command%` |
 | Battle.net (WoW etc.) | Omarchy entry `battlenet.desktop` | Exec: `env OBS_VKCAPTURE=1 omarchy-launch-battlenet` |
-| Battle.net (WC3 CertFix) | Omarchy entry `battlenet-wc3fix.desktop` | Exec: `env OBS_VKCAPTURE=1 ~/.local/bin/omarchy-launch-battlenet-wc3fix` |
 | Ashes of Creation | Local `project-arise.desktop` launcher | Exec: `env OBS_VKCAPTURE=1 /home/chadhs/Games/Project-Arise-Launcher-linux-x86_64.AppImage` |
 
 Critical details:
