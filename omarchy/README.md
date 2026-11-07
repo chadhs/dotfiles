@@ -16,14 +16,29 @@ entries in `scripts/links.conf`; see that file for the exact mapping.
 | `moom.conf` | `~/.config/omarchy/moom.conf` | `MOOM_MODE=planA` |
 | `ghostty/config` | `~/.config/ghostty/config` | linux terminal config (fork of omarchy's, with local font-size/padding tweaks; mac ghostty stays `utils/ghostty/config`) |
 | `env/90-shell.conf` | `~/.config/environment.d/90-shell.conf` | session `SHELL` mirror (ghostty launches `$SHELL`; guards against systemd user-manager staleness after chsh) |
-| `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-quit-app`, `omarchy-agent-tools-update`, `omarchy-agent-usage-opencode-go`, `omarchy-opencode-go-record`, `omarchy-agent-usage-cursor`, `omarchy-cursor-record`, `omarchy-codex-limit-probe`, `omarchy-codex-limit-patch`, `omarchy-window-raise-front`, `focus-new-windows`, `trackpad-check`, `omarchy-scheduled-theme`, `omarchy-theme-toggle` |
-| `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units (`focus-new-windows.service`, `omarchy-opencode-go-record.{service,path,timer}`, `omarchy-cursor-record.{service,path,timer}`, `omarchy-codex-record.{service,path}`, `omarchy-scheduled-theme.{service,timer}`), enabled by `deploy.sh` on arch except the optional theme timer |
+| `bin/` | `~/.local/bin/` | `omarchy-moom`, `omarchy-quit-app`, `omarchy-agent-tools-update`, `omarchy-window-raise-front`, `focus-new-windows`, `trackpad-check`, `omarchy-scheduled-theme`, `omarchy-theme-toggle` |
+| `systemd/user/` | `~/.config/systemd/user/` | dotfiles-shipped user units (`focus-new-windows.service`, `omarchy-scheduled-theme.{service,timer}`), enabled by `deploy.sh` on arch except the optional theme timer |
 | `vicinae/` | `~/.config/vicinae/settings.json`, copy-once `~/.local/share/vicinae/shortcuts/shortcuts.json` | launcher config + `{query}` web-search shortcuts (see below) |
 | `aur.packages` | — | AUR list `deploy.sh` installs (vicinae-bin + agent desktop apps); `omarchy-agent-tools-update` reads the same file. T3 Code OpenRouter setup: [utils/t3-code/README.md](../utils/t3-code/README.md) |
 | `applications/nixfred.blip.desktop` | `~/.local/share/applications/nixfred.blip.desktop` | Blip Messages launcher for Omarchy and Vicinae; requires the Blip plugin |
 | `plugins/patches/` | — | local patches for plugin-manager-managed plugins (see below) |
 | `docs/moom-omarchy-plan.md` | — | design doc for `omarchy-moom` + the Moom chords in `bindings.lua` |
 | `docs/display-profiles.md` | — | DisplayCAL / SpyderX ICC workflow and how Hyprland loads them |
+
+## Omarchy 4.5 baseline
+
+See [docs/omarchy-4.5-review.md](docs/omarchy-4.5-review.md) for the verified
+stock replacements, retained behaviors, and rollback/acceptance checks.
+
+The clock intentionally uses `ddd d MMM h:mm AP`: weekday, date, month,
+and 12-hour time. Keep this live preference, not the older repo formatting
+or the packaged weekday/24-hour default. The bar uses `background: "opaque"`.
+
+`hypr/workspaces.lua` keeps the first five workspaces on each display
+persistent using Omarchy's assigned blocks: DP-2 uses 1–5; DP-3 uses 11–15,
+shown as 1–5 on that bar. If ports or monitor-block assignments change,
+review this file against `~/.local/state/omarchy/monitor-workspaces`.
+Deployment restores its loader via `scripts/ensure-omarchy-workspaces.py`.
 
 ## Scheduled Solarized themes
 
@@ -151,101 +166,34 @@ The fix is three repo-owned pieces:
 it is omarchy's config *entrypoint* template, so an upstream change to its
 require list would silently never load. The rules now live in
 `looknfeel.lua` (safe to own: stock is comments/examples, real defaults load
-from `default/hypr/` regardless) and `hyprland.lua` is stock omarchy again —
-if it ever needs reverting to stock after an update:
-`omarchy refresh config hypr/hyprland.lua`. The unit is enabled by `deploy.sh`
+from `default/hypr/` regardless) and the entrypoint remains machine-local. It currently loads our workspace
+and DisplayCAL modules and contains game-specific fullscreen rules. Do not
+reset it to stock without preserving those additions. Deployment restores the
+workspace loader without replacing the entrypoint. The unit is enabled by `deploy.sh`
 (`systemctl --user enable --now`); an `autostart.lua` hook was rejected
 deliberately — that file stays stock omarchy.
 
-## OpenCode Go tab in the agents panel
+## AI usage: stock Omarchy 4.5 collectors
 
-The stock `omarchy.agents` bar panel only ships collectors for Claude, Codex
-and Fireworks, and its claude/codex collectors fold in opencode sessions only
-when they ran on an `anthropic`/`openai` provider — so usage on the
-`opencode-go` provider (GLM etc.) never showed up. `omarchy/systemd/user/`
-plus `omarchy/bin/` add a fourth tab for it:
+Omarchy now owns Cursor, OpenCode (including Go), and Codex collection. The
+old custom collectors, record writers, Codex limits patch, and eight systemd
+units were retired after verifying the packaged replacements on 2026-11-07.
+No dotfiles service writes to the agents panel's records anymore.
 
-- `omarchy-agent-usage-opencode-go` (collector): local token stats from
-  opencode's SQLite db (assistant messages with `providerID = "opencode-go"`)
-  plus rolling 5h/weekly/monthly limit meters from the official
-  `https://opencode.ai/zen/go/v1/usage` endpoint, Bearer-authed with the key
-  opencode already stores in `~/.local/share/opencode/auth.json`. Falls back
-  to a cached copy on 429/network blips.
-- `omarchy-opencode-go-record` (wrapper): runs the collector and atomically
-  writes `~/.local/state/omarchy/agents/usage/opencode-go.json` — the record
-  file the panel watches. Needed because the packaged
-  `omarchy-agent-usage-update` only runs collectors in `/usr/share/omarchy/bin/`.
-- `omarchy-opencode-go-record.path`: watches `claude.json` + `codex.json` in
-  the usage dir. The packaged updater rewrites every record on each panel
-  refresh (open the panel, press `r`, or its own 15-min timer), so the Go tab
-  regenerates at exactly the same moments as the packaged agents — lockstep
-  freshness with zero extra endpoint traffic. Writes go to `opencode-go.json`,
-  so there is no trigger loop.
-- `omarchy-opencode-go-record.timer`: 15-min fallback in case the watched
-  records stop changing.
-- `omarchy-opencode-go-record.service`: the oneshot both triggers run.
+The stock OpenCode record is `opencode.json`, replacing `opencode-go.json`.
+It reads both OpenCode database formats and counts typed prompts instead of
+assistant steps, so the prompt total differs from the old collector. Token
+coverage and all three Go limit windows were verified. Codex returned fresh
+weekly limits and reset times without the patch. Cursor remains disabled;
+its stock record correctly reports paused limits rather than contacting the
+provider. Claude remains disabled too.
 
-The collector is vendored from upstream omarchy PR #7157 (still open at time
-of writing). Once a released `omarchy update` ships its own
-`omarchy-agent-usage-opencode-go`: delete the two `omarchy/bin/` scripts and
-the three units here, drop the `links.conf` entries, and
-`systemctl --user disable --now` the path + timer units. The packaged
-updater will then regenerate the record itself on every panel refresh.
-
-## Cursor tab in the agents panel
-
-Same shape as the OpenCode Go tab, different data plumbing. Cursor publishes
-no per-user usage API (Admin/Analytics are Enterprise-only), but its web
-dashboard reads live numbers, so the collector authenticates as the
-dashboard does: the WorkOS session token `cursor-agent login` already stored
-in `~/.config/cursor/auth.json`, sent as
-`WorkosCursorSessionToken=<sub>::<jwt>` (sub comes from decoding the token
-itself). `$CURSOR_SESSION_TOKEN` overrides, and the editor's
-`~/.config/Cursor/User/globalStorage/state.vscdb` (`cursorAuth/accessToken`)
-is the fallback. Only cursor.com sees the token.
-
-- `omarchy-agent-usage-cursor` (collector): limits from `GET
-  /api/usage-summary` (Cursor-models pool, other-models pool, total, cycle
-  end) and token stats from the dashboard event log (`POST
-  /api/dashboard/get-filtered-usage-events`, paginate, cap 5 pages). Note
-  event `inputTokens` includes cache traffic; the collector subtracts cache
-  before recording so the panel's per-model sum stays honest.
-- `omarchy-cursor-record` (wrapper): runs the collector, writes
-  `~/.local/state/omarchy/agents/usage/cursor.json` atomically.
-- `omarchy-cursor-record.path` / `.timer` / `.service`: identical lockstep
-  pattern to the opencode-go units, plus a 15-min fallback timer.
-
-These are undocumented dashboard endpoints (reverse-engineered by the
-community, see gist `dmwyatt/1e9359b1862e7cbfe1e754fe4c8db764`); POSTs need
-an `Origin: https://cursor.com` header or they 403. If Cursor changes its
-dashboard protocol the tab goes stale with a "Cursor limits stale" note and
-the cached meters; re-run `omarchy-cursor-record` by hand to re-check.
-
-## Codex tab in the agents panel
-
-The packaged codex collector gives `codex app-server` 4s to answer
-`account/read`; codex 0.157 sometimes needs longer, so the record
-intermittently ships with "Codex limits unavailable". Same lockstep shape as
-the other tabs, but it patches the packaged record instead of replacing a
-missing one:
-
-- `omarchy-codex-limit-probe` (probe): asks the codex app-server only for
-  `account/rateLimits/read` with a 45s leash (skipping the flaky
-  `account/read` round trip; the rateLimits payload carries planType and
-  every window) and prints the fields the packaged collector would have set.
-- `omarchy-codex-limit-patch` (patcher): runs when the packaged record lacks
-  limits and auth is ChatGPT (API-key auth has no rate limits), re-probes
-  up to 3 times under a lock, and splices the result into
-  `~/.local/state/omarchy/agents/usage/codex.json` atomically.
-- `omarchy-codex-record.path` / `.service`: the .path unit watches
-  `claude.json` + `codex.json` in the usage dir and triggers the patcher
-  whenever the packaged updater rewrites either, so the Codex tab recovers
-  at the same moments the packaged agents refresh. No fallback timer: the
-  path covers every packaged rewrite, and the patcher is a no-op once the
-  record has limits.
-
-If the tab still shows "Codex limits unavailable" after a refresh, re-run
-`omarchy-codex-limit-patch` by hand.
+Use `omarchy agent usage-update codex opencode` for an explicit refresh.
+The panel manages ordinary refreshes. Do not reinstall the retired timers or
+path watchers. `scripts/omarchy-retire-usage.sh` removes only known dotfiles
+links and units on older installations; deploy invokes it after confirming
+that the packaged collectors exist. Old Go records move outside the panel's
+watch directory into the local backup directory.
 
 ## Showing and hiding agents in the panel
 
@@ -262,14 +210,10 @@ Bring an agent back the same way with `"enabled": true`. The setting lives in
 edits the repo copy directly; no deploy step needed. The shell hot-reloads
 the change.
 
-Two things to know. `set` writes the key literally rather than walking a
-dotted path, so pass the whole `providers` object with every agent you are
-overriding, not just the one changing. And numbers need `--json` or they
-land in `shell.json` as strings.
-
-Claude is disabled in the committed `shell.json` right now since it is not in
-use. That does not break the opencode-go lockstep trigger: the `.path` unit
-also watches `codex.json`, and the 15-min timer covers everything else.
+`omarchy bar set` treats a dotted key literally, so pass the complete
+`providers` object when changing visibility. Preserve both disabled entries
+for Claude and Cursor. GUI writers can replace the shell config symlink;
+reconcile the live file into the repo before restoring the link.
 
 ## Color profiles
 
@@ -285,7 +229,7 @@ patches, and how to `profcheck` the result: [docs/display-profiles.md](docs/disp
 Omarchy's native menu searches apps and nested commands. It does not do
 home-directory file search or `{query}` web searches, so SUPER+SPACE opens
 [Vicinae](https://docs.vicinae.com/) instead. SUPER+ALT+SPACE is the full
-Omarchy menu (Install / Style / Trigger). SUPER+ESCAPE, the bar menu button,
+Omarchy menu (including Appearance and Trigger), replacing 4.5's Apps-grid shortcut. SUPER+ESCAPE, the bar menu button,
 and the clipboard overlays stay stock.
 
 `vicinae-bin` is in [`aur.packages`](aur.packages). `sh deploy.sh` installs
@@ -312,8 +256,8 @@ the live file and re-run deploy.
 
 **Settings GUI caveat:** Vicinae writes `~/.config/vicinae/settings.json`
 and can replace the symlink with a regular file — same class of problem as
-the ghostty text-size slider. Doctor flags it (FAIL: not a symlink); heal
-with `DOTFILES_LINKS_ONLY=1 sh deploy.sh`. Prefer editing
+the ghostty text-size slider. Doctor flags it (FAIL: not a symlink). First preserve the live settings in
+the repo, then restore the link; blind redeployment would lose live edits. Prefer editing
 `omarchy/vicinae/settings.json` in the repo.
 
 ## Deliberately NOT included
@@ -333,8 +277,8 @@ with `DOTFILES_LINKS_ONLY=1 sh deploy.sh`. Prefer editing
 
 `omarchy display text size <px>` edits `~/.config/ghostty/config` with
 `sed -i`, which **replaces the symlink with a regular file** — one slider
-drag silently severs the repo link. Doctor flags it (FAIL: not a symlink);
-heal with `sh deploy.sh`. Terminal font size changes are repo edits now:
+drag silently severs the repo link. Doctor flags it (FAIL: not a symlink). Preserve any desired live changes
+in the repo before restoring the link. Terminal font size changes are repo edits now:
 change `font-size` in `omarchy/ghostty/config`, commit, and pull/deploy on
 other machines.
 
@@ -393,7 +337,7 @@ under `~/.config/omarchy/plugins/` and `omarchy plugin update` refreshes it.
 That means local patches would be lost on update, so they are snapshotted in
 `plugins/patches/` (see that README for re-apply instructions):
 
-- `switcharoo-local.patch`, two `Switcher.qml` patches:
+- `switcharoo-local.patch`, local patches (see the patch README for the full current list):
   - **super-release**: commit-on-release watches the Super keys, not just
     Alt. Required by the SUPER+TAB / SUPER+SHIFT+TAB bindings in
     `hypr/bindings.lua`; without it the grid opens but never commits.

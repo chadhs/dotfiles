@@ -28,7 +28,10 @@
          "keyboard_interactivity": "on_demand"
       }
    },
-   "favorites": [],
+   "favorites": [
+      "applications:evolve-companion",
+      "applications:battlenet"
+   ],
    "fallbacks": [
       "shortcuts:sct-google",
       "shortcuts:sct-duckduckgo",
@@ -45,6 +48,9 @@
             },
             "com.mitchellh.ghostty": {
                "alias": "terminal"
+            },
+            "evolve-companion": {
+               "alias": "Ashes of Creation"
             },
             "org.mozilla.Thunderbird": {
                "alias": "Mail"

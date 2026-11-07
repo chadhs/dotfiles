@@ -3,8 +3,10 @@
 Local patches applied to plugin-manager-managed plugins under
 `~/.config/omarchy/plugins/` (gitignored, so `omarchy plugin update` can
 clobber them). After any `omarchy plugin update` or `omarchy update`, run
-`sh scripts/omarchy-post-update.sh` — it re-applies this patch
-automatically when the clone is clean and verifies the rest of the setup.
+`sh scripts/omarchy-post-update.sh` for a read-only audit. If patches are
+missing, explicitly run `sh scripts/omarchy-repair-switcharoo.sh`; it applies
+the snapshot only to a clean clone and restarts the shell. The audit never
+changes files, restarts services, or sends notifications.
 To apply by hand:
 
 ```sh

@@ -86,8 +86,7 @@ local function unless_terminal(send)
   end
 end
 
--- Select all (mac Cmd+A).
-o.bind("SUPER + A", "Universal select all", send_shortcut_once("CTRL", "A"))
+-- Select all (mac Cmd+A) is supplied by Omarchy 4.5.
 
 -- Undo/redo (mac Cmd+Z / Cmd+Shift+Z). No-op in terminals so the injected
 -- CTRL+Z can't suspend a running shell job.
@@ -183,7 +182,7 @@ o.bind("SUPER + SHIFT + CTRL + ALT + LEFT", "Moom: wide left panel", moom("wide-
 o.bind("SUPER + SHIFT + CTRL + ALT + RIGHT", "Moom: wide right panel", moom("wide-right"))
 o.bind("SUPER + CTRL + ALT + M", "Moom: center two-thirds", moom("center"))
 o.bind("SUPER + CTRL + ALT + B", "Moom: left three-quarters", moom("threequarter"))
-o.bind("SUPER + CTRL + ALT + F", "Moom: fill", moom("fill"))
+o.rebind("SUPER + CTRL + ALT + F", "Moom: fill", moom("fill"))
 
 -- Placement keys (float-first on tiled windows).
 o.bind("SUPER + ALT + Q", "Moom: corner top left", moom("corner-tl"))
@@ -194,7 +193,6 @@ o.bind("SUPER + CTRL + ALT + Q", "Moom: quarter top left", moom("quarter-tl"))
 o.bind("SUPER + CTRL + ALT + W", "Moom: quarter top right", moom("quarter-tr"))
 o.bind("SUPER + CTRL + ALT + Z", "Moom: quarter bottom left", moom("quarter-bl"))
 o.bind("SUPER + CTRL + ALT + X", "Moom: quarter bottom right", moom("quarter-br"))
-o.bind("SUPER + CTRL + ALT + T", "Moom: task list cell", moom("task"))
 
 -- Window swap (relocated twice over: was SUPER+SHIFT+Arrow, now
 -- SUPER+CTRL+SHIFT+Arrow — SUPER+SHIFT+Arrow is text selection and the last
@@ -202,10 +200,10 @@ o.bind("SUPER + CTRL + ALT + T", "Moom: task list cell", moom("task"))
 -- stock Omarchy) is currently unbound; if ever missed its fallback chord is
 -- SUPER+CTRL+SHIFT+ALT+UP/DOWN (still free):
 --   o.bind("SUPER + CTRL + SHIFT + ALT + UP", "Move window into group above", hl.dsp.window.move({ into_group = "u" }))
-o.bind("SUPER + CTRL + SHIFT + LEFT", "Swap window to the left", hl.dsp.window.swap({ direction = "l" }))
-o.bind("SUPER + CTRL + SHIFT + RIGHT", "Swap window to the right", hl.dsp.window.swap({ direction = "r" }))
-o.bind("SUPER + CTRL + SHIFT + UP", "Swap window up", hl.dsp.window.swap({ direction = "u" }))
-o.bind("SUPER + CTRL + SHIFT + DOWN", "Swap window down", hl.dsp.window.swap({ direction = "d" }))
+o.rebind("SUPER + SHIFT + CTRL + LEFT", "Swap window to the left", hl.dsp.window.swap({ direction = "l" }))
+o.rebind("SUPER + SHIFT + CTRL + RIGHT", "Swap window to the right", hl.dsp.window.swap({ direction = "r" }))
+o.rebind("SUPER + SHIFT + CTRL + UP", "Swap window up", hl.dsp.window.swap({ direction = "u" }))
+o.rebind("SUPER + SHIFT + CTRL + DOWN", "Swap window down", hl.dsp.window.swap({ direction = "d" }))
 
 -- Cede Omarchy's move-into-group chords to Moom nudges. Grouping itself is
 -- untouched: SUPER+G toggles, SUPER+ALT+G moves out, SUPER+ALT+TAB cycles,
@@ -276,9 +274,10 @@ end)
 -- Global reset, reachable without entering the mode.
 o.bind("SUPER + ALT + 0", "Reset tiled window sizes", reset_tiled_sizes)
 
--- Resize bind specs: tiers x directions, built into one list that is the
--- single source of truth. The expected bind count derives from the list, so
--- the self-heal check below can never drift from the actual binds.
+-- Use evdev XKB keycodes for arrows and Return. On Hyprland 0.56.2,
+-- the screenshot selector's named-key unbinds also remove matching binds
+-- in other submaps. Keycodes keep resize binds distinct from those names.
+-- RIGHT=114, LEFT=113, DOWN=116, UP=111, RETURN=36.
 local resize_bind_list = {}
 for _, tier in ipairs({
   { prefix = "", step = 100 },
@@ -286,10 +285,10 @@ for _, tier in ipairs({
   { prefix = "CTRL + ", step = 300 },
 }) do
   for _, dir in ipairs({
-    { key = "RIGHT", dx = 1, dy = 0, desc = "Expand width" },
-    { key = "LEFT", dx = -1, dy = 0, desc = "Shrink width" },
-    { key = "DOWN", dx = 0, dy = 1, desc = "Expand height" },
-    { key = "UP", dx = 0, dy = -1, desc = "Shrink height" },
+    { key = "code:114", dx = 1, dy = 0, desc = "Expand width" },
+    { key = "code:113", dx = -1, dy = 0, desc = "Shrink width" },
+    { key = "code:116", dx = 0, dy = 1, desc = "Expand height" },
+    { key = "code:111", dx = 0, dy = -1, desc = "Shrink height" },
   }) do
     table.insert(resize_bind_list, {
       keys = tier.prefix .. dir.key,
@@ -302,72 +301,18 @@ end
 for _, mode_bind in ipairs({
   { keys = "0", desc = "Reset tiled window sizes", dispatcher = reset_tiled_sizes },
   { keys = "ESCAPE", desc = "Exit resize mode", dispatcher = exit_resize_mode },
-  { keys = "RETURN", desc = "Exit resize mode", dispatcher = exit_resize_mode },
+  { keys = "code:36", desc = "Exit resize mode", dispatcher = exit_resize_mode },
 }) do
   table.insert(resize_bind_list, mode_bind)
 end
 
--- Registered handles double as the self-heal ground truth: hl.bind only
--- returns a handle when the bind actually landed, so #handles is how many
--- binds exist, and a failed config load shows up as a shortfall.
-local resize_bind_handles = {}
-local resize_bind_expected = #resize_bind_list
-
-local function register_resize_binds()
-  resize_bind_handles = {}
+-- Register once per config load; no runtime removal of potentially stale
+-- handles. The former watchdog counted handles, not surviving bindings.
+hl.define_submap("resize", function()
   for _, spec in ipairs(resize_bind_list) do
-    local handle = hl.bind(spec.keys, spec.dispatcher, { description = spec.desc, repeating = spec.repeating })
-    if handle then
-      table.insert(resize_bind_handles, handle)
-    end
+    hl.bind(spec.keys, spec.dispatcher, { description = spec.desc, repeating = spec.repeating })
   end
-end
-
-hl.define_submap("resize", register_resize_binds)
-
--- Self-heal watchdog: a session start or reload can register only part of
--- this submap — hl.define_submap swallows a failed/timed-out pcall with no
--- journal trace. First seen live 2026-09-14: 10 of 15 binds landed at login
--- and a oneshot check wasn't enough. So this is a repeating timer: first
--- check a few seconds after each config load (outside the login storm),
--- then keep checking while short. On a shortfall, remove whatever landed
--- and re-register in-place (removal first, so repaired binds can't
--- double-fire); if a repair attempt also falls short, keep retrying and
--- re-nag about hyprctl reload every 60s. Once healthy (from the start or
--- after a repair), the watchdog stands down: binds only ever drop during a
--- config load, and that reload recreates this timer, so there's nothing
--- left to watch.
-local resize_watchdog_nagged = false
-local resize_watchdog
-
-resize_watchdog = hl.timer(function()
-  if #resize_bind_handles == resize_bind_expected then
-    resize_watchdog:set_enabled(false)
-    return
-  end
-
-  for _, handle in ipairs(resize_bind_handles) do
-    pcall(handle.remove, handle)
-  end
-  -- Re-enter the submap context: hl.bind tags binds with the current submap,
-  -- which is empty inside a timer callback.
-  hl.define_submap("resize", register_resize_binds)
-
-  if #resize_bind_handles == resize_bind_expected then
-    resize_watchdog_nagged = false
-    resize_watchdog:set_enabled(false)
-    hl.exec_cmd("omarchy-shell -q osd show '{\"icon\":\"keyboard\",\"message\":\"Repaired resize mode binds\",\"duration\":\"2500\"}'")
-  else
-    hl.timer(function()
-      resize_watchdog_nagged = false
-    end, { timeout = 60000, type = "oneshot" })
-    if resize_watchdog_nagged then
-      return
-    end
-    resize_watchdog_nagged = true
-    hl.exec_cmd("omarchy-shell -q osd show '{\"icon\":\"keyboard\",\"message\":\"Resize binds still short — run hyprctl reload\",\"duration\":\"5000\"}'")
-  end
-end, { timeout = 4000, type = "repeat" })
+end)
 
 -- Send focused window to prev/next monitor (wraps around).
 o.bind("CTRL + ALT + LEFT", "Moom: previous display", moom("display-prev"))
@@ -391,10 +336,10 @@ end)
 -- Address/search bar (mac Cmd+L): inject CTRL+L, which Chromium and most
 -- GUI apps handle. No-op in terminals so the injected CTRL+L can't clear
 -- a running shell. Relocates Omarchy's workspace-layout toggle to
--- SUPER+ALT+L.
+-- SUPER+ALT+CTRL+T.
 hl.unbind("SUPER + L")
 o.bind("SUPER + L", "Address / search bar", unless_terminal(send_shortcut_once("CTRL", "L")))
-o.bind("SUPER + ALT + L", "Toggle workspace layout", "omarchy-hyprland-workspace-layout-toggle")
+o.rebind("SUPER + ALT + CTRL + T", "Cycle workspace layout", "omarchy-hyprland-workspace-layout-toggle")
 
 -- New window (mac Cmd+N): terminals get nothing (CTRL+N is meaningless
 -- there), GUI apps get CTRL+N (chromium new window, new doc elsewhere).
@@ -441,7 +386,7 @@ end)
 -- Mac-style Cmd+Q: quit the whole app by closing every window of its class.
 -- Universal — no injected chords, so apps that ignore CTRL+Q (omawrite,
 -- claude, omacalc) still quit. On a terminal this closes all terminal windows.
-o.bind("SUPER + Q", "Quit app", "omarchy-quit-app")
+o.rebind("SUPER + Q", "Quit app", "omarchy-quit-app")
 
 -- Screenshot shortcuts (mac-ish chords). All three open the capture menu for
 -- now; mode-specific binds kept tripping over capture quirks (silent exits
@@ -522,3 +467,9 @@ end
 
 o.bind("SUPER + E", "Thunderbird: archive", thunderbird_shortcut("CTRL + ALT + SHIFT", "E"))
 o.bind("SUPER + CTRL + M", "Thunderbird: move to folder", thunderbird_shortcut("CTRL + SHIFT", "N"))
+
+-- Dictation keys from before Alt + Space and Right Alt became the defaults.
+-- Remove these lines to give the keys back to applications.
+if o.dictation_installed and o.dictation_installed() then
+  o.bind("SUPER + CTRL + X", "Toggle dictation", "omarchy-dictation toggle")
+end

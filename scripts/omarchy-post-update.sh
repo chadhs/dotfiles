@@ -5,14 +5,12 @@
 # Emits PASS/INFO/WARN/FAIL per check like doctor.sh (INFO = expected state,
 # WARN = look at eventually); exits non-zero when FAILs exist. Safe to re-run.
 #
-# The one auto-fix: if the switcharoo plugin clone is clean (its local QML
-# patches were wiped by a plugin update), re-apply the snapshot from
-# omarchy/plugins/patches/switcharoo-local.patch and restart omarchy-shell.
-# Everything else is report-only and needs human judgment.
+# Read-only: never patches plugins, restarts the shell, or sends notifications.
+# Repairs are explicit: sh scripts/omarchy-repair-switcharoo.sh.
 #
 # Checks:
-#   1. switcharoo patch applied (auto-apply if missing)
-#   1b. patch sentinels present in the applied Switcher.qml (notifies on failure)
+#   1. switcharoo patch applied (report only)
+#   1b. patch sentinels present in the applied Switcher.qml (report only)
 #   2. switcharoo global shortcuts + sentinel binds live
 #   3. switchboard service responds
 #   4. hyprctl configerrors empty
@@ -43,19 +41,11 @@ if [ ! -d "$SWITCHAROO_CLONE" ]; then
 elif [ ! -f "$PATCH_FILE" ]; then
   fail "patch snapshot missing: $PATCH_FILE"
 elif [ "$HAVE_GIT" != "1" ]; then
-  fail "git not found — cannot verify or re-apply the switcharoo patch"
+  fail "git not found — cannot verify the switcharoo patch"
 else
   local_diff="$(git -C "$SWITCHAROO_CLONE" diff 2>/dev/null)"
   if [ -z "$local_diff" ]; then
-    # Clean clone: patches absent (fresh update or fresh install). Re-apply.
-    if git -C "$SWITCHAROO_CLONE" apply "$PATCH_FILE" 2>/dev/null; then
-      # QML hot-reload is unreliable across plugin updates; restart the shell.
-      omarchy restart shell >/dev/null 2>&1
-      sleep 2
-      pass "switcharoo patch re-applied to clone (shell restarted)"
-    else
-      fail "switcharoo patch no longer applies — upstream refactored Switcher.qml; re-port by hand (see omarchy/plugins/patches/README.md)"
-    fi
+    fail "switcharoo patches absent; repair explicitly: sh scripts/omarchy-repair-switcharoo.sh"
   else
     # Prefix-normalized compare: the snapshot may be generated as a tree diff
     # (a/, b/) while the clone's worktree diff honors diff.mnemonicPrefix
@@ -89,11 +79,7 @@ if [ -d "$SWITCHAROO_CLONE" ] && [ -f "$SWITCHAROO_CLONE/Switcher.qml" ]; then
     pass "patch sentinels present in Switcher.qml"
   else
     fail "patch sentinels missing from Switcher.qml:$missing_sentinels (stale or half-applied patch; re-port: see omarchy/plugins/patches/README.md)"
-    if command -v omarchy-notification-send >/dev/null 2>&1; then
-      omarchy-notification-send -u critical -g 󰀦 "Switcharoo patch broken" \
-        "Sentinels missing:$missing_sentinels — re-port the patch (~/dotfiles/omarchy/plugins/patches/README.md)" \
-        >/dev/null 2>&1 || true
-    fi
+
   fi
 fi
 
@@ -155,12 +141,14 @@ elif [ ! -f "$template" ]; then
   warn "omarchy shell.json template not found at $template — skipped"
 else
   missing_keys="$(for k in $(jq -r 'keys[]' "$template" 2>/dev/null); do
+    # An omitted dock section inherits packaged defaults; it is not lost configuration.
+    [ "$k" = "dock" ] && continue
     jq -e --arg k "$k" 'has($k)' "$REPO_ROOT/omarchy/shell.json" >/dev/null 2>&1 || echo "$k"
   done)"
   if [ -n "$missing_keys" ]; then
     warn "shell.json: omarchy template has top-level keys ours lacks: $(echo $missing_keys) — review and fold in if needed ($template)"
   else
-    pass "shell.json: no top-level keys missing from omarchy template"
+    pass "shell.json: required sections present; omitted dock settings inherit stock defaults"
   fi
 fi
 

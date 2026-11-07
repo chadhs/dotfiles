@@ -310,6 +310,10 @@ symlink_configs(){
   ## manifest-driven links/copies
   backup_omarchy_configs
   apply_links
+  if [ "$system_os" = "arch" ]; then
+    python3 "${DOTFILES_ROOT}/scripts/ensure-omarchy-workspaces.py" || return 1
+    sh "${DOTFILES_ROOT}/scripts/omarchy-retire-usage.sh" || return 1
+  fi
   seed_vicinae_shortcuts
   enable_user_units
 }
@@ -377,8 +381,8 @@ enable_user_units(){
       echo "could not enable user unit: $name (enable manually: systemctl --user enable --now $name)"
     fi
   done
-  # .path/.timer units trigger shipped services (e.g. opencode-go record
-  # refresh); they carry [Install] themselves and must be enabled directly
+  # .path/.timer units trigger shipped services; they carry [Install]
+  # themselves and must be enabled directly
   for unit in "${DOTFILES_ROOT}"/omarchy/systemd/user/*.path \
               "${DOTFILES_ROOT}"/omarchy/systemd/user/*.timer; do
     [ -e "$unit" ] || continue
@@ -406,12 +410,12 @@ if [ "${DOTFILES_LINKS_ONLY:-0}" = "1" ]; then
   # testing/maintenance mode: linking only, no repo update or package install
   echo "links-only mode: skipping repo update and package install..."
   os_setup
-  symlink_configs
+  symlink_configs || exit 1
 else
   update_repo
   os_setup
   verify_packages
-  symlink_configs
+  symlink_configs || exit 1
   offer_login_shell_change
 fi
 echo ""
