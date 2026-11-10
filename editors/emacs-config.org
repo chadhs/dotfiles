@@ -175,12 +175,7 @@ This section documents installed packages and their configuration.  Language and
 
 #+BEGIN_SRC emacs-lisp
   (use-package restart-emacs
-    :defer t
-    :init
-    (add-hook 'kill-emacs-hook (lambda ()
-                                 (interactive)
-                                 (shell-command
-                                  "rm ~/.emacs.d/emacs-config.el"))))
+    :defer t)
 #+END_SRC
 
 *** evil-mode settings
@@ -236,7 +231,7 @@ Emacs is great and has many amazing features, modal editing is not one of them. 
     (global-undo-tree-mode)
     :config
     (evil-set-undo-system 'undo-tree)
-    (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
+    (setq undo-tree-history-directory-alist `(("." . ,(cs/state-directory "undo")))))
 
   (use-package evil-matchit
     :config
@@ -303,10 +298,12 @@ theme cycling stays disabled so it cannot fight OS auto-toggling.
 
 *** terminal settings
 
-Dedicated zsh terminal via =multi-term=, with scroll/Yasnippet tweaks so shells stay usable under Evil.
+Unix uses a dedicated Zsh terminal through =multi-term=. Windows uses native
+PowerShell through =shell=. The shared =,sv= and =,sn= bindings select the backend.
 
 #+BEGIN_SRC emacs-lisp
   (use-package multi-term
+    :if (not (eq system-type 'windows-nt))
     :defer t
     :init
     (setq multi-term-dedicated-window-height 30
@@ -492,6 +489,7 @@ direnv - load environment variables from .envrc files per project
 
 #+BEGIN_SRC elisp
   (use-package envrc
+    :if (executable-find "direnv")
     :defer t
     :init
     (envrc-global-mode))
@@ -504,10 +502,10 @@ direnv - load environment variables from .envrc files per project
     :commands (deft)
     :init
     ;;; custom setup to support multiple note roots
-    (defvar --user-home-dir (getenv "HOME"))
-    (defvar --user-notes-common-dir (concat --user-home-dir "/notes/common"))
-    (defvar --user-notes-personal-dir (concat --user-home-dir "/notes/personal"))
-    (defvar --user-notes-work-dir (concat --user-home-dir "/notes/work"))
+    (defvar --user-home-dir cs/personal-home)
+    (defvar --user-notes-common-dir (expand-file-name "common" cs/notes-directory))
+    (defvar --user-notes-personal-dir (expand-file-name "personal" cs/notes-directory))
+    (defvar --user-notes-work-dir (expand-file-name "work" cs/notes-directory))
     (defun cs-setup-deft (notes-dir)
       ;; ensure we can filter by typing every time we launch deft
       (setq deft-directory notes-dir)
@@ -626,6 +624,7 @@ I'm now experimenting with lsp-mode to add a more standarized approach to adding
     (setq lsp-prefer-capf t)
     (setq lsp-auto-configure t
           lsp-auto-guess-root t
+          lsp-clients-typescript-prefer-use-project-ts-server t
           ;; don't set flymake or lsp-ui so the default linter doesn't get trampled
           lsp-diagnostic-package :none
           lsp-rubocop-use-bundler nil
@@ -876,6 +875,7 @@ use ~y%~ for yanking a s-expression
 #+BEGIN_SRC emacs-lisp
   (use-package highlight-indent-guides
     :defer t
+    :if (not noninteractive)
     :hook ((prog-mode . highlight-indent-guides-mode))
     :diminish highlight-indent-guides-mode
     :config
@@ -1039,7 +1039,7 @@ Honor editorconfig files configuration for whitespace and indentation settings w
     :config
     (setq yas-snippet-dirs
           (cl-union yas-snippet-dirs
-                    '("~/.emacs.d/snippets"))) ;; personal snippets
+                    (list (expand-file-name "emacs.d/snippets" cs/editor-directory))))
     (yas-reload-all))
 
   (use-package yasnippet-snippets
@@ -1113,16 +1113,21 @@ This section documents installed language and syntax specific packages and their
 
 *** universal
 
-Tree-sitter grammar sources. Missing grammars are installed automatically on startup (no-op once present).
+Tree-sitter grammar sources. Unix installs missing grammars when a compiler is
+available. Windows builds them explicitly with =M-x cs/ensure-grammars= after
+dependency setup, so a missing compiler does not block startup.
 
 #+BEGIN_SRC emacs-lisp
   (use-package treesit
     :ensure nil
     ;; only load treesit if installed Emacs supports it
-    :if (fboundp 'treesit-language-available-p)
+    :if (and (fboundp 'treesit-available-p) (treesit-available-p))
     :config
-    (setq treesit-language-source-alist
+    ;; Grammar builds belong to setup, not file-opening prompts in Emacs 31+.
+    (setq treesit-auto-install-grammar 'never
+          treesit-language-source-alist
           '((javascript "https://github.com/tree-sitter/tree-sitter-javascript")
+            (jsdoc "https://github.com/tree-sitter/tree-sitter-jsdoc" "v0.23.2")
             (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
             (tsx        "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
             (json       "https://github.com/tree-sitter/tree-sitter-json")
@@ -1133,9 +1138,8 @@ Tree-sitter grammar sources. Missing grammars are installed automatically on sta
             (python     "https://github.com/tree-sitter/tree-sitter-python")
             (go         "https://github.com/tree-sitter/tree-sitter-go")
             (java       "https://github.com/tree-sitter/tree-sitter-java")))
-    (dolist (lang '(javascript typescript tsx json css html regex ruby python go java))
-      (unless (treesit-language-available-p lang)
-        (treesit-install-language-grammar lang))))
+    (when cs/auto-install-grammars
+      (cs/ensure-grammars)))
 #+END_SRC
 
 *** clojure
@@ -1329,6 +1333,7 @@ Tree-sitter JS/TS/TSX modes with project-local ESLint/Prettier, plus =web-mode= 
 
   (defun cs/js-ts-common-setup ()
     "Common configuration for JavaScript, TSX, and TypeScript modes."
+    (require 'elec-pair)
     (setq-local typescript-indent-level 2
                 js-indent-level 2
                 indent-tabs-mode nil)
@@ -1342,7 +1347,7 @@ Tree-sitter JS/TS/TSX modes with project-local ESLint/Prettier, plus =web-mode= 
   ;; Configure js-ts-mode for plain JavaScript files.
   (use-package js-ts-mode
     :ensure nil
-    :mode ("\\.js\\'" . js-ts-mode)
+    :mode ("\\.js\\'" . cs/javascript-mode)
     :hook (js-ts-mode . (lambda ()
                           (cs/js-ts-common-setup)
                           (evil-leader/set-key-for-mode 'js-ts-mode
@@ -1352,7 +1357,7 @@ Tree-sitter JS/TS/TSX modes with project-local ESLint/Prettier, plus =web-mode= 
   ;; Configure typescript-ts-mode for TypeScript files.
   (use-package typescript-ts-mode
     :ensure nil
-    :mode ("\\.ts\\'" . typescript-ts-mode)
+    :mode ("\\.ts\\'" . cs/typescript-mode)
     :hook (typescript-ts-mode . (lambda ()
                                   (cs/js-ts-common-setup)
                                   (evil-leader/set-key-for-mode 'typescript-ts-mode
@@ -1362,8 +1367,8 @@ Tree-sitter JS/TS/TSX modes with project-local ESLint/Prettier, plus =web-mode= 
   ;; Configure tsx-ts-mode for TSX and JSX files.
   (use-package tsx-ts-mode
     :ensure nil
-    :mode (("\\.tsx\\'" . tsx-ts-mode)
-           ("\\.jsx\\'" . tsx-ts-mode))
+    :mode (("\\.tsx\\'" . cs/tsx-mode)
+           ("\\.jsx\\'" . cs/tsx-mode))
     :hook (tsx-ts-mode . (lambda ()
                            (cs/js-ts-common-setup)
                            (evil-leader/set-key-for-mode 'tsx-ts-mode
@@ -1479,7 +1484,7 @@ Agenda, capture templates, Mac Mail links, HTML agenda export, and related Org t
 #+BEGIN_SRC emacs-lisp
   ;;; mac mail link functions
   (defun org-mac-mail-link-open-link (mid _)
-    (start-process "open-link" nil "open" (format "message://%%3C%s%%3E" mid)))
+    (browse-url (format "message://%%3C%s%%3E" mid)))
 
   (defun org-mac-mail-link-add-message-links ()
     (org-link-set-parameters "message" :follow #'org-mac-mail-link-open-link))
@@ -1499,7 +1504,7 @@ Agenda, capture templates, Mac Mail links, HTML agenda export, and related Org t
            (org-indent-mode . (lambda () (diminish 'org-indent-mode))))
     :init
     ;;; general settings
-    (setq org-directory "~/org")
+    (setq org-directory cs/org-directory)
     (setq org-insert-mode-line-in-empty-file t) ; for .txt file compatability
     (setq org-startup-truncated nil) ; wrap lines, don't truncate.
     ;;; src code editing settings
@@ -1510,7 +1515,7 @@ Agenda, capture templates, Mac Mail links, HTML agenda export, and related Org t
     (org-babel-do-load-languages 'org-babel-load-languages
                                  (append org-babel-load-languages '((sql . t))))
     ;;; todo
-    (setq org-agenda-files (list "~/org/todo.org"))
+    (setq org-agenda-files (list (expand-file-name "todo.org" org-directory)))
     (setq org-todo-keywords
           '((sequence "TODO" "STARTED" "WAITING" "ON HOLD" "|" "DONE" "DROPPED")))
     (setq org-deadline-warning-days 3)
@@ -1522,18 +1527,18 @@ Agenda, capture templates, Mac Mail links, HTML agenda export, and related Org t
     (setq org-outline-path-complete-in-steps nil)
     ;; rethink this as it is outdated....
     (setq org-capture-templates
-          '(("t" "Task" entry (file+headline "~/org/todo.org" "inbox")
+          `(("t" "Task" entry (file+headline ,(expand-file-name "todo.org" org-directory) "inbox")
              "** %?\n%i\n"
              :prepend t)
-            ("n" "Note" entry (file+headline "~/org/notes.org" "uncategorized")
+            ("n" "Note" entry (file+headline ,(expand-file-name "notes.org" org-directory) "uncategorized")
              "** %?\n%i\n"
              :prepend t)
             ("j" "Journal" entry
-             (file+headline "~/org/journal.org" "current month")
+             (file+headline ,(expand-file-name "journal.org" org-directory) "current month")
              "* %u\n%?\n"
              :prepend t)
             ("s" "Scratch" entry
-             (file+headline "~/org/scratchpad.org" "scratchpad")
+             (file+headline ,(expand-file-name "scratchpad.org" org-directory) "scratchpad")
              "** %?\n%i\n"
              :prepend t)))
     ;;; habits
@@ -1549,7 +1554,7 @@ Agenda, capture templates, Mac Mail links, HTML agenda export, and related Org t
     (setq org-html-postamble nil)
     (setq org-agenda-custom-commands
           ;; set agenda views to print to html
-          '(("P" agenda "" nil ("~/.emacs.d/views/agenda.html"))))
+          `(("P" agenda "" nil (,(expand-file-name "agenda.html" (cs/state-directory "views"))))))
     ;;; keybinds pre load
     (evil-leader/set-key-for-mode 'org-mode
       "ots" 'org-todo                                      ; toggle status
@@ -1581,15 +1586,15 @@ Agenda, capture templates, Mac Mail links, HTML agenda export, and related Org t
       "oav" 'org-agenda-list                                   ; org agenda view
       "oaw" 'org-agenda-write                                  ; org agenda write
       ;; automatically create a perspective and then open
-      "oot" (lambda () (interactive) (find-file "~/org/todo.org"))       ; org open todo
-      "oon" (lambda () (interactive) (find-file "~/org/notes.org"))      ; org open notes
-      "ooo" (lambda () (interactive) (find-file "~/org/README.org"))     ; org open README
-      "oos" (lambda () (interactive) (find-file "~/org/scratchpad.org")) ; org open scratchpad
+      "oot" (lambda () (interactive) (find-file (expand-file-name "todo.org" org-directory)))
+      "oon" (lambda () (interactive) (find-file (expand-file-name "notes.org" org-directory)))
+      "ooo" (lambda () (interactive) (find-file (expand-file-name "README.org" org-directory)))
+      "oos" (lambda () (interactive) (find-file (expand-file-name "scratchpad.org" org-directory)))
       ;; org agenda print (and open)
       "oap" (lambda ()
               (interactive)
               (org-store-agenda-views)
-              (browse-url (concat "file://" --user-home-dir "/.emacs.d/views/agenda.html")))
+              (browse-url-of-file (cs/state-path "views/agenda.html")))
       ;; "oCg" 'org-clock-goto
       ;; set universally and override as needed such as with magit + text-mode
       "cc" 'org-edit-src-exit
@@ -1661,6 +1666,7 @@ Elpy remains for now. Prefer migrating to =lsp-pyright= / =python-lsp-server= vi
 
 #+BEGIN_SRC emacs-lisp
   (use-package elpy
+    :if (executable-find "python3")
     :defer t
     :init
     (add-hook 'python-mode-hook 'elpy-enable)
@@ -1698,6 +1704,7 @@ The following gems should be installed:
     (ruby-mode . inf-ruby-minor-mode))
 
   (use-package chruby
+    :if (not (eq system-type 'windows-nt))
     :defer t)
 
   ;; (use-package asdf
@@ -1879,9 +1886,6 @@ The following gems should be installed:
                           :source 'fallback))))))
       (cs/enrich-ruby-tooling result directories manifest declarations)))
 
-  (defconst cs/project-ruby-exec
-    (expand-file-name "~/dotfiles/utils/project-ruby-exec"))
-
   (defun cs/flycheck-project-command (command)
     "Run Flycheck COMMAND under the project Ruby and bundle when declared."
     (let* ((program (file-name-nondirectory (car command)))
@@ -1891,14 +1895,14 @@ The following gems should be installed:
               (plist-get cs/ruby-tooling-resolution :bundled))
              ((string-equal program "reek")
               (plist-get cs/ruby-tooling-resolution :reek-bundled)))))
-      (append (list cs/project-ruby-exec)
+      (append cs/project-ruby-command
               (when bundled '("bundle" "exec"))
               (list program)
               (cdr command))))
 
   (defun cs/ruby-language-server-command (resolution)
     "Build the project-Ruby LSP command from RESOLUTION."
-    (let ((command (list cs/project-ruby-exec)))
+    (let ((command (copy-sequence cs/project-ruby-command)))
       (when (plist-get resolution :lsp-bundled)
         (setq command (append command '("bundle" "exec"))))
       (pcase (plist-get resolution :language-server)
@@ -1959,8 +1963,12 @@ The following gems should be installed:
           (rubocopfmt-mode 1)))
       (cs/setup-ruby-language-server resolution)))
 
-  (add-hook 'ruby-mode-hook #'cs/setup-ruby-tooling)
-  (add-hook 'ruby-ts-mode-hook #'cs/setup-ruby-tooling)
+  (defun cs/setup-ruby-tooling-if-available ()
+    "Keep Ruby editing available without a Ruby runtime."
+    (when (cs/ruby-available-p)
+      (cs/setup-ruby-tooling)))
+  (add-hook 'ruby-mode-hook #'cs/setup-ruby-tooling-if-available)
+  (add-hook 'ruby-ts-mode-hook #'cs/setup-ruby-tooling-if-available)
 #+END_SRC
 
 *** shell scripting
@@ -2175,11 +2183,12 @@ Markup Preview supports org and markdown.
 
 #+BEGIN_SRC emacs-lisp
   (defun cs-markup-preview-file ()
-    "use the markup-preview CLI to preview the current file"
+    "Preview the current file when markup-preview is installed."
     (interactive)
-    (shell-command
-     (format "markup-preview %s"
-             (shell-quote-argument (buffer-file-name)))))
+    (unless buffer-file-name (user-error "Save this buffer before previewing it"))
+    (unless (executable-find "markup-preview")
+      (user-error "Markup Preview is optional. Install its CLI to use this binding"))
+    (start-process "markup-preview" nil "markup-preview" buffer-file-name))
 #+END_SRC
 
 *** use localized javascript linter
@@ -2197,9 +2206,8 @@ Markup Preview supports org and markdown.
     "Prefer project-local eslint/standard binaries when declared in package.json."
     (let* ((root (or (buffer-file-name) default-directory))
            (package-root (locate-dominating-file root "package.json"))
-           (linter-root (locate-dominating-file root "node_modules"))
-           (eslint-bin (and linter-root (expand-file-name "node_modules/.bin/eslint" linter-root)))
-           (standard-bin (and linter-root (expand-file-name "node_modules/.bin/standard" linter-root)))
+           (eslint-bin (cs/node-tool "eslint" root))
+           (standard-bin (cs/node-tool "standard" root))
            (package-file (and package-root (expand-file-name "package.json" package-root)))
            (eslint-p (cs/package-json-mentions-p package-file "eslint"))
            (standard-p (cs/package-json-mentions-p package-file "\"lint\": \"standard")))
@@ -2244,8 +2252,9 @@ Markup Preview supports org and markdown.
                                           (file-exists-p (expand-file-name name package-root)))
                                         config-names)))
            (package-dep-p (cs/package-json-mentions-p package-file "prettier")))
-      (when (or config-file-p package-dep-p)
-        (prettier-js-mode))))
+      (when-let* ((command (and (or config-file-p package-dep-p) (cs/node-tool "prettier"))))
+        (setq-local prettier-js-command command)
+        (prettier-js-mode 1))))
 #+END_SRC
 
 
@@ -2287,9 +2296,9 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 *** set default starting directory (avoid launching projectile at HOME or src root)
 
 #+BEGIN_SRC emacs-lisp
-  (defvar --user-home-dir (getenv "HOME"))
-  (defvar --user-src-dir (concat --user-home-dir "/src"))
-  (defvar --user-scratch-dir (concat --user-src-dir "/scratch"))
+  (defvar --user-home-dir cs/personal-home)
+  (defvar --user-src-dir cs/source-directory)
+  (defvar --user-scratch-dir (expand-file-name "scratch" --user-src-dir))
   (unless (file-exists-p --user-scratch-dir)
     (make-directory --user-scratch-dir t))
   (when (or (string= default-directory "~/")
@@ -2342,11 +2351,8 @@ For iTerm: Go to Preferences > Profiles > (your profile) > Keys > Left option ke
 *** font settings
 
 #+BEGIN_SRC emacs-lisp
-  ;; mac uses Menlo @ 14pt; linux (omarchy) uses omarchy's default font at
-  ;; 10pt — same apparent size as mac retina at this panel's pixel density
-  (let ((default-font (if (eq system-type 'darwin) "Menlo" "JetBrainsMono Nerd Font"))
-        (default-height (if (eq system-type 'darwin) 140 100)))
-    (set-face-attribute 'default nil :family default-font :height default-height :weight 'normal))
+  (set-face-attribute 'default nil :family cs/default-font
+                      :height cs/default-font-height :weight 'normal)
 #+END_SRC
 
 *** turn off menu-bar, tool-bar, and scroll-bar
@@ -2496,8 +2502,7 @@ N [*]filename [project] ᚠbranch (modes) Err U: line:col 29% [main]
 *** open urls in default browser
 
 #+BEGIN_SRC emacs-lisp
-  (when (display-graphic-p)
-    (setq browse-url-browser-function 'browse-url-default-macosx-browser))
+  (setq browse-url-browser-function #'browse-url-default-browser)
 #+END_SRC
 
 
@@ -2512,7 +2517,7 @@ This section contains general global emacs key bindings.  Mode specific key bind
 
 #+BEGIN_SRC emacs-lisp
   ;;; (e)dit (e)macs user init file
-  (defvar --emacs-config (concat user-emacs-directory "emacs-config.org"))
+  (defvar --emacs-config cs/config-org-file)
   (evil-leader/set-key "ee" (lambda () (interactive) (find-file --emacs-config)))
 
   ;;; (s)ource (e)macs user init file
@@ -2581,7 +2586,8 @@ This section contains general global emacs key bindings.  Mode specific key bind
   (global-set-key (kbd "s-<return>") #'toggle-frame-fullscreen) ; s = super (⌘ on mac)
 
   ;;; hide others with macOS default keyboard shortcut of `⌥⌘H`
-  (global-set-key (kbd "M-s-˙") #'ns-do-hide-others)
+  (when (fboundp 'ns-do-hide-others)
+    (global-set-key (kbd "M-s-˙") #'ns-do-hide-others))
   ;; the `˙` in the above keybind is due to opt h producing that char
 
   ;;; window splitting
@@ -2651,8 +2657,8 @@ This section contains general global emacs key bindings.  Mode specific key bind
     "t"  #'counsel-projectile-find-file ; emulate command-(t)
     "b"  #'ivy-switch-buffer            ; switch to (b)uffer
     "kb" #'kill-buffer                  ; (k)ill (b)uffer
-    "gf" #'counsel-projectile-ag        ; (g)rep in project (f)iles (C-c C-o to open results in a buffer)
-    "gF" #'projectile-ag)               ; (g)rep in project (F)iles opening results in a buffer
+    "gf" #'counsel-projectile-rg        ; (g)rep in project (f)iles (C-c C-o to open results in a buffer)
+    "gF" #'projectile-ripgrep)          ; (g)rep in project (F)iles opening results in a buffer
 
   ;;; neotree
   (evil-leader/set-key "nt" #'neotree-toggle)
@@ -2686,13 +2692,8 @@ This section contains general global emacs key bindings.  Mode specific key bind
 #+BEGIN_SRC emacs-lisp
   ;;; toggle/open shell
   (evil-leader/set-key
-    "sv" (lambda () (interactive)         ; toggle (s)hell (v)isor
-           (multi-term-dedicated-toggle)
-           (multi-term-dedicated-select))
-    "sn" (lambda () (interactive)         ; toggle (s)hell (n)ew
-           ;; update buffer name setting dynamically for each perspective
-           (setq-default multi-term-buffer-name (concat "term-" (persp-name (persp-curr))))
-           (multi-term)))
+    "sv" #'cs/terminal-toggle
+    "sn" #'cs/terminal-new)
 
   ;;; multi term keybind setup - full vi-mode in zsh within emacs
   ;; don't leave emacs mode when pressing esc, pass through for vim compatability
