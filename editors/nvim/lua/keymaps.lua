@@ -97,6 +97,7 @@ vim.api.nvim_create_autocmd('BufReadPost', {
 ------------
 -- CUSTOM --
 ------------
+local platform = require 'lib.platform'
 vim.keymap.set('n', '<leader>Fd', vim.cmd.Ex, { desc = 'Open netrw file explorer' })
 vim.keymap.set('n', '<leader>/', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight' })
 
@@ -107,11 +108,11 @@ vim.keymap.set('n', '<leader>qq', '<cmd>quit<CR>', { desc = 'Quit' })
 
 -- Edit / reload Neovim config
 vim.keymap.set('n', '<leader>ev', function()
-  vim.cmd.edit(vim.fn.stdpath 'config' .. '/init.lua')
+  vim.cmd.edit(vim.fs.joinpath(platform.config, 'init.lua'))
 end, { desc = 'Edit Neovim config' })
 -- Reload options/keymaps only. Re-sourcing init.lua would re-run lazy.setup and break.
 vim.keymap.set('n', '<leader>sv', function()
-  local config = vim.fn.stdpath 'config'
+  local config = platform.config
   package.loaded['options'] = nil
   package.loaded['keymaps'] = nil
   dofile(config .. '/lua/options.lua')
@@ -133,7 +134,10 @@ vim.keymap.set('n', '<leader><Right>', '<cmd>vertical resize -5<CR>', { desc = '
 
 -- cwd helpers
 vim.keymap.set('n', '<leader>cd', '<cmd>cd %:p:h<CR><cmd>pwd<CR>', { desc = "cd to current file's directory" })
-vim.keymap.set('n', '<leader>cS', '<cmd>cd ~/src<CR><cmd>pwd<CR>', { desc = 'cd to ~/src' })
+vim.keymap.set('n', '<leader>cS', function()
+  vim.cmd.cd(platform.src)
+  vim.cmd.pwd()
+end, { desc = 'cd to source directory' })
 
 -- Preview current file in Markdown Preview (macOS only) — Emacs markdown ,Mp
 vim.keymap.set('n', '<leader>Mp', function()
@@ -151,6 +155,10 @@ vim.keymap.set('n', '<leader>oP', function()
   if vim.fn.has 'mac' == 1 or vim.fn.has 'macunix' == 1 then
     vim.fn.jobstart({ 'open', '-a', 'Org Preview', path }, { detach = true })
   else
+    if vim.fn.executable 'org-preview' == 0 then
+      vim.notify('Org preview needs org-preview on PATH', vim.log.levels.WARN)
+      return
+    end
     vim.fn.jobstart({ 'org-preview', path }, { detach = true })
   end
 end, { desc = 'Preview in Org Preview' })
@@ -324,7 +332,7 @@ end, { desc = 'Diagnostic refresh buffer' })
 
 -- Deft-shaped notes roots
 local function notes_telescope(subdir)
-  local root = vim.fn.expand('~/notes/' .. subdir)
+  local root = vim.fs.joinpath(platform.notes, subdir)
   if vim.fn.isdirectory(root) == 0 then
     vim.notify('Notes dir missing: ' .. root, vim.log.levels.WARN)
     return
@@ -342,9 +350,9 @@ vim.keymap.set('n', '<leader>nw', function()
 end, { desc = 'Notes: work' })
 vim.keymap.set('n', '<leader>nf', function()
   local roots = {
-    vim.fn.expand '~/notes/common',
-    vim.fn.expand '~/notes/personal',
-    vim.fn.expand '~/notes/work',
+    vim.fs.joinpath(platform.notes, 'common'),
+    vim.fs.joinpath(platform.notes, 'personal'),
+    vim.fs.joinpath(platform.notes, 'work'),
   }
   require('telescope.builtin').find_files {
     search_dirs = roots,

@@ -9,3 +9,8 @@ cache/
 *.orig
 *.rej
 *~
+
+# Machine-local editor overrides and generated Emacs Lisp
+editors/nvim/local.lua
+editors/emacs-config.el
+editors/emacs-config.elc

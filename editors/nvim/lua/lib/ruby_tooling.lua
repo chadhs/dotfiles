@@ -2,7 +2,16 @@
 
 local M = {}
 
-M.command = vim.fs.normalize(vim.fn.expand '~/dotfiles/utils/project-ruby-exec')
+M.command = require('lib.platform').ruby_command
+M.args = require('lib.platform').ruby_args
+
+function M.available()
+  return vim.fn.executable(M.command) == 1
+end
+
+function M.arguments(args)
+  return vim.list_extend(vim.deepcopy(M.args), args or {})
+end
 
 local CONFIGS = {
   standardrb = '.standard.yml',
@@ -222,6 +231,9 @@ local function warn(bufnr, result)
 end
 
 function M.formatters(bufnr)
+  if not M.available() then
+    return {}
+  end
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   local result = M.resolve(bufnr)
   warn(bufnr, result)
@@ -236,7 +248,7 @@ function M.linter(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   local result = M.resolve(bufnr)
   warn(bufnr, result)
-  if result.ambiguous then
+  if result.ambiguous or not M.available() then
     return nil, result
   end
   local suffix = result.bundled and '_bundle' or '_project'
@@ -260,7 +272,7 @@ function M.language_server(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   local result = M.resolve(bufnr)
   warn(bufnr, result)
-  if result.lsp_ambiguous then
+  if result.lsp_ambiguous or not M.available() then
     return nil, result
   end
   return result.language_server, result

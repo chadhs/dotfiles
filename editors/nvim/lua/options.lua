@@ -99,7 +99,9 @@ vim.opt.incsearch = true
 vim.opt.showmatch = true
 
 vim.opt.backup = false
-vim.opt.backupdir = os.getenv 'HOME' .. '/.config/nvim/cache'
+local backupdir = vim.fs.joinpath(vim.fn.stdpath 'state', 'backup')
+vim.fn.mkdir(backupdir, 'p')
+vim.opt.backupdir = backupdir
 
 -- Allow background buffers without forcing a write (old vimrc `set hidden`)
 vim.opt.hidden = true
@@ -114,8 +116,7 @@ vim.opt.foldopen = { 'block', 'insert', 'jump', 'mark', 'percent', 'quickfix', '
 
 -- Neovide GUI settings. Terminal Neovim keeps the options above unchanged.
 if vim.g.neovide then
-  -- mac uses Menlo; linux (omarchy) uses omarchy's default font
-  vim.o.guifont = (vim.uv.os_uname().sysname == 'Darwin') and 'Menlo:h14' or 'JetBrainsMono Nerd Font:h14'
+  vim.o.guifont = require('lib.platform').font
   vim.o.mouse = 'a'
 
   vim.g.neovide_remember_window_size = true

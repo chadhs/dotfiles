@@ -32,6 +32,7 @@ return {
       'saghen/blink.cmp',
     },
     config = function()
+      local platform = require 'lib.platform'
       -- Brief aside: **What is LSP?**
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -217,7 +218,7 @@ return {
       local function ruby_command(executable, arguments)
         return function(dispatchers, config)
           local result = ruby_tooling.resolve_path(config.root_dir)
-          local command = { ruby_tooling.command }
+          local command = vim.list_extend({ ruby_tooling.command }, ruby_tooling.arguments())
           if result.lsp_bundled then
             vim.list_extend(command, { 'bundle', 'exec' })
           end
@@ -304,6 +305,7 @@ return {
         'rubocop',
         'clj-kondo',
       })
+      ensure_installed = platform.mason_tools or ensure_installed
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
       -- mason-lspconfig v2 dropped `handlers` / `automatic_installation`. Configure and
@@ -321,7 +323,9 @@ return {
         -- certain features of an LSP (for example, turning off formatting for ts_ls)
         server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
         vim.lsp.config(server_name, server)
-        vim.lsp.enable(server_name)
+        if not platform.enabled_servers or platform.enabled_servers[server_name] then
+          vim.lsp.enable(server_name)
+        end
       end
 
       for server_name, server in pairs(ruby_servers) do

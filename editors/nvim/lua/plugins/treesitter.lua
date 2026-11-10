@@ -50,10 +50,15 @@ return {
         'yaml',
       }
       local wanted = {}
+      parsers = require('lib.platform').parsers or parsers
       for _, lang in ipairs(parsers) do
         wanted[lang] = true
       end
-      ts.install(parsers)
+      local can_install = vim.fn.executable 'tree-sitter' == 1
+        and (vim.fn.executable 'cc' == 1 or vim.fn.executable 'gcc' == 1 or vim.fn.executable 'clang' == 1 or vim.fn.executable 'cl' == 1)
+      if can_install then
+        ts.install(parsers)
+      end
 
       -- Ruby indent is still more reliable with vim's regex indent (same as the old master config).
       local disable_indent = { ruby = true }
@@ -61,7 +66,8 @@ return {
       ---@param buf integer
       ---@param language string
       local function treesitter_try_attach(buf, language)
-        if not vim.treesitter.language.add(language) then
+        local ok, added = pcall(vim.treesitter.language.add, language)
+        if not ok or not added then
           return
         end
         vim.treesitter.start(buf, language)
@@ -91,7 +97,7 @@ return {
           end
 
           -- Only fetch parsers we opted into (not every filetype, e.g. gitignore).
-          if wanted[language] then
+          if wanted[language] and can_install then
             ts.install(language):await(function()
               treesitter_try_attach(buf, language)
             end)
