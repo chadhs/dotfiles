@@ -1,7 +1,7 @@
-diff --git a/README.md b/README.md
+diff --git i/README.md w/README.md
 index 516035e..5179268 100644
---- a/README.md
-+++ b/README.md
+--- i/README.md
++++ w/README.md
 @@ -82,6 +82,7 @@ Third-party plugin settings live on the plugin entry in `~/.config/omarchy/shell
  {
    "id": "io.github.gabrielvincent.switcharoo",
@@ -20,11 +20,52 @@ index 516035e..5179268 100644
  
  A summon payload can temporarily override any setting. For example:
  
-diff --git a/Switcher.qml b/Switcher.qml
-index 42dfeed..37d0666 100644
---- a/Switcher.qml
-+++ b/Switcher.qml
-@@ -619,6 +619,12 @@ Item {
+diff --git i/Switcher.qml w/Switcher.qml
+index 42dfeed..bf7a4ac 100644
+--- i/Switcher.qml
++++ w/Switcher.qml
+@@ -71,6 +71,11 @@ Item {
+ 
+   function shellEntry() {
+     var config = root.shell && root.shell.shellConfig ? root.shell.shellConfig : null
++    // LOCAL PATCH (config-fallback): current omarchy shells no longer expose
++    // `shellConfig` on the plugin shell API, so every shell.json setting (e.g.
++    // releaseModifiers) was silently ignored. Read the user's shell.json
++    // directly as a fallback, cached briefly to keep repeat presses cheap.
++    if (!config) config = root.readShellConfigFromFile()
+     var plugins = config && Array.isArray(config.plugins) ? config.plugins : []
+     var id = root.pluginId()
+     for (var i = 0; i < plugins.length; i++) {
+@@ -79,6 +84,28 @@ Item {
+     return {}
+   }
+ 
++  // LOCAL PATCH (config-fallback): short-lived cache for the direct
++  // shell.json read, so tab autorepeat at 40 ms does not reparse the file.
++  property var _fileShellConfigCache: null
++  property real _fileShellConfigAt: 0
++
++  function readShellConfigFromFile() {
++    var now = Date.now()
++    if (root._fileShellConfigCache !== null && now - root._fileShellConfigAt < 2000)
++      return root._fileShellConfigCache
++    var parsed = null
++    try {
++      userShellConfigView.path = Quickshell.env("HOME") + "/.config/omarchy/shell.json"
++      parsed = JSON.parse(String(userShellConfigView.text() || ""))
++    } catch (error) {
++      parsed = null
++    }
++    if (!parsed || typeof parsed !== "object" || parsed.version !== 1) parsed = null
++    root._fileShellConfigCache = parsed
++    root._fileShellConfigAt = now
++    return parsed
++  }
++
+   function parsePayload(payloadJson) {
+     if (!payloadJson) return {}
+     try {
+@@ -619,6 +646,12 @@ Item {
        "eval",
        "return hl.dispatch(hl.dsp.focus({ window = 'address:" + address + "' }))"
      ])
@@ -37,7 +78,7 @@ index 42dfeed..37d0666 100644
    }
  
    // Public IPC method for callers that want to commit the current selection
-@@ -656,12 +662,43 @@ Item {
+@@ -656,12 +689,43 @@ Item {
      root.positionSelection()
    }
  
@@ -83,10 +124,26 @@ index 42dfeed..37d0666 100644
    }
  
    function loadMinimizedState(raw) {
-diff --git a/WindowModel.js b/WindowModel.js
+@@ -786,6 +850,15 @@ Item {
+     printErrors: false
+   }
+ 
++  // LOCAL PATCH (config-fallback): direct read of the user's shell.json when
++  // the shell API does not expose shellConfig. Mirrors cmdlineView usage.
++  FileView {
++    id: userShellConfigView
++    preload: false
++    blockAllReads: true
++    printErrors: false
++  }
++
+   PointerMoveGate {
+     id: pointerGate
+     referenceItem: card
+diff --git i/WindowModel.js w/WindowModel.js
 index 158eedf..d6ead81 100644
---- a/WindowModel.js
-+++ b/WindowModel.js
+--- i/WindowModel.js
++++ w/WindowModel.js
 @@ -23,6 +23,22 @@ function normalizeWorkspacePatterns(value) {
      return patterns;
  }
@@ -120,10 +177,10 @@ index 158eedf..d6ead81 100644
          showWorkspace:
              pick("showWorkspace", "showWorkspaceNumbers", false) !== false,
          showSpecialWorkspaceBadge:
-diff --git a/tests/tst_WindowModel.qml b/tests/tst_WindowModel.qml
+diff --git i/tests/tst_WindowModel.qml w/tests/tst_WindowModel.qml
 index 6201449..dc1e485 100644
---- a/tests/tst_WindowModel.qml
-+++ b/tests/tst_WindowModel.qml
+--- i/tests/tst_WindowModel.qml
++++ w/tests/tst_WindowModel.qml
 @@ -64,6 +64,29 @@ TestCase {
      verify(!WindowModel.normalizedConfig({ showSpecialWorkspaceBadge: false }, {}).showSpecialWorkspaceBadge)
    }

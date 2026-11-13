@@ -1,3 +1,16 @@
 lazy-lock.json
 cache/
 .envrc
+
+# Local backups and editor recovery files
+*.bak
+*.bak.*
+*.bak-*
+*.orig
+*.rej
+*~
+
+# Machine-local editor overrides and generated Emacs Lisp
+editors/nvim/local.lua
+editors/emacs-config.el
+editors/emacs-config.elc

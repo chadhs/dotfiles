@@ -1,0 +1,15 @@
+#!/bin/sh
+# mac shim for the Markup Preview app (org/markdown preview).
+# Lives on PATH as ~/bin/markup-preview so shells, emacs shell-command, and
+# scripts all resolve the same command the old zsh alias provided.
+
+APP="Markup Preview"
+APP_PATH="/Applications/${APP}.app"
+
+if [ ! -d "${APP_PATH}" ]; then
+    echo "markup-preview: ${APP_PATH} not found" >&2
+    echo "  install the app, or edit this shim if it lives elsewhere" >&2
+    exit 1
+fi
+
+exec open -a "${APP}" "$@"

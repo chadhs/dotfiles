@@ -1,5 +1,5 @@
--- Keep only your personal keybinding overrides here. Add new bindings or
--- unbind defaults before replacing them.
+-- Keep only your personal keybinding overrides here. Use o.bind for additions
+-- and o.rebind for replacements; hl.unbind disables a key without replacing it.
 
 -- See current bindings and descriptions:
 --   omarchy menu keybindings --print
@@ -19,15 +19,13 @@
 -- hl.unbind("SUPER + SHIFT + B")
 
 -- Vicinae: Alfred-style app/file/web search. SUPER+SPACE was the Omarchy
--- root menu; SUPER+ALT+SPACE was the apps-only menu. The bar's Omarchy
+-- root menu; SUPER+ALT+SPACE opens the stock Apps grid. The bar's Omarchy
 -- menu button and SUPER+ESCAPE (system menu) are unchanged. Plain
 -- `vicinae toggle` talks to the running server — do not wrap with
 -- `{ launch = ... }` (that starts a second uwsm instance).
-hl.unbind("SUPER + SPACE")
-o.bind("SUPER + SPACE", "Vicinae", "vicinae toggle")
+o.rebind("SUPER + SPACE", "Vicinae", "vicinae toggle")
 
-hl.unbind("SUPER + ALT + SPACE")
-o.bind("SUPER + ALT + SPACE", "Omarchy menu", "omarchy-menu toggle")
+o.rebind("SUPER + ALT + SPACE", "Omarchy menu", "omarchy-menu toggle")
 
 hl.layer_rule({ match = { namespace = "vicinae" }, no_anim = true })
 
@@ -86,8 +84,7 @@ local function unless_terminal(send)
   end
 end
 
--- Select all (mac Cmd+A).
-o.bind("SUPER + A", "Universal select all", send_shortcut_once("CTRL", "A"))
+-- Select all (mac Cmd+A) is supplied by Omarchy 4.5.
 
 -- Undo/redo (mac Cmd+Z / Cmd+Shift+Z). No-op in terminals so the injected
 -- CTRL+Z can't suspend a running shell job.
@@ -123,29 +120,21 @@ o.bind("ALT + DELETE", "Delete next word", function()
   end
 end)
 
--- Line/document navigation (mac Cmd+Arrow). Unbind Omarchy's window focus on
--- SUPER+Arrow first; focus moves to SUPER+ALT+Arrow below.
-hl.unbind("SUPER + LEFT")
-hl.unbind("SUPER + RIGHT")
-hl.unbind("SUPER + UP")
-hl.unbind("SUPER + DOWN")
+-- Line/document navigation (mac Cmd+Arrow) replaces Omarchy's window focus.
+-- Window focus uses CTRL+ALT+SHIFT+Arrows below.
 
-o.bind("SUPER + LEFT", "Cursor to line start", send_shortcut_once("", "HOME"))
-o.bind("SUPER + RIGHT", "Cursor to line end", send_shortcut_once("", "END"))
-o.bind("SUPER + UP", "Cursor to document start", send_shortcut_once("CTRL", "HOME"))
-o.bind("SUPER + DOWN", "Cursor to document end", send_shortcut_once("CTRL", "END"))
+o.rebind("SUPER + LEFT", "Cursor to line start", send_shortcut_once("", "HOME"))
+o.rebind("SUPER + RIGHT", "Cursor to line end", send_shortcut_once("", "END"))
+o.rebind("SUPER + UP", "Cursor to document start", send_shortcut_once("CTRL", "HOME"))
+o.rebind("SUPER + DOWN", "Cursor to document end", send_shortcut_once("CTRL", "END"))
 
--- Selection (mac Cmd+Shift+Arrow). Unbind Omarchy's window swap on
--- SUPER+SHIFT+Arrow first; swap moves to SUPER+CTRL+SHIFT+Arrow below.
-hl.unbind("SUPER + SHIFT + LEFT")
-hl.unbind("SUPER + SHIFT + RIGHT")
-hl.unbind("SUPER + SHIFT + UP")
-hl.unbind("SUPER + SHIFT + DOWN")
+-- Selection (mac Cmd+Shift+Arrow) replaces Omarchy's window swaps.
+-- Swaps use SUPER+CTRL+SHIFT+Arrows below.
 
-o.bind("SUPER + SHIFT + LEFT", "Select to line start", send_shortcut_once("SHIFT", "HOME"))
-o.bind("SUPER + SHIFT + RIGHT", "Select to line end", send_shortcut_once("SHIFT", "END"))
-o.bind("SUPER + SHIFT + UP", "Select to document start", send_shortcut_once("CTRL + SHIFT", "HOME"))
-o.bind("SUPER + SHIFT + DOWN", "Select to document end", send_shortcut_once("CTRL + SHIFT", "END"))
+o.rebind("SUPER + SHIFT + LEFT", "Select to line start", send_shortcut_once("SHIFT", "HOME"))
+o.rebind("SUPER + SHIFT + RIGHT", "Select to line end", send_shortcut_once("SHIFT", "END"))
+o.rebind("SUPER + SHIFT + UP", "Select to document start", send_shortcut_once("CTRL + SHIFT", "HOME"))
+o.rebind("SUPER + SHIFT + DOWN", "Select to document end", send_shortcut_once("CTRL + SHIFT", "END"))
 
 -- Window focus (relocated twice over: was SUPER+Arrow, then SUPER+ALT+Arrow —
 -- SUPER+Arrow is now text nav and SUPER+ALT+Arrow is the Moom nudge below).
@@ -156,34 +145,30 @@ o.bind("CTRL + ALT + SHIFT + DOWN", "Focus on below window", hl.dsp.focus({ dire
 
 -- Moom-style window management (see omarchy/docs/moom-omarchy-plan.md in the
 -- dotfiles repo).
--- Fraction chords resize tiled splits; grid cells place floating windows.
+-- Active Plan A floats windows and places them on the literal grid.
+-- Optional Plan B resizes tiled splits; see moom.conf.
 local function moom(action)
   return "omarchy-moom " .. action
 end
 
--- Cede these Omarchy chords to Moom muscle memory (features remain reachable
--- via the omarchy menu): reminders, show time, battery, weather, reset zoom,
--- and move-workspace-to-monitor (per-window monitor moves: CTRL+ALT+Arrows).
-hl.unbind("SUPER + CTRL + ALT + R")
+-- Remove Show time using its original modifier spelling. The layout-cycle
+-- rebind below uses SUPER+ALT+CTRL+T; unbinding that spelling alone does not
+-- remove the stock SUPER+CTRL+ALT+T handler on this Hyprland version.
 hl.unbind("SUPER + CTRL + ALT + T")
-hl.unbind("SUPER + CTRL + ALT + B")
-hl.unbind("SUPER + CTRL + ALT + W")
-hl.unbind("SUPER + CTRL + ALT + Z")
-hl.unbind("SUPER + SHIFT + ALT + LEFT")
-hl.unbind("SUPER + SHIFT + ALT + RIGHT")
 
--- Fractions: tiled = exact split resize, float = cell placement.
+-- Fractions: literal grid placement in active Plan A. Narrow panels and
+-- three-quarter placement replace stock workspace moves and battery display.
 o.bind("SUPER + CTRL + ALT + LEFT", "Moom: half width", moom("half-left"))
 o.bind("SUPER + CTRL + ALT + RIGHT", "Moom: half width", moom("half-right"))
 o.bind("SUPER + CTRL + ALT + UP", "Moom: top half", moom("half-top"))
 o.bind("SUPER + CTRL + ALT + DOWN", "Moom: bottom half", moom("half-bottom"))
-o.bind("SUPER + SHIFT + ALT + LEFT", "Moom: narrow left panel", moom("narrow-left"))
-o.bind("SUPER + SHIFT + ALT + RIGHT", "Moom: narrow right panel", moom("narrow-right"))
+o.rebind("SUPER + SHIFT + ALT + LEFT", "Moom: narrow left panel", moom("narrow-left"))
+o.rebind("SUPER + SHIFT + ALT + RIGHT", "Moom: narrow right panel", moom("narrow-right"))
 o.bind("SUPER + SHIFT + CTRL + ALT + LEFT", "Moom: wide left panel", moom("wide-left"))
 o.bind("SUPER + SHIFT + CTRL + ALT + RIGHT", "Moom: wide right panel", moom("wide-right"))
 o.bind("SUPER + CTRL + ALT + M", "Moom: center two-thirds", moom("center"))
-o.bind("SUPER + CTRL + ALT + B", "Moom: left three-quarters", moom("threequarter"))
-o.bind("SUPER + CTRL + ALT + F", "Moom: fill", moom("fill"))
+o.rebind("SUPER + CTRL + ALT + B", "Moom: left three-quarters", moom("threequarter"))
+o.rebind("SUPER + CTRL + ALT + F", "Moom: fill", moom("fill"))
 
 -- Placement keys (float-first on tiled windows).
 o.bind("SUPER + ALT + Q", "Moom: corner top left", moom("corner-tl"))
@@ -191,10 +176,9 @@ o.bind("SUPER + ALT + W", "Moom: corner top right", moom("corner-tr"))
 o.bind("SUPER + ALT + Z", "Moom: corner bottom left", moom("corner-bl"))
 o.bind("SUPER + ALT + X", "Moom: corner bottom right", moom("corner-br"))
 o.bind("SUPER + CTRL + ALT + Q", "Moom: quarter top left", moom("quarter-tl"))
-o.bind("SUPER + CTRL + ALT + W", "Moom: quarter top right", moom("quarter-tr"))
-o.bind("SUPER + CTRL + ALT + Z", "Moom: quarter bottom left", moom("quarter-bl"))
+o.rebind("SUPER + CTRL + ALT + W", "Moom: quarter top right", moom("quarter-tr"))
+o.rebind("SUPER + CTRL + ALT + Z", "Moom: quarter bottom left", moom("quarter-bl"))
 o.bind("SUPER + CTRL + ALT + X", "Moom: quarter bottom right", moom("quarter-br"))
-o.bind("SUPER + CTRL + ALT + T", "Moom: task list cell", moom("task"))
 
 -- Window swap (relocated twice over: was SUPER+SHIFT+Arrow, now
 -- SUPER+CTRL+SHIFT+Arrow — SUPER+SHIFT+Arrow is text selection and the last
@@ -202,24 +186,20 @@ o.bind("SUPER + CTRL + ALT + T", "Moom: task list cell", moom("task"))
 -- stock Omarchy) is currently unbound; if ever missed its fallback chord is
 -- SUPER+CTRL+SHIFT+ALT+UP/DOWN (still free):
 --   o.bind("SUPER + CTRL + SHIFT + ALT + UP", "Move window into group above", hl.dsp.window.move({ into_group = "u" }))
-o.bind("SUPER + CTRL + SHIFT + LEFT", "Swap window to the left", hl.dsp.window.swap({ direction = "l" }))
-o.bind("SUPER + CTRL + SHIFT + RIGHT", "Swap window to the right", hl.dsp.window.swap({ direction = "r" }))
-o.bind("SUPER + CTRL + SHIFT + UP", "Swap window up", hl.dsp.window.swap({ direction = "u" }))
-o.bind("SUPER + CTRL + SHIFT + DOWN", "Swap window down", hl.dsp.window.swap({ direction = "d" }))
+o.rebind("SUPER + SHIFT + CTRL + LEFT", "Swap window to the left", hl.dsp.window.swap({ direction = "l" }))
+o.rebind("SUPER + SHIFT + CTRL + RIGHT", "Swap window to the right", hl.dsp.window.swap({ direction = "r" }))
+o.rebind("SUPER + SHIFT + CTRL + UP", "Swap window up", hl.dsp.window.swap({ direction = "u" }))
+o.rebind("SUPER + SHIFT + CTRL + DOWN", "Swap window down", hl.dsp.window.swap({ direction = "d" }))
 
 -- Cede Omarchy's move-into-group chords to Moom nudges. Grouping itself is
 -- untouched: SUPER+G toggles, SUPER+ALT+G moves out, SUPER+ALT+TAB cycles,
 -- SUPER+CTRL+Arrows moves grouped focus.
-hl.unbind("SUPER + ALT + LEFT")
-hl.unbind("SUPER + ALT + RIGHT")
-hl.unbind("SUPER + ALT + UP")
-hl.unbind("SUPER + ALT + DOWN")
 
 -- Nudges (floating only, confined to display).
-o.bind("SUPER + ALT + LEFT", "Moom: nudge left", moom("nudge-left"), { repeating = true })
-o.bind("SUPER + ALT + RIGHT", "Moom: nudge right", moom("nudge-right"), { repeating = true })
-o.bind("SUPER + ALT + UP", "Moom: nudge up", moom("nudge-up"), { repeating = true })
-o.bind("SUPER + ALT + DOWN", "Moom: nudge down", moom("nudge-down"), { repeating = true })
+o.rebind("SUPER + ALT + LEFT", "Moom: nudge left", moom("nudge-left"), { repeating = true })
+o.rebind("SUPER + ALT + RIGHT", "Moom: nudge right", moom("nudge-right"), { repeating = true })
+o.rebind("SUPER + ALT + UP", "Moom: nudge up", moom("nudge-up"), { repeating = true })
+o.rebind("SUPER + ALT + DOWN", "Moom: nudge down", moom("nudge-down"), { repeating = true })
 
 -- Reset all tiled windows on the active workspace to even dwindle splits.
 -- No built-in reset dispatcher exists; dwindle's `splitratio 1 exact`
@@ -276,9 +256,10 @@ end)
 -- Global reset, reachable without entering the mode.
 o.bind("SUPER + ALT + 0", "Reset tiled window sizes", reset_tiled_sizes)
 
--- Resize bind specs: tiers x directions, built into one list that is the
--- single source of truth. The expected bind count derives from the list, so
--- the self-heal check below can never drift from the actual binds.
+-- Use evdev XKB keycodes for arrows and Return. On Hyprland 0.56.2,
+-- the screenshot selector's named-key unbinds also remove matching binds
+-- in other submaps. Keycodes keep resize binds distinct from those names.
+-- RIGHT=114, LEFT=113, DOWN=116, UP=111, RETURN=36.
 local resize_bind_list = {}
 for _, tier in ipairs({
   { prefix = "", step = 100 },
@@ -286,10 +267,10 @@ for _, tier in ipairs({
   { prefix = "CTRL + ", step = 300 },
 }) do
   for _, dir in ipairs({
-    { key = "RIGHT", dx = 1, dy = 0, desc = "Expand width" },
-    { key = "LEFT", dx = -1, dy = 0, desc = "Shrink width" },
-    { key = "DOWN", dx = 0, dy = 1, desc = "Expand height" },
-    { key = "UP", dx = 0, dy = -1, desc = "Shrink height" },
+    { key = "code:114", dx = 1, dy = 0, desc = "Expand width" },
+    { key = "code:113", dx = -1, dy = 0, desc = "Shrink width" },
+    { key = "code:116", dx = 0, dy = 1, desc = "Expand height" },
+    { key = "code:111", dx = 0, dy = -1, desc = "Shrink height" },
   }) do
     table.insert(resize_bind_list, {
       keys = tier.prefix .. dir.key,
@@ -302,85 +283,30 @@ end
 for _, mode_bind in ipairs({
   { keys = "0", desc = "Reset tiled window sizes", dispatcher = reset_tiled_sizes },
   { keys = "ESCAPE", desc = "Exit resize mode", dispatcher = exit_resize_mode },
-  { keys = "RETURN", desc = "Exit resize mode", dispatcher = exit_resize_mode },
+  { keys = "code:36", desc = "Exit resize mode", dispatcher = exit_resize_mode },
 }) do
   table.insert(resize_bind_list, mode_bind)
 end
 
--- Registered handles double as the self-heal ground truth: hl.bind only
--- returns a handle when the bind actually landed, so #handles is how many
--- binds exist, and a failed config load shows up as a shortfall.
-local resize_bind_handles = {}
-local resize_bind_expected = #resize_bind_list
-
-local function register_resize_binds()
-  resize_bind_handles = {}
+-- Register once per config load; no runtime removal of potentially stale
+-- handles. The former watchdog counted handles, not surviving bindings.
+hl.define_submap("resize", function()
   for _, spec in ipairs(resize_bind_list) do
-    local handle = hl.bind(spec.keys, spec.dispatcher, { description = spec.desc, repeating = spec.repeating })
-    if handle then
-      table.insert(resize_bind_handles, handle)
-    end
+    hl.bind(spec.keys, spec.dispatcher, { description = spec.desc, repeating = spec.repeating })
   end
-end
-
-hl.define_submap("resize", register_resize_binds)
-
--- Self-heal watchdog: a session start or reload can register only part of
--- this submap — hl.define_submap swallows a failed/timed-out pcall with no
--- journal trace. First seen live 2026-09-14: 10 of 15 binds landed at login
--- and a oneshot check wasn't enough. So this is a repeating timer: first
--- check a few seconds after each config load (outside the login storm),
--- then keep checking while short. On a shortfall, remove whatever landed
--- and re-register in-place (removal first, so repaired binds can't
--- double-fire); if a repair attempt also falls short, keep retrying and
--- re-nag about hyprctl reload every 60s. Once healthy (from the start or
--- after a repair), the watchdog stands down: binds only ever drop during a
--- config load, and that reload recreates this timer, so there's nothing
--- left to watch.
-local resize_watchdog_nagged = false
-local resize_watchdog
-
-resize_watchdog = hl.timer(function()
-  if #resize_bind_handles == resize_bind_expected then
-    resize_watchdog:set_enabled(false)
-    return
-  end
-
-  for _, handle in ipairs(resize_bind_handles) do
-    pcall(handle.remove, handle)
-  end
-  -- Re-enter the submap context: hl.bind tags binds with the current submap,
-  -- which is empty inside a timer callback.
-  hl.define_submap("resize", register_resize_binds)
-
-  if #resize_bind_handles == resize_bind_expected then
-    resize_watchdog_nagged = false
-    resize_watchdog:set_enabled(false)
-    hl.exec_cmd("omarchy-shell -q osd show '{\"icon\":\"keyboard\",\"message\":\"Repaired resize mode binds\",\"duration\":\"2500\"}'")
-  else
-    hl.timer(function()
-      resize_watchdog_nagged = false
-    end, { timeout = 60000, type = "oneshot" })
-    if resize_watchdog_nagged then
-      return
-    end
-    resize_watchdog_nagged = true
-    hl.exec_cmd("omarchy-shell -q osd show '{\"icon\":\"keyboard\",\"message\":\"Resize binds still short — run hyprctl reload\",\"duration\":\"5000\"}'")
-  end
-end, { timeout = 4000, type = "repeat" })
+end)
 
 -- Send focused window to prev/next monitor (wraps around).
 o.bind("CTRL + ALT + LEFT", "Moom: previous display", moom("display-prev"))
 o.bind("CTRL + ALT + RIGHT", "Moom: next display", moom("display-next"))
 
--- Revert last Moom action for the focused window.
-o.bind("SUPER + CTRL + ALT + R", "Moom: revert", moom("revert"))
+-- Revert last Moom action for the focused window (replaces reminders).
+o.rebind("SUPER + CTRL + ALT + R", "Moom: revert", moom("revert"))
 
 -- New tab (mac Cmd+T): terminals get CTRL+SHIFT+T (ghostty's new_tab),
 -- GUI apps get CTRL+T (chromium etc.). Relocates Omarchy's toggle
 -- floating/tiling, now on SUPER+ALT+T below.
-hl.unbind("SUPER + T")
-o.bind("SUPER + T", "New tab", function()
+o.rebind("SUPER + T", "New tab", function()
   if active_window_is_terminal() then
     send_shortcut_once("CTRL + SHIFT", "T")()
   else
@@ -391,10 +317,9 @@ end)
 -- Address/search bar (mac Cmd+L): inject CTRL+L, which Chromium and most
 -- GUI apps handle. No-op in terminals so the injected CTRL+L can't clear
 -- a running shell. Relocates Omarchy's workspace-layout toggle to
--- SUPER+ALT+L.
-hl.unbind("SUPER + L")
-o.bind("SUPER + L", "Address / search bar", unless_terminal(send_shortcut_once("CTRL", "L")))
-o.bind("SUPER + ALT + L", "Toggle workspace layout", "omarchy-hyprland-workspace-layout-toggle")
+-- SUPER+ALT+CTRL+T.
+o.rebind("SUPER + L", "Address / search bar", unless_terminal(send_shortcut_once("CTRL", "L")))
+o.rebind("SUPER + ALT + CTRL + T", "Cycle workspace layout", "omarchy-hyprland-workspace-layout-toggle")
 
 -- New window (mac Cmd+N): terminals get nothing (CTRL+N is meaningless
 -- there), GUI apps get CTRL+N (chromium new window, new doc elsewhere).
@@ -404,8 +329,7 @@ o.bind("SUPER + N", "New window", unless_terminal(send_shortcut_once("CTRL", "N"
 -- CTRL+F can't become readline forward-char. Exclusive fullscreen moves
 -- to SUPER+CTRL+SHIFT+F; maximize stays on SUPER+ALT+F, tiled/client
 -- fullscreen on SUPER+CTRL+F.
-hl.unbind("SUPER + F")
-o.bind("SUPER + F", "Find", unless_terminal(send_shortcut_once("CTRL", "F")))
+o.rebind("SUPER + F", "Find", unless_terminal(send_shortcut_once("CTRL", "F")))
 o.bind("SUPER + CTRL + SHIFT + F", "Full screen", hl.dsp.window.fullscreen({ mode = "fullscreen" }))
 
 -- Reload (mac Cmd+R): inject CTRL+R. No-op in terminals so the injected
@@ -429,8 +353,7 @@ o.bind("SUPER + ALT + T", "Toggle window floating/tiling", hl.dsp.window.float({
 -- else. Tag membership is defined in omarchy/hypr/looknfeel.lua (chromium via
 -- omarchy's upstream tag + an explicit local tail). In terminals always close
 -- the window so injected CTRL+W can't delete a word.
-hl.unbind("SUPER + W")
-o.bind("SUPER + W", "Close tab / window", function()
+o.rebind("SUPER + W", "Close tab / window", function()
   if active_window_is_terminal() or window_has_tag("multi-tab") then
     send_shortcut_once("CTRL", "W")()
   else
@@ -441,7 +364,7 @@ end)
 -- Mac-style Cmd+Q: quit the whole app by closing every window of its class.
 -- Universal — no injected chords, so apps that ignore CTRL+Q (omawrite,
 -- claude, omacalc) still quit. On a terminal this closes all terminal windows.
-o.bind("SUPER + Q", "Quit app", "omarchy-quit-app")
+o.rebind("SUPER + Q", "Quit app", "omarchy-quit-app")
 
 -- Screenshot shortcuts (mac-ish chords). All three open the capture menu for
 -- now; mode-specific binds kept tripping over capture quirks (silent exits
@@ -452,8 +375,7 @@ o.bind("CTRL + SUPER + SHIFT + 5", "Screenshot: capture menu", "omarchy-menu tog
 
 -- 1Password Quick Access: popup whose search box is focused on open.
 -- Replaces monitor scaling down (never used; scaling up remains on SUPER+/).
-hl.unbind("SUPER + ALT + SLASH") -- was: Monitor scaling down
-o.bind("SUPER + ALT + SLASH", "1Password Quick Access", "1password --quick-access")
+o.rebind("SUPER + ALT + SLASH", "1Password Quick Access", "1password --quick-access")
 
 -- Clipboard history (same command as the default SUPER+CTRL+V bind).
 o.bind("SUPER + ALT + C", "Clipboard manager", "omarchy-shell shell toggle omarchy.clipboard")
@@ -476,24 +398,19 @@ o.bind("SUPER + SHIFT + code:51", "Switchboard: window overview", "omarchy-shell
 --   2. omarchy plugin remove io.github.gabrielvincent.switcharoo --yes
 -- The "Switcharoo switcher" description acts as a sentinel: the plugin checks
 -- for it in `hyprctl binds` to detect that the binding is installed.
-hl.unbind("ALT + TAB")
-o.bind("ALT + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:next"), { repeating = true })
+o.rebind("ALT + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:next"), { repeating = true })
 
-hl.unbind("ALT + SHIFT + TAB")
-o.bind("ALT + SHIFT + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:previous"), { repeating = true })
+o.rebind("ALT + SHIFT + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:previous"), { repeating = true })
 
-hl.unbind("ALT + GRAVE")
-o.bind("ALT + GRAVE", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:previous"), { repeating = true })
+o.rebind("ALT + GRAVE", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:previous"), { repeating = true })
 
 hl.layer_rule({ match = { namespace = "omarchy-switcharoo" }, no_anim = true })
 
 -- SUPER+TAB / SUPER+SHIFT+TAB (mac Cmd+Tab muscle memory) share ALT+TAB's
 -- global shortcuts. These chords no longer switch workspaces: use SUPER+1..0,
 -- scroll, or gestures.
-hl.unbind("SUPER + TAB")
-hl.unbind("SUPER + SHIFT + TAB")
-o.bind("SUPER + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:next"), { repeating = true })
-o.bind("SUPER + SHIFT + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:previous"), { repeating = true })
+o.rebind("SUPER + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:next"), { repeating = true })
+o.rebind("SUPER + SHIFT + TAB", "Switcharoo switcher", hl.dsp.global("omarchy-switcharoo:previous"), { repeating = true })
 
 -- Mouse chords (mac-style). Window drag lives on SUPER+ALT+click —
 -- intentionally not on SUPER+click, so muscle-memory Super+clicks can't
@@ -522,3 +439,9 @@ end
 
 o.bind("SUPER + E", "Thunderbird: archive", thunderbird_shortcut("CTRL + ALT + SHIFT", "E"))
 o.bind("SUPER + CTRL + M", "Thunderbird: move to folder", thunderbird_shortcut("CTRL + SHIFT", "N"))
+
+-- Dictation keys from before Alt + Space and Right Alt became the defaults.
+-- Remove these lines to give the keys back to applications.
+if o.dictation_installed and o.dictation_installed() then
+  o.bind("SUPER + CTRL + X", "Toggle dictation", "omarchy-dictation toggle")
+end

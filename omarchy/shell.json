@@ -6,8 +6,6 @@
   },
   "bar": {
     "position": "top",
-    "transparent": false,
-    "centerAnchor": "omarchy.clock",
     "layout": {
       "left": [
         {
@@ -19,27 +17,18 @@
       ],
       "center": [
         {
-          "id": "omarchy.indicators"
-        },
-        {
           "id": "omarchy.clock",
-          "format": "dddd h:mm AP",
+          "format": "ddd d MMM h:mm AP",
           "formatAlt": "d MMMM 'W'ww yyyy",
-          "verticalFormat": "h\n—\nmm AP"
-        },
-        {
-          "id": "omarchy.keyboard-layout"
-        },
-        {
-          "id": "omarchy.weather"
-        },
-        {
-          "id": "omarchy.system-update"
+          "verticalFormat": "h\n\u2014\nmm AP"
         }
       ],
       "right": [
         {
           "id": "omarchy.tray"
+        },
+        {
+          "id": "omarchy.keyboard-layout"
         },
         {
           "id": "nixfred.blip"
@@ -48,7 +37,7 @@
           "id": "omarchy.dropbox"
         },
         {
-          "id": "chadhs.agents",
+          "id": "omarchy.agents",
           "providers": {
             "claude": {
               "enabled": false
@@ -73,8 +62,63 @@
         {
           "id": "omarchy.power"
         }
+      ],
+      "centerBegin": [
+        {
+          "id": "omarchy.indicators"
+        }
+      ],
+      "centerEnd": [
+        {
+          "id": "omarchy.elsewhen",
+          "cities": [
+            {
+              "name": "Orlando",
+              "zone": "America/New_York",
+              "people": [
+                "Aechelon",
+                "Xpanse"
+              ]
+            },
+            {
+              "name": "Mukwonago",
+              "zone": "America/Chicago",
+              "lat": 42.86668,
+              "lon": -88.33343,
+              "region": "Wisconsin, US",
+              "people": [
+                "Chad"
+              ]
+            },
+            {
+              "name": "Denver",
+              "zone": "America/Denver",
+              "lat": 39.73915,
+              "lon": -104.9847,
+              "region": "Colorado, US",
+              "people": [
+                "Matthew"
+              ]
+            },
+            {
+              "name": "San Francisco",
+              "zone": "America/Los_Angeles",
+              "people": [
+                "Aechelon",
+                "Akshay"
+              ]
+            }
+          ]
+        },
+        {
+          "id": "omarchy.weather"
+        },
+        {
+          "id": "omarchy.system-update"
+        }
       ]
-    }
+    },
+    "background": "opaque"
   },
   "plugins": [
     {

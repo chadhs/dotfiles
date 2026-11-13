@@ -180,6 +180,10 @@ where Thunderbird uses its own reader.
 
 ## Keyboard setup
 
+Verified on Thunderbird 158.0 on 2026-11-07 with tbkeys-lite 2.4.4, Quick
+Folder Move 3.3.0, and the local picker-focus helper 1.0.1. OS bindings alone
+are not enough: the receiving add-ons must be active in the selected profile.
+
 Install the official add-ons:
 
 - [Quick Folder Move](https://addons.thunderbird.net/thunderbird/addon/quick-folder-move/), ID `quickmove@mozilla.kewis.ch`.
@@ -215,6 +219,56 @@ choose **Customize**, and add **Quick Folder Move** to the Mail toolbar.
 Keep that button visible when using Conversations. The style installer also
 restores it without duplicating it or removing other toolbar buttons.
 
+### Recovery after a Thunderbird upgrade
+
+The 2026-11-07 failure affected all three shortcuts: the official add-ons were
+app-disabled with cached compatibility capped at 156, and the local helper
+was capped at 155. Add-on updates were disabled, and update/repository URLs
+had been replaced with `extensions-dummy` testing endpoints. Published
+compatibility for the same official add-on versions already included 158.
+
+Recovery used Thunderbird's own AddonManager user-requested update checks.
+The official XPIs did not need patching or replacing, and compatibility
+checks stayed enabled. Reset only the affected add-on update/repository test
+overrides to installed Thunderbird defaults, then use Add-ons Manager's
+**Check for Updates**. Preserve mappings and compose settings. Close the app
+and back up the profile before any offline preference edits; package-managed
+Thunderbird updates remain under Arch.
+
+Run this read-only check from the dotfiles root:
+
+```sh
+python3 utils/thunderbird/check-shortcuts.py
+# Select a non-default profile explicitly if needed:
+python3 utils/thunderbird/check-shortcuts.py --profile /path/to/profile
+```
+
+`doctor.sh` also runs it. It checks the installed profile's required add-on
+activation flags, disabled add-on updates, and dummy update URLs. It never
+reads messages or modifies the profile. A pass confirms dependencies, not
+physical keyboard behavior. Multiple installation defaults require explicit
+profile selection rather than guessing.
+
+Do not let automation apply recommended testing preferences to the daily
+mail profile. Use disposable profiles for tests that require those settings.
+The repair's maintenance connection explicitly set
+`remote.prefs.recommended=false`, confirmed the installed code skips test-pref
+injection, and restored the temporary control preference before a normal
+restart. Do not disable compatibility checking or edit `extensions.json`
+to force activation.
+
+Local sample-message checks confirmed archive into a test archive, deletion
+to Local Folders Trash, and moving through the searchable picker. Typing,
+Backspace, arrows, Enter, and Escape were exercised in the picker; Backspace
+also edited quick-filter and draft text normally. No message was sent. Test
+folders, messages, draft, and temporary local identity were removed afterward.
+The official add-ons and helper remained active after restart. The user confirmed that physical Super+E, Ctrl+Super+M, and Backspace all
+work, including typing and Backspace in the folder picker. Shortcut repair is
+complete. Startup selection of the newest message remains a separate follow-up.
+
+Profile backups, disposable profiles, and test artifacts stay outside Git in
+`~/.local/state/omarchy/backups/thunderbird-shortcuts-20261107-113254/`.
+
 ### Keep typing inside the folder picker
 
 On Thunderbird 155.0, the toolbar popover can display a text caret while
@@ -235,9 +289,10 @@ experiment API, so Thunderbird requests full access. Its tracked source is in
 `picker-focus/`; it only focuses Quick Folder Move's popup browser after the
 popover opens. It does not change key bindings or read or move messages.
 
-The helper is limited to Thunderbird 155.x, where it was tested. Recheck the
-upstream behavior and helper compatibility before upgrading to another major
-version. Normal dotfiles deployment does not install or update this add-on;
+Helper 1.0.1 is bounded to Thunderbird 155–158. The original fix was tested
+on 155; the unchanged focus code was revalidated on 158 after its original
+155-only compatibility cap disabled it. Recheck upstream behavior and helper
+compatibility before upgrading beyond that range. Normal dotfiles deployment does not install or update this add-on;
 rebuild and reinstall it after source changes.
 
 Verify Ctrl+Super+M, typing `paper`, Backspace, arrow navigation, and Escape.

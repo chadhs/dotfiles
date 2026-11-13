@@ -1,8 +1,13 @@
--- Pin workspaces to monitors: 1,3,5 on DP-1; 2,4,6 on DP-2
--- Each monitor starts on its lowest pinned workspace (default = true).
-for _, id in ipairs({ 1, 3, 5 }) do
-  hl.workspace_rule({ workspace = tostring(id), monitor = "DP-1", persistent = true, default = id == 1 })
-end
-for _, id in ipairs({ 2, 4, 6 }) do
-  hl.workspace_rule({ workspace = tostring(id), monitor = "DP-2", persistent = true, default = id == 2 })
+-- Keep the first five workspaces available even when empty, for trackpad swipes.
+-- Use the monitor blocks assigned by Omarchy 4.5 in
+-- ~/.local/state/omarchy/monitor-workspaces: DP-2 = 0, DP-3 = 1.
+-- The bar labels each monitor's first five workspaces 1-5.
+for _, screen in ipairs({ { name = "DP-2", base = 0 }, { name = "DP-3", base = 10 } }) do
+  for slot = 1, 5 do
+    hl.workspace_rule({
+      workspace = tostring(screen.base + slot),
+      monitor = screen.name,
+      persistent = true,
+    })
+  end
 end

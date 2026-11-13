@@ -1,10 +1,12 @@
 # Plugin patches
 
 Local patches applied to plugin-manager-managed plugins under
-`~/.config/omarchy/plugins/` (gitignored, so `omarchy plugin update` can
-clobber them). After any `omarchy plugin update` or `omarchy update`, run
-`sh scripts/omarchy-post-update.sh` — it re-applies this patch
-automatically when the clone is clean and verifies the rest of the setup.
+`~/.config/omarchy/plugins/` (outside the dotfiles repo). Local edits can block a plugin fast-forward;
+updates and validation rollback still require checking the applied patches. After any `omarchy plugin update` or `omarchy update`, run
+`sh scripts/omarchy-post-update.sh` for a read-only audit. If patches are
+missing, explicitly run `sh scripts/omarchy-repair-switcharoo.sh`; it applies
+the snapshot only to a clean clone and restarts the shell. The audit never
+changes files, restarts services, or sends notifications.
 To apply by hand:
 
 ```sh
@@ -37,6 +39,16 @@ Local delta against upstream `main`, applied across `Switcher.qml`,
    `omarchy-window-raise-front <address>` helper so a committed tiled window
    overlapped by a floater is floated in place and raised (Hyprland renders
    all floats above all tiles; plain focus would leave it invisible).
+3. **config-fallback** (`Switcher.qml`, marked `LOCAL PATCH`) — the current
+   omarchy shell's `PluginShellApi` no longer exposes `shellConfig`, so the
+   plugin silently ignored every `shell.json` setting and fell back to
+   defaults. Symptom as of 2026-10-01: SUPER+TAB committed ~100 ms after
+   opening (release-watch saw Alt only, `false` while Super was held), so
+   the grid flashed and never let you hold-tab; ALT+TAB still worked since
+   it matches the default. `shellEntry()` now falls back to reading
+   `~/.config/omarchy/shell.json` directly (2 s cache, `FileView`-based, so
+   tab autorepeat does not reparse the file). Drop this once the shell
+   exposes per-plugin entry config again.
 
 The patch source of truth is the `local-patch` branch of the fork at
 `~/src/chadhs/omarchy-switcharoo` (`git diff upstream/main local-patch`);
@@ -44,19 +56,12 @@ the PR branch is `release-modifiers-config` (everything above minus the
 local-only raise-front commit). Both are required by the bindings in
 `omarchy/hypr/bindings.lua` (switcharoo section).
 
-## TODO: when upstream merges the releaseModifiers PR
+## Retiring a patch after an upstream update
 
-(https://github.com/gabrielvincent/omarchy-switcharoo/pull/1 — draft as of
-2026-08-31; flip this section into done notes when it lands.)
-
-1. `omarchy plugin update` — upstream code now carries releaseModifiers
-   natively; the live clone needs no patch for it
-2. Shrink `switcharoo-local.patch` to the raise-front hunk only
-   (`git diff upstream/main <raise-front-only-ref>` from the fork), re-apply,
-   `sh scripts/omarchy-post-update.sh` must be 10/10
-3. `omarchy/shell.json` keeps `"releaseModifiers": ["alt", "super"]` — now
-   consumed by upstream code instead of the patch; no change needed
-4. Extend `PATCH_SENTINELS` in `scripts/omarchy-post-update.sh` back to just
-   `omarchy-window-raise-front`
-5. Update this README (patch covers only Switcher.qml again); delete the
-   fork if desired — the dotfiles repo has no other dependency on it
+Review each installed upstream implementation before removing its local hunk.
+Release-modifier support, config loading, and raise-front behavior are separate
+requirements; adoption of one does not establish that the others are fixed.
+Regenerate the snapshot for the remaining hunks, adjust audit sentinels to
+match what must still exist in the installed plugin, and verify Alt/Super
+release-to-commit plus visibility behind overlapping floating windows.
+Run `sh scripts/omarchy-post-update.sh`; all applicable checks should pass.

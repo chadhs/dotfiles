@@ -135,6 +135,13 @@ state) and the engine floats managed windows as needed. No manual rebinding
 required — flipping `MOOM_MODE` in `~/.config/omarchy/moom.conf` switches
 behavior.
 
-If Omarchy's tiling ever chafes further: set `omarchy_default_bindings = false`
-in `~/.config/hypr/hyprland.lua`, bind the full Moom table, and float everything —
-the full decode table above is the spec.
+Omarchy 4.5 provides floating workspaces without disabling its default
+bindings. The 2026-11-07 trial passed Moom placements, nudge/revert, and monitor
+transfers there. Keep the current mixed-layout workflow until choosing to
+change it: stock floating mode does not fix tiled windows opening behind
+large floaters on a tiled workspace. See [the 4.5 review](omarchy-4.5-review.md).
+
+SUPER+CTRL+SHIFT+Arrows still swap windows, overriding 4.5's new monitor-move
+bindings. The config spells modifiers in the same order as the stock binding
+when calling `o.rebind`; otherwise this Hyprland version left both handlers
+registered. CTRL+ALT+Left/Right retain Moom monitor transfer.

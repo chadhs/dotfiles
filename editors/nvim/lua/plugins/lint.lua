@@ -40,7 +40,7 @@ return {
           local linter = vim.deepcopy(lint.linters[parent])
           linter.cmd = ruby_tooling.command
           local prefix = bundled and { 'bundle', 'exec', executable } or { executable }
-          linter.args = vim.list_extend(prefix, linter.args)
+          linter.args = vim.list_extend(ruby_tooling.arguments(prefix), linter.args)
           linter.ignore_exitcode = true
           return linter
         end
@@ -50,7 +50,7 @@ return {
         local prefix = bundled and { 'bundle', 'exec', 'reek' } or { 'reek' }
         return {
           cmd = ruby_tooling.command,
-          args = vim.list_extend(prefix, {
+          args = vim.list_extend(ruby_tooling.arguments(prefix), {
             '--format',
             'json',
             function()
