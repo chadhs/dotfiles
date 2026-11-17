@@ -385,6 +385,31 @@ o.bind("SUPER + ALT + C", "Clipboard manager", "omarchy-shell shell toggle omarc
 -- recommendation; unbound in stock Omarchy.
 o.bind("SUPER + SHIFT + code:51", "Switchboard: window overview", "omarchy-shell -q switchboard toggle")
 
+-- Left Ctrl+arrows mirror workspace swipes and Switchboard gestures.
+-- Hyprland 0.56 treats CTRL as either side. Check the physical keysym and
+-- pass right-Ctrl chords through to the app, preserving normal text navigation.
+local function with_left_ctrl(action)
+  return function()
+    if not hl.is_key_down("Control_L") then
+      return { pass_event = true }
+    end
+    action()
+  end
+end
+
+o.bind("CTRL + LEFT", "Left Ctrl: previous workspace", with_left_ctrl(function()
+  hl.dispatch(hl.dsp.focus({ workspace = "m-1" }))
+end))
+o.bind("CTRL + RIGHT", "Left Ctrl: next workspace", with_left_ctrl(function()
+  hl.dispatch(hl.dsp.focus({ workspace = "m+1" }))
+end))
+o.bind("CTRL + UP", "Left Ctrl: Switchboard overview", with_left_ctrl(function()
+  hl.exec_cmd("omarchy-shell -q switchboard toggle")
+end))
+o.bind("CTRL + DOWN", "Left Ctrl: dismiss Switchboard", with_left_ctrl(function()
+  hl.exec_cmd("omarchy-shell -q switchboard close")
+end))
+
 -- Switcharoo: MRU grid window switcher (io.github.gabrielvincent.switcharoo).
 -- Replaces both Omarchy's stock workspace-local ALT+TAB cycling and the
 -- retired altswitch fork (which previously held SUPER+TAB; still in git
