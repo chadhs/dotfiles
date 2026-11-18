@@ -95,6 +95,10 @@ o.bind("SUPER + SHIFT + Z", "Universal redo", unless_terminal(send_shortcut_once
 o.bind("ALT + LEFT", "Move cursor one word left", send_shortcut_once("CTRL", "LEFT"))
 o.bind("ALT + RIGHT", "Move cursor one word right", send_shortcut_once("CTRL", "RIGHT"))
 
+-- Scroll one page in the focused app.
+o.bind("ALT + UP", "Page up", send_shortcut_once("", "Page_Up"))
+o.bind("ALT + DOWN", "Page down", send_shortcut_once("", "Page_Down"))
+
 -- Word selection (mac Option+Shift+Arrow -> CTRL+SHIFT+Arrow).
 o.bind("ALT + SHIFT + LEFT", "Select one word left", send_shortcut_once("CTRL + SHIFT", "LEFT"))
 o.bind("ALT + SHIFT + RIGHT", "Select one word right", send_shortcut_once("CTRL + SHIFT", "RIGHT"))
