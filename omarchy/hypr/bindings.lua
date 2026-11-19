@@ -414,6 +414,31 @@ o.bind("CTRL + DOWN", "Left Ctrl: dismiss Switchboard", with_left_ctrl(function(
   hl.exec_cmd("omarchy-shell -q switchboard close")
 end))
 
+-- WoW's third action bar uses Ctrl+1 through Ctrl+=. Translate the Super
+-- number row while WoW has focus and run the stock desktop action otherwise.
+local function bind_wow_action_bar(code, description, desktop_action)
+  local key = "code:" .. code
+
+  o.rebind("SUPER + " .. key, description .. " / WoW action bar", function()
+    local window = hl.get_active_window()
+    if window and window.class == "steam_app_battlenet" and window.initial_title == "World of Warcraft" then
+      -- Wine on XWayland needs Ctrl key events as well as the modifier mask.
+      hl.dispatch(hl.dsp.send_key_state({ mods = "", key = "Control_L", state = "down" }))
+      hl.dispatch(hl.dsp.send_key_state({ mods = "CTRL", key = key, state = "down" }))
+      hl.dispatch(hl.dsp.send_key_state({ mods = "CTRL", key = key, state = "up" }))
+      hl.dispatch(hl.dsp.send_key_state({ mods = "CTRL", key = "Control_L", state = "up" }))
+    else
+      hl.dispatch(desktop_action)
+    end
+  end)
+end
+
+for slot = 1, 10 do
+  bind_wow_action_bar(slot + 9, "Switch to workspace " .. slot, o.workspaces.focus(slot))
+end
+bind_wow_action_bar(20, "Expand window left", hl.dsp.window.resize({ x = -100, y = 0, relative = true }))
+bind_wow_action_bar(21, "Shrink window left", hl.dsp.window.resize({ x = 100, y = 0, relative = true }))
+
 -- Switcharoo: MRU grid window switcher (io.github.gabrielvincent.switcharoo).
 -- Replaces both Omarchy's stock workspace-local ALT+TAB cycling and the
 -- retired altswitch fork (which previously held SUPER+TAB; still in git
