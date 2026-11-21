@@ -76,12 +76,15 @@ Regenerate after corporate cert rotation (example):
 *** Define package repositories
 
 Use HTTPS for all archives. On work Macs the optional CA bundle above
-covers corporate TLS inspection; on personal Macs the system trust store
-is enough.
+covers corporate TLS inspection. If the GNU ELPA host is unreachable, set
+=cs/gnu-elpa-archive-url= in =local.el= to a mirror that serves current GNU
+signatures.
 
 #+BEGIN_SRC emacs-lisp
+  (defvar cs/gnu-elpa-archive-url "https://elpa.gnu.org/packages/"
+    "HTTPS base URL for GNU ELPA, including the trailing slash.")
   (setq package-archives
-        '(("gnu"          . "https://elpa.gnu.org/packages/")
+        `(("gnu"          . ,cs/gnu-elpa-archive-url)
           ("melpa"        . "https://melpa.org/packages/")
           ("melpa-stable" . "https://stable.melpa.org/packages/")))
 #+END_SRC
