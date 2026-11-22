@@ -7,18 +7,14 @@
         {
           "conditions": [
             {
-              "bundle_identifiers": [
-                "^com.omnigroup.OmniFocus4$"
-              ],
+              "bundle_identifiers": ["^com.omnigroup.OmniFocus4$"],
               "type": "frontmost_application_unless"
             }
           ],
           "from": {
             "key_code": "j",
             "modifiers": {
-              "mandatory": [
-                "left_command"
-              ],
+              "mandatory": ["left_command"],
               "optional": []
             }
           },
@@ -32,18 +28,14 @@
         {
           "conditions": [
             {
-              "bundle_identifiers": [
-                "^com.omnigroup.OmniFocus4$"
-              ],
+              "bundle_identifiers": ["^com.omnigroup.OmniFocus4$"],
               "type": "frontmost_application_unless"
             }
           ],
           "from": {
             "key_code": "k",
             "modifiers": {
-              "mandatory": [
-                "left_command"
-              ],
+              "mandatory": ["left_command"],
               "optional": []
             }
           },
@@ -73,9 +65,7 @@
           "from": {
             "key_code": "h",
             "modifiers": {
-              "mandatory": [
-                "right_command"
-              ],
+              "mandatory": ["right_command"],
               "optional": []
             }
           },
@@ -89,18 +79,14 @@
         {
           "conditions": [
             {
-              "bundle_identifiers": [
-                "^com.omnigroup.OmniFocus4$"
-              ],
+              "bundle_identifiers": ["^com.omnigroup.OmniFocus4$"],
               "type": "frontmost_application_unless"
             }
           ],
           "from": {
             "key_code": "j",
             "modifiers": {
-              "mandatory": [
-                "right_command"
-              ],
+              "mandatory": ["right_command"],
               "optional": []
             }
           },
@@ -114,18 +100,14 @@
         {
           "conditions": [
             {
-              "bundle_identifiers": [
-                "^com.omnigroup.OmniFocus4$"
-              ],
+              "bundle_identifiers": ["^com.omnigroup.OmniFocus4$"],
               "type": "frontmost_application_unless"
             }
           ],
           "from": {
             "key_code": "k",
             "modifiers": {
-              "mandatory": [
-                "right_command"
-              ],
+              "mandatory": ["right_command"],
               "optional": []
             }
           },
@@ -149,9 +131,7 @@
           "from": {
             "key_code": "l",
             "modifiers": {
-              "mandatory": [
-                "right_command"
-              ],
+              "mandatory": ["right_command"],
               "optional": []
             }
           },
@@ -170,9 +150,37 @@
         {
           "conditions": [
             {
-              "bundle_identifiers": [
-                "^com.nvidia.gfnpc.mall$"
-              ],
+              "bundle_identifiers": ["^com.nvidia.gfnpc.mall$"],
+              "type": "frontmost_application_if"
+            },
+            {
+              "type": "device_if",
+              "identifiers": [
+                {
+                  "vendor_id": 1452
+                }
+              ]
+            }
+          ],
+          "from": {
+            "key_code": "left_command"
+          },
+          "to": [
+            {
+              "key_code": "left_control"
+            }
+          ],
+          "type": "basic"
+        }
+      ]
+    },
+    {
+      "description": "Map Command to Control in WoW Forever",
+      "manipulators": [
+        {
+          "conditions": [
+            {
+              "bundle_identifiers": ["^com\\.blizzard\\.worldofwarcraft$"],
               "type": "frontmost_application_if"
             },
             {
