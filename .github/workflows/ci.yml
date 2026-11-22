@@ -38,3 +38,29 @@ jobs:
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq zsh
           zsh -n scripts/weekly-update.sh
+
+  editors:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: rhysd/action-setup-vim@v1
+        with:
+          neovim: true
+          version: v0.12.6
+      - uses: jcs090218/setup-emacs@master
+        with:
+          version: '30.2'
+      - name: shared Neovim regression tests
+        run: nvim --headless -u NONE -i NONE -n -l windows/tests/nvim.lua
+      - name: shared Emacs regression tests
+        run: emacs --batch -Q -l windows/tests/emacs-tests.el -f ert-run-tests-batch-and-exit
+      - name: Windows deployment safety
+        if: runner.os == 'Windows'
+        shell: pwsh
+        env:
+          DOTFILES_TEST_TEMP: ${{ runner.temp }}
+        run: ./windows/tests/deploy.Tests.ps1

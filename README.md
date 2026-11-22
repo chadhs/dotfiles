@@ -12,10 +12,17 @@ obviously you **want to read** the best part... [emacs-config.org](editors/emacs
 | `shells/` | zsh + bash profiles/rc files, `inputrc`, the `digitalnomad` zsh theme |
 | `utils/` | `gitconfig`, `tmux.conf`, ghostty + karabiner + espanso config, `ssh_config`, [agent skills](utils/agents/README.md), [T3 Code](utils/t3-code/README.md), [Thunderbird](utils/thunderbird/README.md), misc tool config and scripts (`project-ruby-exec`, `autogit.sh`, ...) |
 | `omarchy/` | owned omarchy customizations (hypr keymaps/input, omarchy-shell bar config, moom config, ghostty config, `omarchy-moom` script, plugin patches) — see [omarchy/README.md](omarchy/README.md) |
+| `windows/` | native Windows Neovim and Emacs deployment, dependencies, adapters, and tests. See [windows/README.md](windows/README.md). |
 | `scripts/` | `bootstrap-mac.sh`, `doctor.sh`, `weekly-update.sh`, `omarchy-post-update.sh`, `macos-defaults.sh`, `links.conf`, npm/gem package lists (`deploy.sh` lives at the repo root, like the `Brewfile`) |
-| `.github/` | CI: shellcheck, `links.conf` lint, and syntax checks run on push/PR |
+| `.github/` | CI checks shell scripts, the link manifest, Thunderbird, and shared editor regressions on Ubuntu and Windows. |
 
 ## scripts
+### setting up native Windows editors
+
+Run `windows/deploy.ps1` in PowerShell 7 to use the shared Neovim and Emacs
+configuration without WSL. See [windows/README.md](windows/README.md) for setup,
+backup behavior, machine-local overrides, and verified editor tools.
+
 ### setting up a new mac
 the `bootstrap-mac.sh` script is designed to be run once for initial setup, although it should remain safe to re-run if interrupted.
 

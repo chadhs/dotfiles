@@ -78,6 +78,11 @@ EOF
         omarchy pkg aur add $aur_pkgs
       fi
     fi
+    # Omarchy 4.5 installs a self-updating AppImage, not an AUR package.
+    # Preserve an existing install and its selected update channel.
+    if [ ! -x "$HOME/.local/share/t3code/T3-Code.AppImage" ]; then
+      omarchy install ai t3-code nightly --no-launch || return 1
+    fi
     if command -v mise >/dev/null 2>&1; then
       echo "pinning mise CLIs: claude, codex, opencode..."
       mise use -g claude@latest codex@latest opencode@latest
@@ -310,6 +315,10 @@ symlink_configs(){
   ## manifest-driven links/copies
   backup_omarchy_configs
   apply_links
+  if [ "$system_os" = "arch" ]; then
+    python3 "${DOTFILES_ROOT}/scripts/ensure-omarchy-workspaces.py" || return 1
+    sh "${DOTFILES_ROOT}/scripts/omarchy-retire-usage.sh" || return 1
+  fi
   seed_vicinae_shortcuts
   enable_user_units
 }
@@ -377,12 +386,14 @@ enable_user_units(){
       echo "could not enable user unit: $name (enable manually: systemctl --user enable --now $name)"
     fi
   done
-  # .path/.timer units trigger shipped services (e.g. opencode-go record
-  # refresh); they carry [Install] themselves and must be enabled directly
+  # .path/.timer units trigger shipped services; they carry [Install]
+  # themselves and must be enabled directly
   for unit in "${DOTFILES_ROOT}"/omarchy/systemd/user/*.path \
               "${DOTFILES_ROOT}"/omarchy/systemd/user/*.timer; do
     [ -e "$unit" ] || continue
     name="$(basename "$unit")"
+    # Theme scheduling is opt-in; preserve the user's manual theme choice.
+    [ "$name" = "omarchy-scheduled-theme.timer" ] && continue
     if systemctl --user enable --now "$name" 2>/dev/null; then
       echo "user unit enabled: $name"
     else
@@ -404,12 +415,12 @@ if [ "${DOTFILES_LINKS_ONLY:-0}" = "1" ]; then
   # testing/maintenance mode: linking only, no repo update or package install
   echo "links-only mode: skipping repo update and package install..."
   os_setup
-  symlink_configs
+  symlink_configs || exit 1
 else
   update_repo
   os_setup
-  verify_packages
-  symlink_configs
+  verify_packages || exit 1
+  symlink_configs || exit 1
   offer_login_shell_change
 fi
 echo ""

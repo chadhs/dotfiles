@@ -3,7 +3,6 @@
 # omarchy-agent-tools-update reads the same list (yay --needed).
 
 vicinae-bin
-t3code-nightly-bin
 claude-desktop
 openai-codex-desktop
 cursor-bin

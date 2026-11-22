@@ -28,7 +28,9 @@
          "keyboard_interactivity": "on_demand"
       }
    },
-   "favorites": [],
+   "favorites": [
+      "applications:battlenet"
+   ],
    "fallbacks": [
       "shortcuts:sct-google",
       "shortcuts:sct-duckduckgo",

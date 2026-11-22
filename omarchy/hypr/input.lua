@@ -71,11 +71,19 @@ hl.gesture({ fingers = 3, direction = "horizontal", action = "workspace" })
 -- 3-finger swipe up opens Switchboard: a full-screen live overview of every
 -- window on every workspace (macOS Mission Control style). Filter by typing,
 -- digits 1-9 jump, Esc dismisses. Keyboard access is SUPER+SHIFT+backslash
--- (see bindings.lua).
+-- (see bindings.lua). Left Ctrl+Up also toggles it; swipe down or Left
+-- Ctrl+Down dismisses it.
 hl.gesture({
   fingers = 3,
   direction = "up",
   action = function() hl.exec_cmd("omarchy-shell -q switchboard toggle") end,
+})
+
+-- Dismiss the overview without opening it when already closed.
+hl.gesture({
+  fingers = 3,
+  direction = "down",
+  action = function() hl.exec_cmd("omarchy-shell -q switchboard close") end,
 })
 
 -- Enable touchpad gestures for moving focus (helpful on scrolling layout).

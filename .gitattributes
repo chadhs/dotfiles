@@ -1,0 +1,3 @@
+# Editor sources must remain readable by Org and Lua on every checkout.
+editors/** text eol=lf
+windows/** text eol=lf
