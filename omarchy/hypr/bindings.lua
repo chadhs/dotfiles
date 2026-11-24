@@ -18,6 +18,12 @@
 -- Disable a default binding without replacing it.
 -- hl.unbind("SUPER + SHIFT + B")
 
+-- The stock volume shortcuts also run on release. Play feedback in separate
+-- press-only bindings so a tap plays one pop and held keys still repeat.
+local volume_feedback = "pw-play --media-role=Notification --latency=20ms /usr/share/sounds/freedesktop/stereo/audio-volume-change.oga"
+o.bind("XF86AudioRaiseVolume", nil, volume_feedback, { locked = true, repeating = true })
+o.bind("XF86AudioLowerVolume", nil, volume_feedback, { locked = true, repeating = true })
+
 -- Vicinae: Alfred-style app/file/web search. SUPER+SPACE was the Omarchy
 -- root menu; SUPER+ALT+SPACE opens the stock Apps grid. The bar's Omarchy
 -- menu button and SUPER+ESCAPE (system menu) are unchanged. Plain
