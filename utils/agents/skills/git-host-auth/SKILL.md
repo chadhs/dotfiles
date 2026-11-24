@@ -17,9 +17,9 @@ Pick the host CLI from `origin` and load the path-specific token. Never prompt a
 
 Do not trust a global `gh auth` session. The token depends on the repo path.
 
-1. Repo root: `git rev-parse --show-toplevel`.
-2. Run `gh` through that path's direnv so `.envrc` wins, e.g. `direnv exec <repo-root> gh ...`.
-3. Recheck `direnv exec <repo-root> gh auth status` after that env is loaded. Do not use a `gh` that was authenticated before direnv ran.
+1. Use the credential directory named by the user or project instructions. Otherwise start at the checkout root (`git rev-parse --show-toplevel`) and let direnv find the approved `.envrc` there or in a parent directory. If a linked worktree is outside that directory tree, use the original checkout as the direnv starting point.
+2. Run every `gh` command through `direnv exec <credential-directory> gh ...`. The `.envrc` must export `GH_TOKEN` or `GITHUB_TOKEN` for `gh` to receive it.
+3. Before writing to GitHub, run `direnv exec <credential-directory> gh api user --jq .login` and confirm the login matches the project's expected account.
 
 ## GitLab (`glab`)
 
